@@ -6,7 +6,7 @@ If the header doesn't have **[DRAFT]** tag, it means that the paragraph can be c
 
 # Sharetribe SDK for JavaScript [DRAFT]
 
-JavaScript implementation of Sharetribe SDK to provider easy access to [Sharetribe Marketplace API](./) (TODO: Add link to the API Slate documentation).
+JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetribe Marketplace API](./) (TODO: Add link to the API Slate documentation).
 
 - [Promise-based](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) asynchronous API
 - Universal: Runs in [Node.js](https://nodejs.org/) and in browser
@@ -15,20 +15,20 @@ JavaScript implementation of Sharetribe SDK to provider easy access to [Sharetri
 - Clear documentation
 - Human-readable and understandable error messages for debugging
 - Structured (JSON) error messages for logging
-- Provides mechanism to encode/decode complex types (such as UUID, Location, Money, Date)
 - Access to different environments (e.g. 'test' and 'production')
 - Abstracts the native HTTPS communication binginds. Uses [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) in browser and [HTTPS module](https://nodejs.org/api/https.html) in Node.js.
 
 # Usage [DRAFT]
 
 ``` js
-var sharetribe = require('sharetribe-sdk').init({
+var sharetribe = require('sharetribe-sdk')({
   // TODO
   // What do we need here?
   //
-  // - environment? (dev/test/staging/producetion?)
+  // - environment? (dev/test/staging/production?)
   // - apiKey? (is this needed?)
   // - marketplaceId (is this needed?)
+  // - API version?
 });
 
 sharetribe.listings.show({search: {keywords: "apartment"}}).then(function(result) {
@@ -88,7 +88,7 @@ $ npm test
 
 # Author [DRAFT]
 
-Developmed and maintained by [Sharetribe](https://www.sharetribe.com).
+Developed and maintained by [Sharetribe](https://www.sharetribe.com).
 
 # License
 
