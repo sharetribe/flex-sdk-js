@@ -67,14 +67,12 @@ sharetribe.listings.show({search: {keywords: "apartment"}}).then(function(result
 });
 ```
 
-# Examples [DRAFT]
+# Examples
 
-You can find examples under the `[examples/](./examples)` directory:
+You can find all examples under the `[examples/](./examples)` directory:
 
-- [ ] Authentication
-- [ ] Search listings
-- [ ] Post a new listing
-- [ ] Start a new transaction
+- [Hello World example in Node.js](./examples/hello-world-node)
+- [Hello World example in browser](./examples/hello-world-browser)
 
 # Installation [DRAFT]
 
@@ -87,6 +85,12 @@ npm install sharetribe-sdk
 Full documentation is available at [TODO Add link to Slate](./)
 
 # Development [DRAFT]
+
+To rebuild the package:
+
+```
+$ npm run build
+```
 
 Run all tests:
 

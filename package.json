@@ -1,0 +1,27 @@
+{
+  "name": "sharetribe-sdk",
+  "version": "0.0.1",
+  "description": "Sharetribe SDK for JavaScript",
+  "main": "lib/sharetribe-sdk.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sharetribe/sharetribe-sdk-js.git"
+  },
+  "keywords": [
+    "sharetribe",
+    "api",
+    "sdk"
+  ],
+  "author": "Sharetribe",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/sharetribe/sharetribe-sdk-js/issues"
+  },
+  "homepage": "https://github.com/sharetribe/sharetribe-sdk-js",
+  "devDependencies": {
+    "webpack": "2.1.0-beta.25"
+  }
+}
