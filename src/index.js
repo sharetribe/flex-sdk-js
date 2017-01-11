@@ -1,5 +1,3 @@
-module.exports = {
-  hello: function hello(name) {
-    return ["Hello, ", name, "!"].join("");
-  }
-};
+import * as greetings from './greetings';
+
+export const hello = greetings.hello;
