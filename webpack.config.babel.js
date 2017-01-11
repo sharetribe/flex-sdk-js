@@ -1,7 +1,7 @@
 export default () => ({
   entry: './src/index.js',
   output: {
-    path: './lib',
+    path: './build',
     filename: 'sharetribe-sdk.js',
     library: 'sharetribeSdk',
     libraryTarget: 'umd',

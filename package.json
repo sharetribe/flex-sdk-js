@@ -2,7 +2,7 @@
   "name": "sharetribe-sdk",
   "version": "0.0.1",
   "description": "Sharetribe SDK for JavaScript",
-  "main": "lib/sharetribe-sdk.js",
+  "main": "build/sharetribe-sdk.js",
   "scripts": {
     "build": "webpack",
     "lint": "eslint ."
