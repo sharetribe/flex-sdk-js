@@ -8,15 +8,15 @@ If the header doesn't have **[DRAFT]** tag, it means that the paragraph can be c
 
 JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetribe Marketplace API](./) (TODO: Add link to the API Slate documentation).
 
-- [Promise-based](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) asynchronous API
-- Universal: Runs in [Node.js](https://nodejs.org/) and in browser
-- Direct and predictable mapping from API methods and parameters to SDK methods and parameters
-- Easy authentication
-- Clear documentation
-- Human-readable and understandable error messages for debugging
-- Structured (JSON) error messages for logging
-- Access to different environments (e.g. 'test' and 'production')
-- Abstracts the native HTTPS communication binginds. Uses [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) in browser and [HTTPS module](https://nodejs.org/api/https.html) in Node.js.
+- [ ] [Promise-based](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) asynchronous API
+- [ ] Universal: Runs in [Node.js](https://nodejs.org/) and in browser
+- [ ] Direct and predictable mapping from API methods and parameters to SDK methods and parameters
+- [ ] Easy authentication
+- [ ] Clear documentation
+- [ ] Human-readable and understandable error messages for debugging
+- [ ] Structured (JSON) error messages for logging
+- [ ] Access to different environments (e.g. 'test' and 'production')
+- [ ] Abstracts the native HTTPS communication binginds. Uses [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) in browser and [HTTPS module](https://nodejs.org/api/https.html) in Node.js.
 
 # Usage [DRAFT]
 
@@ -66,6 +66,15 @@ sharetribe.listings.show({search: {keywords: "apartment"}}).then(function(result
 
 });
 ```
+
+# Examples [DRAFT]
+
+You can find examples under the `[examples/](./examples)` directory:
+
+- [ ] Authentication
+- [ ] Search listings
+- [ ] Post a new listing
+- [ ] Start a new transaction
 
 # Installation [DRAFT]
 
