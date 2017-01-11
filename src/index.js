@@ -1,3 +1,3 @@
-import * as greetings from './greetings';
+import greetings from './greetings';
 
-export const hello = greetings.hello;
+export default greetings;

@@ -1,1 +1,1 @@
-export const hello = (name) => `Hello, ${name}!`;
+export default name => `Hello, ${name}!`;
