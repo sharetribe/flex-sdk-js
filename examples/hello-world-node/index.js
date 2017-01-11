@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 // To run the example:
 //
 // $ cd [project-root]
@@ -5,6 +7,7 @@
 // $ node index.js
 //
 
-var sharetribe = require('../../lib/sharetribe-sdk');
+const sharetribe = require('../../lib/sharetribe-sdk').default;
 
-console.log(sharetribe.hello("John"));
+/* eslint no-console: "off" */
+console.log(sharetribe('John'));

@@ -1,5 +1,3 @@
-module.exports = {
-  hello: function hello(name) {
-    return ["Hello, ", name, "!"].join("");
-  }
-};
+import greetings from './greetings';
+
+export default greetings;

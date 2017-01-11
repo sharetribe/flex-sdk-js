@@ -99,6 +99,8 @@ $ npm install
 $ npm test
 ```
 
+Use [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) conventions.
+
 # Author [DRAFT]
 
 Developed and maintained by [Sharetribe](https://www.sharetribe.com).
