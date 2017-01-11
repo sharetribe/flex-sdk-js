@@ -1,4 +1,4 @@
-module.exports = {
+export default () => ({
   entry: './src/index.js',
   output: {
     path: './lib',
@@ -13,4 +13,4 @@ module.exports = {
       use: 'babel-loader'
     }]
   }
-};
+});
