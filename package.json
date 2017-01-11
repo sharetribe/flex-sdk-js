@@ -5,7 +5,8 @@
   "main": "build/sharetribe-sdk.js",
   "scripts": {
     "build": "webpack",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js"
   },
   "repository": {
     "type": "git",
@@ -26,9 +27,11 @@
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
     "babel-preset-es2015": "^6.18.0",
+    "chai": "^3.5.0",
     "eslint": "^3.13.1",
     "eslint-config-airbnb-base": "^11.0.1",
     "eslint-plugin-import": "^2.2.0",
+    "mocha": "^3.2.0",
     "webpack": "2.1.0-beta.25"
   }
 }

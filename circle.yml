@@ -1,0 +1,6 @@
+test:
+  pre:
+    - npm run build
+  override:
+    - npm test
+    - npm run lint

@@ -6,6 +6,8 @@ If the header doesn't have **[DRAFT]** tag, it means that the paragraph can be c
 
 # Sharetribe SDK for JavaScript [DRAFT]
 
+[![CircleCI](https://circleci.com/gh/sharetribe/sharetribe-sdk-js.svg?style=svg)](https://circleci.com/gh/sharetribe/sharetribe-sdk-js)
+
 JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetribe Marketplace API](./) (TODO: Add link to the API Slate documentation).
 
 - [ ] [Promise-based](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) asynchronous API
