@@ -86,19 +86,30 @@ npm install sharetribe-sdk
 
 Full documentation is available at [TODO Add link to Slate](./)
 
-# Development [DRAFT]
+# Development
 
-To rebuild the package:
+Install dependencies:
+
+```
+$ npm install
+```
+
+Build the package:
 
 ```
 $ npm run build
 ```
 
-Run all tests:
+Run tests:
 
 ```
-$ npm install
 $ npm test
+```
+
+Run linter:
+
+```
+$ npm run lint
 ```
 
 Use [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) conventions.
