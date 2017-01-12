@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { methodPath } from './utils';
+import { methodPath, assignDeep } from './utils';
 
 const defaultOpts = {
   host: 'api.sharetribe.com',
@@ -21,7 +21,7 @@ class SharetribeSDK {
         url: ep.path,
       };
 
-      this[methodPath(ep.path).join('.')] = () => axiosInstance.request(req);
+      assignDeep(this, methodPath(ep.path), () => axiosInstance.request(req));
     });
   }
 }

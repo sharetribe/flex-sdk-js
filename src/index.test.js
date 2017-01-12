@@ -28,7 +28,7 @@ describe('index', () => {
       },
     ]);
 
-    expect(inst['posts.showAll']).toBeInstanceOf(Function);
+    expect(inst.posts.showAll).toBeInstanceOf(Function);
   });
 
   it('calls endpoints', () => {
