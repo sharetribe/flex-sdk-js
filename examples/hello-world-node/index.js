@@ -7,7 +7,7 @@
 // $ node index.js
 //
 
-const sharetribe = require('../../build/sharetribe-sdk').default;
+const sharetribe = require('../../build/sharetribe-sdk-node').default;
 
 /* eslint no-console: "off" */
 console.log(sharetribe('John'));
