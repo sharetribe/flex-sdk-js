@@ -24,6 +24,9 @@ const nodeConfig = {
   output: output('node'),
   target: 'node',
   module,
+  externals: {
+    axios: true,
+  },
 };
 
 // Web configs

@@ -6,7 +6,11 @@
   <body>
     <script src="../../build/sharetribe-sdk-web.js"></script>
     <script>
-      document.write(sharetribeSdk.default("John"));
+      sharetribeSdk.default().then(function(res) {
+        document.write(res.data.map(function(user) {
+          return [user.name, user.username, user.email].join(', ')
+        }).join('<br />'));
+      });
     </script>
   </body>
 </html>

@@ -1,3 +1,9 @@
-import greetings from './greetings';
+import axios from 'axios';
 
-export default greetings;
+const instance = axios.create({
+  baseURL: 'https://jsonplaceholder.typicode.com/',
+});
+
+const getUsers = () => instance.get('/users');
+
+export default getUsers;
