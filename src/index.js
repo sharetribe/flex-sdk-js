@@ -1,9 +1,32 @@
 import axios from 'axios';
+import { methodPath } from './utils';
 
-const instance = axios.create({
-  baseURL: 'https://jsonplaceholder.typicode.com/',
-});
+const defaultOpts = {
+  host: 'api.sharetribe.com',
+  protocol: 'https',
+};
 
-const getUsers = () => instance.get('/users');
+const defaultEndpoints = [];
 
-export default getUsers;
+class SharetribeSDK {
+  constructor(opts, endpoints) {
+    this.opts = Object.freeze({ ...defaultOpts, ...opts });
+
+    const axiosInstance = axios.create({
+      baseURL: `${this.opts.protocol}://${this.opts.host}`,
+    });
+
+    [...defaultEndpoints, ...endpoints].forEach((ep) => {
+      const req = {
+        url: ep.path,
+      };
+
+      this[methodPath(ep.path).join('.')] = () => axiosInstance.request(req);
+    });
+  }
+}
+
+const createInstance = (opts = {}, endpoints = []) =>
+  new SharetribeSDK(opts, endpoints);
+
+export default createInstance;

@@ -6,11 +6,20 @@
   <body>
     <script src="../../build/sharetribe-sdk-web.js"></script>
     <script>
-      sharetribeSdk.default().then(function(res) {
-        document.write(res.data.map(function(user) {
-          return [user.name, user.username, user.email].join(', ')
-        }).join('<br />'));
-      });
+
+      var inst = sharetribeSdk.default({
+        host: "jsonplaceholder.typicode.com",
+      }, [
+        { path: "users/" },
+      ]);
+
+      inst
+        .users()
+        .then(function(res) {
+          document.write(res.data.map(function(user) {
+            return [user.name, user.username, user.email].join(', ')
+          }).join('<br />'));
+        });
     </script>
   </body>
 </html>
