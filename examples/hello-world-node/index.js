@@ -11,7 +11,7 @@ const sharetribe = require('../../build/sharetribe-sdk-node').default;
 
 /* eslint no-console: "off" */
 const inst = sharetribe({
-  host: 'jsonplaceholder.typicode.com',
+  baseUrl: 'https://jsonplaceholder.typicode.com',
 }, [
   { path: 'users/' },
 ]);

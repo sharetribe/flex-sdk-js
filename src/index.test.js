@@ -5,19 +5,17 @@ describe('index', () => {
     const inst = sharetribe();
 
     expect(inst.opts).toEqual(expect.objectContaining({
-      host: 'api.sharetribe.com',
-      protocol: 'https',
+      baseUrl: 'https://api.sharetribe.com',
     }));
   });
 
   it('creates a new instance with given options', () => {
     const inst = sharetribe({
-      host: 'jsonplaceholder.typicode.com',
+      baseUrl: 'https://jsonplaceholder.typicode.com',
     });
 
     expect(inst.opts).toEqual(expect.objectContaining({
-      host: 'jsonplaceholder.typicode.com',
-      protocol: 'https',
+      baseUrl: 'https://jsonplaceholder.typicode.com',
     }));
   });
 
@@ -33,7 +31,7 @@ describe('index', () => {
 
   it('calls endpoints', () => {
     const inst = sharetribe({
-      host: 'jsonplaceholder.typicode.com',
+      baseUrl: 'https://jsonplaceholder.typicode.com',
     }, [
       {
         path: 'users',
