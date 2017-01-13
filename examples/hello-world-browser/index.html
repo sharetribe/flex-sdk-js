@@ -4,9 +4,22 @@
     <title>Hello World example!</title>
   </head>
   <body>
-    <script src="../../build/sharetribe-sdk.js"></script>
+    <script src="../../build/sharetribe-sdk-web.js"></script>
     <script>
-      document.write(sharetribeSdk.default("John"));
+
+      var inst = sharetribeSdk.default({
+        baseUrl: "https://jsonplaceholder.typicode.com",
+      }, [
+        { path: "users/" },
+      ]);
+
+      inst
+        .users()
+        .then(function(res) {
+          document.write(res.data.map(function(user) {
+            return [user.name, user.username, user.email].join(', ')
+          }).join('<br />'));
+        });
     </script>
   </body>
 </html>

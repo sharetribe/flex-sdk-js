@@ -7,7 +7,15 @@
 // $ node index.js
 //
 
-const sharetribe = require('../../build/sharetribe-sdk').default;
+const sharetribe = require('../../build/sharetribe-sdk-node').default;
 
 /* eslint no-console: "off" */
-console.log(sharetribe('John'));
+const inst = sharetribe({
+  baseUrl: 'https://jsonplaceholder.typicode.com',
+}, [
+  { path: 'users/' },
+]);
+
+inst
+  .users()
+  .then(res => console.log(res.data.map(user => [user.name, user.username, user.email].join(', ')).join('\n')));

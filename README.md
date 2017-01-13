@@ -10,15 +10,15 @@ If the header doesn't have **[DRAFT]** tag, it means that the paragraph can be c
 
 JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetribe Marketplace API](./) (TODO: Add link to the API Slate documentation).
 
-- [ ] [Promise-based](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) asynchronous API
-- [ ] Universal: Runs in [Node.js](https://nodejs.org/) and in browser
+- [X] [Promise-based](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) asynchronous API
+- [X] Universal: Runs in [Node.js](https://nodejs.org/) and in browser
 - [ ] Direct and predictable mapping from API methods and parameters to SDK methods and parameters
 - [ ] Easy authentication
 - [ ] Clear documentation
 - [ ] Human-readable and understandable error messages for debugging
 - [ ] Structured (JSON) error messages for logging
 - [ ] Access to different environments (e.g. 'test' and 'production')
-- [ ] Abstracts the native HTTPS communication binginds. Uses [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) in browser and [HTTPS module](https://nodejs.org/api/https.html) in Node.js.
+- [X] Abstracts the native HTTPS communication bindings. Uses [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) in browser and [HTTPS module](https://nodejs.org/api/https.html) in Node.js. Let's [Axios](https://github.com/mzabriskie/axios/) to do the heavy-lifting.
 
 # Usage [DRAFT]
 
