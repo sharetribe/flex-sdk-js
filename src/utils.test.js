@@ -1,4 +1,4 @@
-import { methodPath, assignDeep } from './utils';
+import { methodPath, assignDeep, nestedKeyValObj } from './utils';
 
 describe('utils', () => {
   describe('pathToMethodName', () => {
@@ -11,8 +11,29 @@ describe('utils', () => {
     });
   });
 
+  describe('nestedKeyValObj', () => {
+    it('takes a nested key path and a value and returns nested object', () => {
+      const keyPath = ['sharetribe', 'user', 'id'];
+      const value = '123abc';
+      const expected = {
+        sharetribe: {
+          user: {
+            id: '123abc',
+          },
+        },
+      };
+
+      expect(nestedKeyValObj(keyPath, value)).toEqual(expected);
+    });
+
+    it('returns val if path is empty', () => {
+      expect(nestedKeyValObj([], 1)).toEqual(1);
+    });
+  });
+
   describe('assignDeep', () => {
     it('assigns value to object to given path', () => {
+      expect(assignDeep({}, [], 1)).toEqual({});
       expect(assignDeep({}, ['sharetribe'], 1)).toEqual({ sharetribe: 1 });
       expect(assignDeep({ sharetribe: { listings: 1 } }, ['sharetribe', 'users'], 1)).toEqual({ sharetribe: { users: 1, listings: 1 } });
       expect(assignDeep({ sharetribe: { listings: 1 } }, ['sharetribe', 'users', 'create'], 1)).toEqual({ sharetribe: { users: { create: 1 }, listings: 1 } });
