@@ -1,3 +1,5 @@
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+
 // Shared configs
 const entry = './src/index.js';
 
@@ -18,6 +20,10 @@ const output = target => ({
   libraryTarget: 'umd',
 });
 
+const plugins = [
+  new LodashModuleReplacementPlugin(),
+];
+
 // Node configs
 const nodeConfig = {
   entry,
@@ -27,6 +33,7 @@ const nodeConfig = {
   externals: {
     axios: true,
   },
+  plugins,
 };
 
 // Web configs
@@ -35,6 +42,7 @@ const webConfig = {
   output: output('web'),
   target: 'web',
   module,
+  plugins,
 };
 
 export default () => ([nodeConfig, webConfig]);
