@@ -7,7 +7,10 @@ const defaultOpts = {
   baseUrl: 'https://api.sharetribe.com',
 };
 
-const defaultEndpoints = [];
+const defaultEndpoints = [
+  { path: 'marketplace/show' },
+  { path: 'user/show' },
+];
 
 // const logAndReturn = data => {
 //   console.log(data);

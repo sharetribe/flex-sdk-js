@@ -32,16 +32,7 @@ describe('index', () => {
   });
 
   it('calls user endpoint with query params', () => {
-    const inst = sharetribe({
-      baseUrl: 'http://localhost:8088/v1/marketplace/',
-    }, [
-      {
-        path: 'marketplace/show',
-      },
-      {
-        path: 'user/show',
-      },
-    ], fake.user.show);
+    const inst = sharetribe({}, [], fake.user.show);
 
     return inst.user.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
@@ -56,16 +47,7 @@ describe('index', () => {
   });
 
   it('calls marketplace endpoint with query params', () => {
-    const inst = sharetribe({
-      baseUrl: 'http://localhost:8088/v1/marketplace/',
-    }, [
-      {
-        path: 'marketplace/show',
-      },
-      {
-        path: 'user/show',
-      },
-    ], fake.marketplace.show);
+    const inst = sharetribe({}, [], fake.marketplace.show);
 
     return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
