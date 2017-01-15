@@ -1,5 +1,6 @@
 import sharetribe from './index';
 import { UUID } from './types'
+import fake from './fake';
 
 describe('index', () => {
   it('creates a new instance with default options', () => {
@@ -31,9 +32,6 @@ describe('index', () => {
   });
 
   it('calls user endpoint with query params', () => {
-
-    // This test will fail if API is not up and running locally
-
     const inst = sharetribe({
       baseUrl: 'http://localhost:8088/v1/marketplace/',
     }, [
@@ -43,7 +41,7 @@ describe('index', () => {
       {
         path: 'user/show'
       }
-    ]);
+    ], fake.user.show);
 
     return inst.user.show({id: "0e0b60fe-d9a2-11e6-bf26-cec0c932ce01"}).then((res) => {
       const resource = res.data.data;
@@ -58,9 +56,6 @@ describe('index', () => {
   });
 
   it('calls marketplace endpoint with query params', () => {
-
-    // This test will fail if API is not up and running locally
-
     const inst = sharetribe({
       baseUrl: 'http://localhost:8088/v1/marketplace/',
     }, [
@@ -70,7 +65,7 @@ describe('index', () => {
       {
         path: 'user/show'
       }
-    ]);
+    ], fake.marketplace.show);
 
     return inst.marketplace.show({id: "0e0b60fe-d9a2-11e6-bf26-cec0c932ce01"}).then((res) => {
       const resource = res.data.data;
