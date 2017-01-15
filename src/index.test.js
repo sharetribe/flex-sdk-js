@@ -1,4 +1,4 @@
-import sharetribe from './index.js';
+import sharetribe from './index';
 
 describe('index', () => {
   it('creates a new instance with default options', () => {

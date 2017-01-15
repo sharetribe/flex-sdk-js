@@ -1,7 +1,10 @@
+/* eslint-env node */
+
 const express = require('express');
-const app = express();
 const path = require('path');
 const fs = require('fs');
+
+const app = express();
 
 // Load the "app bundle" for server
 const bundle = require('./bundle');
@@ -25,8 +28,7 @@ app.use('/build', express.static(path.join(__dirname, '../../build')));
 // Add one root route and do the server rendering
 app.get('/', (req, res) => {
   sdk['iss-now']().then((iss) => {
-    res.send(
-`
+    res.send(`
 <!DOCTYPE html>
 <html>
   <head>
@@ -49,12 +51,12 @@ app.get('/', (req, res) => {
   </head>
   <body>${bundle.renderBodyHtml(iss.data)}</body>
 </html>
-`
-    );
+`);
   });
 });
 
 app.listen(3344, () => {
-  console.log('Example app listening on port 3344!')
+  /* eslint-disable no-console */
+  console.log('Example app listening on port 3344!');
 });
 
