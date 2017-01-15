@@ -6,6 +6,9 @@ const ident = x => x;
 export const reader = () => transit.reader('json', {
   handlers: {
     u: rep => new UUID(rep),
+
+    // Convert keywords to plain strings
+    ':': rep => rep,
   },
   arrayBuilder: {
     init: () => [],
@@ -19,7 +22,7 @@ export const reader = () => transit.reader('json', {
     init: () => ({}),
     add: (ret, key, val) => {
       /* eslint-disable no-param-reassign */
-      ret[key.name()] = val;
+      ret[key] = val;
       return ret;
     },
     finalize: ident,
