@@ -1,4 +1,4 @@
-import sharetribe from '../build/sharetribe-sdk-node';
+import sharetribe from './index.js';
 
 describe('index', () => {
   it('creates a new instance with default options', () => {
