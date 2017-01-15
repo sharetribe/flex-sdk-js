@@ -1,5 +1,6 @@
 /* eslint-env node */
 
+/* eslint-disable import/no-unresolved */
 const express = require('express');
 const path = require('path');
 const fs = require('fs');

@@ -1,5 +1,5 @@
 import sharetribe from './index';
-import { UUID } from './types'
+import { UUID } from './types';
 import fake from './fake';
 
 describe('index', () => {
@@ -39,18 +39,18 @@ describe('index', () => {
         path: 'marketplace/show',
       },
       {
-        path: 'user/show'
-      }
+        path: 'user/show',
+      },
     ], fake.user.show);
 
-    return inst.user.show({id: "0e0b60fe-d9a2-11e6-bf26-cec0c932ce01"}).then((res) => {
+    return inst.user.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 
-      expect(resource.id).toEqual(new UUID("0e0b60fe-d9a2-11e6-bf26-cec0c932ce01"));
+      expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
       expect(attrs).toEqual(expect.objectContaining({
         email: 'user@sharetribe.com',
-        description: 'A team member'
+        description: 'A team member',
       }));
     });
   });
@@ -63,15 +63,15 @@ describe('index', () => {
         path: 'marketplace/show',
       },
       {
-        path: 'user/show'
-      }
+        path: 'user/show',
+      },
     ], fake.marketplace.show);
 
-    return inst.marketplace.show({id: "0e0b60fe-d9a2-11e6-bf26-cec0c932ce01"}).then((res) => {
+    return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 
-      expect(resource.id).toEqual(new UUID("0e0b60fe-d9a2-11e6-bf26-cec0c932ce01"));
+      expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
       expect(attrs).toEqual(expect.objectContaining({
         name: 'Awesome skies.',
         description: 'Meet and greet with fanatical sky divers.',

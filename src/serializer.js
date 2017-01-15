@@ -3,9 +3,9 @@ import { UUID } from './types';
 
 const ident = x => x;
 
-export const reader = () => transit.reader("json", {
+export const reader = () => transit.reader('json', {
   handlers: {
-    u: (rep) => new UUID(rep),
+    u: rep => new UUID(rep),
   },
   arrayBuilder: {
     init: () => [],
@@ -18,11 +18,12 @@ export const reader = () => transit.reader("json", {
   mapBuilder: {
     init: () => ({}),
     add: (ret, key, val) => {
+      /* eslint-disable no-param-reassign */
       ret[key.name()] = val;
       return ret;
     },
     finalize: ident,
-  }
+  },
 });
 
-export const writer = () => transit.writer("json");
+export const writer = () => transit.writer('json');

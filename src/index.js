@@ -3,16 +3,16 @@ import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
 
 const defaultOpts = {
-  headers: {'Accept': 'application/transit'},
+  headers: { Accept: 'application/transit' },
   baseUrl: 'https://api.sharetribe.com',
 };
 
 const defaultEndpoints = [];
 
-const logAndReturn = data => {
-  console.log(data);
-  return data;
-};
+// const logAndReturn = data => {
+//   console.log(data);
+//   return data;
+// };
 
 class SharetribeSdk {
   constructor(opts, endpoints, adapter) {
@@ -26,12 +26,13 @@ class SharetribeSdk {
       baseURL: this.opts.baseUrl,
       transformRequest: [
         // logAndReturn,
-        (data) => w.write(data)],
+        data => w.write(data),
+      ],
       transformResponse: [
         // logAndReturn,
-        (data) => r.read(data)
+        data => r.read(data),
       ],
-      adapter
+      adapter,
     };
 
     const axiosInstance = axios.create(instanceOpts);
@@ -41,7 +42,8 @@ class SharetribeSdk {
         url: ep.path,
       };
 
-      assignDeep(this, methodPath(ep.path), (params = {}) => axiosInstance.request({ ...req, params}));
+      assignDeep(this, methodPath(ep.path),
+                 (params = {}) => axiosInstance.request({ ...req, params }));
     });
   }
 }

@@ -1,12 +1,12 @@
 const createAdapter =
-  (adapterDef) =>
-    (config) =>
+  adapterDef =>
+    config =>
       new Promise((resolve, reject) => {
-        adapterDef.call(null, config, resolve, reject)
+        adapterDef.call(null, config, resolve, reject);
       });
 
 const marketplace = {
-  show: createAdapter((config, resolve, reject) => {
+  show: createAdapter((config, resolve) => {
     const res = `[
                      "^ ",
                      "~:data",
@@ -37,12 +37,12 @@ const marketplace = {
                      []
                    ]`;
 
-    return resolve({data: res});
-  })
+    return resolve({ data: res });
+  }),
 };
 
 const user = {
-  show: createAdapter((config, resolve, reject) => {
+  show: createAdapter((config, resolve) => {
     const res = `[
                    "^ ",
                    "~:data",
@@ -73,8 +73,8 @@ const user = {
                    []
                  ]`;
 
-    return resolve({data: res});
-  })
+    return resolve({ data: res });
+  }),
 };
 
 export default { user, marketplace };
