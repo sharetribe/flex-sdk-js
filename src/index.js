@@ -9,19 +9,32 @@ const defaultOpts = {
 
 const defaultEndpoints = [];
 
+const logAndReturn = data => {
+  console.log(data);
+  return data;
+};
+
 class SharetribeSdk {
-  constructor(opts, endpoints) {
+  constructor(opts, endpoints, adapter) {
     this.opts = Object.freeze({ ...defaultOpts, ...opts });
 
     const r = reader();
     const w = writer();
 
-    const axiosInstance = axios.create({
+    const instanceOpts = {
       headers: this.opts.headers,
       baseURL: this.opts.baseUrl,
-      transformRequest: [(data) => w.write(data)],
-      transformResponse: [(data) => r.read(data)],
-    });
+      transformRequest: [
+        // logAndReturn,
+        (data) => w.write(data)],
+      transformResponse: [
+        // logAndReturn,
+        (data) => r.read(data)
+      ],
+      adapter
+    };
+
+    const axiosInstance = axios.create(instanceOpts);
 
     [...defaultEndpoints, ...endpoints].forEach((ep) => {
       const req = {
@@ -33,7 +46,7 @@ class SharetribeSdk {
   }
 }
 
-const createInstance = (opts = {}, endpoints = []) =>
-  new SharetribeSdk(opts, endpoints);
+const createInstance = (opts = {}, endpoints = [], adapter = null) =>
+  new SharetribeSdk(opts, endpoints, adapter);
 
 export default createInstance;
