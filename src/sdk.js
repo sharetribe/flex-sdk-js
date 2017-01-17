@@ -52,7 +52,7 @@ const assignEndpoints = (obj, endpoints, axiosInstance) => {
 
 export default class SharetribeSdk {
 
-  constructor(opts, endpoints, adapter, handlers) {
+  constructor(opts = {}, endpoints = [], adapter = null, handlers = []) {
     this.opts = Object.freeze({ ...defaultOpts, ...opts });
 
     const { readers, writers } = handlers.reduce((memo, handler) => {
