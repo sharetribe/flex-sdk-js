@@ -2,9 +2,8 @@ import axios from 'axios';
 import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
 
-const defaultOpts = {
+const privateOpts = {
   headers: { Accept: 'application/transit' },
-  baseUrl: 'https://api.sharetribe.com',
 };
 
 const defaultEndpoints = [
@@ -50,10 +49,45 @@ const assignEndpoints = (obj, endpoints, axiosInstance) => {
   return obj;
 };
 
-export default class SharetribeSdk {
+export class ValidationResult {
+  constructor(success, reasonMessage = null) {
+    this.success = success;
+    this.reasonMessage = reasonMessage;
+  }
+}
+
+const publicConfigSchema = [
+  { name: 'baseUrl',
+    default: 'https://api.sharetribe.com' },
+  { name: 'typeHandlers',
+    default: [] },
+  { name: 'endpoints',
+    default: [] },
+];
+
+export const validateConfig = (config, configSchema) =>
+  configSchema.reduce((memo, configDef) => {
+    /* eslint-disable no-param-reassign */
+    const noopValidator = v => new ValidationResult(true, v);
+    const value = config[configDef.name] || configDef.default;
+    const validator = configDef.validate || noopValidator;
+    const validationResult = validator(value);
+
+    if (!validationResult.success) {
+      throw new Error(
+        `Failed to validate config option { ${configDef.name}: ${value} }, reason: ${validationResult.reasonMessage}`);
+    }
+
+    // Assign
+    memo[configDef.name] = value;
+
+    return memo;
+  }, {});
+
+export class SharetribeSdk {
 
   constructor(opts = {}, endpoints = [], adapter = null, handlers = []) {
-    this.opts = Object.freeze({ ...defaultOpts, ...opts });
+    this.opts = Object.freeze(opts);
 
     const { readers, writers } = handlers.reduce((memo, handler) => {
       const r = {
@@ -76,7 +110,7 @@ export default class SharetribeSdk {
     const w = writer(writers);
 
     const httpOpts = {
-      headers: this.opts.headers,
+      headers: privateOpts.headers,
       baseURL: this.opts.baseUrl,
       transformRequest: [
         // logAndReturn,
@@ -96,3 +130,6 @@ export default class SharetribeSdk {
     assignEndpoints(this, allEndpoints, axiosInstance);
   }
 }
+
+export const createInstance = config =>
+  new SharetribeSdk(validateConfig(config, publicConfigSchema));

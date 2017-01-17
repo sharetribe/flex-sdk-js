@@ -1,14 +1,34 @@
 import { UUID } from './types';
 import fake from './fake';
-import SharetribeSdk from './sdk';
+import { SharetribeSdk, validateConfig, ValidationResult } from './sdk';
 
-describe('index', () => {
-  it('creates a new instance with default options', () => {
-    const inst = new SharetribeSdk();
+describe('new SharetribeSdk', () => {
+  describe('validateConfig', () => {
+    it('removes unknown config options', () => {
+      expect(validateConfig({ a: 1, b: 2 }, [{ name: 'a' }]))
+        .toEqual({ a: 1 });
+    });
 
-    expect(inst.opts).toEqual(expect.objectContaining({
-      baseUrl: 'https://api.sharetribe.com',
-    }));
+    it('adds default value for missing config options', () => {
+      expect(validateConfig({}, [{ name: 'a', default: 2 }]))
+        .toEqual({ a: 2 });
+    });
+
+    it('throws error for unvalid values', () => {
+      const isEven = v => v % 2 === 0;
+      const validateIsEven = (v) => {
+        if (isEven(v)) {
+          return new ValidationResult(true);
+        }
+
+        const msg = 'Value must be even, where v % 2 === 0';
+        return new ValidationResult(false, msg);
+      };
+
+      expect(() => validateConfig({ a: 3 }, [{ name: 'a', validate: validateIsEven }]))
+        .toThrowError(
+          'Failed to validate config option { a: 3 }, reason: Value must be even, where v % 2 === 0');
+    });
   });
 
   it('creates a new instance with given options', () => {
