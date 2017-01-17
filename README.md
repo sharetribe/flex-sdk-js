@@ -13,7 +13,7 @@ JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetrib
 - [X] [Promise-based](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) asynchronous API
 - [X] Universal: Runs in [Node.js](https://nodejs.org/) and in browser
 - [ ] Direct and predictable mapping from API methods and parameters to SDK methods and parameters
-- [ ] Encodes/decodes basic types, such as UUID, Money and GeoLocation.
+- [X] Encodes/decodes basic types, such as UUID, Money and GeoLocation.
 - [ ] Easy authentication
 - [ ] Clear documentation
 - [ ] Human-readable and understandable error messages for debugging
@@ -87,6 +87,38 @@ npm install sharetribe-sdk
 # Documentation [DRAFT]
 
 Full documentation is available at [TODO Add link to Slate](./)
+
+## Types [DRAFT]
+
+The SDK provides some basic types that complement the data types that JavaScript supports out-of-the box. The type conversion is handled by the SDK under the hood.
+
+The full list of supported types:
+
+* UUID - Represents UUIDs ([Universally unique identifiers](https://en.wikipedia.org/wiki/Universally_unique_identifier)) // TODO Add link to doc
+* TODO: Add more types here...
+
+### Using your own types
+
+If you want to use your own types instead of the types that the SDK provides, the SDK implements a mechanism for you to pass custom conversion methods which let's you convert SDK types to your own types.
+
+The following example converts SDK's `UUID` class to `MyUuid`:
+
+``` js
+class MyUuid {
+  constructor(uuid) {
+    this.myUuid = uuid;
+  }
+}
+
+const handlers = [{
+  type: UUID,
+  customType: MyUuid,
+  reader: v => new MyUuid(v.uuid), // reader fn type: UUID -> MyUuid
+  writer: v => new UUID(v.myUuid), // writer fn type: MyUuid -> UUID
+}];
+
+const sdk = sharetribe({}, [], [], handlers);
+```
 
 # Development
 
