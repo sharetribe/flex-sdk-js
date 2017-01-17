@@ -3,8 +3,10 @@ import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
 
 const defaultOpts = {
-  headers: { Accept: 'application/transit' },
   baseUrl: 'https://api.sharetribe.com',
+  typeHandlers: [],
+  endpoints: [],
+  adapter: null,
 };
 
 const defaultEndpoints = [
@@ -52,10 +54,17 @@ const assignEndpoints = (obj, endpoints, axiosInstance) => {
 
 export default class SharetribeSdk {
 
-  constructor(opts = {}, endpoints = [], adapter = null, handlers = []) {
-    this.opts = Object.freeze({ ...defaultOpts, ...opts });
+  /**
+     Instantiates a new SharetribeSdk instance.
+     The constructor assumes the config options have been
+     already validated.
+   */
+  constructor(config) {
+    this.config = { ...defaultOpts, ...config };
 
-    const { readers, writers } = handlers.reduce((memo, handler) => {
+    const { baseUrl, typeHandlers, endpoints, adapter } = this.config;
+
+    const { readers, writers } = typeHandlers.reduce((memo, handler) => {
       const r = {
         type: handler.type,
         reader: handler.reader,
@@ -76,8 +85,8 @@ export default class SharetribeSdk {
     const w = writer(writers);
 
     const httpOpts = {
-      headers: this.opts.headers,
-      baseURL: this.opts.baseUrl,
+      headers: { Accept: 'application/transit' },
+      baseURL: baseUrl,
       transformRequest: [
         // logAndReturn,
         data => w.write(data),
