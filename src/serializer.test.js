@@ -51,7 +51,7 @@ describe('serializer', () => {
       .toEqual(new MyCustomUuid(data));
   });
 
-  it.only('allows you to add your own writers handlers for predefined types', () => {
+  it('allows you to add your own writers handlers for predefined types', () => {
     class MyCustomUuid {
       constructor(str) {
         this.myCustomUuidRepresentation = str;

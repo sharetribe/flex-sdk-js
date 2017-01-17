@@ -18,11 +18,29 @@ const defaultEndpoints = [
 // };
 
 class SharetribeSdk {
-  constructor(opts, endpoints, adapter) {
+
+  constructor(opts, endpoints, adapter, handlers) {
     this.opts = Object.freeze({ ...defaultOpts, ...opts });
 
-    const r = reader();
-    const w = writer();
+    const { readers, writers } = handlers.reduce((memo, handler) => {
+      const r = {
+        type: handler.type,
+        reader: handler.reader,
+      };
+      const w = {
+        type: handler.type,
+        customType: handler.customType,
+        writer: handler.writer,
+      };
+
+      memo.readers.push(r);
+      memo.writers.push(w);
+
+      return memo;
+    }, { readers: [], writers: [] });
+
+    const r = reader(readers);
+    const w = writer(writers);
 
     const instanceOpts = {
       headers: this.opts.headers,
@@ -51,7 +69,8 @@ class SharetribeSdk {
   }
 }
 
-const createInstance = (opts = {}, endpoints = [], adapter = null) =>
-  new SharetribeSdk(opts, endpoints, adapter);
+// TODO Rethink the constructor parameters. Add docs.
+const createInstance = (opts = {}, endpoints = [], adapter = null, handlers = []) =>
+  new SharetribeSdk(opts, endpoints, adapter, handlers);
 
 export default createInstance;
