@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "axios": "^0.15.3",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "transit-js": "^0.8.846"
   }
 }
