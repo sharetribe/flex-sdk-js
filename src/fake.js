@@ -1,3 +1,9 @@
+/**
+   This file implements a fake adapters for testing purposes only.
+
+   The test responses are copy-pasted from real API responses.
+ */
+
 const createAdapter =
   adapterDef =>
     config =>

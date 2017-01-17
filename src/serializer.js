@@ -2,31 +2,36 @@ import transit from 'transit-js';
 import _ from 'lodash';
 import { UUID } from './types';
 
-const ident = x => x;
-
 /**
    Composes two readers (default and custom) so that:
 
   ```
+  class MyCustomUuid {
+    constructor(uuid) {
+      this.myUuid = uuid;
+    }
+  }
+
   const defaultReader = {
      type: UUID,
-     reader: (rep) => new UUID(rep),
+     reader: v => new UUID(v),
   };
 
   const customReader = {
      type: UUID,
-     reader: (rep) => new MyCustomUuid(rep.uuid), // rep instanceof UUID === true
+
+     // type of reader function: UUID -> MyCustomUuid
+     reader: v => new MyCustomUuid(v.uuid),
   }
 
   Composition creates a new reader:
 
   {
      type: UUID,
-     reader: (rep) => new MyCustomUuid(new UUID(rep))
+     reader: v => new MyCustomUuid(new UUID(v))
   }
   ```
  */
-
 const composeReader = (defaultReader, customReader) => {
   const defaultReaderFn = defaultReader.reader;
   const customReaderFn = customReader ? customReader.reader : _.identity;
@@ -34,6 +39,37 @@ const composeReader = (defaultReader, customReader) => {
   return rep => customReaderFn(defaultReaderFn(rep));
 };
 
+/**
+   Composes two writers (default and custom) so that:
+
+  ```
+  class MyCustomUuid {
+    constructor(uuid) {
+      this.myUuid = uuid;
+    }
+  }
+
+  const defaultWriter = {
+     type: UUID,
+     writer: v => new UUID(v),
+  };
+
+  const customWriter = {
+     type: UUID,
+     customType: MyCustomUuid,
+
+     // type of writer fn: MyCustomUuid -> UUID
+     writer: v => new UUID(v.myUuid),
+  }
+
+  Composition creates a new reader:
+
+  {
+     type: UUID,
+     reader: v => new MyCustomUuid(new UUID(v))
+  }
+  ```
+ */
 const composeWriter = (defaultWriter, customWriter) => {
   const defaultWriterFn = defaultWriter.writer;
   const customWriterFn = customWriter ? customWriter.writer : _.identity;
@@ -41,63 +77,47 @@ const composeWriter = (defaultWriter, customWriter) => {
   return rep => defaultWriterFn(customWriterFn(rep));
 };
 
+/**
+   Type map from Transit tags to type classes
+ */
 const typeMap = {
   u: UUID,
 };
 
+/**
+   List of default readers
+ */
 const defaultReaders = [{
   type: UUID,
   reader: rep => new UUID(rep),
 }];
 
+/**
+   List of default writers
+ */
 const defaultWriters = [{
   type: UUID,
   writer: v => v.uuid,
 }];
 
-export const reader = (customReaders = []) => {
-  const handlers = _.fromPairs(_.map(typeMap, (typeClass, tag) => {
+/**
+   Take `customReaders` param and construct a list of read handlers
+   from `customReaders`, `defaultReaders` and `typeMap`.
+*/
+const constructReadHandlers = customReaders =>
+  _.fromPairs(_.map(typeMap, (typeClass, tag) => {
     const defaultReader = _.find(defaultReaders, r => r.type === typeClass);
     const customReader = _.find(customReaders, r => r.type === typeClass);
 
     return [tag, composeReader(defaultReader, customReader)];
   }));
 
-  return transit.reader('json', {
-    handlers: {
-      ...handlers,
-
-      // Convert keywords to plain strings
-      //
-      // TODO This is problematic. When we convert keywords to strings,
-      // we lose the information that the string was originally a
-      // keyword. Thus, `read(write(data)) !== data`. Is this a bad thing,
-      // I don't know yet? Can we make the server to threat Strings as if
-      // they were keywords, that's an open question.
-      ':': rep => rep,
-    },
-    arrayBuilder: {
-      init: () => [],
-      add: (ret, val) => {
-        ret.push(val);
-        return ret;
-      },
-      finalize: ident,
-    },
-    mapBuilder: {
-      init: () => ({}),
-      add: (ret, key, val) => {
-        /* eslint-disable no-param-reassign */
-        ret[key] = val;
-        return ret;
-      },
-      finalize: ident,
-    },
-  });
-};
-
-export const writer = (customWriters = []) => {
-  const handlers = _.flatten(_.map(typeMap, (typeClass, tag) => {
+/**
+   Take `customWriters` param and construct a list of write handlers
+   from `customWriters`, `defaultWriters` and `typeMap`.
+*/
+const constructWriteHandlers = customWriters =>
+  _.flatten(_.map(typeMap, (typeClass, tag) => {
     const defaultWriter = _.find(defaultWriters, w => w.type === typeClass);
     const customWriter = _.find(customWriters, w => w.type === typeClass);
     const composedWriter = composeWriter(defaultWriter, customWriter);
@@ -110,6 +130,53 @@ export const writer = (customWriters = []) => {
 
     return [customTypeClass || typeClass, handler];
   }));
+
+/**
+   Builds JS arrays from Transit lists and vectors
+ */
+const arrayBuilder = {
+  init: () => [],
+  add: (ret, val) => {
+    ret.push(val);
+    return ret;
+  },
+  finalize: _.identity,
+};
+
+/**
+   Builds JS objects from Transit maps
+ */
+const mapBuilder = {
+  init: () => ({}),
+  add: (ret, key, val) => {
+    /* eslint-disable no-param-reassign */
+    ret[key] = val;
+    return ret;
+  },
+  finalize: _.identity,
+};
+
+export const reader = (customReaders = []) => {
+  const handlers = constructReadHandlers(customReaders);
+
+  return transit.reader('json', {
+    handlers: {
+      ...handlers,
+
+      // Convert keywords to plain strings.
+      // The conversion loses the information that the
+      // string was originally a keyword. However, the API
+      // can coerse strings to keywords, so it's ok to send strings
+      // to the API when keywords is expected.
+      ':': rep => rep,
+    },
+    arrayBuilder,
+    mapBuilder,
+  });
+};
+
+export const writer = (customWriters = []) => {
+  const handlers = constructWriteHandlers(customWriters);
 
   return transit.writer('json', {
     handlers: transit.map(handlers),
