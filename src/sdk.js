@@ -86,10 +86,17 @@ export const validateConfig = (config, configSchema) =>
 
 export class SharetribeSdk {
 
-  constructor(opts = {}, endpoints = [], adapter = null, handlers = []) {
-    this.opts = Object.freeze(opts);
+  /**
+     Instantiates a new SharetribeSdk instance.
+     The constructor assumes the config options have been
+     already validated.
+   */
+  constructor(config) {
+    this.config = config;
 
-    const { readers, writers } = handlers.reduce((memo, handler) => {
+    const { baseUrl, typeHandlers, endpoints, adapter } = config;
+
+    const { readers, writers } = typeHandlers.reduce((memo, handler) => {
       const r = {
         type: handler.type,
         reader: handler.reader,
@@ -111,7 +118,7 @@ export class SharetribeSdk {
 
     const httpOpts = {
       headers: privateOpts.headers,
-      baseURL: this.opts.baseUrl,
+      baseURL: baseUrl,
       transformRequest: [
         // logAndReturn,
         data => w.write(data),

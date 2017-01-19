@@ -34,25 +34,35 @@ describe('new SharetribeSdk', () => {
   it('creates a new instance with given options', () => {
     const inst = new SharetribeSdk({
       baseUrl: 'https://jsonplaceholder.typicode.com',
+      typeHandlers: [],
+      endpoints: [],
+      adapter: null,
     });
 
-    expect(inst.opts).toEqual(expect.objectContaining({
+    expect(inst.config).toEqual(expect.objectContaining({
       baseUrl: 'https://jsonplaceholder.typicode.com',
     }));
   });
 
   it('creates new endpoints', () => {
-    const inst = new SharetribeSdk({}, [
-      {
+    const inst = new SharetribeSdk({
+      typeHandlers: [],
+      endpoints: [{
         path: 'posts/showAll',
-      },
-    ]);
+      }],
+      adapter: null,
+    });
 
     expect(inst.posts.showAll).toBeInstanceOf(Function);
   });
 
   it('calls user endpoint with query params', () => {
-    const inst = new SharetribeSdk({}, [], fake.user.show);
+    const inst = new SharetribeSdk({
+      baseUrl: '',
+      typeHandlers: [],
+      endpoints: [],
+      adapter: fake.user.show,
+    });
 
     return inst.user.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
@@ -67,7 +77,12 @@ describe('new SharetribeSdk', () => {
   });
 
   it('calls marketplace endpoint with query params', () => {
-    const inst = new SharetribeSdk({}, [], fake.marketplace.show);
+    const inst = new SharetribeSdk({
+      baseUrl: '',
+      typeHandlers: [],
+      endpoints: [],
+      adapter: fake.marketplace.show,
+    });
 
     return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
@@ -95,7 +110,12 @@ describe('new SharetribeSdk', () => {
       writer: v => new UUID(v.myUuid), // writer fn type: MyUuid -> UUID
     }];
 
-    const inst = new SharetribeSdk({}, [], fake.marketplace.show, handlers);
+    const inst = new SharetribeSdk({
+      baseUrl: '',
+      endpoints: [],
+      adapter: fake.marketplace.show,
+      typeHandlers: handlers,
+    });
 
     return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
