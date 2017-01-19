@@ -1,4 +1,5 @@
 import axios from 'axios';
+import _ from 'lodash';
 import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
 
@@ -54,6 +55,75 @@ export class ValidationResult {
     this.success = success;
     this.reasonMessage = reasonMessage;
   }
+}
+
+/**
+   Very naive regexp for checking valid base url.
+ */
+const baseUrlRegexp = /^(http|https):\/\/(.+)/;
+
+export const validateBaseUrl = (url) => {
+    const failureMsg = 'Value must be a string containing full URL, including the protocol. Example: \'http://api.sharetribe.com\'';
+
+  if (!_.isString(url)) {
+    return new ValidationResult(false, failureMsg);
+  }
+  else if (!url.match(baseUrlRegexp)) {
+    const msg = 'Value must be a string containing full URL, including the protocol. Example: \'http://api.sharetribe.com\'';
+    return new ValidationResult(false, failureMsg);
+  }
+
+  return new ValidationResult(true);
+};
+
+const validatePath = (v) => {
+  if (_.isString(v) && !_.isEmpty(v)) {
+    return new ValidationResult(true);
+  }
+
+  return new ValidationResult(false, "Endpoint path must be a non-empty string")
+};
+
+const endpointSchema = {
+  path: validatePath,
+}
+
+const validateEndpoint = endpoint => {
+  const unknownKey = _.keys(endpoint).find(key => endpointSchema[key] == null);
+  const missingKey = _.keys(endpointSchema).find(key => endpoint[key] == null);
+
+  if (unknownKey) {
+    return new ValidationResult(false, `Unknown key "${unknownKey}" for endpoint ${JSON.stringify(endpoint)}`);
+  }
+
+  if (missingKey) {
+    return new ValidationResult(false, `Missing required key "${missingKey}" for endpoint ${JSON.stringify(endpoint)}`);
+  }
+
+  const results = _.map(endpoint, (v, k) => endpointSchema[k](v));
+  const firstFailure = results.find(res => res.success === false);
+
+  if (firstFailure) {
+    return firstFailure;
+  }
+
+  return new ValidationResult(true);
+}
+
+export const validateEndpoints = (endpoints) => {
+  if (!_.isArray(endpoints)) {
+    const msg = 'Value must be an array of objects';
+    return new ValidationResult(false, msg);
+  }
+
+  const endpointResults = endpoints.map((endpoint) => validateEndpoint(endpoint));
+  const endpointFailure = endpointResults.find(epr => epr.success === false);
+
+  if (endpointFailure) {
+    return endpointFailure;
+  }
+
+  return new ValidationResult(true);
 }
 
 const publicConfigSchema = [

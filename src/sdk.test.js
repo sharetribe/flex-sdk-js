@@ -1,6 +1,6 @@
 import { UUID } from './types';
 import fake from './fake';
-import { SharetribeSdk, validateConfig, ValidationResult } from './sdk';
+import { SharetribeSdk, validateConfig, ValidationResult, validateBaseUrl, validateEndpoints } from './sdk';
 
 describe('new SharetribeSdk', () => {
   describe('validateConfig', () => {
@@ -28,6 +28,66 @@ describe('new SharetribeSdk', () => {
       expect(() => validateConfig({ a: 3 }, [{ name: 'a', validate: validateIsEven }]))
         .toThrowError(
           'Failed to validate config option { a: 3 }, reason: Value must be even, where v % 2 === 0');
+    });
+  });
+
+  describe('validation functions', () => {
+    const success = new ValidationResult(true);
+
+    describe('validateBaseUrl', () => {
+      const expectedMsg = 'Value must be a string containing full URL, including the protocol. Example: \'http://api.sharetribe.com\'';
+      const failure = new ValidationResult(false, expectedMsg);
+
+      it('returns success for valid base url', () => {
+        expect(validateBaseUrl('https://api.sharetribe.com')).toEqual(success);
+      });
+
+      it('returns failure result for empty url', () => {
+        expect(validateBaseUrl('')).toEqual(failure);
+      });
+
+      it('returns failure for unsupported protocols', () => {
+        expect(validateBaseUrl('unsupported://localhost.com')).toEqual(failure);
+      });
+
+      it('returns failure for non-string values', () => {
+        expect(validateBaseUrl(true)).toEqual(failure);
+        expect(validateBaseUrl(123)).toEqual(failure);
+      })
+    });
+
+    describe('validateEndpoints', () => {
+      const typeMsg = 'Value must be an array of objects';
+      const typeFailure = new ValidationResult(false, typeMsg);
+
+      it('returns failure for non-array values', () => {
+        expect(validateEndpoints(true)).toEqual(typeFailure);
+        expect(validateEndpoints(1)).toEqual(typeFailure);
+        expect(validateEndpoints({})).toEqual(typeFailure);
+      });
+
+      it('returns success for empty array', () => {
+        expect(validateEndpoints([])).toEqual(success);
+      });
+
+      it('returns a failure of any endpoint contains unknown keys', () => {
+        const unknownKeyMsg = (key, endpoint) => 'Unknown key "a" for endpoint {"a":"b"}';
+        const unknownKeyFailure = (key, endpoint) => new ValidationResult(false, unknownKeyMsg(key, endpoint));
+        expect(validateEndpoints([{ a: "b"}])).toEqual(unknownKeyFailure('a', { a: "b" }));
+      });
+
+      it('returns a failure if a key is missing', () => {
+        const missingKeyMsg = 'Missing required key "path" for endpoint {}';
+        const missingKeyFailure = new ValidationResult(false, missingKeyMsg);
+        expect(validateEndpoints([{}])).toEqual(missingKeyFailure);
+      });
+
+      it('returns a failure for invalid path', () => {
+        const pathMsg = "Endpoint path must be a non-empty string";
+        const pathFailure = new ValidationResult(false, pathMsg);
+
+        expect(validateEndpoints([{ path: ''}])).toEqual(pathFailure);
+      });
     });
   });
 
