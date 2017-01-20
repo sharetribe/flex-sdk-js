@@ -21,52 +21,75 @@ JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetrib
 - [ ] Access to different environments (e.g. 'test' and 'production')
 - [X] Abstracts the native HTTPS communication bindings. Uses [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) in browser and [HTTPS module](https://nodejs.org/api/https.html) in Node.js. Let's [Axios](https://github.com/mzabriskie/axios/) to do the heavy-lifting.
 
-# Usage [DRAFT]
+# Basic usage
 
 ``` js
-var sharetribe = require('sharetribe-sdk')({
-  // TODO
-  // What do we need here?
-  //
-  // - environment? (dev/test/staging/production?)
-  // - apiKey? (is this needed?)
-  // - marketplaceId (is this needed?)
-  // - API version?
-});
 
-sharetribe.listings.show({search: {keywords: "apartment"}}).then(function(result) {
-  console.log(result.data);
+// Add config options, if needed.
+var config = {};
+
+var sharetribe = require('sharetribe-sdk')(config);
+
+sharetribe.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(function(result) {
+  console.log(result);
 
   // prints =>
   //
-  // [{
-  //   "id": "694e130a-d72a-11e6-bf26-cec0c932ce01",
-  //   "type": "listing",
-  //   "attributes": {
-  //     "title": "My Apartment",
-  //     "description": "This is my lovely apartment in downtown Helsinki.",
-  //     "created_at": Tue Jan 10 2017 11:51:22 GMT+0000 (GMT),
-  //     "updated_at": Tue Jan 10 2017 13:44:12 GMT+0000 (GMT)
-  //     "price": {
-  //       "amount": 5000,
-  //       "unit": "per-night",
-  //       "currency": "USD"
-  //     },
-  //     "location": {
-  //       "lng": "-73.940652",
-  //       "lat": "40.677350",
-  //       "address": "1523 Pacific St, Brooklyn, NY 11213"
-  //     },
-  //     "images": [
-  //       {
-  //         "width": 800,
-  //         "height": 600,
-  //         "url": "http://cdn.example.com/fooimage800x600.jpg"
-  //       }
-  //     ]
+  // { status: 200,
+  //   statusText: 'OK',
+  //   data:
+  //   { data:
+  //     { id: UUID { uuid: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' },
+  //       type: 'marketplace',
+  //       attributes:
+  //       { name: 'Awesome skies.',
+  //         description: 'Meet and greet with fanatical sky divers.' },
+  //       relationships: {} },
+  //     meta: {},
+  //     included: [] },
   //   }
-  // }]
+  // });
+```
 
+## Config options
+
+There are a few config options that can given for the initializatio function:
+
+``` js
+var sharetribe = require('sharetribe-sdk')({
+
+  // The API base URL
+  baseUrl: "https://api.sharetribe.com/v1/",
+
+  // List of custom type handlers.
+  typeHandlers: [
+    {
+      type: UUID,
+      customType: MyUuidType,
+
+      // Writer fn type signature must be:
+      // type -> customType
+      //
+      // E.g.
+      // UUID -> MyUuidType
+      writer: v => new UUID(v.myUuid),
+
+      // Reader fn type signature must be:
+      // customType -> type
+      //
+      // E.g.
+      // MyUuidType -> UUID
+      reader: v => new MyUuidType(v.uuid),
+    }
+  ],
+
+  // List of additional endpoints
+  endpoints: [
+    {
+       // This will create a new sdk method: sdk.listing.show() -> Promise
+       path: 'listing/show'
+    }
+  ],
 });
 ```
 

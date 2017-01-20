@@ -19,9 +19,10 @@ const sharetribe = require('../../build/sharetribe-sdk-node').default;
 // Initialize the SDK instance
 const sdk = sharetribe({
   baseUrl: 'http://api.open-notify.org/',
-}, [
-  { path: 'iss-now/' },
-]);
+  endpoints: [
+    { path: 'iss-now/' },
+  ],
+});
 
 // Setup static asset path for browser to fetch the build package
 app.use('/build', express.static(path.join(__dirname, '../../build')));
@@ -36,7 +37,7 @@ app.get('/', (req, res) => {
     <title>Server-rendering example</title>
     <script src="/build/sharetribe-sdk-web.js"></script>
     <script>
-      const sdk = sharetribeSdk.default({baseUrl: 'http://api.open-notify.org/'}, [{ path: 'iss-now/' }]);
+      const sdk = sharetribeSdk.default({baseUrl: 'http://api.open-notify.org/', endpoints: [{ path: 'iss-now/' }]});
 
       // Load the bundle
       const module = {};

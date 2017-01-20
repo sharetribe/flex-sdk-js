@@ -9,9 +9,10 @@
 
       var inst = sharetribeSdk.default({
         baseUrl: "https://jsonplaceholder.typicode.com",
-      }, [
-        { path: "users/" },
-      ]);
+        endpoints: [
+          { path: "users/" },
+        ],
+      });
 
       inst
         .users()

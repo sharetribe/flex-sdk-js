@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
+import { validateConfigs } from './validate_configs';
 
-const defaultOpts = {
+const privateOpts = {
   headers: { Accept: 'application/transit' },
-  baseUrl: 'https://api.sharetribe.com',
 };
 
 const defaultEndpoints = [
@@ -50,12 +50,19 @@ const assignEndpoints = (obj, endpoints, axiosInstance) => {
   return obj;
 };
 
-export default class SharetribeSdk {
+export class SharetribeSdk {
 
-  constructor(opts = {}, endpoints = [], adapter = null, handlers = []) {
-    this.opts = Object.freeze({ ...defaultOpts, ...opts });
+  /**
+     Instantiates a new SharetribeSdk instance.
+     The constructor assumes the config options have been
+     already validated.
+   */
+  constructor(config) {
+    this.config = config;
 
-    const { readers, writers } = handlers.reduce((memo, handler) => {
+    const { baseUrl, typeHandlers, endpoints, adapter } = config;
+
+    const { readers, writers } = typeHandlers.reduce((memo, handler) => {
       const r = {
         type: handler.type,
         reader: handler.reader,
@@ -76,8 +83,8 @@ export default class SharetribeSdk {
     const w = writer(writers);
 
     const httpOpts = {
-      headers: this.opts.headers,
-      baseURL: this.opts.baseUrl,
+      headers: privateOpts.headers,
+      baseURL: baseUrl,
       transformRequest: [
         // logAndReturn,
         data => w.write(data),
@@ -96,3 +103,6 @@ export default class SharetribeSdk {
     assignEndpoints(this, allEndpoints, axiosInstance);
   }
 }
+
+export const createInstance = config =>
+  new SharetribeSdk(validateConfigs(config));
