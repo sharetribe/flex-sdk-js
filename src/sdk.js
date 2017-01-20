@@ -2,6 +2,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
+import { UUID } from './types';
 
 const privateOpts = {
   headers: { Accept: 'application/transit' },
@@ -63,13 +64,11 @@ export class ValidationResult {
 const baseUrlRegexp = /^(http|https):\/\/(.+)/;
 
 export const validateBaseUrl = (url) => {
-    const failureMsg = 'Value must be a string containing full URL, including the protocol. Example: \'http://api.sharetribe.com\'';
+  const failureMsg = 'Value must be a string containing full URL, including the protocol. Example: \'http://api.sharetribe.com\'';
 
   if (!_.isString(url)) {
     return new ValidationResult(false, failureMsg);
-  }
-  else if (!url.match(baseUrlRegexp)) {
-    const msg = 'Value must be a string containing full URL, including the protocol. Example: \'http://api.sharetribe.com\'';
+  } else if (!url.match(baseUrlRegexp)) {
     return new ValidationResult(false, failureMsg);
   }
 
@@ -81,14 +80,14 @@ const validatePath = (v) => {
     return new ValidationResult(true);
   }
 
-  return new ValidationResult(false, "Endpoint path must be a non-empty string")
+  return new ValidationResult(false, 'Endpoint path must be a non-empty string');
 };
 
 const endpointSchema = {
   path: validatePath,
-}
+};
 
-const validateEndpoint = endpoint => {
+const validateEndpoint = (endpoint) => {
   const unknownKey = _.keys(endpoint).find(key => endpointSchema[key] == null);
   const missingKey = _.keys(endpointSchema).find(key => endpoint[key] == null);
 
@@ -108,7 +107,7 @@ const validateEndpoint = endpoint => {
   }
 
   return new ValidationResult(true);
-}
+};
 
 export const validateEndpoints = (endpoints) => {
   if (!_.isArray(endpoints)) {
@@ -116,7 +115,7 @@ export const validateEndpoints = (endpoints) => {
     return new ValidationResult(false, msg);
   }
 
-  const endpointResults = endpoints.map((endpoint) => validateEndpoint(endpoint));
+  const endpointResults = endpoints.map(endpoint => validateEndpoint(endpoint));
   const endpointFailure = endpointResults.find(epr => epr.success === false);
 
   if (endpointFailure) {
@@ -124,7 +123,95 @@ export const validateEndpoints = (endpoints) => {
   }
 
   return new ValidationResult(true);
-}
+};
+
+const validateType = (type) => {
+  const valid = _.includes([UUID], type);
+
+  if (!valid) {
+    return new ValidationResult(false, 'Type must be one of predefined types: [UUID]');
+  }
+
+  return new ValidationResult(true);
+};
+
+const validateCustomType = (customType) => {
+  // TODO This could be improved to check that it really is a constructor, not just function.
+  if (!_.isFunction(customType)) {
+    return new ValidationResult(false, 'Custom type must be a constructor function.');
+  }
+
+  return new ValidationResult(true);
+};
+
+const validateReader = (r) => {
+  if (!_.isFunction(r)) {
+    return new ValidationResult(false, 'Reader must be a function');
+  }
+
+  return new ValidationResult(true);
+};
+
+const validateWriter = (w) => {
+  if (!_.isFunction(w)) {
+    return new ValidationResult(false, 'Writer must be a function');
+  }
+
+  return new ValidationResult(true);
+};
+
+const typeHandlerSchema = {
+  type: validateType,
+  customType: validateCustomType,
+  reader: validateReader,
+  writer: validateWriter,
+};
+
+const printObject = o => JSON.stringify(o, (key, value) => {
+  if (_.isFunction(value)) {
+    return '[Function]';
+  }
+
+  return value;
+});
+
+const validateTypeHandler = (typeHandler) => {
+  const unknownKey = _.keys(typeHandler).find(key => typeHandlerSchema[key] == null);
+  const missingKey = _.keys(typeHandlerSchema).find(key => typeHandler[key] == null);
+
+  if (unknownKey) {
+    return new ValidationResult(false, `Unknown key "${unknownKey}" for type handler ${printObject(typeHandler)}`);
+  }
+
+  if (missingKey) {
+    return new ValidationResult(false, `Missing required key "${missingKey}" for type handler ${printObject(typeHandler)}`);
+  }
+
+  const results = _.map(typeHandler, (v, k) => typeHandlerSchema[k](v));
+  const firstFailure = results.find(res => res.success === false);
+
+  if (firstFailure) {
+    return firstFailure;
+  }
+
+  return new ValidationResult(true);
+};
+
+export const validateTypeHandlers = (typeHandlers) => {
+  if (!_.isArray(typeHandlers)) {
+    const msg = 'Value must be an array of objects';
+    return new ValidationResult(false, msg);
+  }
+
+  const typeHandlerResults = typeHandlers.map(handler => validateTypeHandler(handler));
+  const typeHandlerFailure = typeHandlerResults.find(thr => thr.success === false);
+
+  if (typeHandlerFailure) {
+    return typeHandlerFailure;
+  }
+
+  return new ValidationResult(true);
+};
 
 const publicConfigSchema = [
   { name: 'baseUrl',
