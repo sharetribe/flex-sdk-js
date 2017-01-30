@@ -21,7 +21,9 @@ const output = target => ({
 });
 
 const plugins = [
-  new LodashModuleReplacementPlugin(),
+  new LodashModuleReplacementPlugin({
+    collections: true,
+  }),
 ];
 
 // Node configs
