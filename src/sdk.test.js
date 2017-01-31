@@ -36,7 +36,7 @@ describe('new SharetribeSdk', () => {
       adapter: fake.user.show,
     });
 
-    return inst.user.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    return inst.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 

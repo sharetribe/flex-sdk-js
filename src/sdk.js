@@ -11,7 +11,8 @@ const defaultOpts = {
 
 const defaultEndpoints = [
   { path: 'marketplace/show' },
-  { path: 'user/show' },
+  { path: 'users/show' },
+  { path: 'listings/show' },
 ];
 
 // const logAndReturn = data => {
