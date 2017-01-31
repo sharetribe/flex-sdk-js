@@ -100,6 +100,7 @@ You can find all examples under the `[examples/](./examples)` directory:
 - [Hello World example in Node.js](./examples/hello-world-node)
 - [Hello World example in browser](./examples/hello-world-browser)
 - [Universal example: Use the SDK in browser and server to fetch the current ISS space station location](./examples/iss)
+- [REPL in Node](./examples/repl-node)
 
 # Installation [DRAFT]
 
