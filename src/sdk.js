@@ -13,6 +13,7 @@ const defaultEndpoints = [
   { path: 'marketplace/show' },
   { path: 'users/show' },
   { path: 'listings/show' },
+  { path: 'listings/query' },
 ];
 
 // const logAndReturn = data => {
