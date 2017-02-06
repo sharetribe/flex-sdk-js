@@ -2,7 +2,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
-import { UUID } from './types';
+import { UUID, LatLng, LatLngBounds } from './types';
 
 const defaultOpts = {
   baseUrl: 'https://api.sharetribe.com',
@@ -16,6 +16,7 @@ const defaultEndpoints = [
   { path: 'users/show' },
   { path: 'listings/show' },
   { path: 'listings/query' },
+  { path: 'listings/search' },
 ];
 
 // const logAndReturn = data => {
@@ -87,6 +88,10 @@ const assignEndpoints = (obj, endpoints, axiosInstance) => {
 const serializeParam = (key, value) => {
   if (value instanceof UUID) {
     return [key, value.uuid];
+  } else if (value instanceof LatLng) {
+    return [key, `${value.lat},${value.lng}`];
+  } else if (value instanceof LatLngBounds) {
+    return [key, `${value.ne.lat},${value.ne.lng},${value.sw.lat},${value.sw.lng}`];
   }
 
   return [key, value];
