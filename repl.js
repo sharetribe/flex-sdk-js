@@ -17,6 +17,7 @@ const ctx = repl.start('> ').context;
 // Assign SDK as global
 ctx.sdk = sdk;
 ctx.sharetribeSdk = sharetribeSdk;
+Object.assign(ctx, sharetribeSdk.types);
 
 // Welcome message
 
@@ -45,6 +46,7 @@ console.log('  The following globals are available:');
 console.log('  ');
 console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
 console.log(`  - ${'`sdk`'.inline}: SDK instance configured to connect to http://localhost:8088`);
+console.log(`  - ${'`UUID`'.inline}, ${'`LatLng`'.inline}, e.g. all available types`);
 console.log('  ');
 console.log('  ## Example usage'.h2);
 console.log('  ');

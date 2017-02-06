@@ -28,9 +28,15 @@ JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetrib
 // Add config options, if needed.
 var config = {};
 
-var sharetribe = require('sharetribe-sdk').createInstance(config);
+var sharetribeSdk = require('sharetribe-sdk');
+var UUID = sharetribeSdk.types.UUID;
+var LatLng = sharetribeSdk.types.LatLng;
+var LatLngBounds = sharetribeSdk.types.LatLngBounds;
 
-sharetribe.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(function(result) {
+var sdk = sharetribeSdk.createInstance(config);
+
+// Show marketplace
+sdk.marketplace.show({ id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01') }).then(function(result) {
   console.log(result);
 
   // prints =>
@@ -48,7 +54,52 @@ sharetribe.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then
   //     meta: {},
   //     included: [] },
   //   }
-  // });
+});
+
+// Search listings by location
+sdk.listings.search({
+  marketplace_id: new UUID('16c6a4b8-88ee-429b-835a-6725206cd08c'),
+  origin: new LatLng(12.34, 56.67),
+  bounds: new LatLngBounds(new LatLng(47, -124), new LatLng(17, -68))
+}).then(function(result) {
+  console.log(result);
+
+  // prints =>
+  //
+  // { status: 200,
+  //   statusText: 'OK',
+  //   data:
+  //    { data: [
+  //      { id: UUID { uuid: '9009efe1-25ec-4ed5-9413-e80c584ff6bf' },
+  //        type: 'listing',
+  //        links: { self: '/v1/api/listings/show?id=9009efe1-25ec-4ed5-9413-e80c584ff6bf' },
+  //        attributes:
+  //         { title: 'Nishiki 401',
+  //           description: '27-speed Hybrid. Fully functional.',
+  //           address: '230 Hamilton Ave, Staten Island, NY 10301, USA',
+  //           geolocation: LatLng { lat: 40.64542, lng: -74.08508 } } },
+  //        relationships: { author: [Object], marketplace: [Object] } },
+  //      { id: UUID { uuid: '5e1f2086-522c-46f3-87b4-451c6770c833' },
+  //          type: 'listing',
+  //          links: { self: '/v1/api/listings/show?id=5e1f2086-522c-46f3-87b4-451c6770c833' },
+  //          attributes:
+  //           { title: 'Pelago Brooklyn',
+  //             description: 'Goes together perfectly with a latte and a bow tie.',
+  //             address: '230 Hamilton Ave, Staten Island, NY 10301, USA',
+  //             geolocation: LatLng { lat: 40.64542, lng: -74.08508 } },
+  //          relationships: { author: [Object], marketplace: [Object] } },
+  //      { id: UUID { uuid: 'c6ff7190-bdf7-47a0-8a2b-e3136e74334f' },
+  //          type: 'listing',
+  //          links: { self: '/v1/api/listings/show?id=c6ff7190-bdf7-47a0-8a2b-e3136e74334f' },
+  //          attributes:
+  //           { title: 'Peugeot eT101',
+  //             description: '7-speed Hybrid',
+  //             address: '230 Hamilton Ave, Staten Island, NY 10301, USA',
+  //             geolocation: LatLng { lat: 40.64542, lng: -74.08508 } },
+  //          relationships: { author: [Object], marketplace: [Object] } } ],
+  //      meta: {},
+  //      included: [] } }
+});
 ```
 
 ## Config options
@@ -56,7 +107,7 @@ sharetribe.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then
 There are a few config options that can given for the initializatio function:
 
 ``` js
-var sharetribe = require('sharetribe-sdk').createInstance({
+var sdk = require('sharetribe-sdk').createInstance({
 
   // The API base URL
   baseUrl: "https://api.sharetribe.com/v1/",

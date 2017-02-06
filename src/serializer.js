@@ -1,6 +1,6 @@
 import transit from 'transit-js';
 import _ from 'lodash';
-import { UUID } from './types';
+import { UUID, LatLng } from './types';
 
 /**
    Composes two readers (default and custom) so that:
@@ -82,23 +82,36 @@ const composeWriter = (defaultWriter, customWriter) => {
  */
 const typeMap = {
   u: UUID,
+  geo: LatLng,
 };
 
 /**
    List of default readers
  */
-const defaultReaders = [{
-  type: UUID,
-  reader: rep => new UUID(rep),
-}];
+const defaultReaders = [
+  {
+    type: UUID,
+    reader: rep => new UUID(rep),
+  },
+  {
+    type: LatLng,
+    reader: ([lat, lng]) => new LatLng(lat, lng),
+  },
+];
 
 /**
    List of default writers
  */
-const defaultWriters = [{
-  type: UUID,
-  writer: v => v.uuid,
-}];
+const defaultWriters = [
+  {
+    type: UUID,
+    writer: v => v.uuid,
+  },
+  {
+    type: LatLng,
+    writer: v => [v.lat, v.lng],
+  },
+];
 
 /**
    Take `customReaders` param and construct a list of read handlers

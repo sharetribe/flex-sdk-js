@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
+import paramsSerializer from './params_serializer';
 
 const defaultOpts = {
   baseUrl: 'https://api.sharetribe.com',
@@ -14,6 +15,7 @@ const defaultEndpoints = [
   { path: 'users/show' },
   { path: 'listings/show' },
   { path: 'listings/query' },
+  { path: 'listings/search' },
 ];
 
 // const logAndReturn = data => {
@@ -118,6 +120,7 @@ export default class SharetribeSdk {
         // logAndReturn,
         data => r.read(data),
       ],
+      paramsSerializer,
       adapter,
     };
 
