@@ -1,8 +1,7 @@
 import axios from 'axios';
-import _ from 'lodash';
 import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
-import { UUID, LatLng, LatLngBounds } from './types';
+import paramsSerializer from './params_serializer';
 
 const defaultOpts = {
   baseUrl: 'https://api.sharetribe.com',
@@ -78,41 +77,6 @@ const assignEndpoints = (obj, endpoints, axiosInstance) => {
   return obj;
 };
 
-/**
- * Takes a value for query string and returns it in encoded form.
- *
- * Uses `encodeURIComponent` with few exceptions:
- *
- * - Don't encode comma (,)
- *
- * Inspired by the `encode` function in Axios:
- * https://github.com/mzabriskie/axios/blob/b8f6f5049cf3da8126a184b6b270316402b5b374/lib/helpers/buildURL.js#L5
- */
-const encodeParam = value =>
-  encodeURIComponent(value)
-  .replace(/%2C/gi, ',');
-
-/**
- * Take `key` and `value` and return a key-value tuple where
- * key and value are stringified.
- *
- * TODO Consider moving this function closer to the type definitions,
- * maybe in types.js file(?).
- */
-const serializeParam = (key, value) => {
-  let v = value;
-
-  if (value instanceof UUID) {
-    v = value.uuid;
-  } else if (value instanceof LatLng) {
-    v = `${value.lat},${value.lng}`;
-  } else if (value instanceof LatLngBounds) {
-    v = `${value.ne.lat},${value.ne.lng},${value.sw.lat},${value.sw.lng}`;
-  }
-
-  return [key, encodeParam(v)];
-};
-
 export default class SharetribeSdk {
 
   /**
@@ -156,9 +120,7 @@ export default class SharetribeSdk {
         // logAndReturn,
         data => r.read(data),
       ],
-      paramsSerializer: params =>
-        _.map(params, (value, key) =>
-          serializeParam(key, value).join('=')).join('&'),
+      paramsSerializer,
       adapter,
     };
 
