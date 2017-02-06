@@ -21,13 +21,13 @@ const defaultEndpoints = [
 //   return data;
 // };
 
-const handleSuccessResponse = response => {
+const handleSuccessResponse = (response) => {
   const { status, statusText, data } = response;
 
-  return { status, statusText, data }
-}
+  return { status, statusText, data };
+};
 
-const handleFailureResponse = error => {
+const handleFailureResponse = (error) => {
   const response = error.response;
 
   if (response) {
@@ -35,11 +35,11 @@ const handleFailureResponse = error => {
     // other than 2xx
     const { status, statusText, data } = response;
     return Promise.reject({ status, statusText, data });
-  } else {
-    // Something happened in setting up the request that triggered an Error
-    Promise.reject(error);
   }
-}
+
+  // Something happened in setting up the request that triggered an Error
+  return Promise.reject(error);
+};
 
 const createSdkMethod = (req, axiosInstance) =>
   (params = {}) =>
