@@ -8,7 +8,7 @@ const colors = require('colors');
 const repl = require('repl');
 const sharetribeSdk = require('./src/index');
 
-const sdk = sharetribeSdk.default({
+const sdk = sharetribeSdk.createInstance({
   baseUrl: 'http://localhost:8088/v1/api/',
 });
 

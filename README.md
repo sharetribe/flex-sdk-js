@@ -28,7 +28,7 @@ JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetrib
 // Add config options, if needed.
 var config = {};
 
-var sharetribe = require('sharetribe-sdk')(config);
+var sharetribe = require('sharetribe-sdk').createInstance(config);
 
 sharetribe.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(function(result) {
   console.log(result);
@@ -56,7 +56,7 @@ sharetribe.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then
 There are a few config options that can given for the initializatio function:
 
 ``` js
-var sharetribe = require('sharetribe-sdk')({
+var sharetribe = require('sharetribe-sdk').createInstance({
 
   // The API base URL
   baseUrl: "https://api.sharetribe.com/v1/",

@@ -7,18 +7,18 @@
     <script src="../../build/sharetribe-sdk-web.js"></script>
     <script>
 
-      var inst = sharetribeSdk.default({
+      var inst = sharetribeSdk.createInstance({
         baseUrl: "https://jsonplaceholder.typicode.com",
         endpoints: [
-          { path: "users/" },
+          { path: "albums/" },
         ],
       });
 
       inst
-        .users()
+        .albums()
         .then(function(res) {
-          document.write(res.data.map(function(user) {
-            return [user.name, user.username, user.email].join(', ')
+          document.write(res.data.map(function(album) {
+            return [album.id, album.userId, album.title].join(', ')
           }).join('<br />'));
         });
     </script>
