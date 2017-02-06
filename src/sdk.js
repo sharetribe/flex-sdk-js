@@ -1,6 +1,8 @@
 import axios from 'axios';
+import _ from 'lodash';
 import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
+import { UUID } from './types';
 
 const defaultOpts = {
   baseUrl: 'https://api.sharetribe.com',
@@ -75,6 +77,21 @@ const assignEndpoints = (obj, endpoints, axiosInstance) => {
   return obj;
 };
 
+/**
+ * Take `key` and `value` and return a key-value tuple where
+ * key and value are stringified.
+ *
+ * TODO Consider moving this function closer to the type definitions,
+ * maybe in types.js file(?).
+ */
+const serializeParam = (key, value) => {
+  if (value instanceof UUID) {
+    return [key, value.uuid];
+  }
+
+  return [key, value];
+};
+
 export default class SharetribeSdk {
 
   /**
@@ -118,6 +135,7 @@ export default class SharetribeSdk {
         // logAndReturn,
         data => r.read(data),
       ],
+      paramsSerializer: params => _.map(params, (value, key) => serializeParam(key, value).join('=')).join('&'),
       adapter,
     };
 
