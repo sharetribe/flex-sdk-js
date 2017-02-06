@@ -7,16 +7,16 @@
 // $ node index.js
 //
 
-const sharetribe = require('../../build/sharetribe-sdk-node').default;
+const sharetribeSdk = require('../../build/sharetribe-sdk-node');
 
 /* eslint no-console: "off" */
-const inst = sharetribe({
+const inst = sharetribeSdk.createInstance({
   baseUrl: 'https://jsonplaceholder.typicode.com',
   endpoints: [{
-    path: 'users/',
+    path: 'albums/',
   }],
 });
 
 inst
-  .users()
-  .then(res => console.log(res.data.map(user => [user.name, user.username, user.email].join(', ')).join('\n')));
+  .albums()
+  .then(res => console.log(res.data.map(album => [album.id, album.userId, album.title].join(', ')).join('\n')));
