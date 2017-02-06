@@ -100,7 +100,6 @@ You can find all examples under the `[examples/](./examples)` directory:
 - [Hello World example in Node.js](./examples/hello-world-node)
 - [Hello World example in browser](./examples/hello-world-browser)
 - [Universal example: Use the SDK in browser and server to fetch the current ISS space station location](./examples/iss)
-- [REPL in Node](./examples/repl-node)
 
 # Installation [DRAFT]
 
@@ -171,6 +170,42 @@ $ npm run lint
 ```
 
 Use [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) conventions.
+
+# REPL
+
+With the REPL you can test and try out the SDK with real results from the API.
+
+To start the REPL, type:
+
+```
+> npm run repl
+```
+
+## Globals
+
+The following globals are available:
+
+- `sharetribeSdk`: The SDK module
+- `sdk`: SDK instance configured to connect to http://localhost:8088
+
+## Example usage
+
+Fetch and log all listings in a marketplace:
+
+```
+> res = sdk.marketplace.show({marketplace_id: '16c6a4b8-88ee-429b-835a-6725206cd08c'})
+> res.then((response) => console.log(response.data))
+> { data:
+   { id: UUID { uuid: '16c6a4b8-88ee-429b-835a-6725206cd08c' },
+     type: 'marketplace',
+     links: { self: '/v1/api/marketplace/show' },
+     attributes:
+      { name: 'Bikesoil',
+        description: 'Peer to peer bike rentals in Essex.' },
+     relationships: {} },
+  meta: {},
+  included: [] }
+```
 
 # Author [DRAFT]
 
