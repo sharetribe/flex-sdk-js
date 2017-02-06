@@ -1,4 +1,4 @@
-import { UUID } from './types';
+import { UUID, LatLng } from './types';
 import fake from './fake';
 import SharetribeSdk from './sdk';
 
@@ -28,12 +28,12 @@ describe('new SharetribeSdk', () => {
     expect(inst.posts.showAll).toBeInstanceOf(Function);
   });
 
-  it('calls user endpoint with query params', () => {
+  it('calls users endpoint with query params', () => {
     const inst = new SharetribeSdk({
       baseUrl: '',
       typeHandlers: [],
       endpoints: [],
-      adapter: fake.user.show,
+      adapter: fake.users.show,
     });
 
     return inst.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
@@ -65,6 +65,27 @@ describe('new SharetribeSdk', () => {
         name: 'Awesome skies.',
         description: 'Meet and greet with fanatical sky divers.',
       }));
+    });
+  });
+
+  it('calls listing search with query params', () => {
+    const inst = new SharetribeSdk({
+      baseUrl: '',
+      typeHandlers: [],
+      endpoints: [],
+      adapter: fake.listings.search,
+    });
+
+    return inst.listings.search({ id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'), origin: new LatLng(40.00, -70.00) }).then((res) => {
+      const data = res.data.data;
+
+      expect(data.length).toEqual(2);
+      expect(data[0].attributes.description).toEqual('27-speed Hybrid. Fully functional.');
+      expect(data[0].attributes.geolocation instanceof LatLng).toEqual(true);
+      expect(data[0].attributes.geolocation).toEqual(new LatLng(40.64542, -74.08508));
+      expect(data[1].attributes.description).toEqual('Goes together perfectly with a latte and a bow tie.');
+      expect(data[1].attributes.geolocation instanceof LatLng).toEqual(true);
+      expect(data[1].attributes.geolocation).toEqual(new LatLng(40.64542, -74.08508));
     });
   });
 
