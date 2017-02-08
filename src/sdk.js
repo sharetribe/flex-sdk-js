@@ -87,7 +87,11 @@ export default class SharetribeSdk {
   constructor(config) {
     this.config = { ...defaultOpts, ...config };
 
-    const { baseUrl, typeHandlers, endpoints, adapter } = this.config;
+    const { baseUrl, typeHandlers, endpoints, adapter, clientId } = this.config;
+
+    if (!clientId) {
+      throw new Error('clientId must be provided');
+    }
 
     const { readers, writers } = typeHandlers.reduce((memo, handler) => {
       const r = {
