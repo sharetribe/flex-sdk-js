@@ -44,7 +44,7 @@ const handleFailureResponse = (error) => {
   return Promise.reject(error);
 };
 
-const withAuthToken = (baseUrl, version, clientId, adapter) =>
+const createAuthenticator = ({ baseUrl, version, clientId, adapter }) => () =>
   axios.request({
     method: 'post',
     baseURL: `${baseUrl}/${version}/`,
@@ -57,9 +57,9 @@ const withAuthToken = (baseUrl, version, clientId, adapter) =>
     adapter,
   }).then(res => res.data.access_token);
 
-const createSdkMethod = (req, axiosInstance, baseUrl, version, clientId, authAdapter) =>
+const createSdkMethod = (req, axiosInstance, withAuthToken) =>
   (params = {}) =>
-    withAuthToken(baseUrl, version, clientId, authAdapter).then((authToken) => {
+    withAuthToken().then((authToken) => {
       const authHeader = { Authorization: `Bearer ${authToken}` };
       const reqHeaders = req.headers || {};
       const headers = { ...authHeader, ...reqHeaders };
@@ -76,20 +76,13 @@ const createSdkMethod = (req, axiosInstance, baseUrl, version, clientId, authAda
  * @param {Object} axiosInstance
  *
  */
-const assignEndpoints = (
-  obj,
-  endpoints,
-  axiosInstance,
-  baseUrl,
-  version,
-  clientId,
-  authAdapter) => {
+const assignEndpoints = (obj, endpoints, axiosInstance, withAuthToken) => {
   endpoints.forEach((ep) => {
     const req = {
       url: ep.path,
     };
 
-    const sdkMethod = createSdkMethod(req, axiosInstance, baseUrl, version, clientId, authAdapter);
+    const sdkMethod = createSdkMethod(req, axiosInstance, withAuthToken);
 
     // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
     const path = methodPath(ep.path);
@@ -178,7 +171,11 @@ export default class SharetribeSdk {
     const axiosInstance = axios.create(httpOpts);
     const allEndpoints = [...defaultEndpoints, ...endpoints];
 
+    const withAuthToken = createAuthenticator({
+      baseUrl, version, clientId, adapter,
+    });
+
     // Assign all endpoint definitions to 'this'
-    assignEndpoints(this, allEndpoints, axiosInstance, baseUrl, version, clientId, adapter);
+    assignEndpoints(this, allEndpoints, axiosInstance, withAuthToken);
   }
 }
