@@ -43,10 +43,29 @@ const handleFailureResponse = (error) => {
   return Promise.reject(error);
 };
 
-const createSdkMethod = (req, axiosInstance) =>
+const withAuthToken = (baseUrl, clientId) => {
+  return axios.request({
+    method: 'post',
+    baseURL: 'http://localhost:8088/v1/',
+    url: '/auth/token',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json'
+    },
+    data: `client_id=${clientId}&grant_type=client_credentials&scope=public-read`
+  }).then((res) => res.data.access_token);
+};
+
+const createSdkMethod = (req, axiosInstance, baseUrl, clientId) =>
   (params = {}) =>
-    axiosInstance.request({ ...req, params })
-                 .then(handleSuccessResponse, handleFailureResponse);
+    withAuthToken(baseUrl, clientId).then((authToken) => {
+      const authHeader = { Authorization: `Bearer ${authToken}` };
+      const reqHeaders = req.headers || {};
+      const headers = { ...authHeader, ...reqHeaders };
+
+      return axiosInstance.request({ ...req, headers, params })
+                          .then(handleSuccessResponse, handleFailureResponse);
+    });
 
 /**
  * Mutates 'obj' by adding endpoint methods to it.
@@ -56,13 +75,13 @@ const createSdkMethod = (req, axiosInstance) =>
  * @param {Object} axiosInstance
  *
  */
-const assignEndpoints = (obj, endpoints, axiosInstance) => {
+const assignEndpoints = (obj, endpoints, axiosInstance, baseUrl, clientId) => {
   endpoints.forEach((ep) => {
     const req = {
       url: ep.path,
     };
 
-    const sdkMethod = createSdkMethod(req, axiosInstance);
+    const sdkMethod = createSdkMethod(req, axiosInstance, baseUrl, clientId);
 
     // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
     const path = methodPath(ep.path);
@@ -132,6 +151,6 @@ export default class SharetribeSdk {
     const allEndpoints = [...defaultEndpoints, ...endpoints];
 
     // Assign all endpoint definitions to 'this'
-    assignEndpoints(this, allEndpoints, axiosInstance);
+    assignEndpoints(this, allEndpoints, axiosInstance, baseUrl, clientId);
   }
 }
