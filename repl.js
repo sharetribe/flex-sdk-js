@@ -9,7 +9,8 @@ const repl = require('repl');
 const sharetribeSdk = require('./src/index');
 
 const sdk = sharetribeSdk.createInstance({
-  baseUrl: 'http://localhost:8088/v1/api/',
+  clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+  baseUrl: 'http://localhost:8088/',
 });
 
 const ctx = repl.start('> ').context;

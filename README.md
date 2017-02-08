@@ -25,15 +25,14 @@ JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetrib
 
 ``` js
 
-// Add config options, if needed.
-var config = {};
-
 var sharetribeSdk = require('sharetribe-sdk');
 var UUID = sharetribeSdk.types.UUID;
 var LatLng = sharetribeSdk.types.LatLng;
 var LatLngBounds = sharetribeSdk.types.LatLngBounds;
 
-var sdk = sharetribeSdk.createInstance(config);
+var sdk = sharetribeSdk.createInstance({
+  clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+});
 
 // Show marketplace
 sdk.marketplace.show({ id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01') }).then(function(result) {
@@ -109,6 +108,9 @@ There are a few config options that can given for the initializatio function:
 ``` js
 var sdk = require('sharetribe-sdk').createInstance({
 
+  // The API ClientID (mandatory)
+  clientId: "08ec69f6-d37e-414d-83eb-324e94afddf0",
+
   // The API base URL
   baseUrl: "https://api.sharetribe.com/v1/",
 
@@ -145,6 +147,8 @@ var sdk = require('sharetribe-sdk').createInstance({
 ```
 
 # Examples
+
+**Please note!** The examples **ARE CURRENTLY BROKEN** due to the recent changes. They will be fixed very soon.
 
 You can find all examples under the `[examples/](./examples)` directory:
 

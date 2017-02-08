@@ -6,6 +6,7 @@ describe('new SharetribeSdk', () => {
   it('creates a new instance with given options', () => {
     const inst = new SharetribeSdk({
       baseUrl: 'https://jsonplaceholder.typicode.com',
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [],
       adapter: null,
@@ -13,11 +14,19 @@ describe('new SharetribeSdk', () => {
 
     expect(inst.config).toEqual(expect.objectContaining({
       baseUrl: 'https://jsonplaceholder.typicode.com',
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
     }));
+  });
+
+  it('validates presence of clientId', () => {
+    expect(() => new SharetribeSdk({
+      baseUrl: 'https://jsonplaceholder.typicode.com',
+    })).toThrowError('clientId must be provided');
   });
 
   it('creates new endpoints', () => {
     const inst = new SharetribeSdk({
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [{
         path: 'posts/showAll',
@@ -31,9 +40,10 @@ describe('new SharetribeSdk', () => {
   it('calls users endpoint with query params', () => {
     const inst = new SharetribeSdk({
       baseUrl: '',
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [],
-      adapter: fake.users.show,
+      adapter: fake,
     });
 
     return inst.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
@@ -51,9 +61,10 @@ describe('new SharetribeSdk', () => {
   it('calls marketplace endpoint with query params', () => {
     const inst = new SharetribeSdk({
       baseUrl: '',
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [],
-      adapter: fake.marketplace.show,
+      adapter: fake,
     });
 
     return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
@@ -71,9 +82,10 @@ describe('new SharetribeSdk', () => {
   it('calls listing search with query params', () => {
     const inst = new SharetribeSdk({
       baseUrl: '',
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [],
-      adapter: fake.listings.search,
+      adapter: fake,
     });
 
     return inst.listings.search({ id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'), origin: new LatLng(40.00, -70.00) }).then((res) => {
@@ -105,8 +117,9 @@ describe('new SharetribeSdk', () => {
 
     const inst = new SharetribeSdk({
       baseUrl: '',
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       endpoints: [],
-      adapter: fake.marketplace.show,
+      adapter: fake,
       typeHandlers: handlers,
     });
 

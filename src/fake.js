@@ -11,8 +11,18 @@ const createAdapter =
         adapterDef.call(null, config, resolve, reject);
       });
 
+const auth = (config, resolve) => {
+  const res = `{
+                 "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo",
+                 "token_type": "bearer",
+                 "expires_in": 86400
+               }`;
+
+  return resolve({ data: res });
+};
+
 const marketplace = {
-  show: createAdapter((config, resolve) => {
+  show: (config, resolve) => {
     const res = `[
                      "^ ",
                      "~:data",
@@ -44,11 +54,11 @@ const marketplace = {
                    ]`;
 
     return resolve({ data: res });
-  }),
+  },
 };
 
 const users = {
-  show: createAdapter((config, resolve) => {
+  show: (config, resolve) => {
     const res = `[
                    "^ ",
                    "~:data",
@@ -80,11 +90,11 @@ const users = {
                  ]`;
 
     return resolve({ data: res });
-  }),
+  },
 };
 
 const listings = {
-  search: createAdapter((config, resolve) => {
+  search: (config, resolve) => {
     const res = `[
                    "^ ",
                    "~:data",
@@ -209,7 +219,22 @@ const listings = {
                  ]`;
 
     return resolve({ data: res });
-  }),
+  },
 };
 
-export default { users, marketplace, listings };
+const adapter = createAdapter((config, resolve) => {
+  switch (config.url) {
+    case '/v1/api/users/show':
+      return users.show(config, resolve);
+    case '/v1/api/marketplace/show':
+      return marketplace.show(config, resolve);
+    case '/v1/api/listings/search':
+      return listings.search(config, resolve);
+    case '/v1/auth/token':
+      return auth(config, resolve);
+    default:
+      throw new Error(`Not implemented to Fake adapter: ${config.url}`);
+  }
+});
+
+export default adapter;

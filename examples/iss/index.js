@@ -18,6 +18,7 @@ const sharetribeSdk = require('../../build/sharetribe-sdk-node');
 
 // Initialize the SDK instance
 const sdk = sharetribeSdk.createInstance({
+  clientId: 'noop',
   baseUrl: 'http://api.open-notify.org/',
   endpoints: [
     { path: 'iss-now/' },
@@ -37,7 +38,11 @@ app.get('/', (req, res) => {
     <title>Server-rendering example</title>
     <script src="/build/sharetribe-sdk-web.js"></script>
     <script>
-      const sdk = sharetribeSdk.createInstance({baseUrl: 'http://api.open-notify.org/', endpoints: [{ path: 'iss-now/' }]});
+      const sdk = sharetribeSdk.createInstance({
+        clientId: 'noop',
+        baseUrl: 'http://api.open-notify.org/',
+        endpoints: [{ path: 'iss-now/' }]
+      });
 
       // Load the bundle
       const module = {};

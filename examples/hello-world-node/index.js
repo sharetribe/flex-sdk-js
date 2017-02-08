@@ -11,6 +11,7 @@ const sharetribeSdk = require('../../build/sharetribe-sdk-node');
 
 /* eslint no-console: "off" */
 const inst = sharetribeSdk.createInstance({
+  clientId: 'noop',
   baseUrl: 'https://jsonplaceholder.typicode.com',
   endpoints: [{
     path: 'albums/',

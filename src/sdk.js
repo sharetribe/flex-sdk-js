@@ -8,6 +8,7 @@ const defaultOpts = {
   typeHandlers: [],
   endpoints: [],
   adapter: null,
+  version: 'v1',
 };
 
 const defaultEndpoints = [
@@ -43,10 +44,30 @@ const handleFailureResponse = (error) => {
   return Promise.reject(error);
 };
 
-const createSdkMethod = (req, axiosInstance) =>
+const createAuthenticator = ({ baseUrl, version, clientId, adapter }) => () =>
+  axios.request({
+    method: 'post',
+    baseURL: `${baseUrl}/${version}/`,
+    url: 'auth/token',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+    },
+    data: `client_id=${clientId}&grant_type=client_credentials&scope=public-read`,
+    adapter,
+  }).then(res => res.data.access_token);
+
+const createSdkMethod = (req, axiosInstance, withAuthToken) =>
   (params = {}) =>
-    axiosInstance.request({ ...req, params })
-                 .then(handleSuccessResponse, handleFailureResponse);
+    withAuthToken().then((authToken) => {
+      const authHeader = { Authorization: `Bearer ${authToken}` };
+      const reqHeaders = req.headers || {};
+      const headers = { ...authHeader, ...reqHeaders };
+
+      return axiosInstance.request({ ...req, headers, params })
+                          .then(handleSuccessResponse)
+                          .catch(handleFailureResponse);
+    });
 
 /**
  * Mutates 'obj' by adding endpoint methods to it.
@@ -56,13 +77,13 @@ const createSdkMethod = (req, axiosInstance) =>
  * @param {Object} axiosInstance
  *
  */
-const assignEndpoints = (obj, endpoints, axiosInstance) => {
+const assignEndpoints = (obj, endpoints, axiosInstance, withAuthToken) => {
   endpoints.forEach((ep) => {
     const req = {
       url: ep.path,
     };
 
-    const sdkMethod = createSdkMethod(req, axiosInstance);
+    const sdkMethod = createSdkMethod(req, axiosInstance, withAuthToken);
 
     // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
     const path = methodPath(ep.path);
@@ -77,6 +98,17 @@ const assignEndpoints = (obj, endpoints, axiosInstance) => {
   return obj;
 };
 
+/**
+   Take URL and remove the last slash
+
+   Example:
+
+   ```
+   normalizeBaseUrl("http://www.api.com/") => "http://www.api.com"
+   ```
+ */
+const normalizeBaseUrl = url => url.replace(/\/*$/, '');
+
 export default class SharetribeSdk {
 
   /**
@@ -87,7 +119,20 @@ export default class SharetribeSdk {
   constructor(config) {
     this.config = { ...defaultOpts, ...config };
 
-    const { baseUrl, typeHandlers, endpoints, adapter } = this.config;
+    this.config.baseUrl = normalizeBaseUrl(this.config.baseUrl);
+
+    const {
+      baseUrl,
+      typeHandlers,
+      endpoints,
+      adapter,
+      clientId,
+      version,
+    } = this.config;
+
+    if (!clientId) {
+      throw new Error('clientId must be provided');
+    }
 
     const { readers, writers } = typeHandlers.reduce((memo, handler) => {
       const r = {
@@ -111,7 +156,7 @@ export default class SharetribeSdk {
 
     const httpOpts = {
       headers: { Accept: 'application/transit' },
-      baseURL: baseUrl,
+      baseURL: `${baseUrl}/${version}/api/`,
       transformRequest: [
         // logAndReturn,
         data => w.write(data),
@@ -127,7 +172,11 @@ export default class SharetribeSdk {
     const axiosInstance = axios.create(httpOpts);
     const allEndpoints = [...defaultEndpoints, ...endpoints];
 
+    const withAuthToken = createAuthenticator({
+      baseUrl, version, clientId, adapter,
+    });
+
     // Assign all endpoint definitions to 'this'
-    assignEndpoints(this, allEndpoints, axiosInstance);
+    assignEndpoints(this, allEndpoints, axiosInstance, withAuthToken);
   }
 }
