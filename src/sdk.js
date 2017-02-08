@@ -65,7 +65,8 @@ const createSdkMethod = (req, axiosInstance, withAuthToken) =>
       const headers = { ...authHeader, ...reqHeaders };
 
       return axiosInstance.request({ ...req, headers, params })
-                          .then(handleSuccessResponse, handleFailureResponse);
+                          .then(handleSuccessResponse)
+                          .catch(handleFailureResponse);
     });
 
 /**
