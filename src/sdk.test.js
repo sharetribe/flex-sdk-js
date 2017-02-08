@@ -43,7 +43,7 @@ describe('new SharetribeSdk', () => {
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [],
-      adapter: fake.users.show,
+      adapter: fake,
     });
 
     return inst.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
@@ -64,7 +64,7 @@ describe('new SharetribeSdk', () => {
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [],
-      adapter: fake.marketplace.show,
+      adapter: fake,
     });
 
     return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
@@ -85,7 +85,7 @@ describe('new SharetribeSdk', () => {
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [],
-      adapter: fake.listings.search,
+      adapter: fake,
     });
 
     return inst.listings.search({ id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'), origin: new LatLng(40.00, -70.00) }).then((res) => {
@@ -119,7 +119,7 @@ describe('new SharetribeSdk', () => {
       baseUrl: '',
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       endpoints: [],
-      adapter: fake.marketplace.show,
+      adapter: fake,
       typeHandlers: handlers,
     });
 
