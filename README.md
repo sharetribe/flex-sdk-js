@@ -148,6 +148,8 @@ var sdk = require('sharetribe-sdk').createInstance({
 
 # Examples
 
+**Please note!** The examples **ARE CURRENTLY BROKEN** due to the recent changes. They will be fixed very soon.
+
 You can find all examples under the `[examples/](./examples)` directory:
 
 - [Hello World example in Node.js](./examples/hello-world-node)
