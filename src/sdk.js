@@ -48,7 +48,7 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
   const storedToken = tokenStore && tokenStore.getToken();
 
   if (storedToken) {
-    return Promise.resolve(storedToken.access_token);
+    return Promise.resolve(storedToken);
   }
 
   return axios.request({
@@ -61,13 +61,26 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
     },
     data: `client_id=${clientId}&grant_type=client_credentials&scope=public-read`,
     adapter,
-  }).then(res => res.data.access_token);
+  }).then(res => res.data);
+};
+
+const constructAuthHeader = (authToken) => {
+  /* eslint-disable camelcase */
+  const token_type = authToken.token_type && authToken.token_type.toLowerCase();
+
+  switch (token_type) {
+    case 'bearer':
+      return `Bearer ${authToken.access_token}`;
+    default:
+      throw new Error(`Unknown token type: ${token_type}`);
+  }
+  /* eslint-enable camelcase */
 };
 
 const createSdkMethod = (req, axiosInstance, withAuthToken) =>
   (params = {}) =>
     withAuthToken().then((authToken) => {
-      const authHeader = { Authorization: `Bearer ${authToken}` };
+      const authHeader = { Authorization: `${constructAuthHeader(authToken)}` };
       const reqHeaders = req.headers || {};
       const headers = { ...authHeader, ...reqHeaders };
 
