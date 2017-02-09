@@ -139,10 +139,14 @@ describe('new SharetribeSdk', () => {
     });
   });
 
-  it('includes auth token to the Headers if it\'s stored in tokenStore', () => {
+  it('reads auth token from store and includes it in request headers', () => {
     const inst = new SharetribeSdk({
       baseUrl: '',
+
+      // The Fake server doesn't know this clientId. However, the request passes because
+      // the access_token is in the store
       clientId: 'daaf8871-4723-45b8-bc97-9e335f46966d',
+
       endpoints: [],
       adapter: fake,
       tokenStore: {
@@ -162,6 +166,43 @@ describe('new SharetribeSdk', () => {
         name: 'Awesome skies.',
         description: 'Meet and greet with fanatical sky divers.',
       }));
+    });
+  });
+
+  it('stored the auth token to the store', () => {
+    class TokenStore {
+      getToken() {
+        return this.token;
+      }
+      setToken(token) {
+        this.token = token;
+      }
+    }
+
+    const tokenStore = new TokenStore();
+
+    const inst = new SharetribeSdk({
+      baseUrl: '',
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      endpoints: [],
+      adapter: fake,
+      tokenStore,
+    });
+
+    return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+      const resource = res.data.data;
+      const attrs = resource.attributes;
+      const token = tokenStore.getToken();
+
+      expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
+      expect(attrs).toEqual(expect.objectContaining({
+        name: 'Awesome skies.',
+        description: 'Meet and greet with fanatical sky divers.',
+      }));
+
+      expect(token.access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
+      expect(token.token_type).toEqual('bearer');
+      expect(token.expires_in).toEqual(86400);
     });
   });
 });

@@ -61,7 +61,13 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
     },
     data: `client_id=${clientId}&grant_type=client_credentials&scope=public-read`,
     adapter,
-  }).then(res => res.data);
+  }).then(res => res.data).then((authToken) => {
+    if (tokenStore) {
+      tokenStore.setToken(authToken);
+    }
+
+    return authToken;
+  });
 };
 
 const constructAuthHeader = (authToken) => {
