@@ -6,7 +6,7 @@ This example connects to the local Sharetribe API server running on http://local
 
 ```
 > npm run build
-> cp ../../build/sharetribe-sdk-web.js
+> cp ../../build/sharetribe-sdk-web.js ./
 > npm install -g http-server
 > http-server
 > open http://localhost:8080

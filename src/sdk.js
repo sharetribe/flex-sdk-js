@@ -2,6 +2,8 @@ import axios from 'axios';
 import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
 import paramsSerializer from './params_serializer';
+import browserCookieStore from './browser_cookie_store';
+import memoryStore from './memory_store';
 
 const defaultOpts = {
   baseUrl: 'https://api.sharetribe.com',
@@ -135,6 +137,23 @@ const assignEndpoints = (obj, endpoints, axiosInstance, withAuthToken) => {
  */
 const normalizeBaseUrl = url => url.replace(/\/*$/, '');
 
+// eslint-disable-next-line no-undef
+const hasBrowserCookies = () => typeof document === 'object' && typeof document.cookies === 'string';
+
+const createTokenStore = (tokenStore, clientId) => {
+  if (tokenStore) {
+    return tokenStore;
+  }
+
+  if (hasBrowserCookies) {
+    return browserCookieStore(clientId);
+  }
+
+  // Token store was not given and we can't use browser cookie store.
+  // Default to in-memory store.
+  return memoryStore();
+};
+
 export default class SharetribeSdk {
 
   /**
@@ -199,8 +218,14 @@ export default class SharetribeSdk {
     const axiosInstance = axios.create(httpOpts);
     const allEndpoints = [...defaultEndpoints, ...endpoints];
 
+    const tokenStoreInstance = createTokenStore(tokenStore, clientId);
+
     const withAuthToken = createAuthenticator({
-      baseUrl, version, clientId, adapter, tokenStore,
+      baseUrl,
+      version,
+      clientId,
+      adapter,
+      tokenStore: tokenStoreInstance,
     });
 
     // Assign all endpoint definitions to 'this'
