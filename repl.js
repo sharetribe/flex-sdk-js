@@ -11,6 +11,7 @@ const sharetribeSdk = require('./src/index');
 const sdk = sharetribeSdk.createInstance({
   clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
   baseUrl: 'http://localhost:8088/',
+  tokenStore: sharetribeSdk.tokenStore.memoryStore(),
 });
 
 const ctx = repl.start('> ').context;

@@ -1,6 +1,7 @@
 import { UUID, LatLng } from './types';
 import fake from './fake';
 import SharetribeSdk from './sdk';
+import memoryStore from './memory_store';
 
 describe('new SharetribeSdk', () => {
   it('creates a new instance with given options', () => {
@@ -36,6 +37,7 @@ describe('new SharetribeSdk', () => {
         path: 'posts/showAll',
       }],
       adapter: null,
+      tokenStore: memoryStore(),
     });
 
     expect(inst.posts.showAll).toBeInstanceOf(Function);
@@ -48,6 +50,7 @@ describe('new SharetribeSdk', () => {
       typeHandlers: [],
       endpoints: [],
       adapter: fake,
+      tokenStore: memoryStore(),
     });
 
     return inst.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
@@ -69,6 +72,7 @@ describe('new SharetribeSdk', () => {
       typeHandlers: [],
       endpoints: [],
       adapter: fake,
+      tokenStore: memoryStore(),
     });
 
     return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
@@ -90,6 +94,7 @@ describe('new SharetribeSdk', () => {
       typeHandlers: [],
       endpoints: [],
       adapter: fake,
+      tokenStore: memoryStore(),
     });
 
     return inst.listings.search({ id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'), origin: new LatLng(40.00, -70.00) }).then((res) => {
@@ -125,6 +130,7 @@ describe('new SharetribeSdk', () => {
       endpoints: [],
       adapter: fake,
       typeHandlers: handlers,
+      tokenStore: memoryStore(),
     });
 
     return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
