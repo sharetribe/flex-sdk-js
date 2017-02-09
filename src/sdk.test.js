@@ -4,17 +4,21 @@ import SharetribeSdk from './sdk';
 
 describe('new SharetribeSdk', () => {
   it('creates a new instance with given options', () => {
+    const tokenStore = {};
+
     const inst = new SharetribeSdk({
       baseUrl: 'https://jsonplaceholder.typicode.com',
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [],
       adapter: null,
+      tokenStore,
     });
 
     expect(inst.config).toEqual(expect.objectContaining({
       baseUrl: 'https://jsonplaceholder.typicode.com',
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      tokenStore,
     }));
   });
 
@@ -128,6 +132,32 @@ describe('new SharetribeSdk', () => {
       const attrs = resource.attributes;
 
       expect(resource.id).toEqual(new MyUuid('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
+      expect(attrs).toEqual(expect.objectContaining({
+        name: 'Awesome skies.',
+        description: 'Meet and greet with fanatical sky divers.',
+      }));
+    });
+  });
+
+  it('includes auth token to the Headers if it\'s stored in tokenStore', () => {
+    const inst = new SharetribeSdk({
+      baseUrl: '',
+      clientId: 'daaf8871-4723-45b8-bc97-9e335f46966d',
+      endpoints: [],
+      adapter: fake,
+      tokenStore: {
+        getToken: () => ({
+          access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo',
+          token_type: 'bearer',
+        }),
+      },
+    });
+
+    return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+      const resource = res.data.data;
+      const attrs = resource.attributes;
+
+      expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
       expect(attrs).toEqual(expect.objectContaining({
         name: 'Awesome skies.',
         description: 'Meet and greet with fanatical sky divers.',

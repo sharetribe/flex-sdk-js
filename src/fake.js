@@ -13,7 +13,7 @@ const createAdapter =
         adapterDef.call(null, config, resolve, reject);
       });
 
-const parseFormData = (data) => _.fromPairs(data.split("&").map(keyValue => keyValue.split("=")));
+const parseFormData = data => _.fromPairs(data.split('&').map(keyValue => keyValue.split('=')));
 
 const auth = (config, resolve, reject) => {
   const formData = parseFormData(config.data);
@@ -29,7 +29,7 @@ const auth = (config, resolve, reject) => {
 
   return reject({
     status: 401,
-    data: "Unauthorized",
+    data: 'Unauthorized',
   });
 };
 

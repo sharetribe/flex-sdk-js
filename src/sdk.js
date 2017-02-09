@@ -44,8 +44,14 @@ const handleFailureResponse = (error) => {
   return Promise.reject(error);
 };
 
-const createAuthenticator = ({ baseUrl, version, clientId, adapter }) => () =>
-  axios.request({
+const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => () => {
+  const storedToken = tokenStore && tokenStore.getToken();
+
+  if (storedToken) {
+    return Promise.resolve(storedToken.access_token);
+  }
+
+  return axios.request({
     method: 'post',
     baseURL: `${baseUrl}/${version}/`,
     url: 'auth/token',
@@ -56,6 +62,7 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter }) => () =>
     data: `client_id=${clientId}&grant_type=client_credentials&scope=public-read`,
     adapter,
   }).then(res => res.data.access_token);
+};
 
 const createSdkMethod = (req, axiosInstance, withAuthToken) =>
   (params = {}) =>
@@ -128,6 +135,7 @@ export default class SharetribeSdk {
       adapter,
       clientId,
       version,
+      tokenStore,
     } = this.config;
 
     if (!clientId) {
@@ -173,7 +181,7 @@ export default class SharetribeSdk {
     const allEndpoints = [...defaultEndpoints, ...endpoints];
 
     const withAuthToken = createAuthenticator({
-      baseUrl, version, clientId, adapter,
+      baseUrl, version, clientId, adapter, tokenStore,
     });
 
     // Assign all endpoint definitions to 'this'
