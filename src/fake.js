@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 /**
    This file implements a fake adapters for testing purposes only.
 
@@ -11,14 +13,24 @@ const createAdapter =
         adapterDef.call(null, config, resolve, reject);
       });
 
-const auth = (config, resolve) => {
-  const res = `{
+const parseFormData = data => _.fromPairs(data.split('&').map(keyValue => keyValue.split('=')));
+
+const auth = (config, resolve, reject) => {
+  const formData = parseFormData(config.data);
+
+  if (formData.client_id === '08ec69f6-d37e-414d-83eb-324e94afddf0') {
+    const res = `{
                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo",
                  "token_type": "bearer",
                  "expires_in": 86400
                }`;
+    return resolve({ data: res });
+  }
 
-  return resolve({ data: res });
+  return reject({
+    status: 401,
+    data: 'Unauthorized',
+  });
 };
 
 const marketplace = {
@@ -222,16 +234,29 @@ const listings = {
   },
 };
 
-const adapter = createAdapter((config, resolve) => {
+const requireAuth = (config, reject) => {
+  const expectedAuth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo';
+
+  if (config.headers.Authorization.toLowerCase() !== expectedAuth.toLowerCase()) {
+    return reject({
+      status: 401,
+      data: 'Unauthorized',
+    });
+  }
+
+  return Promise.resolve();
+};
+
+const adapter = createAdapter((config, resolve, reject) => {
   switch (config.url) {
     case '/v1/api/users/show':
-      return users.show(config, resolve);
+      return requireAuth(config, reject).then(() => users.show(config, resolve));
     case '/v1/api/marketplace/show':
-      return marketplace.show(config, resolve);
+      return requireAuth(config, reject).then(() => marketplace.show(config, resolve));
     case '/v1/api/listings/search':
-      return listings.search(config, resolve);
+      return requireAuth(config, reject).then(() => listings.search(config, resolve));
     case '/v1/auth/token':
-      return auth(config, resolve);
+      return auth(config, resolve, reject);
     default:
       throw new Error(`Not implemented to Fake adapter: ${config.url}`);
   }

@@ -1,20 +1,25 @@
 import { UUID, LatLng } from './types';
 import fake from './fake';
 import SharetribeSdk from './sdk';
+import memoryStore from './memory_store';
 
 describe('new SharetribeSdk', () => {
   it('creates a new instance with given options', () => {
+    const tokenStore = {};
+
     const inst = new SharetribeSdk({
       baseUrl: 'https://jsonplaceholder.typicode.com',
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [],
       adapter: null,
+      tokenStore,
     });
 
     expect(inst.config).toEqual(expect.objectContaining({
       baseUrl: 'https://jsonplaceholder.typicode.com',
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      tokenStore,
     }));
   });
 
@@ -32,6 +37,7 @@ describe('new SharetribeSdk', () => {
         path: 'posts/showAll',
       }],
       adapter: null,
+      tokenStore: memoryStore(),
     });
 
     expect(inst.posts.showAll).toBeInstanceOf(Function);
@@ -44,6 +50,7 @@ describe('new SharetribeSdk', () => {
       typeHandlers: [],
       endpoints: [],
       adapter: fake,
+      tokenStore: memoryStore(),
     });
 
     return inst.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
@@ -65,6 +72,7 @@ describe('new SharetribeSdk', () => {
       typeHandlers: [],
       endpoints: [],
       adapter: fake,
+      tokenStore: memoryStore(),
     });
 
     return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
@@ -86,6 +94,7 @@ describe('new SharetribeSdk', () => {
       typeHandlers: [],
       endpoints: [],
       adapter: fake,
+      tokenStore: memoryStore(),
     });
 
     return inst.listings.search({ id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'), origin: new LatLng(40.00, -70.00) }).then((res) => {
@@ -121,6 +130,7 @@ describe('new SharetribeSdk', () => {
       endpoints: [],
       adapter: fake,
       typeHandlers: handlers,
+      tokenStore: memoryStore(),
     });
 
     return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
@@ -132,6 +142,73 @@ describe('new SharetribeSdk', () => {
         name: 'Awesome skies.',
         description: 'Meet and greet with fanatical sky divers.',
       }));
+    });
+  });
+
+  it('reads auth token from store and includes it in request headers', () => {
+    const inst = new SharetribeSdk({
+      baseUrl: '',
+
+      // The Fake server doesn't know this clientId. However, the request passes because
+      // the access_token is in the store
+      clientId: 'daaf8871-4723-45b8-bc97-9e335f46966d',
+
+      endpoints: [],
+      adapter: fake,
+      tokenStore: {
+        getToken: () => ({
+          access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo',
+          token_type: 'bearer',
+        }),
+      },
+    });
+
+    return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+      const resource = res.data.data;
+      const attrs = resource.attributes;
+
+      expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
+      expect(attrs).toEqual(expect.objectContaining({
+        name: 'Awesome skies.',
+        description: 'Meet and greet with fanatical sky divers.',
+      }));
+    });
+  });
+
+  it('stored the auth token to the store', () => {
+    class TokenStore {
+      getToken() {
+        return this.token;
+      }
+      setToken(token) {
+        this.token = token;
+      }
+    }
+
+    const tokenStore = new TokenStore();
+
+    const inst = new SharetribeSdk({
+      baseUrl: '',
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      endpoints: [],
+      adapter: fake,
+      tokenStore,
+    });
+
+    return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+      const resource = res.data.data;
+      const attrs = resource.attributes;
+      const token = tokenStore.getToken();
+
+      expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
+      expect(attrs).toEqual(expect.objectContaining({
+        name: 'Awesome skies.',
+        description: 'Meet and greet with fanatical sky divers.',
+      }));
+
+      expect(token.access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
+      expect(token.token_type).toEqual('bearer');
+      expect(token.expires_in).toEqual(86400);
     });
   });
 });

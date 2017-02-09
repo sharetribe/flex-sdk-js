@@ -2,6 +2,8 @@ import axios from 'axios';
 import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
 import paramsSerializer from './params_serializer';
+import browserCookieStore from './browser_cookie_store';
+import memoryStore from './memory_store';
 
 const defaultOpts = {
   baseUrl: 'https://api.sharetribe.com',
@@ -44,8 +46,14 @@ const handleFailureResponse = (error) => {
   return Promise.reject(error);
 };
 
-const createAuthenticator = ({ baseUrl, version, clientId, adapter }) => () =>
-  axios.request({
+const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => () => {
+  const storedToken = tokenStore && tokenStore.getToken();
+
+  if (storedToken) {
+    return Promise.resolve(storedToken);
+  }
+
+  return axios.request({
     method: 'post',
     baseURL: `${baseUrl}/${version}/`,
     url: 'auth/token',
@@ -55,12 +63,32 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter }) => () =>
     },
     data: `client_id=${clientId}&grant_type=client_credentials&scope=public-read`,
     adapter,
-  }).then(res => res.data.access_token);
+  }).then(res => res.data).then((authToken) => {
+    if (tokenStore) {
+      tokenStore.setToken(authToken);
+    }
+
+    return authToken;
+  });
+};
+
+const constructAuthHeader = (authToken) => {
+  /* eslint-disable camelcase */
+  const token_type = authToken.token_type && authToken.token_type.toLowerCase();
+
+  switch (token_type) {
+    case 'bearer':
+      return `Bearer ${authToken.access_token}`;
+    default:
+      throw new Error(`Unknown token type: ${token_type}`);
+  }
+  /* eslint-enable camelcase */
+};
 
 const createSdkMethod = (req, axiosInstance, withAuthToken) =>
   (params = {}) =>
     withAuthToken().then((authToken) => {
-      const authHeader = { Authorization: `Bearer ${authToken}` };
+      const authHeader = { Authorization: `${constructAuthHeader(authToken)}` };
       const reqHeaders = req.headers || {};
       const headers = { ...authHeader, ...reqHeaders };
 
@@ -109,6 +137,23 @@ const assignEndpoints = (obj, endpoints, axiosInstance, withAuthToken) => {
  */
 const normalizeBaseUrl = url => url.replace(/\/*$/, '');
 
+// eslint-disable-next-line no-undef
+const hasBrowserCookies = () => typeof document === 'object' && typeof document.cookies === 'string';
+
+const createTokenStore = (tokenStore, clientId) => {
+  if (tokenStore) {
+    return tokenStore;
+  }
+
+  if (hasBrowserCookies) {
+    return browserCookieStore(clientId);
+  }
+
+  // Token store was not given and we can't use browser cookie store.
+  // Default to in-memory store.
+  return memoryStore();
+};
+
 export default class SharetribeSdk {
 
   /**
@@ -128,6 +173,7 @@ export default class SharetribeSdk {
       adapter,
       clientId,
       version,
+      tokenStore,
     } = this.config;
 
     if (!clientId) {
@@ -172,8 +218,14 @@ export default class SharetribeSdk {
     const axiosInstance = axios.create(httpOpts);
     const allEndpoints = [...defaultEndpoints, ...endpoints];
 
+    const tokenStoreInstance = createTokenStore(tokenStore, clientId);
+
     const withAuthToken = createAuthenticator({
-      baseUrl, version, clientId, adapter,
+      baseUrl,
+      version,
+      clientId,
+      adapter,
+      tokenStore: tokenStoreInstance,
     });
 
     // Assign all endpoint definitions to 'this'
