@@ -19,12 +19,26 @@ const auth = (config, resolve, reject) => {
   const formData = parseFormData(config.data);
 
   if (formData.client_id === '08ec69f6-d37e-414d-83eb-324e94afddf0') {
-    const res = `{
+    if (formData.grant_type === 'client_credentials') {
+      const res = `{
                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo",
                  "token_type": "bearer",
                  "expires_in": 86400
                }`;
-    return resolve({ data: res });
+      return resolve({ data: res });
+    }
+
+    if (formData.grant_type === 'password') {
+      if (formData.username === 'joe.dunphy@example.com' && formData.password === 'secret-joe') {
+        const res = `{
+                  "access_token": "dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44",
+                  "token_type": "bearer",
+                  "expires_in": 3600,
+                  "refresh_token": "74344396-d9af-458a-adbc-7ff1cb2661d0-fcaeb2c8-6089-4dc3-aa47-7c1ef57f9163"
+                }`;
+        return resolve({ data: res });
+      }
+    }
   }
 
   return reject({

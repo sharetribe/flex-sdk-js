@@ -1,4 +1,5 @@
 import axios from 'axios';
+import _ from 'lodash';
 import { methodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
 import paramsSerializer from './params_serializer';
@@ -46,14 +47,13 @@ const handleFailureResponse = (error) => {
   return Promise.reject(error);
 };
 
-const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => () => {
-  const storedToken = tokenStore && tokenStore.getToken();
+const formData = params => _.reduce(params, (pairs, v, k) => {
+  pairs.push(`${k}=${v}`);
+  return pairs;
+}, []).join('&');
 
-  if (storedToken) {
-    return Promise.resolve(storedToken);
-  }
-
-  return axios.request({
+const callAuthAndSaveToken = ({ baseUrl, version, adapter, tokenStore, data }) =>
+  axios.request({
     method: 'post',
     baseURL: `${baseUrl}/${version}/`,
     url: 'auth/token',
@@ -61,7 +61,7 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
       'Content-Type': 'application/x-www-form-urlencoded',
       Accept: 'application/json',
     },
-    data: `client_id=${clientId}&grant_type=client_credentials&scope=public-read`,
+    data: formData(data),
     adapter,
   }).then(res => res.data).then((authToken) => {
     if (tokenStore) {
@@ -69,6 +69,41 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
     }
 
     return authToken;
+  });
+
+const createLoginEndpoint = ({ baseUrl, version, clientId, adapter, tokenStore }) =>
+  ({ username, password }) =>
+    callAuthAndSaveToken({
+      baseUrl,
+      version,
+      adapter,
+      tokenStore,
+      data: {
+        client_id: clientId,
+        grant_type: 'password',
+        username,
+        password,
+        scope: 'user',
+      },
+    });
+
+const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => () => {
+  const storedToken = tokenStore && tokenStore.getToken();
+
+  if (storedToken) {
+    return Promise.resolve(storedToken);
+  }
+
+  return callAuthAndSaveToken({
+    baseUrl,
+    version,
+    adapter,
+    tokenStore,
+    data: {
+      client_id: clientId,
+      grant_type: 'client_credentials',
+      scope: 'public-read',
+    },
   });
 };
 
@@ -228,7 +263,17 @@ export default class SharetribeSdk {
       tokenStore: tokenStoreInstance,
     });
 
+    const loginEndpoint = createLoginEndpoint({
+      baseUrl,
+      version,
+      clientId,
+      adapter,
+      tokenStore: tokenStoreInstance,
+    });
+
     // Assign all endpoint definitions to 'this'
     assignEndpoints(this, allEndpoints, axiosInstance, withAuthToken);
+    this.login = loginEndpoint;
   }
 }
+
