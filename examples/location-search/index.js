@@ -1,14 +1,18 @@
+/* eslint-disable */
+
 (function() {
 
-  var marketplaceId = "16c6a4b8-88ee-429b-835a-6725206cd08c";
+  var marketplaceId = '16c6a4b8-88ee-429b-835a-6725206cd08c';
 
   var el = {
-    currentPos: document.getElementById("current-pos"),
-    savedPos: document.getElementById("saved-pos"),
-    button: document.getElementById("button"),
-    origin: document.getElementById("origin"),
-    bounds: document.getElementById("bounds"),
+    currentPos: document.getElementById('current-pos'),
+    savedPos: document.getElementById('saved-pos'),
+    button: document.getElementById('button'),
+    origin: document.getElementById('origin'),
+    bounds: document.getElementById('bounds'),
     map: document.getElementById('map'),
+    login: document.getElementById('login'),
+    loginBroken: document.getElementById('login-broken'),
   };
 
   var markers = [];
@@ -55,11 +59,19 @@
     });
 
     var sdk = sharetribeSdk.createInstance({
-      clientId: "08ec69f6-d37e-414d-83eb-324e94afddf0",
-      baseUrl: "http://localhost:8088/",
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      baseUrl: 'http://localhost:8088/',
     });
 
-    el.button.addEventListener("click", function() {
+    el.login.addEventListener('click', function() {
+      sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' });
+    });
+
+    el.loginBroken.addEventListener('click', function() {
+      sdk.login({ username: 'non-existing-user@example.com', password: 'password' });
+    });
+
+    el.button.addEventListener('click', function() {
       var originVal = el.origin.value;
       var boundsVal = el.bounds.value;
 
@@ -88,14 +100,14 @@
             var marker = new google.maps.Marker({
               position: listing.attributes.geolocation,
               title: 'test',
-              label: "" + (i + 1),
+              label: '' + (i + 1),
             });
 
             var infowindow = new google.maps.InfoWindow({
               content: [
-                "<p><strong>" + listing.attributes.title + "</strong></p>",
-                "<p>" + listing.attributes.description + "</p>",
-                "<p>Seller: " + [author.attributes.profile.firstName, author.attributes.profile.lastName, "(" + author.attributes.email + ")"].join(' ') + "</p>",
+                '<p><strong>' + listing.attributes.title + '</strong></p>',
+                '<p>' + listing.attributes.description + '</p>',
+                '<p>Seller: ' + [author.attributes.profile.firstName, author.attributes.profile.lastName, '(' + author.attributes.email + ')'].join(' ') + '</p>',
               ].join(''),
             });
 

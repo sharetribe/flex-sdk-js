@@ -13,7 +13,7 @@ html, body {
 }
 
 #topbar {
-  height: 240px;
+  height: 280px;
 }
 
 #topbar-content {
@@ -25,5 +25,5 @@ html, body {
 }
 
 #map {
-  height: calc(100% - 100px);
+  height: calc(100% - 280px);
 }
