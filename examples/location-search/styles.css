@@ -1,0 +1,29 @@
+/* Always set the map height explicitly to define the size of the div
+ * element that contains the map. */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+#root {
+  height: 100%;
+}
+
+#topbar {
+  height: 240px;
+}
+
+#topbar-content {
+  margin: 40px;
+}
+
+#topbar .row {
+  line-height: 40px;
+}
+
+#map {
+  height: calc(100% - 100px);
+}
