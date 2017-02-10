@@ -43,8 +43,15 @@
       el.currentPos.textContent = [event.latLng.lat(), event.latLng.lng()].join(',');
     });
 
+    var clickMarker = new google.maps.Marker({
+      title: 'test',
+      label: '*',
+    });
+
     google.maps.event.addListener(map, 'click', function (event) {
       el.savedPos.textContent = [event.latLng.lat(), event.latLng.lng()].join(',');
+      clickMarker.setPosition(event.latLng);
+      clickMarker.setMap(map);
     });
 
     var sdk = sharetribeSdk.createInstance({
