@@ -71,6 +71,40 @@
       sdk.login({ username: 'non-existing-user@example.com', password: 'password' });
     });
 
+    var handleResult = function(res) {
+      clearMarkers();
+
+      var includedMap = lookupMap(res.data.included);
+
+      res.data.data.forEach(function(listing, i) {
+
+        var authorLink = listing.relationships.author.data;
+        var author = includedMap[authorLink.type][authorLink.id.uuid];
+
+        var marker = new google.maps.Marker({
+          position: listing.attributes.geolocation,
+          title: 'test',
+          label: '' + (i + 1),
+        });
+
+        var infowindow = new google.maps.InfoWindow({
+          content: [
+            '<p><strong>' + listing.attributes.title + '</strong></p>',
+            '<p>' + listing.attributes.description + '</p>',
+            '<p>Seller: ' + [author.attributes.profile.firstName, author.attributes.profile.lastName, '(' + author.attributes.email + ')'].join(' ') + '</p>',
+          ].join(''),
+        });
+
+        marker.setMap(map);
+
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+
+        markers.push(marker);
+      });
+    };
+
     el.button.addEventListener('click', function() {
       var originVal = el.origin.value;
       var boundsVal = el.bounds.value;
@@ -87,40 +121,12 @@
 
       sdk
         .listings.search(params)
-        .then(function(res) {
-          clearMarkers();
-
-          var includedMap = lookupMap(res.data.included);
-
-          res.data.data.forEach(function(listing, i) {
-
-            var authorLink = listing.relationships.author.data;
-            var author = includedMap[authorLink.type][authorLink.id.uuid];
-
-            var marker = new google.maps.Marker({
-              position: listing.attributes.geolocation,
-              title: 'test',
-              label: '' + (i + 1),
-            });
-
-            var infowindow = new google.maps.InfoWindow({
-              content: [
-                '<p><strong>' + listing.attributes.title + '</strong></p>',
-                '<p>' + listing.attributes.description + '</p>',
-                '<p>Seller: ' + [author.attributes.profile.firstName, author.attributes.profile.lastName, '(' + author.attributes.email + ')'].join(' ') + '</p>',
-              ].join(''),
-            });
-
-            marker.setMap(map);
-
-            marker.addListener('click', function() {
-              infowindow.open(map, marker);
-            });
-
-            markers.push(marker);
-          });
-        });
+        .then(handleResult);
     });
+
+    if (window.initialData) {
+      handleResult(window.initialData);
+    }
 
   }
 
