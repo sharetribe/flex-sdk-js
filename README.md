@@ -21,7 +21,7 @@ JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetrib
 - [ ] Access to different environments (e.g. 'test' and 'production')
 - [X] Abstracts the native HTTPS communication bindings. Uses [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) in browser and [HTTPS module](https://nodejs.org/api/https.html) in Node.js. Let's [Axios](https://github.com/mzabriskie/axios/) to do the heavy-lifting.
 
-# Basic usage
+## Basic usage
 
 ``` js
 
@@ -111,6 +111,14 @@ var sdk = require('sharetribe-sdk').createInstance({
   // The API ClientID (mandatory)
   clientId: "08ec69f6-d37e-414d-83eb-324e94afddf0",
 
+  // Token store
+  //
+  // Where the authentication token is stored.
+  //
+  // Default: sharetribeSdk.tokenStore.browserCookieStore
+  //
+  tokenStore: sharetribeSdk.tokenStore.expressCookieStore,
+
   // The API base URL
   baseUrl: "https://api.sharetribe.com/v1/",
 
@@ -146,7 +154,46 @@ var sdk = require('sharetribe-sdk').createInstance({
 });
 ```
 
-# Examples
+## Advanced usage
+
+### Sharing authentication token with Express.js server and browser
+
+In case you're running a Express.js server for server-side rendering, you need to share the authentication information between the browser and the Express.js server.
+
+The SDK uses token stores to implement this. When you use a `browserCookieStore` in the browser and `expressCookieStore` in the server, the server and browser can share the same authentication token by reading and writing to the same cookie.
+
+By default the SDK uses `browserCookieStore` in the browser. You don't need to do any configuration changes in the browser.
+
+In the server, you need to configure the SDK to use `expressCookieStore`:
+
+``` js
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const sharetribeSdk = require('sharetribe-sdk');
+
+const app = express();
+const clientId = 'your-client-id';
+
+// The SDK expects that cookieParser middleware is in use
+app.use(cookieParser());
+
+app.get('/', (req, res) => {
+  // Initialize the SDK instance
+  const sdk = sharetribeSdk.createInstance({
+    clientId,
+    tokenStore: sharetribeSdk.tokenStore.expressCookieStore({
+      clientId, req, res,
+    }),
+  });
+
+  // Call the SDK to preload listings
+  sdk.listings.search({ ... }).then((listingsResult) => {
+    // do rendering etc.
+  });
+});
+```
+
+## Examples
 
 You can find all examples under the `[examples/](./examples)` directory:
 
