@@ -148,14 +148,16 @@ var sdk = require('sharetribe-sdk').createInstance({
 
 # Examples
 
-**Please note!** The examples **ARE CURRENTLY BROKEN** due to the recent changes. They will be fixed very soon.
-
 You can find all examples under the `[examples/](./examples)` directory:
+
+- [Fetch listings form local server (localhost:8080)](./examples/local-server)
+- [Location search from local server (localhost:8080)](./examples/location-search)
+
+**Please note!** The following examples **ARE CURRENTLY BROKEN** due to the recent changes. They will be fixed very soon.
 
 - [Hello World example in Node.js](./examples/hello-world-node)
 - [Hello World example in browser](./examples/hello-world-browser)
 - [Universal example: Use the SDK in browser and server to fetch the current ISS space station location](./examples/iss)
-- [Fetch listings form local server (localhost:8080)](./examples/local-server)
 
 # Installation [DRAFT]
 
