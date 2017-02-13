@@ -176,7 +176,7 @@ describe('new SharetribeSdk', () => {
   });
 
   it('stored the auth token to the store', () => {
-    const tokenStore = memoryStore()
+    const tokenStore = memoryStore();
 
     const inst = new SharetribeSdk({
       baseUrl: '',
@@ -204,7 +204,7 @@ describe('new SharetribeSdk', () => {
   });
 
   it('stores auth token after login', () => {
-    const tokenStore = memoryStore()
+    const tokenStore = memoryStore();
 
     const sdk = new SharetribeSdk({
       baseUrl: '',
@@ -225,8 +225,8 @@ describe('new SharetribeSdk', () => {
     });
   });
 
-  it('refreshs token', () => {
-    const tokenStore = memoryStore()
+  it('refreshes login token', () => {
+    const tokenStore = memoryStore();
 
     const sdk = new SharetribeSdk({
       baseUrl: '',
@@ -243,10 +243,48 @@ describe('new SharetribeSdk', () => {
       // Remove auth token from the store to simulate a
       // situation where access_token is invalid but refresh_token is
       // still valid
+      // eslint-disable-next-line no-unused-vars
       const { access_token, ...rest } = tokenStore.getToken();
       tokenStore.setToken({ access_token: 'invalid_token', ...rest });
 
       return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+        const resource = res.data.data;
+        const attrs = resource.attributes;
+
+        expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
+        expect(attrs).toEqual(expect.objectContaining({
+          name: 'Awesome skies.',
+          description: 'Meet and greet with fanatical sky divers.',
+        }));
+      });
+    });
+  });
+
+  it('refreshes anonymous token', () => {
+    const tokenStore = memoryStore();
+
+    const sdk = new SharetribeSdk({
+      baseUrl: '',
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      endpoints: [],
+      adapter: fake(),
+      tokenStore,
+    });
+
+    // First we get the anonymous token
+    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+      expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
+
+      // Remove auth token from the store to simulate a
+      // situation where access_token is invalid
+      // eslint-disable-next-line no-unused-vars
+      const { access_token, ...rest } = tokenStore.getToken();
+      tokenStore.setToken({ access_token: 'invalid_token', ...rest });
+
+      return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+        expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
+
+
         const resource = res.data.data;
         const attrs = resource.attributes;
 

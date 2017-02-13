@@ -93,7 +93,7 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
   let authentication;
 
   if (storedToken) {
-    authentication = Promise.resolve(storedToken)
+    authentication = Promise.resolve(storedToken);
   } else {
     authentication = callAuthAndSaveToken({
       baseUrl,
@@ -108,14 +108,13 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
     });
   }
 
-  return authentication.then((authToken) => {
-    return apiCall(authToken)
+  return authentication.then(authToken =>
+    apiCall(authToken)
       .catch((error) => {
-        if (error.status === 401) {
+        let newAuthentication;
 
-          // TODO Check that the refresh token exists!
-
-          return callAuthAndSaveToken({
+        if (error.status === 401 && authToken.refresh_token) {
+          newAuthentication = callAuthAndSaveToken({
             baseUrl,
             version,
             adapter,
@@ -125,14 +124,23 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
               grant_type: 'refresh_token',
               refresh_token: authToken.refresh_token,
             },
-          }).then((freshAuthToken) => {
-            return apiCall(freshAuthToken);
           });
         } else {
-          Promise.reject(error);
+          newAuthentication = callAuthAndSaveToken({
+            baseUrl,
+            version,
+            adapter,
+            tokenStore,
+            data: {
+              client_id: clientId,
+              grant_type: 'client_credentials',
+              scope: 'public-read',
+            },
+          });
         }
-      });
-  });
+
+        return newAuthentication.then(freshAuthToken => apiCall(freshAuthToken));
+      }));
 };
 
 const constructAuthHeader = (authToken) => {

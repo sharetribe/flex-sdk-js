@@ -277,7 +277,7 @@ const requireAuth = (config, reject) => {
   ];
 
   const authorized = expectedAuths.find(
-    expected => expected.toLowerCase() == config.headers.Authorization.toLowerCase());
+    expected => expected.toLowerCase() === config.headers.Authorization.toLowerCase());
 
   if (!authorized) {
     return reject({
