@@ -176,16 +176,7 @@ describe('new SharetribeSdk', () => {
   });
 
   it('stored the auth token to the store', () => {
-    class TokenStore {
-      getToken() {
-        return this.token;
-      }
-      setToken(token) {
-        this.token = token;
-      }
-    }
-
-    const tokenStore = new TokenStore();
+    const tokenStore = memoryStore()
 
     const inst = new SharetribeSdk({
       baseUrl: '',
@@ -213,16 +204,7 @@ describe('new SharetribeSdk', () => {
   });
 
   it('stores auth token after login', () => {
-    class TokenStore {
-      getToken() {
-        return this.token;
-      }
-      setToken(token) {
-        this.token = token;
-      }
-    }
-
-    const tokenStore = new TokenStore();
+    const tokenStore = memoryStore()
 
     const sdk = new SharetribeSdk({
       baseUrl: '',
