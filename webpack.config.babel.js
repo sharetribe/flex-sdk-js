@@ -48,7 +48,7 @@ const webConfig = {
   plugins: [
     ...plugins,
     new webpack.optimize.UglifyJsPlugin(),
-  ]
+  ],
 };
 
 export default () => ([nodeConfig, webConfig]);
