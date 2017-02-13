@@ -4,7 +4,7 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <title>Location search example</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="public/styles.css">
   </head>
   <body>
 
@@ -40,7 +40,8 @@
 
     <!-- sync load scripts -->
     <script src="https://maps.googleapis.com/maps/api/js"></script>
-    <script src="/sharetribe-sdk-web.js"></script>
-    <script src="/index.js"></script>
+    <script>window.initialData = __initialData__ </script>
+    <script src="build/sharetribe-sdk-web.js"></script>
+    <script src="public/index.js"></script>
   </body>
 </html>
