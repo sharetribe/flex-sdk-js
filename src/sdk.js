@@ -87,23 +87,51 @@ const createLoginEndpoint = ({ baseUrl, version, clientId, adapter, tokenStore }
       },
     });
 
-const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => () => {
+const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => (apiCall) => {
   const storedToken = tokenStore && tokenStore.getToken();
 
+  let authentication;
+
   if (storedToken) {
-    return Promise.resolve(storedToken);
+    authentication = Promise.resolve(storedToken)
+  } else {
+    authentication = callAuthAndSaveToken({
+      baseUrl,
+      version,
+      adapter,
+      tokenStore,
+      data: {
+        client_id: clientId,
+        grant_type: 'client_credentials',
+        scope: 'public-read',
+      },
+    });
   }
 
-  return callAuthAndSaveToken({
-    baseUrl,
-    version,
-    adapter,
-    tokenStore,
-    data: {
-      client_id: clientId,
-      grant_type: 'client_credentials',
-      scope: 'public-read',
-    },
+  return authentication.then((authToken) => {
+    return apiCall(authToken)
+      .catch((error) => {
+        if (error.status === 401) {
+
+          // TODO Check that the refresh token exists!
+
+          return callAuthAndSaveToken({
+            baseUrl,
+            version,
+            adapter,
+            tokenStore,
+            data: {
+              client_id: clientId,
+              grant_type: 'refresh_token',
+              refresh_token: authToken.refresh_token,
+            },
+          }).then((freshAuthToken) => {
+            return apiCall(freshAuthToken);
+          });
+        } else {
+          Promise.reject(error);
+        }
+      });
   });
 };
 
@@ -122,7 +150,7 @@ const constructAuthHeader = (authToken) => {
 
 const createSdkMethod = (req, axiosInstance, withAuthToken) =>
   (params = {}) =>
-    withAuthToken().then((authToken) => {
+    withAuthToken((authToken) => {
       const authHeader = { Authorization: `${constructAuthHeader(authToken)}` };
       const reqHeaders = req.headers || {};
       const headers = { ...authHeader, ...reqHeaders };

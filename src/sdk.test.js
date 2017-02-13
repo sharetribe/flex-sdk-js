@@ -224,4 +224,38 @@ describe('new SharetribeSdk', () => {
       });
     });
   });
+
+  it('refreshs token', () => {
+    const tokenStore = memoryStore()
+
+    const sdk = new SharetribeSdk({
+      baseUrl: '',
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      endpoints: [],
+      adapter: fake(),
+      tokenStore,
+    });
+
+    // First, login
+    return sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+      expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
+
+      // Remove auth token from the store to simulate a
+      // situation where access_token is invalid but refresh_token is
+      // still valid
+      const { access_token, ...rest } = tokenStore.getToken();
+      tokenStore.setToken({ access_token: 'invalid_token', ...rest });
+
+      return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+        const resource = res.data.data;
+        const attrs = resource.attributes;
+
+        expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
+        expect(attrs).toEqual(expect.objectContaining({
+          name: 'Awesome skies.',
+          description: 'Meet and greet with fanatical sky divers.',
+        }));
+      });
+    });
+  });
 });
