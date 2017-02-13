@@ -1,4 +1,5 @@
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const webpack = require('webpack');
 
 // Shared configs
 const entry = './src/index.js';
@@ -44,7 +45,10 @@ const webConfig = {
   output: output('web'),
   target: 'web',
   module,
-  plugins,
+  plugins: [
+    ...plugins,
+    new webpack.optimize.UglifyJsPlugin(),
+  ]
 };
 
 export default () => ([nodeConfig, webConfig]);
