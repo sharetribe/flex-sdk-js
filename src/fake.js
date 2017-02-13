@@ -6,7 +6,7 @@ import _ from 'lodash';
    The test responses are copy-pasted from real API responses.
  */
 
-const createAdapter =
+const adapterHelper =
   adapterDef =>
     config =>
       new Promise((resolve, reject) => {
@@ -261,19 +261,20 @@ const requireAuth = (config, reject) => {
   return Promise.resolve();
 };
 
-const adapter = createAdapter((config, resolve, reject) => {
-  switch (config.url) {
-    case '/v1/api/users/show':
-      return requireAuth(config, reject).then(() => users.show(config, resolve));
-    case '/v1/api/marketplace/show':
-      return requireAuth(config, reject).then(() => marketplace.show(config, resolve));
-    case '/v1/api/listings/search':
-      return requireAuth(config, reject).then(() => listings.search(config, resolve));
-    case '/v1/auth/token':
-      return auth(config, resolve, reject);
-    default:
-      throw new Error(`Not implemented to Fake adapter: ${config.url}`);
-  }
-});
+const createAdapter = () =>
+  adapterHelper((config, resolve, reject) => {
+    switch (config.url) {
+      case '/v1/api/users/show':
+        return requireAuth(config, reject).then(() => users.show(config, resolve));
+      case '/v1/api/marketplace/show':
+        return requireAuth(config, reject).then(() => marketplace.show(config, resolve));
+      case '/v1/api/listings/search':
+        return requireAuth(config, reject).then(() => listings.search(config, resolve));
+      case '/v1/auth/token':
+        return auth(config, resolve, reject);
+      default:
+        throw new Error(`Not implemented to Fake adapter: ${config.url}`);
+    }
+  });
 
-export default adapter;
+export default createAdapter;
