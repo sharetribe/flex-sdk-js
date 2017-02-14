@@ -24,18 +24,10 @@ const formData = params => _.reduce(params, (pairs, v, k) => {
   return pairs;
 }, []).join('&');
 
-const callAuthAndSaveToken = ({ baseUrl, version, adapter, tokenStore, data }) =>
-  axios.request({
-    method: 'post',
-    baseURL: `${baseUrl}/${version}/`,
-    url: 'auth/token',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
-    },
-    data: formData(data),
-    adapter,
-  }).then(res => res.data).then((authToken) => {
+const saveToken = (authResponse, tokenStore) =>
+  authResponse.then((res) => {
+    const authToken = res.data;
+
     if (tokenStore) {
       tokenStore.setToken(authToken);
     }
@@ -43,7 +35,7 @@ const callAuthAndSaveToken = ({ baseUrl, version, adapter, tokenStore, data }) =
     return authToken;
   });
 
-const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => (apiCall) => {
+const createAuthenticator = (sdk, tokenStore) => (apiCall) => {
   const storedToken = tokenStore && tokenStore.getToken();
 
   let authentication;
@@ -51,17 +43,11 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
   if (storedToken) {
     authentication = Promise.resolve(storedToken);
   } else {
-    authentication = callAuthAndSaveToken({
-      baseUrl,
-      version,
-      adapter,
-      tokenStore,
-      data: {
-        client_id: clientId,
-        grant_type: 'client_credentials',
-        scope: 'public-read',
-      },
-    });
+    authentication = saveToken(sdk.auth.token({
+      client_id: sdk.config.clientId,
+      grant_type: 'client_credentials',
+      scope: 'public-read',
+    }), tokenStore);
   }
 
   return authentication.then(authToken =>
@@ -70,29 +56,17 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
         let newAuthentication;
 
         if (error.status === 401 && authToken.refresh_token) {
-          newAuthentication = callAuthAndSaveToken({
-            baseUrl,
-            version,
-            adapter,
-            tokenStore,
-            data: {
-              client_id: clientId,
-              grant_type: 'refresh_token',
-              refresh_token: authToken.refresh_token,
-            },
-          });
+          newAuthentication = saveToken(sdk.auth.token({
+            client_id: sdk.config.clientId,
+            grant_type: 'refresh_token',
+            refresh_token: authToken.refresh_token,
+          }), tokenStore);
         } else {
-          newAuthentication = callAuthAndSaveToken({
-            baseUrl,
-            version,
-            adapter,
-            tokenStore,
-            data: {
-              client_id: clientId,
-              grant_type: 'client_credentials',
-              scope: 'public-read',
-            },
-          });
+          newAuthentication = saveToken(sdk.auth.token({
+            client_id: sdk.config.clientId,
+            grant_type: 'client_credentials',
+            scope: 'public-read',
+          }), tokenStore);
         }
 
         return newAuthentication.then(freshAuthToken => apiCall({ Authorization: `${constructAuthHeader(freshAuthToken)}` }));
@@ -279,11 +253,13 @@ export default class SharetribeSdk {
       throw new Error('clientId must be provided');
     }
 
-    // Create endpoint opts
-    const opts = _.mapValues(apis, apiDefinition =>
-      _.mapValues(apiDefinition, v => v(this.config)));
-
     const tokenStore = createTokenStore(config.tokenStore, clientId);
+
+    // Create endpoint opts
+    const opts = _.mapValues(apis, apiDefinition => ({
+      config: apiDefinition.config(this.config),
+      authenticationMiddleware: apiDefinition.authenticationMiddleware(this, tokenStore),
+    }));
 
     const sdkMethodDefs = [...defaultEndpoints, ...endpoints].map((endpoint) => {
       // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
