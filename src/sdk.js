@@ -87,6 +87,47 @@ const createLoginEndpoint = ({ baseUrl, version, clientId, adapter, tokenStore }
       },
     });
 
+const callRemoveAndCleanToken = ({ baseUrl, version, adapter, tokenStore, data }) =>
+  axios.request({
+    method: 'post',
+    baseURL: `${baseUrl}/${version}/`,
+    url: 'auth/revoke',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+    },
+    data: formData(data),
+    adapter,
+  }).then(res => res.data).then(() => {
+    if (tokenStore) {
+      tokenStore.setToken(null);
+    }
+
+    return Promise.resolve();
+  });
+
+const createLogoutEndpoint = ({ baseUrl, version, adapter, tokenStore }) =>
+  () => {
+    const token = tokenStore && tokenStore.getToken();
+    const refreshToken = token && token.refresh_token;
+
+    if (refreshToken) {
+      return callRemoveAndCleanToken({
+        baseUrl,
+        version,
+        adapter,
+        tokenStore,
+        data: {
+          token: refreshToken,
+        },
+      });
+    }
+    // refresh_token didn't exist so the session can be considered as logged out.
+    // Return resolved promise
+    return Promise.resolve();
+  };
+
+
 const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => (apiCall) => {
   const storedToken = tokenStore && tokenStore.getToken();
 
@@ -307,9 +348,17 @@ export default class SharetribeSdk {
       tokenStore: tokenStoreInstance,
     });
 
+    const logoutEndpoint = createLogoutEndpoint({
+      baseUrl,
+      version,
+      adapter,
+      tokenStore: tokenStoreInstance,
+    });
+
     // Assign all endpoint definitions to 'this'
     assignEndpoints(this, allEndpoints, axiosInstance, withAuthToken);
     this.login = loginEndpoint;
+    this.logout = logoutEndpoint;
   }
 }
 

@@ -15,6 +15,20 @@ const adapterHelper =
 
 const parseFormData = data => _.fromPairs(data.split('&').map(keyValue => keyValue.split('=')));
 
+const revoke = (config, resolve, reject) => {
+  const formData = parseFormData(config.data);
+
+  if (formData.token) {
+    if (formData.token === '74344396-d9af-458a-adbc-7ff1cb2661d0-fcaeb2c8-6089-4dc3-aa47-7c1ef57f9163') {
+      return resolve({ data: 'revoked' });
+    }
+
+    return resolve({ data: '' });
+  }
+
+  return reject({ data: '' });
+};
+
 const auth = (config, resolve, reject) => {
   const formData = parseFormData(config.data);
 
@@ -300,6 +314,8 @@ const createAdapter = () =>
         return requireAuth(config, reject).then(() => listings.search(config, resolve));
       case '/v1/auth/token':
         return auth(config, resolve, reject);
+      case '/v1/auth/revoke':
+        return revoke(config, resolve, reject);
       default:
         throw new Error(`Not implemented to Fake adapter: ${config.url}`);
     }
