@@ -197,14 +197,14 @@ const constructAuthHeader = (authToken) => {
   /* eslint-enable camelcase */
 };
 
-const createSdkMethod = (req, axiosInstance, withAuthToken) =>
+const createSdkMethod = (req, httpOpts, withAuthToken) =>
   (params = {}) =>
     withAuthToken((authToken) => {
       const authHeader = { Authorization: `${constructAuthHeader(authToken)}` };
       const reqHeaders = req.headers || {};
       const headers = { ...authHeader, ...reqHeaders };
 
-      return axiosInstance.request({ ...req, headers, params })
+      return axios.request({ ...httpOpts, ...req, headers, params })
                           .then(handleSuccessResponse)
                           .catch(handleFailureResponse);
     });
@@ -217,13 +217,13 @@ const createSdkMethod = (req, axiosInstance, withAuthToken) =>
  * @param {Object} axiosInstance
  *
  */
-const assignEndpoints = (obj, endpoints, axiosInstance, withAuthToken) => {
+const assignEndpoints = (obj, endpoints, httpOpts, withAuthToken) => {
   endpoints.forEach((ep) => {
     const req = {
       url: ep.path,
     };
 
-    const sdkMethod = createSdkMethod(req, axiosInstance, withAuthToken);
+    const sdkMethod = createSdkMethod(req, httpOpts, withAuthToken);
 
     // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
     const path = methodPath(ep.path);
@@ -327,7 +327,6 @@ export default class SharetribeSdk {
       adapter,
     };
 
-    const axiosInstance = axios.create(httpOpts);
     const allEndpoints = [...defaultEndpoints, ...endpoints];
 
     const tokenStoreInstance = createTokenStore(tokenStore, clientId);
@@ -356,7 +355,7 @@ export default class SharetribeSdk {
     });
 
     // Assign all endpoint definitions to 'this'
-    assignEndpoints(this, allEndpoints, axiosInstance, withAuthToken);
+    assignEndpoints(this, allEndpoints, httpOpts, withAuthToken);
     this.login = loginEndpoint;
     this.logout = logoutEndpoint;
   }
