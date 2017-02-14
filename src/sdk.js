@@ -6,12 +6,51 @@ import paramsSerializer from './params_serializer';
 import browserCookieStore from './browser_cookie_store';
 import memoryStore from './memory_store';
 
-const defaultOpts = {
+const defaultSdkConfig = {
   baseUrl: 'https://api.sharetribe.com',
   typeHandlers: [],
   endpoints: [],
   adapter: null,
   version: 'v1',
+};
+
+const endpointHttpOpts = {
+  api: ({ baseUrl, version, adapter, typeHandlers }) => {
+    const { readers, writers } = typeHandlers.reduce((memo, handler) => {
+      const r = {
+        type: handler.type,
+        reader: handler.reader,
+      };
+      const w = {
+        type: handler.type,
+        customType: handler.customType,
+        writer: handler.writer,
+      };
+
+      memo.readers.push(r);
+      memo.writers.push(w);
+
+      return memo;
+    }, { readers: [], writers: [] });
+
+    const r = reader(readers);
+    const w = writer(writers);
+
+    return {
+      headers: { Accept: 'application/transit' },
+      baseURL: `${baseUrl}/${version}`,
+      transformRequest: [
+        // logAndReturn,
+        data => w.write(data),
+      ],
+      transformResponse: [
+        // logAndReturn,
+        data => r.read(data),
+      ],
+      adapter,
+      paramsSerializer,
+    };
+  },
 };
 
 const defaultEndpoints = [
@@ -200,16 +239,23 @@ const constructAuthHeader = (authToken) => {
 const createSdkMethod = (endpoint, httpOpts, withAuthToken) =>
   (params = {}) =>
     withAuthToken((authToken) => {
-      const headers = { Authorization: `${constructAuthHeader(authToken)}` };
+      // TODO Maybe we should use deep merge here?
+      const authHeaders = { Authorization: `${constructAuthHeader(authToken)}` };
+      const headers = { ...httpOpts.headers, ...authHeaders };
 
       const { api, path } = endpoint;
 
-      return axios.request({
+      const req = {
         ...httpOpts,
         headers,
         params,
-        url: [api, path].join('/'), // TODO Check if `api` is empty
-      }).then(handleSuccessResponse).catch(handleFailureResponse);
+        url: [api, path].join('/'), // TODO Check if `api` is empty{
+      };
+
+      // console.log("Sending request...");
+      // console.log(req);
+
+      return axios.request(req).then(handleSuccessResponse).catch(handleFailureResponse);
     });
 
 /**
@@ -248,13 +294,12 @@ export default class SharetribeSdk {
      already validated.
    */
   constructor(config) {
-    this.config = { ...defaultOpts, ...config };
+    this.config = { ...defaultSdkConfig, ...config };
 
     this.config.baseUrl = normalizeBaseUrl(this.config.baseUrl);
 
     const {
       baseUrl,
-      typeHandlers,
       endpoints,
       adapter,
       clientId,
@@ -266,40 +311,8 @@ export default class SharetribeSdk {
       throw new Error('clientId must be provided');
     }
 
-    const { readers, writers } = typeHandlers.reduce((memo, handler) => {
-      const r = {
-        type: handler.type,
-        reader: handler.reader,
-      };
-      const w = {
-        type: handler.type,
-        customType: handler.customType,
-        writer: handler.writer,
-      };
-
-      memo.readers.push(r);
-      memo.writers.push(w);
-
-      return memo;
-    }, { readers: [], writers: [] });
-
-    const r = reader(readers);
-    const w = writer(writers);
-
-    const httpOpts = {
-      headers: { Accept: 'application/transit' },
-      baseURL: `${baseUrl}/${version}`,
-      transformRequest: [
-        // logAndReturn,
-        data => w.write(data),
-      ],
-      transformResponse: [
-        // logAndReturn,
-        data => r.read(data),
-      ],
-      paramsSerializer,
-      adapter,
-    };
+    // Create endpoint opts
+    const opts = _.mapValues(endpointHttpOpts, v => v.call(null, this.config));
 
     const tokenStoreInstance = createTokenStore(tokenStore, clientId);
 
@@ -326,21 +339,22 @@ export default class SharetribeSdk {
       tokenStore: tokenStoreInstance,
     });
 
-    this.endpoints = [...defaultEndpoints, ...endpoints].map(endpoint => {
+    this.endpoints = [...defaultEndpoints, ...endpoints].map((endpoint) => {
       // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
       const mp = methodPath(endpoint.path);
+      const httpOpts = opts[endpoint.api];
 
       return {
         path: [endpoint.api, endpoint.path].join('/'),
         methodPath: mp,
         methodName: mp.join('.'),
         method: createSdkMethod(endpoint, httpOpts, withAuthToken),
-      }
+      };
     });
 
     // Assign all endpoint definitions to 'this'
-    this.endpoints.forEach(({ methodPath, method }) => {
-      assignDeep(this, methodPath, method);
+    this.endpoints.forEach((ep) => {
+      assignDeep(this, ep.methodPath, ep.method);
     });
 
     this.login = loginEndpoint;
