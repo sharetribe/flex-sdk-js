@@ -34,7 +34,7 @@ describe('new SharetribeSdk', () => {
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [{
-        path: 'posts/showAll',
+        path: 'posts/showAll', api: 'api', root: true,
       }],
       adapter: null,
       tokenStore: memoryStore(),
@@ -297,7 +297,7 @@ describe('new SharetribeSdk', () => {
     });
   });
 
-  it.only('revokes token (a.k.a logout)', () => {
+  it('revokes token (a.k.a logout)', () => {
     const tokenStore = memoryStore();
 
     const sdk = new SharetribeSdk({

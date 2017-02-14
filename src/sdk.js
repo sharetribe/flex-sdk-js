@@ -6,84 +6,17 @@ import paramsSerializer from './params_serializer';
 import browserCookieStore from './browser_cookie_store';
 import memoryStore from './memory_store';
 
-const defaultSdkConfig = {
-  baseUrl: 'https://api.sharetribe.com',
-  typeHandlers: [],
-  endpoints: [],
-  adapter: null,
-  version: 'v1',
-};
+const constructAuthHeader = (authToken) => {
+  /* eslint-disable camelcase */
+  const token_type = authToken.token_type && authToken.token_type.toLowerCase();
 
-const endpointHttpOpts = {
-  api: ({ baseUrl, version, adapter, typeHandlers }) => {
-    const { readers, writers } = typeHandlers.reduce((memo, handler) => {
-      const r = {
-        type: handler.type,
-        reader: handler.reader,
-      };
-      const w = {
-        type: handler.type,
-        customType: handler.customType,
-        writer: handler.writer,
-      };
-
-      memo.readers.push(r);
-      memo.writers.push(w);
-
-      return memo;
-    }, { readers: [], writers: [] });
-
-    const r = reader(readers);
-    const w = writer(writers);
-
-    return {
-      headers: { Accept: 'application/transit' },
-      baseURL: `${baseUrl}/${version}`,
-      transformRequest: [
-        // logAndReturn,
-        data => w.write(data),
-      ],
-      transformResponse: [
-        // logAndReturn,
-        data => r.read(data),
-      ],
-      adapter,
-      paramsSerializer,
-    };
-  },
-};
-
-const defaultEndpoints = [
-  { path: 'marketplace/show', api: 'api' },
-  { path: 'users/show', api: 'api' },
-  { path: 'listings/show', api: 'api' },
-  { path: 'listings/query', api: 'api' },
-  { path: 'listings/search', api: 'api' },
-];
-
-// const logAndReturn = data => {
-//   console.log(data);
-//   return data;
-// };
-
-const handleSuccessResponse = (response) => {
-  const { status, statusText, data } = response;
-
-  return { status, statusText, data };
-};
-
-const handleFailureResponse = (error) => {
-  const response = error.response;
-
-  if (response) {
-    // The request was made, but the server responses with a status code
-    // other than 2xx
-    const { status, statusText, data } = response;
-    return Promise.reject({ status, statusText, data });
+  switch (token_type) {
+    case 'bearer':
+      return `Bearer ${authToken.access_token}`;
+    default:
+      throw new Error(`Unknown token type: ${token_type}`);
   }
-
-  // Something happened in setting up the request that triggered an Error
-  return Promise.reject(error);
+  /* eslint-enable camelcase */
 };
 
 const formData = params => _.reduce(params, (pairs, v, k) => {
@@ -110,63 +43,6 @@ const callAuthAndSaveToken = ({ baseUrl, version, adapter, tokenStore, data }) =
     return authToken;
   });
 
-const createLoginEndpoint = ({ baseUrl, version, clientId, adapter, tokenStore }) =>
-  ({ username, password }) =>
-    callAuthAndSaveToken({
-      baseUrl,
-      version,
-      adapter,
-      tokenStore,
-      data: {
-        client_id: clientId,
-        grant_type: 'password',
-        username,
-        password,
-        scope: 'user',
-      },
-    });
-
-const callRemoveAndCleanToken = ({ baseUrl, version, adapter, tokenStore, data }) =>
-  axios.request({
-    method: 'post',
-    baseURL: `${baseUrl}/${version}/`,
-    url: 'auth/revoke',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
-    },
-    data: formData(data),
-    adapter,
-  }).then(res => res.data).then(() => {
-    if (tokenStore) {
-      tokenStore.setToken(null);
-    }
-
-    return Promise.resolve();
-  });
-
-const createLogoutEndpoint = ({ baseUrl, version, adapter, tokenStore }) =>
-  () => {
-    const token = tokenStore && tokenStore.getToken();
-    const refreshToken = token && token.refresh_token;
-
-    if (refreshToken) {
-      return callRemoveAndCleanToken({
-        baseUrl,
-        version,
-        adapter,
-        tokenStore,
-        data: {
-          token: refreshToken,
-        },
-      });
-    }
-    // refresh_token didn't exist so the session can be considered as logged out.
-    // Return resolved promise
-    return Promise.resolve();
-  };
-
-
 const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => (apiCall) => {
   const storedToken = tokenStore && tokenStore.getToken();
 
@@ -189,7 +65,7 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
   }
 
   return authentication.then(authToken =>
-    apiCall(authToken)
+    apiCall({ Authorization: `${constructAuthHeader(authToken)}` })
       .catch((error) => {
         let newAuthentication;
 
@@ -219,41 +95,137 @@ const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }
           });
         }
 
-        return newAuthentication.then(freshAuthToken => apiCall(freshAuthToken));
+        return newAuthentication.then(freshAuthToken => apiCall({ Authorization: `${constructAuthHeader(freshAuthToken)}` }));
       }));
 };
 
-const constructAuthHeader = (authToken) => {
-  /* eslint-disable camelcase */
-  const token_type = authToken.token_type && authToken.token_type.toLowerCase();
-
-  switch (token_type) {
-    case 'bearer':
-      return `Bearer ${authToken.access_token}`;
-    default:
-      throw new Error(`Unknown token type: ${token_type}`);
-  }
-  /* eslint-enable camelcase */
+const defaultSdkConfig = {
+  baseUrl: 'https://api.sharetribe.com',
+  typeHandlers: [],
+  endpoints: [],
+  adapter: null,
+  version: 'v1',
 };
 
-const createSdkMethod = (endpoint, httpOpts, withAuthToken) =>
+const apis = {
+  api: {
+    config: ({ baseUrl, version, adapter, typeHandlers }) => {
+      const { readers, writers } = typeHandlers.reduce((memo, handler) => {
+        const r = {
+          type: handler.type,
+          reader: handler.reader,
+        };
+        const w = {
+          type: handler.type,
+          customType: handler.customType,
+          writer: handler.writer,
+        };
+
+        memo.readers.push(r);
+        memo.writers.push(w);
+
+        return memo;
+      }, { readers: [], writers: [] });
+
+      const r = reader(readers);
+      const w = writer(writers);
+
+      return {
+        headers: { Accept: 'application/transit' },
+        baseURL: `${baseUrl}/${version}`,
+        transformRequest: [
+          // logAndReturn,
+          data => w.write(data),
+        ],
+        transformResponse: [
+          // logAndReturn,
+          data => r.read(data),
+        ],
+        adapter,
+        paramsSerializer,
+      };
+    },
+    authenticationMiddleware: createAuthenticator,
+  },
+
+  auth: {
+    config: ({ baseUrl, version, adapter }) => ({
+      baseURL: `${baseUrl}/${version}/`,
+      transformRequest: [
+        data => formData(data),
+      ],
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json',
+      },
+      adapter,
+    }),
+    authenticationMiddleware: () => apiCall => apiCall({}),
+  },
+};
+
+const defaultEndpoints = [
+  { path: 'marketplace/show', api: 'api', root: true, method: 'get' },
+  { path: 'users/show', api: 'api', root: true, method: 'get' },
+  { path: 'listings/show', api: 'api', root: true, method: 'get' },
+  { path: 'listings/query', api: 'api', root: true, method: 'get' },
+  { path: 'listings/search', api: 'api', root: true, method: 'get' },
+  { path: 'token', api: 'auth', root: false, method: 'post' },
+  { path: 'revoke', api: 'auth', root: false, method: 'post' },
+];
+
+// const logAndReturn = (data) => {
+//   console.log(data);
+//   return data;
+// };
+
+const handleSuccessResponse = (response) => {
+  const { status, statusText, data } = response;
+
+  return { status, statusText, data };
+};
+
+const handleFailureResponse = (error) => {
+  const response = error.response;
+
+  if (response) {
+    // The request was made, but the server responses with a status code
+    // other than 2xx
+    const { status, statusText, data } = response;
+    return Promise.reject({ status, statusText, data });
+  }
+
+  // Something happened in setting up the request that triggered an Error
+  return Promise.reject(error);
+};
+
+const createSdkMethod = (endpoint, httpOpts, authenticationMiddleware) =>
   (params = {}) =>
-    withAuthToken((authToken) => {
+    // TODO, if needed, generalize to proper middleware pattern
+    authenticationMiddleware((authorizationHeaders) => {
       // TODO Maybe we should use deep merge here?
-      const authHeaders = { Authorization: `${constructAuthHeader(authToken)}` };
-      const headers = { ...httpOpts.headers, ...authHeaders };
+      const headers = { ...httpOpts.headers, ...authorizationHeaders };
 
       const { api, path } = endpoint;
+      const method = endpoint.method || 'get'; // default to GET
+
+      let bodyParams = null;
+      let queryParams = null;
+
+      if (method.toLowerCase() === 'post') {
+        bodyParams = params;
+      } else {
+        queryParams = params;
+      }
 
       const req = {
         ...httpOpts,
+        method,
         headers,
-        params,
-        url: [api, path].join('/'), // TODO Check if `api` is empty{
+        params: queryParams,
+        data: bodyParams,
+        url: [api, path].join('/'),
       };
-
-      // console.log("Sending request...");
-      // console.log(req);
 
       return axios.request(req).then(handleSuccessResponse).catch(handleFailureResponse);
     });
@@ -299,12 +271,8 @@ export default class SharetribeSdk {
     this.config.baseUrl = normalizeBaseUrl(this.config.baseUrl);
 
     const {
-      baseUrl,
       endpoints,
-      adapter,
       clientId,
-      version,
-      tokenStore,
     } = this.config;
 
     if (!clientId) {
@@ -312,52 +280,68 @@ export default class SharetribeSdk {
     }
 
     // Create endpoint opts
-    const opts = _.mapValues(endpointHttpOpts, v => v.call(null, this.config));
+    const opts = _.mapValues(apis, apiDefinition =>
+      _.mapValues(apiDefinition, v => v(this.config)));
 
-    const tokenStoreInstance = createTokenStore(tokenStore, clientId);
+    const tokenStore = createTokenStore(config.tokenStore, clientId);
 
-    const withAuthToken = createAuthenticator({
-      baseUrl,
-      version,
-      clientId,
-      adapter,
-      tokenStore: tokenStoreInstance,
-    });
-
-    const loginEndpoint = createLoginEndpoint({
-      baseUrl,
-      version,
-      clientId,
-      adapter,
-      tokenStore: tokenStoreInstance,
-    });
-
-    const logoutEndpoint = createLogoutEndpoint({
-      baseUrl,
-      version,
-      adapter,
-      tokenStore: tokenStoreInstance,
-    });
-
-    this.endpoints = [...defaultEndpoints, ...endpoints].map((endpoint) => {
+    const sdkMethodDefs = [...defaultEndpoints, ...endpoints].map((endpoint) => {
       // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
-      const mp = methodPath(endpoint.path);
-      const httpOpts = opts[endpoint.api];
+      const mp = endpoint.root ?
+                 methodPath(endpoint.path) :
+                 [endpoint.api, ...methodPath(endpoint.path)];
+      const methodName = mp.join('.');
+      const httpOpts = opts[endpoint.api].config;
+      const authenticationMiddleware = opts[endpoint.api].authenticationMiddleware;
 
       return {
         path: [endpoint.api, endpoint.path].join('/'),
         methodPath: mp,
-        methodName: mp.join('.'),
-        method: createSdkMethod(endpoint, httpOpts, withAuthToken),
+        methodName,
+        fn: createSdkMethod(endpoint, httpOpts, authenticationMiddleware),
       };
     });
 
     // Assign all endpoint definitions to 'this'
-    this.endpoints.forEach((ep) => {
-      assignDeep(this, ep.methodPath, ep.method);
+    sdkMethodDefs.forEach((sdkMethodDef) => {
+      assignDeep(this, sdkMethodDef.methodPath, sdkMethodDef.fn);
     });
 
-    this.login = loginEndpoint;
-    this.logout = logoutEndpoint;
+    this.login = ({ username, password }) =>
+      this.auth.token({
+        client_id: clientId,
+        grant_type: 'password',
+        username,
+        password,
+        scope: 'user',
+      }).then(res => res.data).then((authToken) => {
+        if (tokenStore) {
+          tokenStore.setToken(authToken);
+        }
+
+        return authToken;
+      });
+
+    this.logout = () => {
+      const token = tokenStore && tokenStore.getToken();
+      const refreshToken = token && token.refresh_token;
+
+      if (refreshToken) {
+        return this.auth.revoke({
+          token: refreshToken,
+        }).then(res => res.data).then(() => {
+          if (tokenStore) {
+            tokenStore.setToken(null);
+          }
+
+          return Promise.resolve();
+        });
+      }
+
+      // refresh_token didn't exist so the session can be considered as logged out.
+      // Return resolved promise
+      return Promise.resolve();
+    };
   }
 }
+
