@@ -15,11 +15,11 @@ const defaultOpts = {
 };
 
 const defaultEndpoints = [
-  { path: 'marketplace/show' },
-  { path: 'users/show' },
-  { path: 'listings/show' },
-  { path: 'listings/query' },
-  { path: 'listings/search' },
+  { path: 'marketplace/show', api: 'api' },
+  { path: 'users/show', api: 'api' },
+  { path: 'listings/show', api: 'api' },
+  { path: 'listings/query', api: 'api' },
+  { path: 'listings/search', api: 'api' },
 ];
 
 // const logAndReturn = data => {
@@ -288,7 +288,7 @@ export default class SharetribeSdk {
 
     const httpOpts = {
       headers: { Accept: 'application/transit' },
-      baseURL: `${baseUrl}/${version}/api/`,
+      baseURL: `${baseUrl}/${version}`,
       transformRequest: [
         // logAndReturn,
         data => w.write(data),
@@ -328,11 +328,14 @@ export default class SharetribeSdk {
 
     this.endpoints = [...defaultEndpoints, ...endpoints].map(endpoint => {
       // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
-      endpoint.methodPath = methodPath(endpoint.path);
-      endpoint.methodName = endpoint.methodPath.join('.');
-      endpoint.method = createSdkMethod(endpoint, httpOpts, withAuthToken);
+      const mp = methodPath(endpoint.path);
 
-      return endpoint;
+      return {
+        path: [endpoint.api, endpoint.path].join('/'),
+        methodPath: mp,
+        methodName: mp.join('.'),
+        method: createSdkMethod(endpoint, httpOpts, withAuthToken),
+      }
     });
 
     // Assign all endpoint definitions to 'this'
