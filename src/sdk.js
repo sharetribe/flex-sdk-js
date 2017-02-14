@@ -197,46 +197,20 @@ const constructAuthHeader = (authToken) => {
   /* eslint-enable camelcase */
 };
 
-const createSdkMethod = (req, httpOpts, withAuthToken) =>
+const createSdkMethod = (endpoint, httpOpts, withAuthToken) =>
   (params = {}) =>
     withAuthToken((authToken) => {
-      const authHeader = { Authorization: `${constructAuthHeader(authToken)}` };
-      const reqHeaders = req.headers || {};
-      const headers = { ...authHeader, ...reqHeaders };
+      const headers = { Authorization: `${constructAuthHeader(authToken)}` };
 
-      return axios.request({ ...httpOpts, ...req, headers, params })
-                          .then(handleSuccessResponse)
-                          .catch(handleFailureResponse);
+      const { api, path } = endpoint;
+
+      return axios.request({
+        ...httpOpts,
+        headers,
+        params,
+        url: [api, path].join('/'), // TODO Check if `api` is empty
+      }).then(handleSuccessResponse).catch(handleFailureResponse);
     });
-
-/**
- * Mutates 'obj' by adding endpoint methods to it.
- *
- * @param {Object} obj - Object that will be assigned with the endpoints.
- * @param {Object[]} endpoints - endpoint definitions
- * @param {Object} axiosInstance
- *
- */
-const assignEndpoints = (obj, endpoints, httpOpts, withAuthToken) => {
-  endpoints.forEach((ep) => {
-    const req = {
-      url: ep.path,
-    };
-
-    const sdkMethod = createSdkMethod(req, httpOpts, withAuthToken);
-
-    // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
-    const path = methodPath(ep.path);
-
-    // Assign `sdkMethod` to path.
-    //
-    // E.g. assign obj.marketplace.users.show = sdkMethod
-    assignDeep(obj, path, sdkMethod);
-  });
-
-  // Return the mutated obj
-  return obj;
-};
 
 /**
    Take URL and remove the last slash
@@ -327,8 +301,6 @@ export default class SharetribeSdk {
       adapter,
     };
 
-    const allEndpoints = [...defaultEndpoints, ...endpoints];
-
     const tokenStoreInstance = createTokenStore(tokenStore, clientId);
 
     const withAuthToken = createAuthenticator({
@@ -354,10 +326,21 @@ export default class SharetribeSdk {
       tokenStore: tokenStoreInstance,
     });
 
+    this.endpoints = [...defaultEndpoints, ...endpoints].map(endpoint => {
+      // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
+      endpoint.methodPath = methodPath(endpoint.path);
+      endpoint.methodName = endpoint.methodPath.join('.');
+      endpoint.method = createSdkMethod(endpoint, httpOpts, withAuthToken);
+
+      return endpoint;
+    });
+
     // Assign all endpoint definitions to 'this'
-    assignEndpoints(this, allEndpoints, httpOpts, withAuthToken);
+    this.endpoints.forEach(({ methodPath, method }) => {
+      assignDeep(this, methodPath, method);
+    });
+
     this.login = loginEndpoint;
     this.logout = logoutEndpoint;
   }
 }
-
