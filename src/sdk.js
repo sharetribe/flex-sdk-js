@@ -5,6 +5,7 @@ import { reader, writer } from './serializer';
 import paramsSerializer from './params_serializer';
 import browserCookieStore from './browser_cookie_store';
 import memoryStore from './memory_store';
+import run from './middleware';
 
 const constructAuthHeader = (authToken) => {
   /* eslint-disable camelcase */
@@ -34,6 +35,56 @@ const saveToken = (authResponse, tokenStore) =>
 
     return authToken;
   });
+
+const authenticate = (enterCtx, next) => {
+  const { clientId, tokenStore, endpointFns } = enterCtx;
+  const storedToken = tokenStore && tokenStore.getToken();
+
+  let authentication;
+
+  if (storedToken) {
+    authentication = Promise.resolve(storedToken);
+  } else {
+    authentication = saveToken(endpointFns.auth.token({
+      params: {
+        client_id: clientId,
+        grant_type: 'client_credentials',
+        scope: 'public-read',
+      }
+    }), tokenStore);
+  }
+
+  return authentication.then((authToken) => {
+    const authHeaders = { Authorization: constructAuthHeader(authToken) };
+    return next({ ...enterCtx, headers: authHeaders });
+  }).catch((error) => {
+    let newAuthentication;
+    const errorCtx = error.ctx;
+
+    if (error.status === 401 && authToken.refresh_token) {
+      newAuthentication = saveToken(endpointFns.auth.token({
+        params: {
+          client_id: clientId,
+          grant_type: 'refresh_token',
+          refresh_token: authToken.refresh_token,
+        }
+      }), tokenStore);
+    } else {
+      newAuthentication = saveToken(endpointFns.auth.token({
+        params: {
+          client_id: clientId,
+          grant_type: 'client_credentials',
+          scope: 'public-read',
+        }
+      }), tokenStore);
+    }
+
+    return newAuthentication.then(freshAuthToken => {
+      const freshAuthHeaders = { Authorization: constructAuthHeader(freshAuthToken) };
+      return next({ ...errorCtx, headers: freshAuthHeaders });
+    });
+  });
+};
 
 const createAuthenticator = (clientId, endpointFns, tokenStore) => (apiCall) => {
   const storedToken = tokenStore && tokenStore.getToken();
@@ -125,7 +176,6 @@ const apis = {
         paramsSerializer,
       };
     },
-    authenticationMiddleware: createAuthenticator,
   },
 
   auth: {
@@ -140,42 +190,40 @@ const apis = {
       },
       adapter,
     }),
-    authenticationMiddleware: () => apiCall => apiCall({}),
   },
 };
 
-const saveTokenMiddleware = (ctx, next) => {
-  const { tokenStore } = ctx;
-
-  return next(ctx).then((res) => {
+const saveTokenMiddleware = (enterCtx, next) => {
+  return next(enterCtx).then((leaveCtx) => {
+    const { tokenStore, res } = leaveCtx;
     const authToken = res.data;
 
     if (tokenStore) {
       tokenStore.setToken(authToken);
     }
 
-    return res;
+    return leaveCtx;
   });
 };
 
-const clearTokenMiddleware = (ctx, next) => {
-  const { tokenStore } = ctx;
+const clearTokenMiddleware = (enterCtx, next) => {
+  return next(enterCtx).then((leaveCtx) => {
+    const { tokenStore } = leaveCtx;
 
-  return next(ctx).then((res) => {
     if (tokenStore) {
       tokenStore.setToken(null);
     }
 
-    return res;
+    return leaveCtx;
   });
 }
 
 const endpointDefinitions = [
-  { apiName: 'api', path: 'marketplace/show', root: true, method: 'get' },
-  { apiName: 'api', path: 'users/show', root: true, method: 'get' },
-  { apiName: 'api', path: 'listings/show', root: true, method: 'get' },
-  { apiName: 'api', path: 'listings/query', root: true, method: 'get' },
-  { apiName: 'api', path: 'listings/search', root: true, method: 'get' },
+  { apiName: 'api', path: 'marketplace/show', root: true, method: 'get', middleware: [authenticate] },
+  { apiName: 'api', path: 'users/show', root: true, method: 'get', middleware: [authenticate] },
+  { apiName: 'api', path: 'listings/show', root: true, method: 'get', middleware: [authenticate] },
+  { apiName: 'api', path: 'listings/query', root: true, method: 'get', middleware: [authenticate] },
+  { apiName: 'api', path: 'listings/search', root: true, method: 'get', middleware: [authenticate] },
   { apiName: 'auth', path: 'token', root: false, method: 'post' },
   { apiName: 'auth', path: 'revoke', root: false, method: 'post' },
 ];
@@ -242,10 +290,6 @@ const doRequest = ({ params = {}, httpOpts }) => {
   Usage example: TODO
 */
 const createEndpointFn = ({ method, url, httpOpts }) => {
-  if (!url) {
-    throw new Error('URL cant be empty');
-  }
-
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
   return ({ params = {}, headers = {} }) => {
@@ -262,13 +306,21 @@ const createEndpointFn = ({ method, url, httpOpts }) => {
   };
 }
 
-const createSdkMethod = (endpointFn, authenticationMiddleware) => {
-  return (params = {}) =>
-    // TODO, if needed, generalize to proper middleware pattern
-    authenticationMiddleware((authorizationHeaders) => {
-      return endpointFn({params, headers: authorizationHeaders });
-    });
-}
+const createSdkMethod = (ctx, endpointFn, middleware) =>
+  (params = {}) =>
+    run(ctx, [
+      ...middleware,
+      (enterCtx) => {
+        const { headers } = enterCtx;
+        return endpointFn({ params, headers })
+          .then(res => ({ ...enterCtx, res }))
+          .catch((error) => {
+            error.ctx = enterCtx;
+            return Promise.reject(error);
+          })
+        ;
+      }
+    ]).then(({ res }) => res); // Unpack the `res` from context
 
 /**
    Take URL and remove the last slash
@@ -349,45 +401,51 @@ export default class SharetribeSdk {
       return _.set(acc, epDef.fullMethodPath, epDef.endpointFn);
     }, {});
 
-    // Create endpoint opts
-    const authMiddlewares = _.mapValues(apis, apiDefinition => apiDefinition.authenticationMiddleware(clientId, endpointFns, tokenStore));
+    const ctx = {
+      tokenStore,
+      endpointFns,
+      clientId,
+    };
 
     endpointDefs.forEach((epDef) => {
-      const authenticationMiddleware = authMiddlewares[epDef.apiName];
-      const sdkFn = createSdkMethod(epDef.endpointFn, authenticationMiddleware);
+      const sdkFn = createSdkMethod(ctx, epDef.endpointFn, epDef.middleware);
 
       _.set(this, epDef.sdkMethodPath, sdkFn);
     });
 
-    const ctx = { tokenStore };
-
     this.login = ({ username, password }) =>
-      saveTokenMiddleware(ctx, () => endpointFns.auth.token({
-        params: {
-          client_id: clientId,
-          grant_type: 'password',
-          username,
-          password,
-          scope: 'user',
-        }
-      }));
+      run(ctx, [
+        saveTokenMiddleware,
+        (enterCtx) => endpointFns.auth.token({
+          params: {
+            client_id: clientId,
+            grant_type: 'password',
+            username,
+            password,
+            scope: 'user',
+          }
+        }).then((res) => ({ ...enterCtx, res }))
+      ]);
 
     this.logout = () =>
-     clearTokenMiddleware(ctx, () => {
-        const token = tokenStore && tokenStore.getToken();
-        const refreshToken = token && token.refresh_token;
+      run(ctx, [
+        clearTokenMiddleware,
+        (enterCtx) => {
+          const { tokenStore } = enterCtx;
+          const token = tokenStore && tokenStore.getToken();
+          const refreshToken = token && token.refresh_token;
 
-        if (refreshToken) {
-          return endpointFns.auth.revoke({
-            params: { token: refreshToken },
-            headers: { Authorization: constructAuthHeader(token) }
-          });
+          if (refreshToken) {
+            return endpointFns.auth.revoke({
+              params: { token: refreshToken },
+              headers: { Authorization: constructAuthHeader(token) }
+            }).then((res) => ({ ...enterCtx, res }));
+          }
+
+          // refresh_token didn't exist so the session can be considered as logged out.
+          // Return resolved promise
+          return Promise.resolve(enterCtx);
         }
-
-        // refresh_token didn't exist so the session can be considered as logged out.
-        // Return resolved promise
-        return Promise.resolve();
-      });
+      ]);
   }
 }
-
