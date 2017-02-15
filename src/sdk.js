@@ -144,6 +144,32 @@ const apis = {
   },
 };
 
+const saveTokenMiddleware = (ctx, next) => {
+  const { tokenStore } = ctx;
+
+  return next(ctx).then((res) => {
+    const authToken = res.data;
+
+    if (tokenStore) {
+      tokenStore.setToken(authToken);
+    }
+
+    return res;
+  });
+};
+
+const clearTokenMiddleware = (ctx, next) => {
+  const { tokenStore } = ctx;
+
+  return next(ctx).then((res) => {
+    if (tokenStore) {
+      tokenStore.setToken(null);
+    }
+
+    return res;
+  });
+}
+
 const endpointDefinitions = [
   { apiName: 'api', path: 'marketplace/show', root: true, method: 'get' },
   { apiName: 'api', path: 'users/show', root: true, method: 'get' },
@@ -333,8 +359,10 @@ export default class SharetribeSdk {
       _.set(this, epDef.sdkMethodPath, sdkFn);
     });
 
+    const ctx = { tokenStore };
+
     this.login = ({ username, password }) =>
-      endpointFns.auth.token({
+      saveTokenMiddleware(ctx, () => endpointFns.auth.token({
         params: {
           client_id: clientId,
           grant_type: 'password',
@@ -342,35 +370,24 @@ export default class SharetribeSdk {
           password,
           scope: 'user',
         }
-      }).then(res => res.data).then((authToken) => {
-        if (tokenStore) {
-          tokenStore.setToken(authToken);
+      }));
+
+    this.logout = () =>
+     clearTokenMiddleware(ctx, () => {
+        const token = tokenStore && tokenStore.getToken();
+        const refreshToken = token && token.refresh_token;
+
+        if (refreshToken) {
+          return endpointFns.auth.revoke({
+            params: { token: refreshToken },
+            headers: { Authorization: constructAuthHeader(token) }
+          });
         }
 
-        return authToken;
+        // refresh_token didn't exist so the session can be considered as logged out.
+        // Return resolved promise
+        return Promise.resolve();
       });
-
-    this.logout = () => {
-      const token = tokenStore && tokenStore.getToken();
-      const refreshToken = token && token.refresh_token;
-
-      if (refreshToken) {
-        return endpointFns.auth.revoke({
-          params: { token: refreshToken },
-          headers: { Authorization: constructAuthHeader(token) }
-        }).then(res => res.data).then(() => {
-          if (tokenStore) {
-            tokenStore.setToken(null);
-          }
-
-          return Promise.resolve();
-        });
-      }
-
-      // refresh_token didn't exist so the session can be considered as logged out.
-      // Return resolved promise
-      return Promise.resolve();
-    };
   }
 }
 
