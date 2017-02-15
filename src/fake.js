@@ -76,7 +76,7 @@ const auth = (config, resolve, reject) => {
 
   return reject({
     status: 401,
-    data: 'Unauthorized',
+    data: '{}', // FIXME This is not what the server sends
 
     // Add additional information to help debugging when testing.
     // This key is NOT returned by the real API.
@@ -307,7 +307,7 @@ const requireAuth = (config, reject) => {
   if (!authorized) {
     return reject({
       status: 401,
-      data: 'Unauthorized',
+      data: '{}', // FIXME This is not what the server sends
     });
   }
 

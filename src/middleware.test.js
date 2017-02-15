@@ -15,7 +15,7 @@ describe('middleware runner', () => {
     const b = createMiddleware('b');
     const c = createMiddleware('c');
 
-    return run({ enter: [], leave: []}, [a, b, c]).then((resultCtx) => {
+    return run([a, b, c])({ enter: [], leave: []}).then((resultCtx) => {
       expect(resultCtx).toEqual({ enter: ['a', 'b', 'c'], leave: ['c', 'b', 'a'] });
     });
   });
@@ -59,8 +59,23 @@ describe('middleware runner', () => {
       });
     };
 
-    return run({ enter: [], leave: [], error: [] }, [a, retry, b, failOnce]).then((resultCtx) => {
+    return run([a, retry, b, failOnce])({ enter: [], leave: [], error: [] }).then((resultCtx) => {
       expect(resultCtx).toEqual({ enter: ['a', 'retry', 'b', 'fail', 'b', 'fail'], leave: ['fail', 'b', 'retry', 'a'], error: ['fail', 'retry'] });
     });
+  });
+
+  it('can compose middlewares', () => {
+    const a = createMiddleware('a');
+    const b = createMiddleware('b');
+    const c = createMiddleware('c');
+    const d = createMiddleware('d');
+
+    const ab = run([a, b]);
+    const cd = run([c, d]);
+
+    return run([ab, cd])({ enter: [], leave: []}).then((resultCtx) => {
+      expect(resultCtx).toEqual({ enter: ['a', 'b', 'c', 'd' ], leave: ['d', 'c', 'b', 'a' ]});
+})
+
   });
 });

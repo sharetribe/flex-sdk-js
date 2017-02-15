@@ -36,99 +36,69 @@ const saveToken = (authResponse, tokenStore) =>
     return authToken;
   });
 
-const authenticate = (enterCtx, next) => {
-  const { clientId, tokenStore, endpointFns } = enterCtx;
+const fetchAuthToken = (enterCtx, next) => {
+  const { tokenStore, endpointFns, clientId } = enterCtx;
   const storedToken = tokenStore && tokenStore.getToken();
 
-  let authentication;
-
   if (storedToken) {
-    authentication = Promise.resolve(storedToken);
+    return next({ ...enterCtx, authToken: storedToken });
   } else {
-    authentication = saveToken(endpointFns.auth.token({
+    return saveToken(endpointFns.auth.token({
       params: {
         client_id: clientId,
         grant_type: 'client_credentials',
         scope: 'public-read',
       }
-    }), tokenStore);
+    }), tokenStore).then((authToken) => next({ ...enterCtx, authToken: authToken }))
   }
+};
 
-  return authentication.then((authToken) => {
-    const authHeaders = { Authorization: constructAuthHeader(authToken) };
-    return next({ ...enterCtx, headers: authHeaders });
-  }).catch((error) => {
-    let newAuthentication;
+const addAuthTokenHeader = (enterCtx, next) => {
+  const { authToken } = enterCtx;
+  const authHeaders = { Authorization: constructAuthHeader(authToken) };
+  return next({ ...enterCtx, headers: authHeaders });
+}
+
+const retryWithRefreshToken = (enterCtx, next) => {
+  return next(enterCtx).catch((error) => {
     const errorCtx = error.ctx;
+    const { authToken, endpointFns, clientId, tokenStore } = errorCtx;
 
-    if (error.status === 401 && authToken.refresh_token) {
-      newAuthentication = saveToken(endpointFns.auth.token({
+    if (error.response && error.response.status === 401 && authToken.refresh_token) {
+      return saveToken(endpointFns.auth.token({
         params: {
           client_id: clientId,
           grant_type: 'refresh_token',
           refresh_token: authToken.refresh_token,
         }
-      }), tokenStore);
+      }), tokenStore).then((authToken) => next({ ...errorCtx, authToken: authToken }))
     } else {
-      newAuthentication = saveToken(endpointFns.auth.token({
-        params: {
-          client_id: clientId,
-          grant_type: 'client_credentials',
-          scope: 'public-read',
-        }
-      }), tokenStore);
+      return Promise.reject(error);
     }
-
-    return newAuthentication.then(freshAuthToken => {
-      const freshAuthHeaders = { Authorization: constructAuthHeader(freshAuthToken) };
-      return next({ ...errorCtx, headers: freshAuthHeaders });
-    });
   });
 };
 
-const createAuthenticator = (clientId, endpointFns, tokenStore) => (apiCall) => {
-  const storedToken = tokenStore && tokenStore.getToken();
+const retryWithAnonToken = (enterCtx, next) => {
+  return next(enterCtx).catch((error) => {
+    const errorCtx = error.ctx;
+    const { clientId, tokenStore, endpointFns } = errorCtx;
 
-  let authentication;
-
-  if (storedToken) {
-    authentication = Promise.resolve(storedToken);
-  } else {
-    authentication = saveToken(endpointFns.auth.token({
+    return saveToken(endpointFns.auth.token({
       params: {
         client_id: clientId,
         grant_type: 'client_credentials',
         scope: 'public-read',
       }
-    }), tokenStore);
-  }
-
-  return authentication.then(authToken =>
-    apiCall({ Authorization: `${constructAuthHeader(authToken)}` })
-      .catch((error) => {
-        let newAuthentication;
-
-        if (error.status === 401 && authToken.refresh_token) {
-          newAuthentication = saveToken(endpointFns.auth.token({
-            params: {
-              client_id: clientId,
-              grant_type: 'refresh_token',
-              refresh_token: authToken.refresh_token,
-            }
-          }), tokenStore);
-        } else {
-          newAuthentication = saveToken(endpointFns.auth.token({
-            params: {
-              client_id: clientId,
-              grant_type: 'client_credentials',
-              scope: 'public-read',
-            }
-          }), tokenStore);
-        }
-
-        return newAuthentication.then(freshAuthToken => apiCall({ Authorization: `${constructAuthHeader(freshAuthToken)}` }));
-      }));
+    }), tokenStore).then((authToken) => next({ ...errorCtx, authToken: authToken }))
+  });
 };
+
+const authenticate = run([
+  fetchAuthToken,
+  retryWithAnonToken,
+  retryWithRefreshToken,
+  addAuthTokenHeader,
+]);
 
 const defaultSdkConfig = {
   baseUrl: 'https://api.sharetribe.com',
@@ -308,7 +278,7 @@ const createEndpointFn = ({ method, url, httpOpts }) => {
 
 const createSdkMethod = (ctx, endpointFn, middleware) =>
   (params = {}) =>
-    run(ctx, [
+    run([
       ...middleware,
       (enterCtx) => {
         const { headers } = enterCtx;
@@ -320,7 +290,7 @@ const createSdkMethod = (ctx, endpointFn, middleware) =>
           })
         ;
       }
-    ]).then(({ res }) => res); // Unpack the `res` from context
+    ])(ctx).then(({ res }) => res); // Unpack the `res` from context
 
 /**
    Take URL and remove the last slash
@@ -414,7 +384,7 @@ export default class SharetribeSdk {
     });
 
     this.login = ({ username, password }) =>
-      run(ctx, [
+      run([
         saveTokenMiddleware,
         (enterCtx) => endpointFns.auth.token({
           params: {
@@ -425,10 +395,10 @@ export default class SharetribeSdk {
             scope: 'user',
           }
         }).then((res) => ({ ...enterCtx, res }))
-      ]);
+      ])(ctx);
 
     this.logout = () =>
-      run(ctx, [
+      run([
         clearTokenMiddleware,
         (enterCtx) => {
           const { tokenStore } = enterCtx;
@@ -446,6 +416,6 @@ export default class SharetribeSdk {
           // Return resolved promise
           return Promise.resolve(enterCtx);
         }
-      ]);
+      ])(ctx);
   }
 }
