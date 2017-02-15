@@ -1,6 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
-import { methodPath, assignDeep } from './utils';
+import { methodPath as urlPathToMethodPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
 import paramsSerializer from './params_serializer';
 import browserCookieStore from './browser_cookie_store';
@@ -35,7 +35,7 @@ const saveToken = (authResponse, tokenStore) =>
     return authToken;
   });
 
-const createAuthenticator = (sdk, tokenStore) => (apiCall) => {
+const createAuthenticator = (clientId, endpointFns, tokenStore) => (apiCall) => {
   const storedToken = tokenStore && tokenStore.getToken();
 
   let authentication;
@@ -43,10 +43,12 @@ const createAuthenticator = (sdk, tokenStore) => (apiCall) => {
   if (storedToken) {
     authentication = Promise.resolve(storedToken);
   } else {
-    authentication = saveToken(sdk.auth.token({
-      client_id: sdk.config.clientId,
-      grant_type: 'client_credentials',
-      scope: 'public-read',
+    authentication = saveToken(endpointFns.auth.token({
+      params: {
+        client_id: clientId,
+        grant_type: 'client_credentials',
+        scope: 'public-read',
+      }
     }), tokenStore);
   }
 
@@ -56,16 +58,20 @@ const createAuthenticator = (sdk, tokenStore) => (apiCall) => {
         let newAuthentication;
 
         if (error.status === 401 && authToken.refresh_token) {
-          newAuthentication = saveToken(sdk.auth.token({
-            client_id: sdk.config.clientId,
-            grant_type: 'refresh_token',
-            refresh_token: authToken.refresh_token,
+          newAuthentication = saveToken(endpointFns.auth.token({
+            params: {
+              client_id: clientId,
+              grant_type: 'refresh_token',
+              refresh_token: authToken.refresh_token,
+            }
           }), tokenStore);
         } else {
-          newAuthentication = saveToken(sdk.auth.token({
-            client_id: sdk.config.clientId,
-            grant_type: 'client_credentials',
-            scope: 'public-read',
+          newAuthentication = saveToken(endpointFns.auth.token({
+            params: {
+              client_id: clientId,
+              grant_type: 'client_credentials',
+              scope: 'public-read',
+            }
           }), tokenStore);
         }
 
@@ -138,7 +144,7 @@ const apis = {
   },
 };
 
-const defaultEndpoints = [
+const endpointDefinitions = [
   { apiName: 'api', path: 'marketplace/show', root: true, method: 'get' },
   { apiName: 'api', path: 'users/show', root: true, method: 'get' },
   { apiName: 'api', path: 'listings/show', root: true, method: 'get' },
@@ -209,16 +215,19 @@ const doRequest = ({ params = {}, httpOpts }) => {
 
   Usage example: TODO
 */
-const createEndpointFn = (endpoint, httpOpts) => {
-  const { apiName, path, method = 'get' } = endpoint;
+const createEndpointFn = ({ method, url, httpOpts }) => {
+  if (!url) {
+    throw new Error('URL cant be empty');
+  }
+
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
-  const url = [apiName, path].join('/');
 
   return ({ params = {}, headers = {} }) => {
     return doRequest({
       params,
       httpOpts: {
-        method,
+        method: (method || 'get'),
+        // Merge additional headers
         headers: { ...httpOptsHeaders, ...headers },
         ...restHttpOpts,
         url,
@@ -227,9 +236,7 @@ const createEndpointFn = (endpoint, httpOpts) => {
   };
 }
 
-const createSdkMethod = (endpoint, httpOpts, authenticationMiddleware) => {
-  const endpointFn = createEndpointFn(endpoint, httpOpts);
-
+const createSdkMethod = (endpointFn, authenticationMiddleware) => {
   return (params = {}) =>
     // TODO, if needed, generalize to proper middleware pattern
     authenticationMiddleware((authorizationHeaders) => {
@@ -278,7 +285,7 @@ export default class SharetribeSdk {
     this.config.baseUrl = normalizeBaseUrl(this.config.baseUrl);
 
     const {
-      endpoints,
+      endpoints: userEndpointDefinitions,
       clientId,
     } = this.config;
 
@@ -291,38 +298,50 @@ export default class SharetribeSdk {
     // Create endpoint opts
     const opts = _.mapValues(apis, apiDefinition => ({
       config: apiDefinition.config(this.config),
-      authenticationMiddleware: apiDefinition.authenticationMiddleware(this, tokenStore),
     }));
 
-    const sdkMethodDefs = [...defaultEndpoints, ...endpoints].map((endpoint) => {
-      // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
-      const mp = endpoint.root ?
-                 methodPath(endpoint.path) :
-                 [endpoint.apiName, ...methodPath(endpoint.path)];
-      const methodName = mp.join('.');
-      const httpOpts = opts[endpoint.apiName].config;
-      const authenticationMiddleware = opts[endpoint.apiName].authenticationMiddleware;
+    const endpointDefs = [...endpointDefinitions, ...userEndpointDefinitions].map((epDef) => {
+      const methodPath = urlPathToMethodPath(epDef.path);
+      const fullMethodPath = [epDef.apiName, ...methodPath];
+      const sdkMethodPath = epDef.root ? methodPath : fullMethodPath;
+      const fullUrlPath = [epDef.apiName, epDef.path].join('/');
+      const httpOpts = opts[epDef.apiName].config;
+
+      const endpointFn = createEndpointFn({ method: epDef.method, url: fullUrlPath, httpOpts });
 
       return {
-        path: [endpoint.apiName, endpoint.path].join('/'),
-        methodPath: mp,
-        methodName,
-        fn: createSdkMethod(endpoint, httpOpts, authenticationMiddleware),
-      };
+        ...epDef,
+        methodPath,
+        fullMethodPath,
+        sdkMethodPath,
+        fullUrlPath,
+        endpointFn,
+      }
     });
 
-    // Assign all endpoint definitions to 'this'
-    sdkMethodDefs.forEach((sdkMethodDef) => {
-      assignDeep(this, sdkMethodDef.methodPath, sdkMethodDef.fn);
+    const endpointFns = endpointDefs.reduce((acc, epDef) => {
+      return _.set(acc, epDef.fullMethodPath, epDef.endpointFn);
+    }, {});
+
+    // Create endpoint opts
+    const authMiddlewares = _.mapValues(apis, apiDefinition => apiDefinition.authenticationMiddleware(clientId, endpointFns, tokenStore));
+
+    endpointDefs.forEach((epDef) => {
+      const authenticationMiddleware = authMiddlewares[epDef.apiName];
+      const sdkFn = createSdkMethod(epDef.endpointFn, authenticationMiddleware);
+
+      _.set(this, epDef.sdkMethodPath, sdkFn);
     });
 
     this.login = ({ username, password }) =>
-      this.auth.token({
-        client_id: clientId,
-        grant_type: 'password',
-        username,
-        password,
-        scope: 'user',
+      endpointFns.auth.token({
+        params: {
+          client_id: clientId,
+          grant_type: 'password',
+          username,
+          password,
+          scope: 'user',
+        }
       }).then(res => res.data).then((authToken) => {
         if (tokenStore) {
           tokenStore.setToken(authToken);
@@ -336,8 +355,9 @@ export default class SharetribeSdk {
       const refreshToken = token && token.refresh_token;
 
       if (refreshToken) {
-        return this.auth.revoke({
-          token: refreshToken,
+        return endpointFns.auth.revoke({
+          params: { token: refreshToken },
+          headers: { Authorization: constructAuthHeader(token) }
         }).then(res => res.data).then(() => {
           if (tokenStore) {
             tokenStore.setToken(null);

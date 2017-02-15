@@ -33,7 +33,7 @@ const revoke = (config, resolve, reject) => {
     return resolve({ data: '' });
   }
 
-  return reject({ data: '' });
+  return reject({ data: '', __additionalTestInfo: formData });
 };
 
 const auth = (config, resolve, reject) => {
