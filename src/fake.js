@@ -10,7 +10,14 @@ const adapterHelper =
   adapterDef =>
     config =>
       new Promise((resolve, reject) => {
-        adapterDef.call(null, config, resolve, reject);
+        const rejectWithError = (response) => {
+          const error = new Error(`Request failed with status code ${response.status}`);
+          error.response = response;
+
+          reject(error);
+        }
+
+        adapterDef.call(null, config, resolve, rejectWithError);
       });
 
 const parseFormData = data => _.fromPairs(data.split('&').map(keyValue => keyValue.split('=')));
@@ -70,6 +77,10 @@ const auth = (config, resolve, reject) => {
   return reject({
     status: 401,
     data: 'Unauthorized',
+
+    // Add additional information to help debugging when testing.
+    // This key is NOT returned by the real API.
+    __additionalTestInfo: {formData}
   });
 };
 

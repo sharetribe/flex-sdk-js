@@ -3,6 +3,21 @@ import fake from './fake';
 import SharetribeSdk from './sdk';
 import memoryStore from './memory_store';
 
+/**
+   Helper to improve error messages.
+
+   Includes the `response` in the error message if
+   `response` exists.
+ */
+const report = (responsePromise) =>
+  responsePromise.catch((error) => {
+    if (error.response) {
+      error.message = `${error.message}. Response: ${JSON.stringify(error.response)}`;
+    }
+
+    return Promise.reject(error);
+  });
+
 describe('new SharetribeSdk', () => {
   it('creates a new instance with given options', () => {
     const tokenStore = {};
@@ -53,7 +68,7 @@ describe('new SharetribeSdk', () => {
       tokenStore: memoryStore(),
     });
 
-    return inst.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    return report(inst.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 
@@ -62,7 +77,7 @@ describe('new SharetribeSdk', () => {
         email: 'user@sharetribe.com',
         description: 'A team member',
       }));
-    });
+    }));
   });
 
   it('calls marketplace endpoint with query params', () => {
@@ -215,14 +230,14 @@ describe('new SharetribeSdk', () => {
     });
 
     // First we get the anonymous token
-    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+    return report(sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
       expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
 
       // After login, the anonymous token will be overriden
       return sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
         expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
       });
-    });
+    }));
   });
 
   it('refreshes login token', () => {
@@ -237,7 +252,7 @@ describe('new SharetribeSdk', () => {
     });
 
     // First, login
-    return sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
       expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
 
       // Remove auth token from the store to simulate a
@@ -257,7 +272,7 @@ describe('new SharetribeSdk', () => {
           description: 'Meet and greet with fanatical sky divers.',
         }));
       });
-    });
+    }));
   });
 
   it('refreshes anonymous token', () => {
@@ -272,7 +287,7 @@ describe('new SharetribeSdk', () => {
     });
 
     // First we get the anonymous token
-    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+    return report(sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
       expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
 
       // Remove auth token from the store to simulate a
@@ -294,7 +309,7 @@ describe('new SharetribeSdk', () => {
           description: 'Meet and greet with fanatical sky divers.',
         }));
       });
-    });
+    }));
   });
 
   it('revokes token (a.k.a logout)', () => {
@@ -309,7 +324,7 @@ describe('new SharetribeSdk', () => {
     });
 
     // First, login
-    return sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
       expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
 
       // Revoke token
@@ -320,6 +335,6 @@ describe('new SharetribeSdk', () => {
           expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
         });
       });
-    });
+    }));
   });
 });
