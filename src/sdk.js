@@ -139,13 +139,13 @@ const apis = {
 };
 
 const defaultEndpoints = [
-  { path: 'marketplace/show', api: 'api', root: true, method: 'get' },
-  { path: 'users/show', api: 'api', root: true, method: 'get' },
-  { path: 'listings/show', api: 'api', root: true, method: 'get' },
-  { path: 'listings/query', api: 'api', root: true, method: 'get' },
-  { path: 'listings/search', api: 'api', root: true, method: 'get' },
-  { path: 'token', api: 'auth', root: false, method: 'post' },
-  { path: 'revoke', api: 'auth', root: false, method: 'post' },
+  { apiName: 'api', path: 'marketplace/show', root: true, method: 'get' },
+  { apiName: 'api', path: 'users/show', root: true, method: 'get' },
+  { apiName: 'api', path: 'listings/show', root: true, method: 'get' },
+  { apiName: 'api', path: 'listings/query', root: true, method: 'get' },
+  { apiName: 'api', path: 'listings/search', root: true, method: 'get' },
+  { apiName: 'auth', path: 'token', root: false, method: 'post' },
+  { apiName: 'auth', path: 'revoke', root: false, method: 'post' },
 ];
 
 // const logAndReturn = (data) => {
@@ -165,44 +165,77 @@ const handleFailureResponse = (error) => {
   if (response) {
     // The request was made, but the server responses with a status code
     // other than 2xx
-    const { status, statusText, data } = response;
-    return Promise.reject({ status, statusText, data });
+
+    // TODO Server should send the error JSON. When that is implemented, parse the JSON
+    // and return nicely formatted error.
+    return Promise.reject(error);
   }
 
   // Something happened in setting up the request that triggered an Error
   return Promise.reject(error);
 };
 
-const createSdkMethod = (endpoint, httpOpts, authenticationMiddleware) =>
-  (params = {}) =>
+const doRequest = ({ params = {}, httpOpts }) => {
+  const { method = 'get' } = httpOpts;
+
+  let bodyParams = null;
+  let queryParams = null;
+
+  if (method.toLowerCase() === 'post') {
+    bodyParams = params;
+  } else {
+    queryParams = params;
+  }
+
+  const req = {
+    ...httpOpts,
+    method,
+    params: queryParams,
+    data: bodyParams,
+  };
+
+  return axios.request(req).then(handleSuccessResponse).catch(handleFailureResponse);
+}
+
+/**
+
+  Creates an 'endpoint function'.
+
+  'endpoint function' is a 'plain' functions that doesn't do any
+  additional logic besides calling the endpoint with the given
+  parameters and configurations. Should not be confused with 'sdk
+  function', which calls to 'endpoint function' and does some
+  additional logic, such as authorization.
+
+  Usage example: TODO
+*/
+const createEndpointFn = (endpoint, httpOpts) => {
+  const { apiName, path, method = 'get' } = endpoint;
+  const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
+  const url = [apiName, path].join('/');
+
+  return ({ params = {}, headers = {} }) => {
+    return doRequest({
+      params,
+      httpOpts: {
+        method,
+        headers: { ...httpOptsHeaders, ...headers },
+        ...restHttpOpts,
+        url,
+      }
+    });
+  };
+}
+
+const createSdkMethod = (endpoint, httpOpts, authenticationMiddleware) => {
+  const endpointFn = createEndpointFn(endpoint, httpOpts);
+
+  return (params = {}) =>
     // TODO, if needed, generalize to proper middleware pattern
     authenticationMiddleware((authorizationHeaders) => {
-      // TODO Maybe we should use deep merge here?
-      const headers = { ...httpOpts.headers, ...authorizationHeaders };
-
-      const { api, path } = endpoint;
-      const method = endpoint.method || 'get'; // default to GET
-
-      let bodyParams = null;
-      let queryParams = null;
-
-      if (method.toLowerCase() === 'post') {
-        bodyParams = params;
-      } else {
-        queryParams = params;
-      }
-
-      const req = {
-        ...httpOpts,
-        method,
-        headers,
-        params: queryParams,
-        data: bodyParams,
-        url: [api, path].join('/'),
-      };
-
-      return axios.request(req).then(handleSuccessResponse).catch(handleFailureResponse);
+      return endpointFn({params, headers: authorizationHeaders });
     });
+}
 
 /**
    Take URL and remove the last slash
@@ -265,13 +298,13 @@ export default class SharetribeSdk {
       // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
       const mp = endpoint.root ?
                  methodPath(endpoint.path) :
-                 [endpoint.api, ...methodPath(endpoint.path)];
+                 [endpoint.apiName, ...methodPath(endpoint.path)];
       const methodName = mp.join('.');
-      const httpOpts = opts[endpoint.api].config;
-      const authenticationMiddleware = opts[endpoint.api].authenticationMiddleware;
+      const httpOpts = opts[endpoint.apiName].config;
+      const authenticationMiddleware = opts[endpoint.apiName].authenticationMiddleware;
 
       return {
-        path: [endpoint.api, endpoint.path].join('/'),
+        path: [endpoint.apiName, endpoint.path].join('/'),
         methodPath: mp,
         methodName,
         fn: createSdkMethod(endpoint, httpOpts, authenticationMiddleware),
