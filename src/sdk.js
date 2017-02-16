@@ -5,7 +5,7 @@ import { reader, writer } from './serializer';
 import paramsSerializer from './params_serializer';
 import browserCookieStore from './browser_cookie_store';
 import memoryStore from './memory_store';
-import { authenticate, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware, saveTokenMiddleware, addAuthTokenResponseToCtx } from './authenticate';
+import { authenticate, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware, saveTokenMiddleware, addAuthTokenResponseToCtx, fetchRefreshTokenForRevoke } from './authenticate';
 import run from './middleware';
 
 const formData = params => _.reduce(params, (pairs, v, k) => {
@@ -286,23 +286,8 @@ export default class SharetribeSdk {
         fetchAuthToken,
         addAuthTokenHeader,
         clearTokenMiddleware,
-        (enterCtx, next) => {
-          const { headers, authToken } = enterCtx;
-          const refreshToken = authToken && authToken.refresh_token;
-
-          if (refreshToken) {
-            return endpointFns.auth.revoke({
-              params: { token: refreshToken },
-              headers,
-            }, (authCtx) => {
-              return next({ ...enterCtx, res: authCtx.res });
-            });
-          }
-
-          // refresh_token didn't exist so the session can be considered as logged out.
-          // Return resolved promise
-          return next({ ...enterCtx, res: {}});
-        }
+        fetchRefreshTokenForRevoke,
+        endpointFns.auth.revoke,
       ])(ctx).then(({ res }) => res); // Unpack the `res` from context
   }
 }

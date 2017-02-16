@@ -131,6 +131,19 @@ export const clearTokenMiddleware = (enterCtx, next) => {
   });
 }
 
+export const fetchRefreshTokenForRevoke = (enterCtx, next) => {
+  const { authToken: { refresh_token: token } } = enterCtx;
+
+  if (token) {
+    return next({ ...enterCtx, params: { token }});
+  } else {
+    // No need to call `revoke` endpoint, because we don't have
+    // refresh_token.
+    // Return Promise and halt the middleware chain
+    return Promise.resolve(enterCtx);
+  }
+}
+
 export const authenticate = run([
   fetchAuthToken,
   retryWithAnonToken,
