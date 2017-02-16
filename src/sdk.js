@@ -21,6 +21,17 @@ const defaultSdkConfig = {
   version: 'v1',
 };
 
+const defaultParamsMiddleware = (defaultParams = {}) => ({ params: ctxParams, ...ctx }, next) =>
+  next({ ...ctx, params: { ...defaultParams, ...ctxParams } });
+
+const addClientIdToParams = (ctx, next) => {
+  const { clientId, params } = ctx;
+
+  return next({ ...ctx, params: { ...params, client_id: clientId }});
+}
+
+const unwrapResponseFromCtx = (enterCtx, next) => next(enterCtx).then(({ res }) => res);
+
 const apis = {
   api: {
     config: ({ baseUrl, version, adapter, typeHandlers }) => {
@@ -172,9 +183,10 @@ const createEndpointFn = ({ method, url, httpOpts }) => {
 const createSdkMethod = (ctx, endpointFn, middleware) =>
   (params = {}) =>
     run([
+      unwrapResponseFromCtx,
       ...middleware,
       endpointFn,
-    ])({ ...ctx, params }).then(({ res }) => res); // Unpack the `res` from context
+    ])({ ...ctx, params });
 
 /**
    Take URL and remove the last slash
@@ -267,27 +279,24 @@ export default class SharetribeSdk {
       _.set(this, epDef.sdkMethodPath, sdkFn);
     });
 
-    this.login = ({ username, password }) =>
+    this.login = (params = {}) =>
       run([
-        endpointFns.auth.token,
-        addAuthTokenResponseToCtx,
+        unwrapResponseFromCtx,
+        defaultParamsMiddleware({ grant_type: 'password', scope: 'user' }),
+        addClientIdToParams,
         saveTokenMiddleware,
-      ])({ ...ctx,
-           params: {
-             client_id: clientId,
-             grant_type: 'password',
-             username,
-             password,
-             scope: 'user',
-           }}).then(({ res }) => res); // Unpack the `res` from context
+        addAuthTokenResponseToCtx,
+        endpointFns.auth.token,
+      ])({ ...ctx, params });
 
-    this.logout = () =>
+    this.logout = (params = {}) =>
       run([
+        unwrapResponseFromCtx,
         fetchAuthToken,
         addAuthTokenHeader,
         clearTokenMiddleware,
         fetchRefreshTokenForRevoke,
         endpointFns.auth.revoke,
-      ])(ctx).then(({ res }) => res); // Unpack the `res` from context
+      ])({ ...ctx, params });
   }
 }

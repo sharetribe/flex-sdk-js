@@ -14,31 +14,24 @@ const constructAuthHeader = (authToken) => {
   /* eslint-enable camelcase */
 };
 
-const saveToken = (authResponse, tokenStore) =>
-  authResponse.then((res) => {
-    const authToken = res.data;
+export const saveTokenMiddleware = (enterCtx, next) => {
+  return next(enterCtx).then((leaveCtx) => {
+    const { authToken, tokenStore } = leaveCtx;
 
     if (tokenStore) {
       tokenStore.setToken(authToken);
     }
 
-    return authToken;
+    return leaveCtx;
   });
-
-export const saveTokenMiddleware = (enterCtx, next) => {
-  const { authToken, tokenStore } = enterCtx;
-
-  if (tokenStore) {
-    tokenStore.setToken(authToken);
-  }
-
-  return next(enterCtx);
 }
 
 export const addAuthTokenResponseToCtx = (enterCtx, next) => {
-  const { res: { data: authToken } } = enterCtx;
+  return next(enterCtx).then((leaveCtx) => {
+    const { res: { data: authToken } } = leaveCtx;
 
-  return next({ ...enterCtx, authToken });
+    return { ...leaveCtx, authToken };
+  });
 }
 
 export const fetchAuthToken = (enterCtx, next) => {
@@ -49,9 +42,9 @@ export const fetchAuthToken = (enterCtx, next) => {
     return next({ ...enterCtx, authToken: storedToken });
   } else {
     return run([
-      endpointFns.auth.token,
-      addAuthTokenResponseToCtx,
       saveTokenMiddleware,
+      addAuthTokenResponseToCtx,
+      endpointFns.auth.token,
     ])({
       params: {
         client_id: clientId,
@@ -78,9 +71,9 @@ const retryWithRefreshToken = (enterCtx, next) => {
 
     if (error.response && error.response.status === 401 && authToken.refresh_token) {
       return run([
-        endpointFns.auth.token,
-        addAuthTokenResponseToCtx,
         saveTokenMiddleware,
+        addAuthTokenResponseToCtx,
+        endpointFns.auth.token,
       ])({
         params: {
           client_id: clientId,
@@ -103,9 +96,9 @@ const retryWithAnonToken = (enterCtx, next) => {
     const { clientId, tokenStore, endpointFns } = errorCtx;
 
     return run([
-      endpointFns.auth.token,
-      addAuthTokenResponseToCtx,
       saveTokenMiddleware,
+      addAuthTokenResponseToCtx,
+      endpointFns.auth.token,
     ])({
       params: {
         client_id: clientId,
