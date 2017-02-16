@@ -1,13 +1,13 @@
-import { methodPath, assignDeep, nestedKeyValObj } from './utils';
+import { fnPath, assignDeep, nestedKeyValObj } from './utils';
 
 describe('utils', () => {
   describe('pathToMethodName', () => {
     it('takes URL path, returns method name', () => {
-      expect(methodPath('users')).toEqual(['users']);
-      expect(methodPath('/users')).toEqual(['users']);
-      expect(methodPath('users/')).toEqual(['users']);
-      expect(methodPath('/users/')).toEqual(['users']);
-      expect(methodPath('/users/create/')).toEqual(['users', 'create']);
+      expect(fnPath('users')).toEqual(['users']);
+      expect(fnPath('/users')).toEqual(['users']);
+      expect(fnPath('users/')).toEqual(['users']);
+      expect(fnPath('/users/')).toEqual(['users']);
+      expect(fnPath('/users/create/')).toEqual(['users', 'create']);
     });
   });
 

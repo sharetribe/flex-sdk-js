@@ -1,6 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
-import { methodPath as urlPathToMethodPath, assignDeep } from './utils';
+import { fnPath as urlPathToFnPath, assignDeep } from './utils';
 import { reader, writer } from './serializer';
 import paramsSerializer from './params_serializer';
 import browserCookieStore from './browser_cookie_store';
@@ -96,6 +96,25 @@ const endpointDefinitions = [
   { apiName: 'auth', path: 'token', root: false, method: 'post' },
   { apiName: 'auth', path: 'revoke', root: false, method: 'post' },
 ];
+
+const loginMiddleware = [
+  defaultParamsMiddleware({ grant_type: 'password', scope: 'user' }),
+  addClientIdToParams,
+  saveTokenMiddleware,
+  addAuthTokenResponseToCtx,
+];
+
+const logoutMiddleware = [
+  fetchAuthToken,
+  addAuthTokenHeader,
+  clearTokenMiddleware,
+  fetchRefreshTokenForRevoke,
+];
+
+const additionalSdkFnDefinitions = [
+  { path: 'login', endpointFnName: "auth.token", middleware: loginMiddleware },
+  { path: 'logout', endpointFnName: "auth.revoke", middleware: logoutMiddleware }
+]
 
 // const logAndReturn = (data) => {
 //   console.log(data);
@@ -245,26 +264,26 @@ export default class SharetribeSdk {
     }));
 
     const endpointDefs = [...endpointDefinitions, ...userEndpointDefinitions].map((epDef) => {
-      const methodPath = urlPathToMethodPath(epDef.path);
-      const fullMethodPath = [epDef.apiName, ...methodPath];
-      const sdkMethodPath = epDef.root ? methodPath : fullMethodPath;
-      const fullUrlPath = [epDef.apiName, epDef.path].join('/');
-      const httpOpts = opts[epDef.apiName].config;
+      const { path, apiName, root, method } = epDef;
+      const fnPath = urlPathToFnPath(path);
+      const fullFnPath = [apiName, ...fnPath];
+      const sdkFnPath = root ? fnPath : fullFnPath;
+      const fullUrlPath = [apiName, path].join('/');
+      const httpOpts = opts[apiName].config;
 
       const endpointFn = createEndpointFn({ method: epDef.method, url: fullUrlPath, httpOpts });
 
       return {
         ...epDef,
-        methodPath,
-        fullMethodPath,
-        sdkMethodPath,
-        fullUrlPath,
+        fnPath,
+        fullFnPath,
+        sdkFnPath,
         endpointFn,
       }
     });
 
-    const endpointFns = endpointDefs.reduce((acc, epDef) => {
-      return _.set(acc, epDef.fullMethodPath, epDef.endpointFn);
+    const endpointFns = endpointDefs.reduce((acc, { fullFnPath, endpointFn }) => {
+      return _.set(acc, fullFnPath, endpointFn);
     }, {});
 
     const ctx = {
@@ -273,30 +292,16 @@ export default class SharetribeSdk {
       clientId,
     };
 
-    endpointDefs.forEach((epDef) => {
-      const sdkFn = createSdkMethod(ctx, epDef.endpointFn, epDef.middleware);
-
-      _.set(this, epDef.sdkMethodPath, sdkFn);
+    const endpointSdkFns = endpointDefs.map(({ sdkFnPath, endpointFn, middleware }) => {
+      return { path: sdkFnPath, fn: createSdkMethod(ctx, endpointFn, middleware) };
     });
 
-    this.login = (params = {}) =>
-      run([
-        unwrapResponseFromCtx,
-        defaultParamsMiddleware({ grant_type: 'password', scope: 'user' }),
-        addClientIdToParams,
-        saveTokenMiddleware,
-        addAuthTokenResponseToCtx,
-        endpointFns.auth.token,
-      ])({ ...ctx, params });
+    const additionalSdkFns = additionalSdkFnDefinitions.map(({ path, endpointFnName, middleware }) => {
+      const sdkFn = createSdkMethod(ctx, _.get(endpointFns, endpointFnName), middleware);
+      return { path, fn: createSdkMethod(ctx, _.get(endpointFns, endpointFnName), middleware) };
+    });
 
-    this.logout = (params = {}) =>
-      run([
-        unwrapResponseFromCtx,
-        fetchAuthToken,
-        addAuthTokenHeader,
-        clearTokenMiddleware,
-        fetchRefreshTokenForRevoke,
-        endpointFns.auth.revoke,
-      ])({ ...ctx, params });
+    // Assign SDK functions to 'this'
+    [...endpointSdkFns, ...additionalSdkFns].forEach(({ path, fn }) => _.set(this, path, fn));
   }
 }

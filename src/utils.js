@@ -31,4 +31,4 @@ export const nestedKeyValObj = (keyPath, val) => {
 export const assignDeep = (obj, path, val) =>
   _.defaultsDeep(obj, nestedKeyValObj(path, val));
 
-export const methodPath = path => _.without(path.split('/'), '');
+export const fnPath = path => _.without(path.split('/'), '');
