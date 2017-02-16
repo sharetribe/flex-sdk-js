@@ -25,6 +25,22 @@ const saveToken = (authResponse, tokenStore) =>
     return authToken;
   });
 
+export const saveTokenMiddleware = (enterCtx, next) => {
+  const { authToken, tokenStore } = enterCtx;
+
+  if (tokenStore) {
+    tokenStore.setToken(authToken);
+  }
+
+  return next(enterCtx);
+}
+
+export const addAuthTokenResponseToCtx = (enterCtx, next) => {
+  const { res: { data: authToken } } = enterCtx;
+
+  return next({ ...enterCtx, authToken });
+}
+
 export const fetchAuthToken = (enterCtx, next) => {
   const { tokenStore, endpointFns, clientId } = enterCtx;
   const storedToken = tokenStore && tokenStore.getToken();
@@ -32,13 +48,20 @@ export const fetchAuthToken = (enterCtx, next) => {
   if (storedToken) {
     return next({ ...enterCtx, authToken: storedToken });
   } else {
-    return saveToken(endpointFns.auth.token({
+    return run([
+      endpointFns.auth.token,
+      addAuthTokenResponseToCtx,
+      saveTokenMiddleware,
+    ])({
       params: {
         client_id: clientId,
         grant_type: 'client_credentials',
         scope: 'public-read',
-      }
-    }), tokenStore).then((authToken) => next({ ...enterCtx, authToken: authToken }))
+      },
+      tokenStore,
+    }).then(({ authToken }) => {
+      return next({ ...enterCtx, authToken });
+    });
   }
 };
 
@@ -54,13 +77,20 @@ const retryWithRefreshToken = (enterCtx, next) => {
     const { authToken, endpointFns, clientId, tokenStore } = errorCtx;
 
     if (error.response && error.response.status === 401 && authToken.refresh_token) {
-      return saveToken(endpointFns.auth.token({
+      return run([
+        endpointFns.auth.token,
+        addAuthTokenResponseToCtx,
+        saveTokenMiddleware,
+      ])({
         params: {
           client_id: clientId,
           grant_type: 'refresh_token',
           refresh_token: authToken.refresh_token,
-        }
-      }), tokenStore).then((authToken) => next({ ...errorCtx, authToken: authToken }))
+        },
+        tokenStore
+      }).then(({ authToken }) => {
+        return next({ ...enterCtx, authToken });
+      });
     } else {
       return Promise.reject(error);
     }
@@ -72,13 +102,20 @@ const retryWithAnonToken = (enterCtx, next) => {
     const errorCtx = error.ctx;
     const { clientId, tokenStore, endpointFns } = errorCtx;
 
-    return saveToken(endpointFns.auth.token({
+    return run([
+      endpointFns.auth.token,
+      addAuthTokenResponseToCtx,
+      saveTokenMiddleware,
+    ])({
       params: {
         client_id: clientId,
         grant_type: 'client_credentials',
         scope: 'public-read',
-      }
-    }), tokenStore).then((authToken) => next({ ...errorCtx, authToken: authToken }))
+      },
+      tokenStore
+    }).then(({ authToken }) => {
+      return next({ ...enterCtx, authToken });
+    });
   });
 };
 

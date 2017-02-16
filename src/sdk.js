@@ -5,7 +5,7 @@ import { reader, writer } from './serializer';
 import paramsSerializer from './params_serializer';
 import browserCookieStore from './browser_cookie_store';
 import memoryStore from './memory_store';
-import { authenticate, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware } from './authenticate';
+import { authenticate, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware, saveTokenMiddleware, addAuthTokenResponseToCtx } from './authenticate';
 import run from './middleware';
 
 const formData = params => _.reduce(params, (pairs, v, k) => {
@@ -74,19 +74,6 @@ const apis = {
       adapter,
     }),
   },
-};
-
-const saveTokenMiddleware = (enterCtx, next) => {
-  return next(enterCtx).then((leaveCtx) => {
-    const { tokenStore, res } = leaveCtx;
-    const authToken = res.data;
-
-    if (tokenStore) {
-      tokenStore.setToken(authToken);
-    }
-
-    return leaveCtx;
-  });
 };
 
 const endpointDefinitions = [
@@ -163,7 +150,9 @@ const doRequest = ({ params = {}, httpOpts }) => {
 const createEndpointFn = ({ method, url, httpOpts }) => {
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
-  return ({ params = {}, headers = {} }) => {
+  return (enterCtx, next) => {
+    const { params, headers } = enterCtx;
+
     return doRequest({
       params,
       httpOpts: {
@@ -173,7 +162,10 @@ const createEndpointFn = ({ method, url, httpOpts }) => {
         ...restHttpOpts,
         url,
       }
-    });
+    }).then(res => ({ ...enterCtx, res })).catch((error) => {
+      error.ctx = enterCtx;
+      return Promise.reject(error);
+    }).then(next);
   };
 }
 
@@ -181,17 +173,8 @@ const createSdkMethod = (ctx, endpointFn, middleware) =>
   (params = {}) =>
     run([
       ...middleware,
-      (enterCtx) => {
-        const { headers } = enterCtx;
-        return endpointFn({ params, headers })
-          .then(res => ({ ...enterCtx, res }))
-          .catch((error) => {
-            error.ctx = enterCtx;
-            return Promise.reject(error);
-          })
-        ;
-      }
-    ])(ctx).then(({ res }) => res); // Unpack the `res` from context
+      endpointFn,
+    ])({ ...ctx, params }).then(({ res }) => res); // Unpack the `res` from context
 
 /**
    Take URL and remove the last slash
@@ -286,38 +269,40 @@ export default class SharetribeSdk {
 
     this.login = ({ username, password }) =>
       run([
+        endpointFns.auth.token,
+        addAuthTokenResponseToCtx,
         saveTokenMiddleware,
-        (enterCtx) => endpointFns.auth.token({
-          params: {
-            client_id: clientId,
-            grant_type: 'password',
-            username,
-            password,
-            scope: 'user',
-          }
-        }).then((res) => ({ ...enterCtx, res }))
-      ])(ctx);
+      ])({ ...ctx,
+           params: {
+             client_id: clientId,
+             grant_type: 'password',
+             username,
+             password,
+             scope: 'user',
+           }}).then(({ res }) => res); // Unpack the `res` from context
 
     this.logout = () =>
       run([
         fetchAuthToken,
         addAuthTokenHeader,
         clearTokenMiddleware,
-        (enterCtx) => {
+        (enterCtx, next) => {
           const { headers, authToken } = enterCtx;
-          const refreshToken = authToken && authToken.refreshToken;
+          const refreshToken = authToken && authToken.refresh_token;
 
           if (refreshToken) {
             return endpointFns.auth.revoke({
               params: { token: refreshToken },
               headers,
-            }).then((res) => ({ ...enterCtx, res }));
+            }, (authCtx) => {
+              return next({ ...enterCtx, res: authCtx.res });
+            });
           }
 
           // refresh_token didn't exist so the session can be considered as logged out.
           // Return resolved promise
-          return Promise.resolve(enterCtx);
+          return next({ ...enterCtx, res: {}});
         }
-      ])(ctx);
+      ])(ctx).then(({ res }) => res); // Unpack the `res` from context
   }
 }
