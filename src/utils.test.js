@@ -1,4 +1,4 @@
-import { fnPath, assignDeep, nestedKeyValObj } from './utils';
+import { fnPath, assignDeep, nestedKeyValObj, trimEndSlash } from './utils';
 
 describe('utils', () => {
   describe('pathToMethodName', () => {
@@ -48,4 +48,12 @@ describe('utils', () => {
       expect(a).toBe(abc);
     });
   });
+
+  describe('trimEndSlash', () => {
+    it('trims trailing slashes', () => {
+      expect(trimEndSlash('http://www.api.com')).toEqual('http://www.api.com');
+      expect(trimEndSlash('http://www.api.com/')).toEqual('http://www.api.com');
+      expect(trimEndSlash('http://www.api.com//')).toEqual('http://www.api.com');
+    });
+  })
 });

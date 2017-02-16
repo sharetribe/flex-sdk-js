@@ -1,6 +1,5 @@
 import run from './middleware';
 
-// FIXME Duplicated
 const constructAuthHeader = (authToken) => {
   /* eslint-disable camelcase */
   const token_type = authToken.token_type && authToken.token_type.toLowerCase();

@@ -1,12 +1,11 @@
 import axios from 'axios';
 import _ from 'lodash';
-import { fnPath as urlPathToFnPath, assignDeep } from './utils';
-import { reader, writer } from './serializer';
+import { fnPath as urlPathToFnPath, assignDeep, trimEndSlash } from './utils';
+import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
-import browserCookieStore from './browser_cookie_store';
-import memoryStore from './memory_store';
 import { authenticate, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware, saveTokenMiddleware, addAuthTokenResponseToCtx, fetchRefreshTokenForRevoke } from './authenticate';
 import run from './middleware';
+import { createDefaultTokenStore } from './token_store';
 
 const formData = params => _.reduce(params, (pairs, v, k) => {
   pairs.push(`${k}=${v}`);
@@ -24,67 +23,80 @@ const defaultSdkConfig = {
 const defaultParamsMiddleware = (defaultParams = {}) => ({ params: ctxParams, ...ctx }, next) =>
   next({ ...ctx, params: { ...defaultParams, ...ctxParams } });
 
-const addClientIdToParams = (ctx, next) => {
-  const { clientId, params } = ctx;
+const addClientIdToParams = ({ clientId, params, ...ctx }, next) =>
+  next({ ...ctx, clientId, params: { ...params, client_id: clientId }});
 
-  return next({ ...ctx, params: { ...params, client_id: clientId }});
+const unwrapResponseFromCtx = (enterCtx, next) =>
+  next(enterCtx).then(({ res }) => res);
+
+const createTransitConverters = (typeHandlers) => {
+  const { readers, writers } = typeHandlers.reduce((memo, handler) => {
+    const r = {
+      type: handler.type,
+      reader: handler.reader,
+    };
+    const w = {
+      type: handler.type,
+      customType: handler.customType,
+      writer: handler.writer,
+    };
+
+    memo.readers.push(r);
+    memo.writers.push(w);
+
+    return memo;
+  }, { readers: [], writers: [] });
+
+  const reader = serializer.reader(readers);
+  const writer = serializer.writer(writers);
+
+  return { reader, writer };
 }
 
-const unwrapResponseFromCtx = (enterCtx, next) => next(enterCtx).then(({ res }) => res);
+/**
+   Basic configurations for different 'apis'.
 
+   Currently we have two apis:
+
+   - `api`: the marketplace API
+   - `auth`: the authentication API
+
+   These configurations will be passed to Axios library.
+   They define how to do the requets to the APIs, e.g.
+   how the parameters should be serialized,
+   what are the headers that should be always sent and
+   how to transform requests and response, etc.
+ */
 const apis = {
-  api: {
-    config: ({ baseUrl, version, adapter, typeHandlers }) => {
-      const { readers, writers } = typeHandlers.reduce((memo, handler) => {
-        const r = {
-          type: handler.type,
-          reader: handler.reader,
-        };
-        const w = {
-          type: handler.type,
-          customType: handler.customType,
-          writer: handler.writer,
-        };
+  api: ({ baseUrl, version, adapter, typeHandlers }) => {
+    const { reader, writer } = createTransitConverters(typeHandlers);
 
-        memo.readers.push(r);
-        memo.writers.push(w);
-
-        return memo;
-      }, { readers: [], writers: [] });
-
-      const r = reader(readers);
-      const w = writer(writers);
-
-      return {
-        headers: { Accept: 'application/transit' },
-        baseURL: `${baseUrl}/${version}`,
-        transformRequest: [
-          // logAndReturn,
-          data => w.write(data),
-        ],
-        transformResponse: [
-          // logAndReturn,
-          data => r.read(data),
-        ],
-        adapter,
-        paramsSerializer,
-      };
-    },
-  },
-
-  auth: {
-    config: ({ baseUrl, version, adapter }) => ({
-      baseURL: `${baseUrl}/${version}/`,
+    return {
+      headers: { Accept: 'application/transit' },
+      baseURL: `${baseUrl}/${version}`,
       transformRequest: [
-        data => formData(data),
+        // logAndReturn,
+        data => writer.write(data),
       ],
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json',
-      },
+      transformResponse: [
+        // logAndReturn,
+        data => reader.read(data),
+      ],
       adapter,
-    }),
+      paramsSerializer,
+    };
   },
+  auth: ({ baseUrl, version, adapter }) => ({
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+    },
+    baseURL: `${baseUrl}/${version}/`,
+    transformRequest: [
+      data => formData(data),
+    ],
+    adapter,
+  }),
 };
 
 const endpointDefinitions = [
@@ -166,16 +178,17 @@ const doRequest = ({ params = {}, httpOpts }) => {
 }
 
 /**
-
   Creates an 'endpoint function'.
 
   'endpoint function' is a 'plain' functions that doesn't do any
   additional logic besides calling the endpoint with the given
   parameters and configurations. Should not be confused with 'sdk
   function', which calls to 'endpoint function' and does some
-  additional logic, such as authorization.
+  additional logic with middlewares, such as authorization.
 
-  Usage example: TODO
+  'endpoint function' is meant for SDK's internal use.
+
+  Returns a middleware function.
 */
 const createEndpointFn = ({ method, url, httpOpts }) => {
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
@@ -199,7 +212,15 @@ const createEndpointFn = ({ method, url, httpOpts }) => {
   };
 }
 
-const createSdkMethod = (ctx, endpointFn, middleware) =>
+/**
+   Creates a new SDK function.
+
+   'sdk function' is a function that will be attached to the SDK instance.
+   These functions will be part of the SDK's public interface.
+
+   It's meant to used by the user of the SDK.
+ */
+const createSdkFn = (ctx, endpointFn, middleware) =>
   (params = {}) =>
     run([
       unwrapResponseFromCtx,
@@ -207,33 +228,23 @@ const createSdkMethod = (ctx, endpointFn, middleware) =>
       endpointFn,
     ])({ ...ctx, params });
 
-/**
-   Take URL and remove the last slash
+// Take SDK configurations, do transformation and return.
+const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => {
+  return {
+    ...sdkConfig,
+    baseUrl: trimEndSlash(baseUrl),
+    tokenStore: tokenStore || createDefaultTokenStore(tokenStore, sdkConfig.clientId),
+  }
+}
 
-   Example:
-
-   ```
-   normalizeBaseUrl("http://www.api.com/") => "http://www.api.com"
-   ```
- */
-const normalizeBaseUrl = url => url.replace(/\/*$/, '');
-
-// eslint-disable-next-line no-undef
-const hasBrowserCookies = () => typeof document === 'object' && typeof document.cookies === 'string';
-
-const createTokenStore = (tokenStore, clientId) => {
-  if (tokenStore) {
-    return tokenStore;
+// Validate SDK configurations, throw an error if invalid, otherwise return.
+const validateSdkConfig = (sdkConfig) => {
+  if (!sdkConfig.clientId) {
+    throw new Error('clientId must be provided');
   }
 
-  if (hasBrowserCookies) {
-    return browserCookieStore(clientId);
-  }
-
-  // Token store was not given and we can't use browser cookie store.
-  // Default to in-memory store.
-  return memoryStore();
-};
+  return sdkConfig;
+}
 
 export default class SharetribeSdk {
 
@@ -242,34 +253,21 @@ export default class SharetribeSdk {
      The constructor assumes the config options have been
      already validated.
    */
-  constructor(config) {
-    this.config = { ...defaultSdkConfig, ...config };
+  constructor(userSdkConfig) {
+    // Transform and validation SDK configurations
+    const sdkConfig = validateSdkConfig(transformSdkConfig({ ...defaultSdkConfig, ...userSdkConfig }));
 
-    this.config.baseUrl = normalizeBaseUrl(this.config.baseUrl);
+    // Instantiate API configs
+    const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
 
-    const {
-      endpoints: userEndpointDefinitions,
-      clientId,
-    } = this.config;
-
-    if (!clientId) {
-      throw new Error('clientId must be provided');
-    }
-
-    const tokenStore = createTokenStore(config.tokenStore, clientId);
-
-    // Create endpoint opts
-    const opts = _.mapValues(apis, apiDefinition => ({
-      config: apiDefinition.config(this.config),
-    }));
-
-    const endpointDefs = [...endpointDefinitions, ...userEndpointDefinitions].map((epDef) => {
+    // Read the endpoint definitions and do some mapping
+    const endpointDefs = [...endpointDefinitions, ...sdkConfig.endpoints].map((epDef) => {
       const { path, apiName, root, method } = epDef;
       const fnPath = urlPathToFnPath(path);
       const fullFnPath = [apiName, ...fnPath];
       const sdkFnPath = root ? fnPath : fullFnPath;
       const fullUrlPath = [apiName, path].join('/');
-      const httpOpts = opts[apiName].config;
+      const httpOpts = apiConfigs[apiName];
 
       const endpointFn = createEndpointFn({ method: epDef.method, url: fullUrlPath, httpOpts });
 
@@ -282,23 +280,28 @@ export default class SharetribeSdk {
       }
     });
 
+    // Create `endpointFns` object, which is object containing all defined endpoints.
+    // This object can be passed to middleware in the context so that middleware
+    // functions are able to do API calls (e.g. authentication middleware)
     const endpointFns = endpointDefs.reduce((acc, { fullFnPath, endpointFn }) => {
       return _.set(acc, fullFnPath, endpointFn);
     }, {});
 
+    // Create a context object that will be passed to the middleware functions
     const ctx = {
-      tokenStore,
+      tokenStore: sdkConfig.tokenStore,
       endpointFns,
-      clientId,
+      clientId: sdkConfig.clientId,
     };
 
-    const endpointSdkFns = endpointDefs.map(({ sdkFnPath, endpointFn, middleware }) => {
-      return { path: sdkFnPath, fn: createSdkMethod(ctx, endpointFn, middleware) };
+    // Create SDK functions from the defined endpoints
+    const endpointSdkFns = endpointDefs.map(({ sdkFnPath: path, endpointFn, middleware }) => {
+      return { path, fn: createSdkFn(ctx, endpointFn, middleware) };
     });
 
+    // Create additional SDK functions
     const additionalSdkFns = additionalSdkFnDefinitions.map(({ path, endpointFnName, middleware }) => {
-      const sdkFn = createSdkMethod(ctx, _.get(endpointFns, endpointFnName), middleware);
-      return { path, fn: createSdkMethod(ctx, _.get(endpointFns, endpointFnName), middleware) };
+      return { path, fn: createSdkFn(ctx, _.get(endpointFns, endpointFnName), middleware) };
     });
 
     // Assign SDK functions to 'this'

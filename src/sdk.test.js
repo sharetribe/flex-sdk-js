@@ -19,25 +19,6 @@ const report = (responsePromise) =>
   });
 
 describe('new SharetribeSdk', () => {
-  it('creates a new instance with given options', () => {
-    const tokenStore = {};
-
-    const inst = new SharetribeSdk({
-      baseUrl: 'https://jsonplaceholder.typicode.com',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      typeHandlers: [],
-      endpoints: [],
-      adapter: null,
-      tokenStore,
-    });
-
-    expect(inst.config).toEqual(expect.objectContaining({
-      baseUrl: 'https://jsonplaceholder.typicode.com',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      tokenStore,
-    }));
-  });
-
   it('validates presence of clientId', () => {
     expect(() => new SharetribeSdk({
       baseUrl: 'https://jsonplaceholder.typicode.com',
