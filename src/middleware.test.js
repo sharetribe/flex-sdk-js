@@ -1,7 +1,7 @@
 import run from './middleware';
 
 describe('middleware runner', () => {
-  const createMiddleware = (v) =>
+  const createMiddleware = v =>
     (enterCtx, next) => {
       enterCtx.enter.push(v);
       return next(enterCtx).then((leaveCtx) => {
@@ -15,7 +15,7 @@ describe('middleware runner', () => {
     const b = createMiddleware('b');
     const c = createMiddleware('c');
 
-    return run([a, b, c])({ enter: [], leave: []}).then((resultCtx) => {
+    return run([a, b, c])({ enter: [], leave: [] }).then((resultCtx) => {
       expect(resultCtx).toEqual({ enter: ['a', 'b', 'c'], leave: ['c', 'b', 'a'] });
     });
   });
@@ -73,9 +73,8 @@ describe('middleware runner', () => {
     const ab = run([a, b]);
     const cd = run([c, d]);
 
-    return run([ab, cd])({ enter: [], leave: []}).then((resultCtx) => {
-      expect(resultCtx).toEqual({ enter: ['a', 'b', 'c', 'd' ], leave: ['d', 'c', 'b', 'a' ]});
-})
-
+    return run([ab, cd])({ enter: [], leave: [] }).then((resultCtx) => {
+      expect(resultCtx).toEqual({ enter: ['a', 'b', 'c', 'd'], leave: ['d', 'c', 'b', 'a'] });
+    });
   });
 });

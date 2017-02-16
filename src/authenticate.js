@@ -13,8 +13,8 @@ const constructAuthHeader = (authToken) => {
   /* eslint-enable camelcase */
 };
 
-export const saveTokenMiddleware = (enterCtx, next) => {
-  return next(enterCtx).then((leaveCtx) => {
+export const saveTokenMiddleware = (enterCtx, next) =>
+  next(enterCtx).then((leaveCtx) => {
     const { authToken, tokenStore } = leaveCtx;
 
     if (tokenStore) {
@@ -23,15 +23,13 @@ export const saveTokenMiddleware = (enterCtx, next) => {
 
     return leaveCtx;
   });
-}
 
-export const addAuthTokenResponseToCtx = (enterCtx, next) => {
-  return next(enterCtx).then((leaveCtx) => {
+export const addAuthTokenResponseToCtx = (enterCtx, next) =>
+  next(enterCtx).then((leaveCtx) => {
     const { res: { data: authToken } } = leaveCtx;
 
     return { ...leaveCtx, authToken };
   });
-}
 
 export const fetchAuthToken = (enterCtx, next) => {
   const { tokenStore, endpointFns, clientId } = enterCtx;
@@ -39,32 +37,30 @@ export const fetchAuthToken = (enterCtx, next) => {
 
   if (storedToken) {
     return next({ ...enterCtx, authToken: storedToken });
-  } else {
-    return run([
-      saveTokenMiddleware,
-      addAuthTokenResponseToCtx,
-      endpointFns.auth.token,
-    ])({
-      params: {
-        client_id: clientId,
-        grant_type: 'client_credentials',
-        scope: 'public-read',
-      },
-      tokenStore,
-    }).then(({ authToken }) => {
-      return next({ ...enterCtx, authToken });
-    });
   }
+
+  return run([
+    saveTokenMiddleware,
+    addAuthTokenResponseToCtx,
+    endpointFns.auth.token,
+  ])({
+    params: {
+      client_id: clientId,
+      grant_type: 'client_credentials',
+      scope: 'public-read',
+    },
+    tokenStore,
+  }).then(({ authToken }) => next({ ...enterCtx, authToken }));
 };
 
 export const addAuthTokenHeader = (enterCtx, next) => {
   const { authToken } = enterCtx;
   const authHeaders = { Authorization: constructAuthHeader(authToken) };
   return next({ ...enterCtx, headers: authHeaders });
-}
+};
 
-const retryWithRefreshToken = (enterCtx, next) => {
-  return next(enterCtx).catch((error) => {
+const retryWithRefreshToken = (enterCtx, next) =>
+  next(enterCtx).catch((error) => {
     const errorCtx = error.ctx;
     const { authToken, endpointFns, clientId, tokenStore } = errorCtx;
 
@@ -79,18 +75,15 @@ const retryWithRefreshToken = (enterCtx, next) => {
           grant_type: 'refresh_token',
           refresh_token: authToken.refresh_token,
         },
-        tokenStore
-      }).then(({ authToken }) => {
-        return next({ ...enterCtx, authToken });
-      });
-    } else {
-      return Promise.reject(error);
+        tokenStore,
+      }).then(({ authToken: newAuthToken }) => next({ ...enterCtx, authToken: newAuthToken }));
     }
-  });
-};
 
-const retryWithAnonToken = (enterCtx, next) => {
-  return next(enterCtx).catch((error) => {
+    return Promise.reject(error);
+  });
+
+const retryWithAnonToken = (enterCtx, next) =>
+  next(enterCtx).catch((error) => {
     const errorCtx = error.ctx;
     const { clientId, tokenStore, endpointFns } = errorCtx;
 
@@ -104,15 +97,12 @@ const retryWithAnonToken = (enterCtx, next) => {
         grant_type: 'client_credentials',
         scope: 'public-read',
       },
-      tokenStore
-    }).then(({ authToken }) => {
-      return next({ ...enterCtx, authToken });
-    });
+      tokenStore,
+    }).then(({ authToken }) => next({ ...enterCtx, authToken }));
   });
-};
 
-export const clearTokenMiddleware = (enterCtx, next) => {
-  return next(enterCtx).then((leaveCtx) => {
+export const clearTokenMiddleware = (enterCtx, next) =>
+  next(enterCtx).then((leaveCtx) => {
     const { tokenStore } = leaveCtx;
 
     if (tokenStore) {
@@ -121,20 +111,19 @@ export const clearTokenMiddleware = (enterCtx, next) => {
 
     return leaveCtx;
   });
-}
 
 export const fetchRefreshTokenForRevoke = (enterCtx, next) => {
   const { authToken: { refresh_token: token } } = enterCtx;
 
   if (token) {
-    return next({ ...enterCtx, params: { token }});
-  } else {
-    // No need to call `revoke` endpoint, because we don't have
-    // refresh_token.
-    // Return Promise and halt the middleware chain
-    return Promise.resolve(enterCtx);
+    return next({ ...enterCtx, params: { token } });
   }
-}
+
+  // No need to call `revoke` endpoint, because we don't have
+  // refresh_token.
+  // Return Promise and halt the middleware chain
+  return Promise.resolve(enterCtx);
+};
 
 export const authenticate = run([
   fetchAuthToken,

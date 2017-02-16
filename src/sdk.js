@@ -1,6 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
-import { fnPath as urlPathToFnPath, assignDeep, trimEndSlash } from './utils';
+import { fnPath as urlPathToFnPath, trimEndSlash } from './utils';
 import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
 import { authenticate, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware, saveTokenMiddleware, addAuthTokenResponseToCtx, fetchRefreshTokenForRevoke } from './authenticate';
@@ -24,7 +24,7 @@ const defaultParamsMiddleware = (defaultParams = {}) => ({ params: ctxParams, ..
   next({ ...ctx, params: { ...defaultParams, ...ctxParams } });
 
 const addClientIdToParams = ({ clientId, params, ...ctx }, next) =>
-  next({ ...ctx, clientId, params: { ...params, client_id: clientId }});
+  next({ ...ctx, clientId, params: { ...params, client_id: clientId } });
 
 const unwrapResponseFromCtx = (enterCtx, next) =>
   next(enterCtx).then(({ res }) => res);
@@ -51,7 +51,7 @@ const createTransitConverters = (typeHandlers) => {
   const writer = serializer.writer(writers);
 
   return { reader, writer };
-}
+};
 
 /**
    Basic configurations for different 'apis'.
@@ -124,9 +124,9 @@ const logoutMiddleware = [
 ];
 
 const additionalSdkFnDefinitions = [
-  { path: 'login', endpointFnName: "auth.token", middleware: loginMiddleware },
-  { path: 'logout', endpointFnName: "auth.revoke", middleware: logoutMiddleware }
-]
+  { path: 'login', endpointFnName: 'auth.token', middleware: loginMiddleware },
+  { path: 'logout', endpointFnName: 'auth.revoke', middleware: logoutMiddleware },
+];
 
 // const logAndReturn = (data) => {
 //   console.log(data);
@@ -175,7 +175,7 @@ const doRequest = ({ params = {}, httpOpts }) => {
   };
 
   return axios.request(req).then(handleSuccessResponse).catch(handleFailureResponse);
-}
+};
 
 /**
   Creates an 'endpoint function'.
@@ -204,13 +204,14 @@ const createEndpointFn = ({ method, url, httpOpts }) => {
         headers: { ...httpOptsHeaders, ...headers },
         ...restHttpOpts,
         url,
-      }
+      },
     }).then(res => ({ ...enterCtx, res })).catch((error) => {
+      // eslint-disable-next-line no-param-reassign
       error.ctx = enterCtx;
       return Promise.reject(error);
     }).then(next);
   };
-}
+};
 
 /**
    Creates a new SDK function.
@@ -229,13 +230,11 @@ const createSdkFn = (ctx, endpointFn, middleware) =>
     ])({ ...ctx, params });
 
 // Take SDK configurations, do transformation and return.
-const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => {
-  return {
-    ...sdkConfig,
-    baseUrl: trimEndSlash(baseUrl),
-    tokenStore: tokenStore || createDefaultTokenStore(tokenStore, sdkConfig.clientId),
-  }
-}
+const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
+  ...sdkConfig,
+  baseUrl: trimEndSlash(baseUrl),
+  tokenStore: tokenStore || createDefaultTokenStore(tokenStore, sdkConfig.clientId),
+});
 
 // Validate SDK configurations, throw an error if invalid, otherwise return.
 const validateSdkConfig = (sdkConfig) => {
@@ -244,7 +243,7 @@ const validateSdkConfig = (sdkConfig) => {
   }
 
   return sdkConfig;
-}
+};
 
 export default class SharetribeSdk {
 
@@ -255,7 +254,10 @@ export default class SharetribeSdk {
    */
   constructor(userSdkConfig) {
     // Transform and validation SDK configurations
-    const sdkConfig = validateSdkConfig(transformSdkConfig({ ...defaultSdkConfig, ...userSdkConfig }));
+    const sdkConfig =
+      validateSdkConfig(
+        transformSdkConfig(
+          { ...defaultSdkConfig, ...userSdkConfig }));
 
     // Instantiate API configs
     const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
@@ -266,10 +268,10 @@ export default class SharetribeSdk {
       const fnPath = urlPathToFnPath(path);
       const fullFnPath = [apiName, ...fnPath];
       const sdkFnPath = root ? fnPath : fullFnPath;
-      const fullUrlPath = [apiName, path].join('/');
+      const url = [apiName, path].join('/');
       const httpOpts = apiConfigs[apiName];
 
-      const endpointFn = createEndpointFn({ method: epDef.method, url: fullUrlPath, httpOpts });
+      const endpointFn = createEndpointFn({ method, url, httpOpts });
 
       return {
         ...epDef,
@@ -277,15 +279,15 @@ export default class SharetribeSdk {
         fullFnPath,
         sdkFnPath,
         endpointFn,
-      }
+      };
     });
 
     // Create `endpointFns` object, which is object containing all defined endpoints.
     // This object can be passed to middleware in the context so that middleware
     // functions are able to do API calls (e.g. authentication middleware)
-    const endpointFns = endpointDefs.reduce((acc, { fullFnPath, endpointFn }) => {
-      return _.set(acc, fullFnPath, endpointFn);
-    }, {});
+    const endpointFns = endpointDefs.reduce(
+      (acc, { fullFnPath, endpointFn }) =>
+        _.set(acc, fullFnPath, endpointFn), {});
 
     // Create a context object that will be passed to the middleware functions
     const ctx = {
@@ -295,14 +297,14 @@ export default class SharetribeSdk {
     };
 
     // Create SDK functions from the defined endpoints
-    const endpointSdkFns = endpointDefs.map(({ sdkFnPath: path, endpointFn, middleware }) => {
-      return { path, fn: createSdkFn(ctx, endpointFn, middleware) };
-    });
+    const endpointSdkFns = endpointDefs.map(
+      ({ sdkFnPath: path, endpointFn, middleware }) =>
+        ({ path, fn: createSdkFn(ctx, endpointFn, middleware) }));
 
     // Create additional SDK functions
-    const additionalSdkFns = additionalSdkFnDefinitions.map(({ path, endpointFnName, middleware }) => {
-      return { path, fn: createSdkFn(ctx, _.get(endpointFns, endpointFnName), middleware) };
-    });
+    const additionalSdkFns = additionalSdkFnDefinitions.map(
+      ({ path, endpointFnName, middleware }) =>
+        ({ path, fn: createSdkFn(ctx, _.get(endpointFns, endpointFnName), middleware) }));
 
     // Assign SDK functions to 'this'
     [...endpointSdkFns, ...additionalSdkFns].forEach(({ path, fn }) => _.set(this, path, fn));

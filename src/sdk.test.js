@@ -9,9 +9,10 @@ import memoryStore from './memory_store';
    Includes the `response` in the error message if
    `response` exists.
  */
-const report = (responsePromise) =>
+const report = responsePromise =>
   responsePromise.catch((error) => {
     if (error.response) {
+      // eslint-disable-next-line no-param-reassign
       error.message = `${error.message}. Response: ${JSON.stringify(error.response)}`;
     }
 
@@ -30,7 +31,7 @@ describe('new SharetribeSdk', () => {
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [{
-        path: 'posts/showAll', apiName: 'api', root: true
+        path: 'posts/showAll', apiName: 'api', root: true,
       }],
       adapter: null,
       tokenStore: memoryStore(),
