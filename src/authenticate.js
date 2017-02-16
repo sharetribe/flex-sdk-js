@@ -25,7 +25,7 @@ const saveToken = (authResponse, tokenStore) =>
     return authToken;
   });
 
-const fetchAuthToken = (enterCtx, next) => {
+export const fetchAuthToken = (enterCtx, next) => {
   const { tokenStore, endpointFns, clientId } = enterCtx;
   const storedToken = tokenStore && tokenStore.getToken();
 
@@ -42,7 +42,7 @@ const fetchAuthToken = (enterCtx, next) => {
   }
 };
 
-const addAuthTokenHeader = (enterCtx, next) => {
+export const addAuthTokenHeader = (enterCtx, next) => {
   const { authToken } = enterCtx;
   const authHeaders = { Authorization: constructAuthHeader(authToken) };
   return next({ ...enterCtx, headers: authHeaders });
@@ -82,7 +82,19 @@ const retryWithAnonToken = (enterCtx, next) => {
   });
 };
 
-export default run([
+export const clearTokenMiddleware = (enterCtx, next) => {
+  return next(enterCtx).then((leaveCtx) => {
+    const { tokenStore } = leaveCtx;
+
+    if (tokenStore) {
+      tokenStore.setToken(null);
+    }
+
+    return leaveCtx;
+  });
+}
+
+export const authenticate = run([
   fetchAuthToken,
   retryWithAnonToken,
   retryWithRefreshToken,

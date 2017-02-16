@@ -5,22 +5,8 @@ import { reader, writer } from './serializer';
 import paramsSerializer from './params_serializer';
 import browserCookieStore from './browser_cookie_store';
 import memoryStore from './memory_store';
-import authenticate from './authenticate';
+import { authenticate, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware } from './authenticate';
 import run from './middleware';
-
-// FIXME Duplicated
-const constructAuthHeader = (authToken) => {
-  /* eslint-disable camelcase */
-  const token_type = authToken.token_type && authToken.token_type.toLowerCase();
-
-  switch (token_type) {
-    case 'bearer':
-      return `Bearer ${authToken.access_token}`;
-    default:
-      throw new Error(`Unknown token type: ${token_type}`);
-  }
-  /* eslint-enable camelcase */
-};
 
 const formData = params => _.reduce(params, (pairs, v, k) => {
   pairs.push(`${k}=${v}`);
@@ -102,18 +88,6 @@ const saveTokenMiddleware = (enterCtx, next) => {
     return leaveCtx;
   });
 };
-
-const clearTokenMiddleware = (enterCtx, next) => {
-  return next(enterCtx).then((leaveCtx) => {
-    const { tokenStore } = leaveCtx;
-
-    if (tokenStore) {
-      tokenStore.setToken(null);
-    }
-
-    return leaveCtx;
-  });
-}
 
 const endpointDefinitions = [
   { apiName: 'api', path: 'marketplace/show', root: true, method: 'get', middleware: [authenticate] },
@@ -326,16 +300,17 @@ export default class SharetribeSdk {
 
     this.logout = () =>
       run([
+        fetchAuthToken,
+        addAuthTokenHeader,
         clearTokenMiddleware,
         (enterCtx) => {
-          const { tokenStore } = enterCtx;
-          const token = tokenStore && tokenStore.getToken();
-          const refreshToken = token && token.refresh_token;
+          const { headers, authToken } = enterCtx;
+          const refreshToken = authToken && authToken.refreshToken;
 
           if (refreshToken) {
             return endpointFns.auth.revoke({
               params: { token: refreshToken },
-              headers: { Authorization: constructAuthHeader(token) }
+              headers,
             }).then((res) => ({ ...enterCtx, res }));
           }
 
