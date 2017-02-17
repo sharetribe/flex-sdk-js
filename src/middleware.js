@@ -50,7 +50,7 @@
     }.catch((error)) => {
       const end = (new Date()).getTime();
       error.ctx.time = (end - start);
-      return Promise.reject(error);
+      throe error;
   });
 
   const logTimingMiddleware = (enterCtx, next) => {
@@ -59,7 +59,7 @@
       return leaveCtx;
     }).catch((error) => {
       console.log(`Error took: ${error.ctx.time}`);
-      return Promise.reject(error);
+      throw error;
     })
   });
 

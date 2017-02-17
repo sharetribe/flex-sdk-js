@@ -16,7 +16,7 @@ const report = responsePromise =>
       error.message = `${error.message}. Response: ${JSON.stringify(error.response)}`;
     }
 
-    return Promise.reject(error);
+    throw error;
   });
 
 describe('new SharetribeSdk', () => {

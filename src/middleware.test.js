@@ -73,7 +73,7 @@ describe('middleware runner', () => {
       const mwEnter1 = (enterCtx, next) => next([ ...enterCtx, 1]);
       const mwError2 = (enterCtx, next) => next(enterCtx).catch((error) => {
         error.ctx = [...error.ctx, 2];
-        return Promise.reject(error);
+        throw error;
       });
       const mwReject = (enterCtx, next) => {
         const error = new Error();
@@ -97,7 +97,7 @@ describe('middleware runner', () => {
       const mwLeave2 = (enterCtx, next) => next(enterCtx).then((leaveCtx) => [ ...leaveCtx, 2]);
       const mwError3 = (enterCtx, next) => next(enterCtx).catch((error) => {
         error.ctx = [...error.ctx, 3];
-        return Promise.reject(error);
+        throw error;
       });
       const mwRescue = (enterCtx, next) => next(enterCtx).catch((error) => Promise.resolve(error.ctx));
       const mwReject = (enterCtx, next) => {
@@ -174,7 +174,7 @@ describe('middleware runner', () => {
           return leaveCtx;
         }).catch((error) => {
           error.ctx.error.push('fail');
-          return Promise.reject(error);
+          throw error;
         });
       };
 

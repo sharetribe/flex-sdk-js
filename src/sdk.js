@@ -148,11 +148,11 @@ const handleFailureResponse = (error) => {
 
     // TODO Server should send the error JSON. When that is implemented, parse the JSON
     // and return nicely formatted error.
-    return Promise.reject(error);
+    throw error;
   }
 
   // Something happened in setting up the request that triggered an Error
-  return Promise.reject(error);
+  throw error;
 };
 
 const doRequest = ({ params = {}, httpOpts }) => {
@@ -208,7 +208,7 @@ const createEndpointFn = ({ method, url, httpOpts }) => {
     }).then(res => ({ ...enterCtx, res })).catch((error) => {
       // eslint-disable-next-line no-param-reassign
       error.ctx = enterCtx;
-      return Promise.reject(error);
+      throw error;
     }).then(next);
   };
 };

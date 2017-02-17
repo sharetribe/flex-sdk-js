@@ -79,7 +79,7 @@ const retryWithRefreshToken = (enterCtx, next) =>
       }).then(({ authToken: newAuthToken }) => next({ ...enterCtx, authToken: newAuthToken }));
     }
 
-    return Promise.reject(error);
+    throw error;
   });
 
 const retryWithAnonToken = (enterCtx, next) =>
