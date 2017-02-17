@@ -32,6 +32,14 @@ export const addAuthTokenResponseToCtx = (enterCtx, next) =>
     return { ...leaveCtx, authToken };
   });
 
+export class AddAuthTokenResponseToCtx {
+  leave(ctx) {
+    const { res: { data: authToken } } = ctx;
+
+    return { ...ctx, authToken };
+  }
+}
+
 export const fetchAuthToken = (enterCtx, next) => {
   const { tokenStore, endpointFns, clientId } = enterCtx;
   const storedToken = tokenStore && tokenStore.getToken();
@@ -42,8 +50,11 @@ export const fetchAuthToken = (enterCtx, next) => {
 
   return run([
     saveTokenMiddleware,
-    addAuthTokenResponseToCtx,
-    contextRunner([endpointFns.auth.token]),
+    // addAuthTokenResponseToCtx,
+    contextRunner([
+      new AddAuthTokenResponseToCtx(),
+      endpointFns.auth.token,
+    ]),
   ])({
     params: {
       client_id: clientId,
@@ -60,6 +71,14 @@ export const addAuthTokenHeader = (enterCtx, next) => {
   return next({ ...enterCtx, headers: authHeaders });
 };
 
+class AddAuthTokenHeader {
+  enter(ctx) {
+    const { authToken } = ctx;
+    const authHeaders = { Authorization: constructAuthHeader(authToken) };
+    return { ...ctx, headers: authHeaders };
+  }
+}
+
 const retryWithRefreshToken = (enterCtx, next) =>
   next(enterCtx).catch((error) => {
     const errorCtx = error.ctx;
@@ -68,8 +87,11 @@ const retryWithRefreshToken = (enterCtx, next) =>
     if (error.response && error.response.status === 401 && authToken.refresh_token) {
       return run([
         saveTokenMiddleware,
-        addAuthTokenResponseToCtx,
-        contextRunner([endpointFns.auth.token]),
+        // addAuthTokenResponseToCtx,
+        contextRunner([
+          new AddAuthTokenResponseToCtx(),
+          endpointFns.auth.token,
+        ]),
       ])({
         params: {
           client_id: clientId,
@@ -90,8 +112,11 @@ const retryWithAnonToken = (enterCtx, next) =>
 
     return run([
       saveTokenMiddleware,
-      addAuthTokenResponseToCtx,
-      contextRunner([endpointFns.auth.token]),
+      // addAuthTokenResponseToCtx,
+      contextRunner([
+        new AddAuthTokenResponseToCtx(),
+        endpointFns.auth.token,
+      ]),
     ])({
       params: {
         client_id: clientId,
@@ -130,5 +155,8 @@ export const authenticate = run([
   fetchAuthToken,
   retryWithAnonToken,
   retryWithRefreshToken,
-  addAuthTokenHeader,
+  // addAuthTokenHeader,
+  (enterCtx, next) => contextRunner([
+    new AddAuthTokenHeader(),
+  ])(enterCtx).then(next),
 ]);
