@@ -5,7 +5,7 @@ import memoryStore from './memory_store';
 /* eslint-disable import/prefer-default-export */
 
 export const createDefaultTokenStore = (tokenStore, clientId) => {
-  if (hasBrowserCookies) {
+  if (hasBrowserCookies()) {
     return browserCookieStore(clientId);
   }
 
