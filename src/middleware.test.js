@@ -1,59 +1,56 @@
 import run from './middleware';
 
 describe('middleware runner', () => {
-
   describe('basics', () => {
     it('throws an exception without parameters', () => {
       expect(() => run()({ data: true })).toThrowError(TypeError);
-    })
+    });
 
     it('returns resolved Promise, if no middleware is given', () => {
-      run([])({ data: true }).then((ctx) =>
-        expect(ctx).toEqual({ data: true })
-      );
+      run([])({ data: true }).then(ctx => expect(ctx).toEqual({ data: true }));
     });
 
     it('runs the middleware', () => {
-      const mw1 = (ctx, next) => next([ ...ctx, 1]);
-      run([mw1])([]).then((ctx) =>
+      const mw1 = (ctx, next) => next([...ctx, 1]);
+      run([mw1])([]).then(ctx =>
         expect(ctx).toEqual([1]));
     });
 
     it('runs a chain or middleware', () => {
-      const mw1 = (ctx, next) => next([ ...ctx, 1]);
-      const mw2 = (ctx, next) => next([ ...ctx, 2]);
-      run([mw1, mw2])([]).then((ctx) =>
+      const mw1 = (ctx, next) => next([...ctx, 1]);
+      const mw2 = (ctx, next) => next([...ctx, 2]);
+      run([mw1, mw2])([]).then(ctx =>
         expect(ctx).toEqual([1, 2]));
     });
 
     it('continues to the next middleware if the `next` is provided', () => {
-      const mw1 = (ctx, next) => next([ ...ctx, 1]);
-      const mw2 = (ctx, next) => next([ ...ctx, 2]);
-      const mw3 = (ctx, next) => next([ ...ctx, 3]);
-      const mw4 = (ctx, next) => next([ ...ctx, 4]);
+      const mw1 = (ctx, next) => next([...ctx, 1]);
+      const mw2 = (ctx, next) => next([...ctx, 2]);
+      const mw3 = (ctx, next) => next([...ctx, 3]);
+      const mw4 = (ctx, next) => next([...ctx, 4]);
 
       const mw34 = run([mw3, mw4]);
-      run([mw1, mw2])([], mw34).then((ctx) =>
+      run([mw1, mw2])([], mw34).then(ctx =>
         expect(ctx).toEqual([1, 2, 3, 4]));
     });
 
     it('allows chaining', () => {
-      const mw1 = (ctx, next) => next([ ...ctx, 1]);
-      const mw2 = (ctx, next) => next([ ...ctx, 2]);
-      const mw3 = (ctx, next) => next([ ...ctx, 3]);
-      const mw4 = (ctx, next) => next([ ...ctx, 4]);
+      const mw1 = (ctx, next) => next([...ctx, 1]);
+      const mw2 = (ctx, next) => next([...ctx, 2]);
+      const mw3 = (ctx, next) => next([...ctx, 3]);
+      const mw4 = (ctx, next) => next([...ctx, 4]);
 
       const mw12 = run([mw1, mw2]);
       const mw34 = run([mw3, mw4]);
 
-      run([mw12, mw34])([]).then((ctx) =>
+      run([mw12, mw34])([]).then(ctx =>
         expect(ctx).toEqual([1, 2, 3, 4]));
     });
 
     it('halts the chain execution if Promise is returned', () => {
-      const mw1 = (ctx, next) => next([ ...ctx, 1]);
-      const mwResolve = (ctx, next) => Promise.resolve(ctx);
-      const mw3 = (ctx, next) => next([ ...ctx, 3]);
+      const mw1 = (ctx, next) => next([...ctx, 1]);
+      const mwResolve = ctx => Promise.resolve(ctx);
+      const mw3 = (ctx, next) => next([...ctx, 3]);
 
       run([mw1, mwResolve, mw3])([]).then((ctx) => {
         expect(ctx).toEqual([1]);
@@ -61,8 +58,8 @@ describe('middleware runner', () => {
     });
 
     it('can hook on *enter* or *leave* phase', () => {
-      const mw12 = (enterCtx, next) => next([ ...enterCtx, 1]).then((leaveCtx) => [ ...leaveCtx, 2]);
-      const mw3 = (ctx, next) => next([ ...ctx, 3]);
+      const mw12 = (enterCtx, next) => next([...enterCtx, 1]).then(leaveCtx => [...leaveCtx, 2]);
+      const mw3 = (ctx, next) => next([...ctx, 3]);
 
       run([mw12, mw3])([]).then((ctx) => {
         expect(ctx).toEqual([1, 3, 2]);
@@ -70,12 +67,13 @@ describe('middleware runner', () => {
     });
 
     it('can hook to *error* phase', () => {
-      const mwEnter1 = (enterCtx, next) => next([ ...enterCtx, 1]);
+      const mwEnter1 = (enterCtx, next) => next([...enterCtx, 1]);
       const mwError2 = (enterCtx, next) => next(enterCtx).catch((error) => {
+        // eslint-disable-next-line no-param-reassign
         error.ctx = [...error.ctx, 2];
         throw error;
       });
-      const mwReject = (enterCtx, next) => {
+      const mwReject = (enterCtx) => {
         const error = new Error();
         error.ctx = enterCtx;
         return Promise.reject(error);
@@ -89,18 +87,19 @@ describe('middleware runner', () => {
         const ctx = error.ctx;
         expect(ctx).toEqual([1, 2]);
       });
-
     });
 
     it('can rescue errored chain', () => {
-      const mwEnter1 = (enterCtx, next) => next([ ...enterCtx, 1]);
-      const mwLeave2 = (enterCtx, next) => next(enterCtx).then((leaveCtx) => [ ...leaveCtx, 2]);
+      const mwEnter1 = (enterCtx, next) => next([...enterCtx, 1]);
+      const mwLeave2 = (enterCtx, next) => next(enterCtx).then(leaveCtx => [...leaveCtx, 2]);
       const mwError3 = (enterCtx, next) => next(enterCtx).catch((error) => {
+        // eslint-disable-next-line no-param-reassign
         error.ctx = [...error.ctx, 3];
         throw error;
       });
-      const mwRescue = (enterCtx, next) => next(enterCtx).catch((error) => Promise.resolve(error.ctx));
-      const mwReject = (enterCtx, next) => {
+      const mwRescue = (enterCtx, next) =>
+        next(enterCtx).catch(error => Promise.resolve(error.ctx));
+      const mwReject = (enterCtx) => {
         const error = new Error();
         error.ctx = enterCtx;
         return Promise.reject(error);
@@ -119,7 +118,6 @@ describe('middleware runner', () => {
   });
 
   describe('use cases', () => {
-
     const createMiddleware = v =>
       (enterCtx, next) => {
         enterCtx.enter.push(v);
