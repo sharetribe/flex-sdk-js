@@ -6,6 +6,7 @@ import paramsSerializer from './params_serializer';
 import { authenticate, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware, saveTokenMiddleware, addAuthTokenResponseToCtx, fetchRefreshTokenForRevoke } from './authenticate';
 import run from './middleware';
 import { createDefaultTokenStore } from './token_store';
+import contextRunner from './context_runner';
 
 const formData = params => _.reduce(params, (pairs, v, k) => {
   pairs.push(`${k}=${v}`);
@@ -193,26 +194,22 @@ const doRequest = ({ params = {}, httpOpts }) => {
 const createEndpointFn = ({ method, url, httpOpts }) => {
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
-  return (enterCtx, next) => {
-    const { params, headers } = enterCtx;
-
-    return doRequest({
-      params,
-      httpOpts: {
-        method: (method || 'get'),
-        // Merge additional headers
-        headers: { ...httpOptsHeaders, ...headers },
-        ...restHttpOpts,
-        url,
-      },
-    }).then(res => ({ ...enterCtx, res })).catch((error) => {
-      // eslint-disable-next-line no-param-reassign
-      error.ctx = enterCtx;
-      throw error;
-    }).then(next);
+  return {
+    enter: (ctx) => {
+      const { params, headers } = ctx;
+      return doRequest({
+        params,
+        httpOpts: {
+          method: (method || 'get'),
+          // Merge additional headers
+          headers: { ...httpOptsHeaders, ...headers },
+          ...restHttpOpts,
+          url,
+        },
+      }).then(res => ({ ...ctx, res }));
+    },
   };
 };
-
 /**
    Creates a new SDK function.
 
@@ -226,7 +223,9 @@ const createSdkFn = (ctx, endpointFn, middleware) =>
     run([
       unwrapResponseFromCtx,
       ...middleware,
-      endpointFn,
+
+      // Do some acrobatics. Run interceptor as middlware.
+      (enterCtx, next) => contextRunner([endpointFn])(enterCtx).then(next),
     ])({ ...ctx, params });
 
 // Take SDK configurations, do transformation and return.

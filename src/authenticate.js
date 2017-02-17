@@ -1,4 +1,5 @@
 import run from './middleware';
+import contextRunner from './context_runner';
 
 const constructAuthHeader = (authToken) => {
   /* eslint-disable camelcase */
@@ -42,7 +43,7 @@ export const fetchAuthToken = (enterCtx, next) => {
   return run([
     saveTokenMiddleware,
     addAuthTokenResponseToCtx,
-    endpointFns.auth.token,
+    contextRunner([endpointFns.auth.token]),
   ])({
     params: {
       client_id: clientId,
@@ -68,7 +69,7 @@ const retryWithRefreshToken = (enterCtx, next) =>
       return run([
         saveTokenMiddleware,
         addAuthTokenResponseToCtx,
-        endpointFns.auth.token,
+        contextRunner([endpointFns.auth.token]),
       ])({
         params: {
           client_id: clientId,
@@ -90,7 +91,7 @@ const retryWithAnonToken = (enterCtx, next) =>
     return run([
       saveTokenMiddleware,
       addAuthTokenResponseToCtx,
-      endpointFns.auth.token,
+      contextRunner([endpointFns.auth.token]),
     ])({
       params: {
         client_id: clientId,
