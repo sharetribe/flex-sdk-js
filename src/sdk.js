@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash } from './utils';
 import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
-import { authenticate, authenticateInterceptors, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware, saveTokenMiddleware, addAuthTokenResponseToCtx, fetchRefreshTokenForRevoke } from './authenticate';
+import { authenticate, authenticateInterceptors, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware, saveTokenMiddleware, addAuthTokenResponseToCtx, fetchRefreshTokenForRevoke, FetchRefreshTokenForRevoke, ClearTokenMiddleware, FetchAuthToken, AddAuthTokenHeader } from './authenticate';
 import run from './middleware';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
@@ -118,15 +118,18 @@ const loginMiddleware = [
 ];
 
 const logoutMiddleware = [
-  fetchAuthToken,
-  addAuthTokenHeader,
-  clearTokenMiddleware,
-  fetchRefreshTokenForRevoke,
+];
+
+const logoutInterceptors = [
+  new FetchAuthToken(),
+  new AddAuthTokenHeader(),
+  new ClearTokenMiddleware(),
+  new FetchRefreshTokenForRevoke(),
 ];
 
 const additionalSdkFnDefinitions = [
   { path: 'login', endpointFnName: 'auth.token', middleware: loginMiddleware },
-  { path: 'logout', endpointFnName: 'auth.revoke', middleware: logoutMiddleware },
+  { path: 'logout', endpointFnName: 'auth.revoke', middleware: logoutMiddleware, interceptors: [...logoutInterceptors] },
 ];
 
 // const logAndReturn = (data) => {
@@ -317,8 +320,8 @@ export default class SharetribeSdk {
 
     // Create additional SDK functions
     const additionalSdkFns = additionalSdkFnDefinitions.map(
-      ({ path, endpointFnName, middleware }) =>
-        ({ path, fn: createSdkFn(ctx, _.get(endpointFns, endpointFnName), middleware) }));
+      ({ path, endpointFnName, interceptors, middleware }) =>
+        ({ path, fn: createSdkFn(ctx, _.get(endpointFns, endpointFnName), middleware, interceptors) }));
 
     // Assign SDK functions to 'this'
     [...endpointSdkFns, ...additionalSdkFns].forEach(({ path, fn }) => _.set(this, path, fn));

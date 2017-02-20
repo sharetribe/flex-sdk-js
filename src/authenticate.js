@@ -71,7 +71,7 @@ export const addAuthTokenHeader = (enterCtx, next) => {
   return next({ ...enterCtx, headers: authHeaders });
 };
 
-class AddAuthTokenHeader {
+export class AddAuthTokenHeader {
   enter(ctx) {
     const { authToken } = ctx;
     const authHeaders = { Authorization: constructAuthHeader(authToken) };
@@ -222,6 +222,18 @@ export const clearTokenMiddleware = (enterCtx, next) =>
     return leaveCtx;
   });
 
+export class ClearTokenMiddleware {
+  leave(ctx) {
+    const { tokenStore } = ctx;
+
+    if (tokenStore) {
+      tokenStore.setToken(null);
+    }
+
+    return ctx;
+  }
+}
+
 export const fetchRefreshTokenForRevoke = (enterCtx, next) => {
   const { authToken: { refresh_token: token } } = enterCtx;
 
@@ -235,7 +247,22 @@ export const fetchRefreshTokenForRevoke = (enterCtx, next) => {
   return Promise.resolve(enterCtx);
 };
 
-class FetchAuthToken {
+export class FetchRefreshTokenForRevoke {
+  enter(ctx) {
+    const { authToken: { refresh_token: token } } = ctx;
+
+    if (token) {
+      return { ...ctx, params: { token } };
+    }
+
+    // No need to call `revoke` endpoint, because we don't have
+    // refresh_token.
+    // Clear the enterQueue
+    return { ...ctx, enterQueue: [] };
+  }
+}
+
+export class FetchAuthToken {
   enter(enterCtx) {
     const { tokenStore, endpointFns, clientId } = enterCtx;
     const storedToken = tokenStore && tokenStore.getToken();
