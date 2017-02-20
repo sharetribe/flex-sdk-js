@@ -1,9 +1,7 @@
 const resolve = ctx => Promise.resolve(ctx);
 
-const buildEnterQueue = (params, middleware) => middleware.reverse();
-
 const buildCtx = (params = {}, middleware) =>
-  ({ ...params, enterQueue: buildEnterQueue(params, middleware), leaveStack: [] });
+  ({ ...params, enterQueue: [...middleware].reverse(), leaveStack: [] });
 
 const tryExecuteMw = (ctx, mw, stage) =>
   resolve(ctx).then(mw[stage] || resolve).catch((error) => {
@@ -17,22 +15,23 @@ const tryExecuteMw = (ctx, mw, stage) =>
   });
 
 const nextMw = (ctx) => {
-  const newCtx = { ...ctx };
+  const leaveStack = [...ctx.leaveStack];
+  const enterQueue = [...ctx.enterQueue];
   let mw;
   let type;
 
-  if (newCtx.error) {
-    mw = newCtx.leaveStack.shift();
+  if (ctx.error) {
+    mw = leaveStack.shift();
     type = 'error';
-  } else if (newCtx.enterQueue.length) {
-    mw = newCtx.enterQueue.pop();
-    newCtx.leaveStack.unshift(mw);
+  } else if (enterQueue.length) {
+    mw = enterQueue.pop();
+    leaveStack.unshift(mw);
     type = 'enter';
   } else {
-    mw = newCtx.leaveStack.shift();
+    mw = leaveStack.shift();
     type = 'leave';
   }
-  return [newCtx, mw, type];
+  return [{ ...ctx, enterQueue, leaveStack }, mw, type];
 };
 
 const executeCtx = (ctx) => {
