@@ -25,6 +25,18 @@ export const saveTokenMiddleware = (enterCtx, next) =>
     return leaveCtx;
   });
 
+export class SaveTokenMiddleware {
+  leave(ctx) {
+    const { authToken, tokenStore } = ctx;
+
+    if (tokenStore) {
+      tokenStore.setToken(authToken);
+    }
+
+    return ctx;
+  }
+}
+
 export const addAuthTokenResponseToCtx = (enterCtx, next) =>
   next(enterCtx).then((leaveCtx) => {
     const { res: { data: authToken } } = leaveCtx;
@@ -41,7 +53,7 @@ export class AddAuthTokenResponseToCtx {
 }
 
 export const fetchAuthToken = (enterCtx, next) => {
-  const { tokenStore, endpointFns, clientId } = enterCtx;
+  const { tokenStore, endpointInterceptors, clientId } = enterCtx;
   const storedToken = tokenStore && tokenStore.getToken();
 
   if (storedToken) {
@@ -53,7 +65,7 @@ export const fetchAuthToken = (enterCtx, next) => {
     // addAuthTokenResponseToCtx,
     contextRunner([
       new AddAuthTokenResponseToCtx(),
-      endpointFns.auth.token,
+      endpointInterceptors.auth.token,
     ]),
   ])({
     params: {
@@ -82,7 +94,7 @@ export class AddAuthTokenHeader {
 const retryWithRefreshToken = (enterCtx, next) =>
   next(enterCtx).catch((error) => {
     const errorCtx = error.ctx;
-    const { authToken, endpointFns, clientId, tokenStore } = errorCtx;
+    const { authToken, endpointInterceptors, clientId, tokenStore } = errorCtx;
 
     if (error.response && error.response.status === 401 && authToken.refresh_token) {
       return run([
@@ -90,7 +102,7 @@ const retryWithRefreshToken = (enterCtx, next) =>
         // addAuthTokenResponseToCtx,
         contextRunner([
           new AddAuthTokenResponseToCtx(),
-          endpointFns.auth.token,
+          endpointInterceptors.auth.token,
         ]),
       ])({
         params: {
@@ -108,14 +120,14 @@ const retryWithRefreshToken = (enterCtx, next) =>
 const retryWithAnonToken = (enterCtx, next) =>
   next(enterCtx).catch((error) => {
     const errorCtx = error.ctx;
-    const { clientId, tokenStore, endpointFns } = errorCtx;
+    const { clientId, tokenStore, endpointInterceptors } = errorCtx;
 
     return run([
       saveTokenMiddleware,
       // addAuthTokenResponseToCtx,
       contextRunner([
         new AddAuthTokenResponseToCtx(),
-        endpointFns.auth.token,
+        endpointInterceptors.auth.token,
       ]),
     ])({
       params: {
@@ -140,7 +152,7 @@ class RetryWithRefreshToken {
   }
 
   error(errorCtx) {
-    const { authToken, clientId, tokenStore, endpointFns, refreshTokenRetry: { retryQueue, attempts } } = errorCtx;
+    const { authToken, clientId, tokenStore, endpointInterceptors, refreshTokenRetry: { retryQueue, attempts } } = errorCtx;
 
     if (attempts > 1) {
       return errorCtx;
@@ -151,7 +163,7 @@ class RetryWithRefreshToken {
         saveTokenMiddleware,
         contextRunner([
           new AddAuthTokenResponseToCtx(),
-          endpointFns.auth.token,
+          endpointInterceptors.auth.token,
         ]),
       ])({
         params: {
@@ -182,7 +194,7 @@ class RetryWithAnonToken {
   }
 
   error(errorCtx) {
-    const { clientId, tokenStore, endpointFns, anonTokenRetry: { retryQueue, attempts } } = errorCtx;
+    const { clientId, tokenStore, endpointInterceptors, anonTokenRetry: { retryQueue, attempts } } = errorCtx;
 
     if (attempts > 1) {
       return errorCtx;
@@ -193,7 +205,7 @@ class RetryWithAnonToken {
         saveTokenMiddleware,
         contextRunner([
           new AddAuthTokenResponseToCtx(),
-          endpointFns.auth.token,
+          endpointInterceptors.auth.token,
         ]),
       ])({
         params: {
@@ -264,7 +276,7 @@ export class FetchRefreshTokenForRevoke {
 
 export class FetchAuthToken {
   enter(enterCtx) {
-    const { tokenStore, endpointFns, clientId } = enterCtx;
+    const { tokenStore, endpointInterceptors, clientId } = enterCtx;
     const storedToken = tokenStore && tokenStore.getToken();
 
     if (storedToken) {
@@ -275,7 +287,7 @@ export class FetchAuthToken {
       saveTokenMiddleware,
       contextRunner([
         new AddAuthTokenResponseToCtx(),
-        endpointFns.auth.token,
+        endpointInterceptors.auth.token,
       ]),
     ])({
       params: {

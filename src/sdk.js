@@ -3,8 +3,7 @@ import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash } from './utils';
 import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
-import { authenticate, authenticateInterceptors, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware, saveTokenMiddleware, addAuthTokenResponseToCtx, fetchRefreshTokenForRevoke, FetchRefreshTokenForRevoke, ClearTokenMiddleware, FetchAuthToken, AddAuthTokenHeader } from './authenticate';
-import run from './middleware';
+import { authenticate, authenticateInterceptors, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware, saveTokenMiddleware, addAuthTokenResponseToCtx, fetchRefreshTokenForRevoke, FetchRefreshTokenForRevoke, ClearTokenMiddleware, FetchAuthToken, AddAuthTokenHeader, SaveTokenMiddleware, AddAuthTokenResponseToCtx } from './authenticate';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
 
@@ -24,8 +23,20 @@ const defaultSdkConfig = {
 const defaultParamsMiddleware = (defaultParams = {}) => ({ params: ctxParams, ...ctx }, next) =>
   next({ ...ctx, params: { ...defaultParams, ...ctxParams } });
 
+const defaultParamsInterceptor = (defaultParams = {}) => {
+  return {
+    enter: ({ params: ctxParams, ...ctx }) => ({ ...ctx, params: { ...defaultParams, ...ctxParams }})
+  };
+};
+
 const addClientIdToParams = ({ clientId, params, ...ctx }, next) =>
   next({ ...ctx, clientId, params: { ...params, client_id: clientId } });
+
+class AddClientIdToParams {
+  enter({ clientId, params, ...ctx }) {
+    return { ...ctx, clientId, params: { ...params, client_id: clientId } };
+  }
+}
 
 const unwrapResponseFromCtx = (enterCtx, next) =>
   next(enterCtx).then(({ res }) => res);
@@ -101,23 +112,20 @@ const apis = {
 };
 
 const endpointDefinitions = [
-  { apiName: 'api', path: 'marketplace/show', root: true, method: 'get', middleware: [authenticate], interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'users/show', root: true, method: 'get', middleware: [authenticate], interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/show', root: true, method: 'get', middleware: [authenticate], interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/query', root: true, method: 'get', middleware: [authenticate], interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/search', root: true, method: 'get', middleware: [authenticate], interceptors: [...authenticateInterceptors] },
+  { apiName: 'api', path: 'marketplace/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
+  { apiName: 'api', path: 'users/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
+  { apiName: 'api', path: 'listings/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
+  { apiName: 'api', path: 'listings/query', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
+  { apiName: 'api', path: 'listings/search', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
   { apiName: 'auth', path: 'token', root: false, method: 'post' },
   { apiName: 'auth', path: 'revoke', root: false, method: 'post' },
 ];
 
-const loginMiddleware = [
-  defaultParamsMiddleware({ grant_type: 'password', scope: 'user' }),
-  addClientIdToParams,
-  saveTokenMiddleware,
-  addAuthTokenResponseToCtx,
-];
-
-const logoutMiddleware = [
+const loginInterceptors = [
+  defaultParamsInterceptor({ grant_type: 'password', scope: 'user' }),
+  new AddClientIdToParams(),
+  new SaveTokenMiddleware(),
+  new AddAuthTokenResponseToCtx(),
 ];
 
 const logoutInterceptors = [
@@ -128,8 +136,8 @@ const logoutInterceptors = [
 ];
 
 const additionalSdkFnDefinitions = [
-  { path: 'login', endpointFnName: 'auth.token', middleware: loginMiddleware },
-  { path: 'logout', endpointFnName: 'auth.revoke', middleware: logoutMiddleware, interceptors: [...logoutInterceptors] },
+  { path: 'login', endpointInterceptorName: 'auth.token', interceptors: loginInterceptors },
+  { path: 'logout', endpointInterceptorName: 'auth.revoke', interceptors: [...logoutInterceptors] },
 ];
 
 // const logAndReturn = (data) => {
@@ -182,19 +190,10 @@ const doRequest = ({ params = {}, httpOpts }) => {
 };
 
 /**
-  Creates an 'endpoint function'.
-
-  'endpoint function' is a 'plain' functions that doesn't do any
-  additional logic besides calling the endpoint with the given
-  parameters and configurations. Should not be confused with 'sdk
-  function', which calls to 'endpoint function' and does some
-  additional logic with middlewares, such as authorization.
-
-  'endpoint function' is meant for SDK's internal use.
-
-  Returns a middleware function.
+   Creates an endpoint interceptor that calls the endpoint with the
+   given parameters.
 */
-const createEndpointFn = ({ method, url, httpOpts }) => {
+const createEndpointInterceptor = ({ method, url, httpOpts }) => {
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
   return {
@@ -225,26 +224,12 @@ const createEndpointFn = ({ method, url, httpOpts }) => {
 
    It's meant to used by the user of the SDK.
  */
-const createSdkFn = (ctx, endpointFn, middleware, interceptors) =>
-  (params = {}) => {
-    if (interceptors) {
-      return contextRunner([
-        ...interceptors,
-        endpointFn,
-      ])({ ...ctx, params }).then(({ res }) => res);
-    }
-
-    if (middleware) {
-      return run([
-        unwrapResponseFromCtx,
-        ...middleware,
-
-        // Do some acrobatics. Run interceptor as middlware.
-        (enterCtx, next) => contextRunner([endpointFn])(enterCtx).then(next),
-      ])({ ...ctx, params });
-    }
-
-  }
+const createSdkFn = ({ctx, endpointInterceptor, interceptors}) =>
+  (params = {}) =>
+    contextRunner([
+      ...interceptors,
+      endpointInterceptor,
+    ])({ ...ctx, params }).then(({ res }) => res);
 
 // Take SDK configurations, do transformation and return.
 const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
@@ -288,40 +273,41 @@ export default class SharetribeSdk {
       const url = [apiName, path].join('/');
       const httpOpts = apiConfigs[apiName];
 
-      const endpointFn = createEndpointFn({ method, url, httpOpts });
+      const endpointInterceptor = createEndpointInterceptor({ method, url, httpOpts });
 
       return {
         ...epDef,
         fnPath,
         fullFnPath,
         sdkFnPath,
-        endpointFn,
+        endpointInterceptor,
       };
     });
 
-    // Create `endpointFns` object, which is object containing all defined endpoints.
-    // This object can be passed to middleware in the context so that middleware
-    // functions are able to do API calls (e.g. authentication middleware)
-    const endpointFns = endpointDefs.reduce(
-      (acc, { fullFnPath, endpointFn }) =>
-        _.set(acc, fullFnPath, endpointFn), {});
+    // Create `endpointInterceptors` object, which is object
+    // containing interceptors for all defined endpoints.
+    // This object can be passed to other interceptors in the interceptor context so they
+    // are able to do API calls (e.g. authentication interceptors)
+    const endpointInterceptors = endpointDefs.reduce(
+      (acc, { fullFnPath, endpointInterceptor }) =>
+        _.set(acc, fullFnPath, endpointInterceptor), {});
 
-    // Create a context object that will be passed to the middleware functions
+    // Create a context object that will be passed to the interceptor context runner
     const ctx = {
       tokenStore: sdkConfig.tokenStore,
-      endpointFns,
+      endpointInterceptors,
       clientId: sdkConfig.clientId,
     };
 
     // Create SDK functions from the defined endpoints
     const endpointSdkFns = endpointDefs.map(
-      ({ sdkFnPath: path, endpointFn, interceptors }) =>
-        ({ path, fn: createSdkFn(ctx, endpointFn, null, interceptors) }));
+      ({ sdkFnPath: path, endpointInterceptor, interceptors }) =>
+        ({ path, fn: createSdkFn({ctx, endpointInterceptor, interceptors}) }));
 
     // Create additional SDK functions
     const additionalSdkFns = additionalSdkFnDefinitions.map(
-      ({ path, endpointFnName, interceptors, middleware }) =>
-        ({ path, fn: createSdkFn(ctx, _.get(endpointFns, endpointFnName), middleware, interceptors) }));
+      ({ path, endpointInterceptorName, interceptors }) =>
+        ({ path, fn: createSdkFn({ctx, endpointInterceptor: _.get(endpointInterceptors, endpointInterceptorName), interceptors}) }));
 
     // Assign SDK functions to 'this'
     [...endpointSdkFns, ...additionalSdkFns].forEach(({ path, fn }) => _.set(this, path, fn));
