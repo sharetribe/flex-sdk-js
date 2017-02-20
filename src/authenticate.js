@@ -1,5 +1,7 @@
 import contextRunner from './context_runner';
 
+/* eslint-disable class-methods-use-this */
+
 const constructAuthHeader = (authToken) => {
   /* eslint-disable camelcase */
   const token_type = authToken.token_type && authToken.token_type.toLowerCase();
@@ -13,17 +15,6 @@ const constructAuthHeader = (authToken) => {
   /* eslint-enable camelcase */
 };
 
-export const saveTokenMiddleware = (enterCtx, next) =>
-  next(enterCtx).then((leaveCtx) => {
-    const { authToken, tokenStore } = leaveCtx;
-
-    if (tokenStore) {
-      tokenStore.setToken(authToken);
-    }
-
-    return leaveCtx;
-  });
-
 export class SaveTokenMiddleware {
   leave(ctx) {
     const { authToken, tokenStore } = ctx;
@@ -36,13 +27,6 @@ export class SaveTokenMiddleware {
   }
 }
 
-export const addAuthTokenResponseToCtx = (enterCtx, next) =>
-  next(enterCtx).then((leaveCtx) => {
-    const { res: { data: authToken } } = leaveCtx;
-
-    return { ...leaveCtx, authToken };
-  });
-
 export class AddAuthTokenResponseToCtx {
   leave(ctx) {
     const { res: { data: authToken } } = ctx;
@@ -50,37 +34,6 @@ export class AddAuthTokenResponseToCtx {
     return { ...ctx, authToken };
   }
 }
-
-export const fetchAuthToken = (enterCtx, next) => {
-  const { tokenStore, endpointInterceptors, clientId } = enterCtx;
-  const storedToken = tokenStore && tokenStore.getToken();
-
-  if (storedToken) {
-    return next({ ...enterCtx, authToken: storedToken });
-  }
-
-  return run([
-    saveTokenMiddleware,
-    // addAuthTokenResponseToCtx,
-    contextRunner([
-      new AddAuthTokenResponseToCtx(),
-      endpointInterceptors.auth.token,
-    ]),
-  ])({
-    params: {
-      client_id: clientId,
-      grant_type: 'client_credentials',
-      scope: 'public-read',
-    },
-    tokenStore,
-  }).then(({ authToken }) => next({ ...enterCtx, authToken }));
-};
-
-export const addAuthTokenHeader = (enterCtx, next) => {
-  const { authToken } = enterCtx;
-  const authHeaders = { Authorization: constructAuthHeader(authToken) };
-  return next({ ...enterCtx, headers: authHeaders });
-};
 
 export class AddAuthTokenHeader {
   enter(ctx) {
@@ -90,68 +43,21 @@ export class AddAuthTokenHeader {
   }
 }
 
-const retryWithRefreshToken = (enterCtx, next) =>
-  next(enterCtx).catch((error) => {
-    const errorCtx = error.ctx;
-    const { authToken, endpointInterceptors, clientId, tokenStore } = errorCtx;
-
-    if (error.response && error.response.status === 401 && authToken.refresh_token) {
-      return run([
-        saveTokenMiddleware,
-        // addAuthTokenResponseToCtx,
-        contextRunner([
-          new AddAuthTokenResponseToCtx(),
-          endpointInterceptors.auth.token,
-        ]),
-      ])({
-        params: {
-          client_id: clientId,
-          grant_type: 'refresh_token',
-          refresh_token: authToken.refresh_token,
-        },
-        tokenStore,
-      }).then(({ authToken: newAuthToken }) => next({ ...enterCtx, authToken: newAuthToken }));
-    }
-
-    throw error;
-  });
-
-const retryWithAnonToken = (enterCtx, next) =>
-  next(enterCtx).catch((error) => {
-    const errorCtx = error.ctx;
-    const { clientId, tokenStore, endpointInterceptors } = errorCtx;
-
-    return run([
-      saveTokenMiddleware,
-      // addAuthTokenResponseToCtx,
-      contextRunner([
-        new AddAuthTokenResponseToCtx(),
-        endpointInterceptors.auth.token,
-      ]),
-    ])({
-      params: {
-        client_id: clientId,
-        grant_type: 'client_credentials',
-        scope: 'public-read',
-      },
-      tokenStore,
-    }).then(({ authToken }) => next({ ...enterCtx, authToken }));
-  });
-
 class RetryWithRefreshToken {
   enter(enterCtx) {
     const { enterQueue, refreshTokenRetry: { attempts = 0 } = {} } = enterCtx;
     return {
       ...enterCtx,
       refreshTokenRetry: {
-        retryQueue: [...enterQueue, new RetryWithAnonToken()],
+        retryQueue: [...enterQueue, new RetryWithRefreshToken()],
         attempts: attempts + 1,
-      }
-    }
+      },
+    };
   }
 
   error(errorCtx) {
-    const { authToken, clientId, tokenStore, endpointInterceptors, refreshTokenRetry: { retryQueue, attempts } } = errorCtx;
+    const { authToken, clientId, tokenStore, endpointInterceptors,
+            refreshTokenRetry: { retryQueue, attempts } } = errorCtx;
 
     if (attempts > 1) {
       return errorCtx;
@@ -169,9 +75,8 @@ class RetryWithRefreshToken {
           refresh_token: authToken.refresh_token,
         },
         tokenStore,
-      }).then(({ authToken }) => {
-        return { ...errorCtx, authToken, enterQueue: retryQueue, error: null };
-      });
+      }).then(({ authToken: newAuthToken }) =>
+        ({ ...errorCtx, authToken: newAuthToken, enterQueue: retryQueue, error: null }));
     }
 
     return errorCtx;
@@ -186,18 +91,19 @@ class RetryWithAnonToken {
       anonTokenRetry: {
         retryQueue: [...enterQueue, new RetryWithAnonToken()],
         attempts: attempts + 1,
-      }
-    }
+      },
+    };
   }
 
   error(errorCtx) {
-    const { clientId, tokenStore, endpointInterceptors, anonTokenRetry: { retryQueue, attempts } } = errorCtx;
+    const { clientId, tokenStore, endpointInterceptors,
+            anonTokenRetry: { retryQueue, attempts } } = errorCtx;
 
     if (attempts > 1) {
       return errorCtx;
     }
 
-    if (errorCtx.res && errorCtx.res.status == 401) {
+    if (errorCtx.res && errorCtx.res.status === 401) {
       return contextRunner([
         new SaveTokenMiddleware(),
         new AddAuthTokenResponseToCtx(),
@@ -209,25 +115,12 @@ class RetryWithAnonToken {
           scope: 'public-read',
         },
         tokenStore,
-      }).then(({ authToken }) => {
-        return { ...errorCtx, authToken, enterQueue: retryQueue, error: null };
-      });
+      }).then(({ authToken }) => ({ ...errorCtx, authToken, enterQueue: retryQueue, error: null }));
     }
 
     return errorCtx;
   }
 }
-
-export const clearTokenMiddleware = (enterCtx, next) =>
-  next(enterCtx).then((leaveCtx) => {
-    const { tokenStore } = leaveCtx;
-
-    if (tokenStore) {
-      tokenStore.setToken(null);
-    }
-
-    return leaveCtx;
-  });
 
 export class ClearTokenMiddleware {
   leave(ctx) {
@@ -240,19 +133,6 @@ export class ClearTokenMiddleware {
     return ctx;
   }
 }
-
-export const fetchRefreshTokenForRevoke = (enterCtx, next) => {
-  const { authToken: { refresh_token: token } } = enterCtx;
-
-  if (token) {
-    return next({ ...enterCtx, params: { token } });
-  }
-
-  // No need to call `revoke` endpoint, because we don't have
-  // refresh_token.
-  // Return Promise and halt the middleware chain
-  return Promise.resolve(enterCtx);
-};
 
 export class FetchRefreshTokenForRevoke {
   enter(ctx) {
@@ -279,7 +159,7 @@ export class FetchAuthToken {
     }
 
     return contextRunner([
-      new SaveTokenMiddleware,
+      new SaveTokenMiddleware(),
       new AddAuthTokenResponseToCtx(),
       endpointInterceptors.auth.token,
     ])({
@@ -298,14 +178,4 @@ export const authenticateInterceptors = [
   new RetryWithAnonToken(),
   new RetryWithRefreshToken(),
   new AddAuthTokenHeader(),
-]
-
-// export const authenticate = run([
-//   fetchAuthToken,
-//   retryWithAnonToken,
-//   retryWithRefreshToken,
-//   // addAuthTokenHeader,
-//   (enterCtx, next) => contextRunner([
-//     new AddAuthTokenHeader(),
-//   ])(enterCtx).then(next),
-// ]);
+];

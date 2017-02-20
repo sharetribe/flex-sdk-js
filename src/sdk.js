@@ -3,9 +3,17 @@ import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash } from './utils';
 import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
-import { authenticate, authenticateInterceptors, fetchAuthToken, addAuthTokenHeader, clearTokenMiddleware, saveTokenMiddleware, addAuthTokenResponseToCtx, fetchRefreshTokenForRevoke, FetchRefreshTokenForRevoke, ClearTokenMiddleware, FetchAuthToken, AddAuthTokenHeader, SaveTokenMiddleware, AddAuthTokenResponseToCtx } from './authenticate';
+import { authenticateInterceptors,
+         FetchRefreshTokenForRevoke,
+         ClearTokenMiddleware,
+         FetchAuthToken,
+         AddAuthTokenHeader,
+         SaveTokenMiddleware,
+         AddAuthTokenResponseToCtx } from './authenticate';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
+
+/* eslint-disable class-methods-use-this */
 
 const formData = params => _.reduce(params, (pairs, v, k) => {
   pairs.push(`${k}=${v}`);
@@ -20,26 +28,17 @@ const defaultSdkConfig = {
   version: 'v1',
 };
 
-const defaultParamsMiddleware = (defaultParams = {}) => ({ params: ctxParams, ...ctx }, next) =>
-  next({ ...ctx, params: { ...defaultParams, ...ctxParams } });
-
-const defaultParamsInterceptor = (defaultParams = {}) => {
-  return {
-    enter: ({ params: ctxParams, ...ctx }) => ({ ...ctx, params: { ...defaultParams, ...ctxParams }})
-  };
-};
-
-const addClientIdToParams = ({ clientId, params, ...ctx }, next) =>
-  next({ ...ctx, clientId, params: { ...params, client_id: clientId } });
+const defaultParamsInterceptor = (defaultParams = {}) =>
+  ({
+    enter: ({ params: ctxParams, ...ctx }) =>
+      ({ ...ctx, params: { ...defaultParams, ...ctxParams } }),
+  });
 
 class AddClientIdToParams {
   enter({ clientId, params, ...ctx }) {
     return { ...ctx, clientId, params: { ...params, client_id: clientId } };
   }
 }
-
-const unwrapResponseFromCtx = (enterCtx, next) =>
-  next(enterCtx).then(({ res }) => res);
 
 const createTransitConverters = (typeHandlers) => {
   const { readers, writers } = typeHandlers.reduce((memo, handler) => {
@@ -208,8 +207,9 @@ const createEndpointInterceptor = ({ method, url, httpOpts }) => {
           ...restHttpOpts,
           url,
         },
-      }).then(res => ({ ...ctx, res })).catch(error => {
+      }).then(res => ({ ...ctx, res })).catch((error) => {
         const errorCtx = { ...ctx, res: error.response };
+        // eslint-disable-next-line no-param-reassign
         error.ctx = errorCtx;
         throw error;
       });
@@ -224,7 +224,7 @@ const createEndpointInterceptor = ({ method, url, httpOpts }) => {
 
    It's meant to used by the user of the SDK.
  */
-const createSdkFn = ({ctx, endpointInterceptor, interceptors}) =>
+const createSdkFn = ({ ctx, endpointInterceptor, interceptors }) =>
   (params = {}) =>
     contextRunner([
       ...interceptors,
@@ -302,12 +302,19 @@ export default class SharetribeSdk {
     // Create SDK functions from the defined endpoints
     const endpointSdkFns = endpointDefs.map(
       ({ sdkFnPath: path, endpointInterceptor, interceptors }) =>
-        ({ path, fn: createSdkFn({ctx, endpointInterceptor, interceptors}) }));
+        ({ path, fn: createSdkFn({ ctx, endpointInterceptor, interceptors }) }));
 
     // Create additional SDK functions
     const additionalSdkFns = additionalSdkFnDefinitions.map(
       ({ path, endpointInterceptorName, interceptors }) =>
-        ({ path, fn: createSdkFn({ctx, endpointInterceptor: _.get(endpointInterceptors, endpointInterceptorName), interceptors}) }));
+        ({
+          path,
+          fn: createSdkFn({
+            ctx,
+            endpointInterceptor: _.get(endpointInterceptors, endpointInterceptorName),
+            interceptors,
+          }),
+        }));
 
     // Assign SDK functions to 'this'
     [...endpointSdkFns, ...additionalSdkFns].forEach(({ path, fn }) => _.set(this, path, fn));

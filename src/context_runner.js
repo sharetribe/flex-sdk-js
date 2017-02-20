@@ -6,7 +6,7 @@ const buildCtx = (params = {}, middleware) =>
   ({ ...params, enterQueue: buildEnterQueue(params, middleware), leaveStack: [] });
 
 const tryExecuteMw = (ctx, mw, stage) =>
-  resolve(ctx).then(mw[stage] || resolve).catch(error => {
+  resolve(ctx).then(mw[stage] || resolve).catch((error) => {
     const errorCtx = error.ctx || ctx;
     return Promise.resolve({
       ...errorCtx,
