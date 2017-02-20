@@ -1,6 +1,6 @@
 import run from './middleware';
 
-describe('middleware runner', () => {
+xdescribe('middleware runner', () => {
   describe('basics', () => {
     it('throws an exception without parameters', () => {
       expect(() => run()({ data: true })).toThrowError(TypeError);

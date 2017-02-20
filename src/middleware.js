@@ -88,6 +88,7 @@
 */
 
 const run = (middlewares) => {
+  throw new Error("Deprecated")
   const [first, ...rest] = middlewares;
 
   // Return a middleware function (ctx, next) -> Promise

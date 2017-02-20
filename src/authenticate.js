@@ -1,4 +1,3 @@
-import run from './middleware';
 import contextRunner from './context_runner';
 
 const constructAuthHeader = (authToken) => {
@@ -159,12 +158,10 @@ class RetryWithRefreshToken {
     }
 
     if (errorCtx.res && errorCtx.res.status === 401 && authToken.refresh_token) {
-      return run([
-        saveTokenMiddleware,
-        contextRunner([
-          new AddAuthTokenResponseToCtx(),
-          endpointInterceptors.auth.token,
-        ]),
+      return contextRunner([
+        new SaveTokenMiddleware(),
+        new AddAuthTokenResponseToCtx(),
+        endpointInterceptors.auth.token,
       ])({
         params: {
           client_id: clientId,
@@ -201,12 +198,10 @@ class RetryWithAnonToken {
     }
 
     if (errorCtx.res && errorCtx.res.status == 401) {
-      return run([
-        saveTokenMiddleware,
-        contextRunner([
-          new AddAuthTokenResponseToCtx(),
-          endpointInterceptors.auth.token,
-        ]),
+      return contextRunner([
+        new SaveTokenMiddleware(),
+        new AddAuthTokenResponseToCtx(),
+        endpointInterceptors.auth.token,
       ])({
         params: {
           client_id: clientId,
@@ -283,12 +278,10 @@ export class FetchAuthToken {
       return Promise.resolve({ ...enterCtx, authToken: storedToken });
     }
 
-    return run([
-      saveTokenMiddleware,
-      contextRunner([
-        new AddAuthTokenResponseToCtx(),
-        endpointInterceptors.auth.token,
-      ]),
+    return contextRunner([
+      new SaveTokenMiddleware,
+      new AddAuthTokenResponseToCtx(),
+      endpointInterceptors.auth.token,
     ])({
       params: {
         client_id: clientId,
@@ -307,12 +300,12 @@ export const authenticateInterceptors = [
   new AddAuthTokenHeader(),
 ]
 
-export const authenticate = run([
-  fetchAuthToken,
-  retryWithAnonToken,
-  retryWithRefreshToken,
-  // addAuthTokenHeader,
-  (enterCtx, next) => contextRunner([
-    new AddAuthTokenHeader(),
-  ])(enterCtx).then(next),
-]);
+// export const authenticate = run([
+//   fetchAuthToken,
+//   retryWithAnonToken,
+//   retryWithRefreshToken,
+//   // addAuthTokenHeader,
+//   (enterCtx, next) => contextRunner([
+//     new AddAuthTokenHeader(),
+//   ])(enterCtx).then(next),
+// ]);
