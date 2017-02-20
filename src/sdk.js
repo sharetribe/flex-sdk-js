@@ -1,12 +1,26 @@
 import axios from 'axios';
 import _ from 'lodash';
-import { methodPath, assignDeep } from './utils';
-import { reader, writer } from './serializer';
+import { fnPath as urlPathToFnPath, trimEndSlash } from './utils';
+import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
-import browserCookieStore from './browser_cookie_store';
-import memoryStore from './memory_store';
+import { authenticateInterceptors,
+         FetchRefreshTokenForRevoke,
+         ClearTokenMiddleware,
+         FetchAuthToken,
+         AddAuthTokenHeader,
+         SaveTokenMiddleware,
+         AddAuthTokenResponseToCtx } from './authenticate';
+import { createDefaultTokenStore } from './token_store';
+import contextRunner from './context_runner';
 
-const defaultOpts = {
+/* eslint-disable class-methods-use-this */
+
+const formData = params => _.reduce(params, (pairs, v, k) => {
+  pairs.push(`${k}=${v}`);
+  return pairs;
+}, []).join('&');
+
+const defaultSdkConfig = {
   baseUrl: 'https://api.sharetribe.com',
   typeHandlers: [],
   endpoints: [],
@@ -14,15 +28,118 @@ const defaultOpts = {
   version: 'v1',
 };
 
-const defaultEndpoints = [
-  { path: 'marketplace/show' },
-  { path: 'users/show' },
-  { path: 'listings/show' },
-  { path: 'listings/query' },
-  { path: 'listings/search' },
+const defaultParamsInterceptor = (defaultParams = {}) =>
+  ({
+    enter: ({ params: ctxParams, ...ctx }) =>
+      ({ ...ctx, params: { ...defaultParams, ...ctxParams } }),
+  });
+
+class AddClientIdToParams {
+  enter({ clientId, params, ...ctx }) {
+    return { ...ctx, clientId, params: { ...params, client_id: clientId } };
+  }
+}
+
+const createTransitConverters = (typeHandlers) => {
+  const { readers, writers } = typeHandlers.reduce((memo, handler) => {
+    const r = {
+      type: handler.type,
+      reader: handler.reader,
+    };
+    const w = {
+      type: handler.type,
+      customType: handler.customType,
+      writer: handler.writer,
+    };
+
+    memo.readers.push(r);
+    memo.writers.push(w);
+
+    return memo;
+  }, { readers: [], writers: [] });
+
+  const reader = serializer.reader(readers);
+  const writer = serializer.writer(writers);
+
+  return { reader, writer };
+};
+
+/**
+   Basic configurations for different 'apis'.
+
+   Currently we have two apis:
+
+   - `api`: the marketplace API
+   - `auth`: the authentication API
+
+   These configurations will be passed to Axios library.
+   They define how to do the requets to the APIs, e.g.
+   how the parameters should be serialized,
+   what are the headers that should be always sent and
+   how to transform requests and response, etc.
+ */
+const apis = {
+  api: ({ baseUrl, version, adapter, typeHandlers }) => {
+    const { reader, writer } = createTransitConverters(typeHandlers);
+
+    return {
+      headers: { Accept: 'application/transit' },
+      baseURL: `${baseUrl}/${version}`,
+      transformRequest: [
+        // logAndReturn,
+        data => writer.write(data),
+      ],
+      transformResponse: [
+        // logAndReturn,
+        data => reader.read(data),
+      ],
+      adapter,
+      paramsSerializer,
+    };
+  },
+  auth: ({ baseUrl, version, adapter }) => ({
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+    },
+    baseURL: `${baseUrl}/${version}/`,
+    transformRequest: [
+      data => formData(data),
+    ],
+    adapter,
+  }),
+};
+
+const endpointDefinitions = [
+  { apiName: 'api', path: 'marketplace/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
+  { apiName: 'api', path: 'users/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
+  { apiName: 'api', path: 'listings/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
+  { apiName: 'api', path: 'listings/query', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
+  { apiName: 'api', path: 'listings/search', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
+  { apiName: 'auth', path: 'token', root: false, method: 'post' },
+  { apiName: 'auth', path: 'revoke', root: false, method: 'post' },
 ];
 
-// const logAndReturn = data => {
+const loginInterceptors = [
+  defaultParamsInterceptor({ grant_type: 'password', scope: 'user' }),
+  new AddClientIdToParams(),
+  new SaveTokenMiddleware(),
+  new AddAuthTokenResponseToCtx(),
+];
+
+const logoutInterceptors = [
+  new FetchAuthToken(),
+  new AddAuthTokenHeader(),
+  new ClearTokenMiddleware(),
+  new FetchRefreshTokenForRevoke(),
+];
+
+const additionalSdkFnDefinitions = [
+  { path: 'login', endpointInterceptorName: 'auth.token', interceptors: loginInterceptors },
+  { path: 'logout', endpointInterceptorName: 'auth.revoke', interceptors: [...logoutInterceptors] },
+];
+
+// const logAndReturn = (data) => {
 //   console.log(data);
 //   return data;
 // };
@@ -39,231 +156,95 @@ const handleFailureResponse = (error) => {
   if (response) {
     // The request was made, but the server responses with a status code
     // other than 2xx
-    const { status, statusText, data } = response;
-    return Promise.reject({ status, statusText, data });
+
+    // TODO Server should send the error JSON. When that is implemented, parse the JSON
+    // and return nicely formatted error.
+    throw error;
   }
 
   // Something happened in setting up the request that triggered an Error
-  return Promise.reject(error);
+  throw error;
 };
 
-const formData = params => _.reduce(params, (pairs, v, k) => {
-  pairs.push(`${k}=${v}`);
-  return pairs;
-}, []).join('&');
+const doRequest = ({ params = {}, httpOpts }) => {
+  const { method = 'get' } = httpOpts;
 
-const callAuthAndSaveToken = ({ baseUrl, version, adapter, tokenStore, data }) =>
-  axios.request({
-    method: 'post',
-    baseURL: `${baseUrl}/${version}/`,
-    url: 'auth/token',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
-    },
-    data: formData(data),
-    adapter,
-  }).then(res => res.data).then((authToken) => {
-    if (tokenStore) {
-      tokenStore.setToken(authToken);
-    }
+  let bodyParams = null;
+  let queryParams = null;
 
-    return authToken;
-  });
+  if (method.toLowerCase() === 'post') {
+    bodyParams = params;
+  } else {
+    queryParams = params;
+  }
 
-const createLoginEndpoint = ({ baseUrl, version, clientId, adapter, tokenStore }) =>
-  ({ username, password }) =>
-    callAuthAndSaveToken({
-      baseUrl,
-      version,
-      adapter,
-      tokenStore,
-      data: {
-        client_id: clientId,
-        grant_type: 'password',
-        username,
-        password,
-        scope: 'user',
-      },
-    });
-
-const callRemoveAndCleanToken = ({ baseUrl, version, adapter, tokenStore, data }) =>
-  axios.request({
-    method: 'post',
-    baseURL: `${baseUrl}/${version}/`,
-    url: 'auth/revoke',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
-    },
-    data: formData(data),
-    adapter,
-  }).then(res => res.data).then(() => {
-    if (tokenStore) {
-      tokenStore.setToken(null);
-    }
-
-    return Promise.resolve();
-  });
-
-const createLogoutEndpoint = ({ baseUrl, version, adapter, tokenStore }) =>
-  () => {
-    const token = tokenStore && tokenStore.getToken();
-    const refreshToken = token && token.refresh_token;
-
-    if (refreshToken) {
-      return callRemoveAndCleanToken({
-        baseUrl,
-        version,
-        adapter,
-        tokenStore,
-        data: {
-          token: refreshToken,
-        },
-      });
-    }
-    // refresh_token didn't exist so the session can be considered as logged out.
-    // Return resolved promise
-    return Promise.resolve();
+  const req = {
+    ...httpOpts,
+    method,
+    params: queryParams,
+    data: bodyParams,
   };
 
-
-const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => (apiCall) => {
-  const storedToken = tokenStore && tokenStore.getToken();
-
-  let authentication;
-
-  if (storedToken) {
-    authentication = Promise.resolve(storedToken);
-  } else {
-    authentication = callAuthAndSaveToken({
-      baseUrl,
-      version,
-      adapter,
-      tokenStore,
-      data: {
-        client_id: clientId,
-        grant_type: 'client_credentials',
-        scope: 'public-read',
-      },
-    });
-  }
-
-  return authentication.then(authToken =>
-    apiCall(authToken)
-      .catch((error) => {
-        let newAuthentication;
-
-        if (error.status === 401 && authToken.refresh_token) {
-          newAuthentication = callAuthAndSaveToken({
-            baseUrl,
-            version,
-            adapter,
-            tokenStore,
-            data: {
-              client_id: clientId,
-              grant_type: 'refresh_token',
-              refresh_token: authToken.refresh_token,
-            },
-          });
-        } else {
-          newAuthentication = callAuthAndSaveToken({
-            baseUrl,
-            version,
-            adapter,
-            tokenStore,
-            data: {
-              client_id: clientId,
-              grant_type: 'client_credentials',
-              scope: 'public-read',
-            },
-          });
-        }
-
-        return newAuthentication.then(freshAuthToken => apiCall(freshAuthToken));
-      }));
+  return axios.request(req).then(handleSuccessResponse).catch(handleFailureResponse);
 };
 
-const constructAuthHeader = (authToken) => {
-  /* eslint-disable camelcase */
-  const token_type = authToken.token_type && authToken.token_type.toLowerCase();
+/**
+   Creates an endpoint interceptor that calls the endpoint with the
+   given parameters.
+*/
+const createEndpointInterceptor = ({ method, url, httpOpts }) => {
+  const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
-  switch (token_type) {
-    case 'bearer':
-      return `Bearer ${authToken.access_token}`;
-    default:
-      throw new Error(`Unknown token type: ${token_type}`);
-  }
-  /* eslint-enable camelcase */
+  return {
+    enter: (ctx) => {
+      const { params, headers } = ctx;
+      return doRequest({
+        params,
+        httpOpts: {
+          method: (method || 'get'),
+          // Merge additional headers
+          headers: { ...httpOptsHeaders, ...headers },
+          ...restHttpOpts,
+          url,
+        },
+      }).then(res => ({ ...ctx, res })).catch((error) => {
+        const errorCtx = { ...ctx, res: error.response };
+        // eslint-disable-next-line no-param-reassign
+        error.ctx = errorCtx;
+        throw error;
+      });
+    },
+  };
 };
+/**
+   Creates a new SDK function.
 
-const createSdkMethod = (req, axiosInstance, withAuthToken) =>
+   'sdk function' is a function that will be attached to the SDK instance.
+   These functions will be part of the SDK's public interface.
+
+   It's meant to used by the user of the SDK.
+ */
+const createSdkFn = ({ ctx, endpointInterceptor, interceptors }) =>
   (params = {}) =>
-    withAuthToken((authToken) => {
-      const authHeader = { Authorization: `${constructAuthHeader(authToken)}` };
-      const reqHeaders = req.headers || {};
-      const headers = { ...authHeader, ...reqHeaders };
+    contextRunner([
+      ...interceptors,
+      endpointInterceptor,
+    ])({ ...ctx, params }).then(({ res }) => res);
 
-      return axiosInstance.request({ ...req, headers, params })
-                          .then(handleSuccessResponse)
-                          .catch(handleFailureResponse);
-    });
+// Take SDK configurations, do transformation and return.
+const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
+  ...sdkConfig,
+  baseUrl: trimEndSlash(baseUrl),
+  tokenStore: tokenStore || createDefaultTokenStore(tokenStore, sdkConfig.clientId),
+});
 
-/**
- * Mutates 'obj' by adding endpoint methods to it.
- *
- * @param {Object} obj - Object that will be assigned with the endpoints.
- * @param {Object[]} endpoints - endpoint definitions
- * @param {Object} axiosInstance
- *
- */
-const assignEndpoints = (obj, endpoints, axiosInstance, withAuthToken) => {
-  endpoints.forEach((ep) => {
-    const req = {
-      url: ep.path,
-    };
-
-    const sdkMethod = createSdkMethod(req, axiosInstance, withAuthToken);
-
-    // e.g. '/marketplace/users/show/' -> ['marketplace', 'users', 'show']
-    const path = methodPath(ep.path);
-
-    // Assign `sdkMethod` to path.
-    //
-    // E.g. assign obj.marketplace.users.show = sdkMethod
-    assignDeep(obj, path, sdkMethod);
-  });
-
-  // Return the mutated obj
-  return obj;
-};
-
-/**
-   Take URL and remove the last slash
-
-   Example:
-
-   ```
-   normalizeBaseUrl("http://www.api.com/") => "http://www.api.com"
-   ```
- */
-const normalizeBaseUrl = url => url.replace(/\/*$/, '');
-
-// eslint-disable-next-line no-undef
-const hasBrowserCookies = () => typeof document === 'object' && typeof document.cookies === 'string';
-
-const createTokenStore = (tokenStore, clientId) => {
-  if (tokenStore) {
-    return tokenStore;
+// Validate SDK configurations, throw an error if invalid, otherwise return.
+const validateSdkConfig = (sdkConfig) => {
+  if (!sdkConfig.clientId) {
+    throw new Error('clientId must be provided');
   }
 
-  if (hasBrowserCookies) {
-    return browserCookieStore(clientId);
-  }
-
-  // Token store was not given and we can't use browser cookie store.
-  // Default to in-memory store.
-  return memoryStore();
+  return sdkConfig;
 };
 
 export default class SharetribeSdk {
@@ -273,92 +254,69 @@ export default class SharetribeSdk {
      The constructor assumes the config options have been
      already validated.
    */
-  constructor(config) {
-    this.config = { ...defaultOpts, ...config };
+  constructor(userSdkConfig) {
+    // Transform and validation SDK configurations
+    const sdkConfig =
+      validateSdkConfig(
+        transformSdkConfig(
+          { ...defaultSdkConfig, ...userSdkConfig }));
 
-    this.config.baseUrl = normalizeBaseUrl(this.config.baseUrl);
+    // Instantiate API configs
+    const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
 
-    const {
-      baseUrl,
-      typeHandlers,
-      endpoints,
-      adapter,
-      clientId,
-      version,
-      tokenStore,
-    } = this.config;
+    // Read the endpoint definitions and do some mapping
+    const endpointDefs = [...endpointDefinitions, ...sdkConfig.endpoints].map((epDef) => {
+      const { path, apiName, root, method } = epDef;
+      const fnPath = urlPathToFnPath(path);
+      const fullFnPath = [apiName, ...fnPath];
+      const sdkFnPath = root ? fnPath : fullFnPath;
+      const url = [apiName, path].join('/');
+      const httpOpts = apiConfigs[apiName];
 
-    if (!clientId) {
-      throw new Error('clientId must be provided');
-    }
+      const endpointInterceptor = createEndpointInterceptor({ method, url, httpOpts });
 
-    const { readers, writers } = typeHandlers.reduce((memo, handler) => {
-      const r = {
-        type: handler.type,
-        reader: handler.reader,
+      return {
+        ...epDef,
+        fnPath,
+        fullFnPath,
+        sdkFnPath,
+        endpointInterceptor,
       };
-      const w = {
-        type: handler.type,
-        customType: handler.customType,
-        writer: handler.writer,
-      };
+    });
 
-      memo.readers.push(r);
-      memo.writers.push(w);
+    // Create `endpointInterceptors` object, which is object
+    // containing interceptors for all defined endpoints.
+    // This object can be passed to other interceptors in the interceptor context so they
+    // are able to do API calls (e.g. authentication interceptors)
+    const endpointInterceptors = endpointDefs.reduce(
+      (acc, { fullFnPath, endpointInterceptor }) =>
+        _.set(acc, fullFnPath, endpointInterceptor), {});
 
-      return memo;
-    }, { readers: [], writers: [] });
-
-    const r = reader(readers);
-    const w = writer(writers);
-
-    const httpOpts = {
-      headers: { Accept: 'application/transit' },
-      baseURL: `${baseUrl}/${version}/api/`,
-      transformRequest: [
-        // logAndReturn,
-        data => w.write(data),
-      ],
-      transformResponse: [
-        // logAndReturn,
-        data => r.read(data),
-      ],
-      paramsSerializer,
-      adapter,
+    // Create a context object that will be passed to the interceptor context runner
+    const ctx = {
+      tokenStore: sdkConfig.tokenStore,
+      endpointInterceptors,
+      clientId: sdkConfig.clientId,
     };
 
-    const axiosInstance = axios.create(httpOpts);
-    const allEndpoints = [...defaultEndpoints, ...endpoints];
+    // Create SDK functions from the defined endpoints
+    const endpointSdkFns = endpointDefs.map(
+      ({ sdkFnPath: path, endpointInterceptor, interceptors }) =>
+        ({ path, fn: createSdkFn({ ctx, endpointInterceptor, interceptors }) }));
 
-    const tokenStoreInstance = createTokenStore(tokenStore, clientId);
+    // Create additional SDK functions
+    const additionalSdkFns = additionalSdkFnDefinitions.map(
+      ({ path, endpointInterceptorName, interceptors }) =>
+        ({
+          path,
+          fn: createSdkFn({
+            ctx,
+            endpointInterceptor: _.get(endpointInterceptors, endpointInterceptorName),
+            interceptors,
+          }),
+        }));
 
-    const withAuthToken = createAuthenticator({
-      baseUrl,
-      version,
-      clientId,
-      adapter,
-      tokenStore: tokenStoreInstance,
-    });
-
-    const loginEndpoint = createLoginEndpoint({
-      baseUrl,
-      version,
-      clientId,
-      adapter,
-      tokenStore: tokenStoreInstance,
-    });
-
-    const logoutEndpoint = createLogoutEndpoint({
-      baseUrl,
-      version,
-      adapter,
-      tokenStore: tokenStoreInstance,
-    });
-
-    // Assign all endpoint definitions to 'this'
-    assignEndpoints(this, allEndpoints, axiosInstance, withAuthToken);
-    this.login = loginEndpoint;
-    this.logout = logoutEndpoint;
+    // Assign SDK functions to 'this'
+    [...endpointSdkFns, ...additionalSdkFns].forEach(({ path, fn }) => _.set(this, path, fn));
   }
 }
-

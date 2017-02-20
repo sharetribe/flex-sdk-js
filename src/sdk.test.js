@@ -3,26 +3,23 @@ import fake from './fake';
 import SharetribeSdk from './sdk';
 import memoryStore from './memory_store';
 
-describe('new SharetribeSdk', () => {
-  it('creates a new instance with given options', () => {
-    const tokenStore = {};
+/**
+   Helper to improve error messages.
 
-    const inst = new SharetribeSdk({
-      baseUrl: 'https://jsonplaceholder.typicode.com',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      typeHandlers: [],
-      endpoints: [],
-      adapter: null,
-      tokenStore,
-    });
+   Includes the `response` in the error message if
+   `response` exists.
+ */
+const report = responsePromise =>
+  responsePromise.catch((error) => {
+    if (error.response) {
+      // eslint-disable-next-line no-param-reassign
+      error.message = `${error.message}. Response: ${JSON.stringify(error.response)}`;
+    }
 
-    expect(inst.config).toEqual(expect.objectContaining({
-      baseUrl: 'https://jsonplaceholder.typicode.com',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      tokenStore,
-    }));
+    throw error;
   });
 
+describe('new SharetribeSdk', () => {
   it('validates presence of clientId', () => {
     expect(() => new SharetribeSdk({
       baseUrl: 'https://jsonplaceholder.typicode.com',
@@ -34,7 +31,7 @@ describe('new SharetribeSdk', () => {
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [{
-        path: 'posts/showAll',
+        path: 'posts/showAll', apiName: 'api', root: true,
       }],
       adapter: null,
       tokenStore: memoryStore(),
@@ -53,7 +50,7 @@ describe('new SharetribeSdk', () => {
       tokenStore: memoryStore(),
     });
 
-    return inst.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    return report(inst.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 
@@ -62,7 +59,7 @@ describe('new SharetribeSdk', () => {
         email: 'user@sharetribe.com',
         description: 'A team member',
       }));
-    });
+    }));
   });
 
   it('calls marketplace endpoint with query params', () => {
@@ -175,7 +172,7 @@ describe('new SharetribeSdk', () => {
     });
   });
 
-  it('stored the auth token to the store', () => {
+  it('stores the auth token to the store', () => {
     const tokenStore = memoryStore();
 
     const inst = new SharetribeSdk({
@@ -215,14 +212,14 @@ describe('new SharetribeSdk', () => {
     });
 
     // First we get the anonymous token
-    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+    return report(sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
       expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
 
       // After login, the anonymous token will be overriden
       return sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
         expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
       });
-    });
+    }));
   });
 
   it('refreshes login token', () => {
@@ -237,7 +234,7 @@ describe('new SharetribeSdk', () => {
     });
 
     // First, login
-    return sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
       expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
 
       // Remove auth token from the store to simulate a
@@ -248,6 +245,8 @@ describe('new SharetribeSdk', () => {
       tokenStore.setToken({ access_token: 'invalid_token', ...rest });
 
       return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+        expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODcwMDYyNjgsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.t2XeBug85fPPxo3M8mVkKUvs7bUQdAQdoOwgT2qr8io');
+
         const resource = res.data.data;
         const attrs = resource.attributes;
 
@@ -257,7 +256,7 @@ describe('new SharetribeSdk', () => {
           description: 'Meet and greet with fanatical sky divers.',
         }));
       });
-    });
+    }));
   });
 
   it('refreshes anonymous token', () => {
@@ -272,7 +271,7 @@ describe('new SharetribeSdk', () => {
     });
 
     // First we get the anonymous token
-    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+    return report(sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
       expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
 
       // Remove auth token from the store to simulate a
@@ -294,10 +293,10 @@ describe('new SharetribeSdk', () => {
           description: 'Meet and greet with fanatical sky divers.',
         }));
       });
-    });
+    }));
   });
 
-  it.only('revokes token (a.k.a logout)', () => {
+  it('revokes token (a.k.a logout)', () => {
     const tokenStore = memoryStore();
 
     const sdk = new SharetribeSdk({
@@ -309,17 +308,19 @@ describe('new SharetribeSdk', () => {
     });
 
     // First, login
-    return sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
       expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
 
       // Revoke token
-      return sdk.logout().then(() => {
+      return sdk.logout().then((res) => {
+        expect(res.data.action).toEqual('revoked');
+
         expect(tokenStore.getToken()).toEqual(null);
 
         return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
           expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
         });
       });
-    });
+    }));
   });
 });

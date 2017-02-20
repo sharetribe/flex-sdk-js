@@ -10,7 +10,14 @@ const adapterHelper =
   adapterDef =>
     config =>
       new Promise((resolve, reject) => {
-        adapterDef.call(null, config, resolve, reject);
+        const rejectWithError = (response) => {
+          const error = new Error(`Request failed with status code ${response.status}`);
+          error.response = response;
+
+          reject(error);
+        };
+
+        adapterDef.call(null, config, resolve, rejectWithError);
       });
 
 const parseFormData = data => _.fromPairs(data.split('&').map(keyValue => keyValue.split('=')));
@@ -20,13 +27,16 @@ const revoke = (config, resolve, reject) => {
 
   if (formData.token) {
     if (formData.token === '74344396-d9af-458a-adbc-7ff1cb2661d0-fcaeb2c8-6089-4dc3-aa47-7c1ef57f9163') {
-      return resolve({ data: 'revoked' });
+      // FIXME The `data` is not what the server returns
+      return resolve({ data: { action: 'revoked' } });
     }
 
-    return resolve({ data: '' });
+    // FIXME The `data` is not what the server returns
+    return resolve({ data: { action: 'nothing' } });
   }
 
-  return reject({ data: '' });
+  // FIXME The `data` is not what the server returns
+  return reject({ data: {}, __additionalTestInfo: formData });
 };
 
 const auth = (config, resolve, reject) => {
@@ -69,7 +79,11 @@ const auth = (config, resolve, reject) => {
 
   return reject({
     status: 401,
-    data: 'Unauthorized',
+    data: '{}', // FIXME This is not what the server sends
+
+    // Add additional information to help debugging when testing.
+    // This key is NOT returned by the real API.
+    __additionalTestInfo: { formData },
   });
 };
 
@@ -296,7 +310,7 @@ const requireAuth = (config, reject) => {
   if (!authorized) {
     return reject({
       status: 401,
-      data: 'Unauthorized',
+      data: '{}', // FIXME This is not what the server sends
     });
   }
 
