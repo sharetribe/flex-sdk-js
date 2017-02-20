@@ -6,13 +6,15 @@ const buildCtx = (params = {}, middleware) =>
   ({ ...params, enterQueue: buildEnterQueue(params, middleware), leaveStack: [] });
 
 const tryExecuteMw = (ctx, mw, stage) =>
-  resolve(ctx).then(mw[stage] || resolve).catch(error =>
-    Promise.resolve({
-      ...ctx,
+  resolve(ctx).then(mw[stage] || resolve).catch(error => {
+    const errorCtx = error.ctx || ctx;
+    return Promise.resolve({
+      ...errorCtx,
       error,
       errorMiddleware: mw.constructor.name,
       errorStage: stage,
-    }));
+    });
+  });
 
 const nextMw = (ctx) => {
   const newCtx = { ...ctx };
@@ -39,7 +41,7 @@ const executeCtx = (ctx) => {
   if (mw) {
     return tryExecuteMw(newCtx, mw, type).then(executeCtx);
   } else if (newCtx.error) {
-    const { error, ...errorCtx } = ctx;
+    const { error, ...errorCtx } = newCtx;
     error.ctx = errorCtx;
     return Promise.reject(error);
   }
