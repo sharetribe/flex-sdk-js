@@ -87,24 +87,101 @@ const createLoginEndpoint = ({ baseUrl, version, clientId, adapter, tokenStore }
       },
     });
 
-const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => () => {
+const callRemoveAndCleanToken = ({ baseUrl, version, adapter, tokenStore, data }) =>
+  axios.request({
+    method: 'post',
+    baseURL: `${baseUrl}/${version}/`,
+    url: 'auth/revoke',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+    },
+    data: formData(data),
+    adapter,
+  }).then(res => res.data).then(() => {
+    if (tokenStore) {
+      tokenStore.setToken(null);
+    }
+
+    return Promise.resolve();
+  });
+
+const createLogoutEndpoint = ({ baseUrl, version, adapter, tokenStore }) =>
+  () => {
+    const token = tokenStore && tokenStore.getToken();
+    const refreshToken = token && token.refresh_token;
+
+    if (refreshToken) {
+      return callRemoveAndCleanToken({
+        baseUrl,
+        version,
+        adapter,
+        tokenStore,
+        data: {
+          token: refreshToken,
+        },
+      });
+    }
+    // refresh_token didn't exist so the session can be considered as logged out.
+    // Return resolved promise
+    return Promise.resolve();
+  };
+
+
+const createAuthenticator = ({ baseUrl, version, clientId, adapter, tokenStore }) => (apiCall) => {
   const storedToken = tokenStore && tokenStore.getToken();
 
+  let authentication;
+
   if (storedToken) {
-    return Promise.resolve(storedToken);
+    authentication = Promise.resolve(storedToken);
+  } else {
+    authentication = callAuthAndSaveToken({
+      baseUrl,
+      version,
+      adapter,
+      tokenStore,
+      data: {
+        client_id: clientId,
+        grant_type: 'client_credentials',
+        scope: 'public-read',
+      },
+    });
   }
 
-  return callAuthAndSaveToken({
-    baseUrl,
-    version,
-    adapter,
-    tokenStore,
-    data: {
-      client_id: clientId,
-      grant_type: 'client_credentials',
-      scope: 'public-read',
-    },
-  });
+  return authentication.then(authToken =>
+    apiCall(authToken)
+      .catch((error) => {
+        let newAuthentication;
+
+        if (error.status === 401 && authToken.refresh_token) {
+          newAuthentication = callAuthAndSaveToken({
+            baseUrl,
+            version,
+            adapter,
+            tokenStore,
+            data: {
+              client_id: clientId,
+              grant_type: 'refresh_token',
+              refresh_token: authToken.refresh_token,
+            },
+          });
+        } else {
+          newAuthentication = callAuthAndSaveToken({
+            baseUrl,
+            version,
+            adapter,
+            tokenStore,
+            data: {
+              client_id: clientId,
+              grant_type: 'client_credentials',
+              scope: 'public-read',
+            },
+          });
+        }
+
+        return newAuthentication.then(freshAuthToken => apiCall(freshAuthToken));
+      }));
 };
 
 const constructAuthHeader = (authToken) => {
@@ -122,7 +199,7 @@ const constructAuthHeader = (authToken) => {
 
 const createSdkMethod = (req, axiosInstance, withAuthToken) =>
   (params = {}) =>
-    withAuthToken().then((authToken) => {
+    withAuthToken((authToken) => {
       const authHeader = { Authorization: `${constructAuthHeader(authToken)}` };
       const reqHeaders = req.headers || {};
       const headers = { ...authHeader, ...reqHeaders };
@@ -271,9 +348,17 @@ export default class SharetribeSdk {
       tokenStore: tokenStoreInstance,
     });
 
+    const logoutEndpoint = createLogoutEndpoint({
+      baseUrl,
+      version,
+      adapter,
+      tokenStore: tokenStoreInstance,
+    });
+
     // Assign all endpoint definitions to 'this'
     assignEndpoints(this, allEndpoints, axiosInstance, withAuthToken);
     this.login = loginEndpoint;
+    this.logout = logoutEndpoint;
   }
 }
 

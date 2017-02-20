@@ -6,7 +6,7 @@ import _ from 'lodash';
    The test responses are copy-pasted from real API responses.
  */
 
-const createAdapter =
+const adapterHelper =
   adapterDef =>
     config =>
       new Promise((resolve, reject) => {
@@ -14,6 +14,20 @@ const createAdapter =
       });
 
 const parseFormData = data => _.fromPairs(data.split('&').map(keyValue => keyValue.split('=')));
+
+const revoke = (config, resolve, reject) => {
+  const formData = parseFormData(config.data);
+
+  if (formData.token) {
+    if (formData.token === '74344396-d9af-458a-adbc-7ff1cb2661d0-fcaeb2c8-6089-4dc3-aa47-7c1ef57f9163') {
+      return resolve({ data: 'revoked' });
+    }
+
+    return resolve({ data: '' });
+  }
+
+  return reject({ data: '' });
+};
 
 const auth = (config, resolve, reject) => {
   const formData = parseFormData(config.data);
@@ -35,6 +49,18 @@ const auth = (config, resolve, reject) => {
                   "token_type": "bearer",
                   "expires_in": 3600,
                   "refresh_token": "74344396-d9af-458a-adbc-7ff1cb2661d0-fcaeb2c8-6089-4dc3-aa47-7c1ef57f9163"
+                }`;
+        return resolve({ data: res });
+      }
+    }
+
+    if (formData.grant_type === 'refresh_token') {
+      if (formData.refresh_token === '74344396-d9af-458a-adbc-7ff1cb2661d0-fcaeb2c8-6089-4dc3-aa47-7c1ef57f9163') {
+        const res = `{
+                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODcwMDYyNjgsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.t2XeBug85fPPxo3M8mVkKUvs7bUQdAQdoOwgT2qr8io",
+                  "token_type": "bearer",
+                  "expires_in": 3600,
+                  "refresh_token": "c78e62a1-5640-460d-a476-e1c3b6b274f8--0fe0fb97-b304-4a71-860c-267b90f777f6"
                 }`;
         return resolve({ data: res });
       }
@@ -249,9 +275,25 @@ const listings = {
 };
 
 const requireAuth = (config, reject) => {
-  const expectedAuth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo';
+  // TODO Err... this is quite adhoc :)
+  // Consider a more robust implementation: Inject a list of auth
+  // tokens returned by the fake adapter. When a token is returned,
+  // memorize it as logged in token that is authorize to do calls.
 
-  if (config.headers.Authorization.toLowerCase() !== expectedAuth.toLowerCase()) {
+  const anonToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo';
+  const loggedInToken = 'Bearer dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44';
+  const refreshedToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODcwMDYyNjgsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.t2XeBug85fPPxo3M8mVkKUvs7bUQdAQdoOwgT2qr8io';
+
+  const expectedAuths = [
+    anonToken,
+    loggedInToken,
+    refreshedToken,
+  ];
+
+  const authorized = expectedAuths.find(
+    expected => expected.toLowerCase() === config.headers.Authorization.toLowerCase());
+
+  if (!authorized) {
     return reject({
       status: 401,
       data: 'Unauthorized',
@@ -261,19 +303,22 @@ const requireAuth = (config, reject) => {
   return Promise.resolve();
 };
 
-const adapter = createAdapter((config, resolve, reject) => {
-  switch (config.url) {
-    case '/v1/api/users/show':
-      return requireAuth(config, reject).then(() => users.show(config, resolve));
-    case '/v1/api/marketplace/show':
-      return requireAuth(config, reject).then(() => marketplace.show(config, resolve));
-    case '/v1/api/listings/search':
-      return requireAuth(config, reject).then(() => listings.search(config, resolve));
-    case '/v1/auth/token':
-      return auth(config, resolve, reject);
-    default:
-      throw new Error(`Not implemented to Fake adapter: ${config.url}`);
-  }
-});
+const createAdapter = () =>
+  adapterHelper((config, resolve, reject) => {
+    switch (config.url) {
+      case '/v1/api/users/show':
+        return requireAuth(config, reject).then(() => users.show(config, resolve));
+      case '/v1/api/marketplace/show':
+        return requireAuth(config, reject).then(() => marketplace.show(config, resolve));
+      case '/v1/api/listings/search':
+        return requireAuth(config, reject).then(() => listings.search(config, resolve));
+      case '/v1/auth/token':
+        return auth(config, resolve, reject);
+      case '/v1/auth/revoke':
+        return revoke(config, resolve, reject);
+      default:
+        throw new Error(`Not implemented to Fake adapter: ${config.url}`);
+    }
+  });
 
-export default adapter;
+export default createAdapter;
