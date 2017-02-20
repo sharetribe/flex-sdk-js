@@ -127,6 +127,90 @@ const retryWithAnonToken = (enterCtx, next) =>
     }).then(({ authToken }) => next({ ...enterCtx, authToken }));
   });
 
+class RetryWithRefreshToken {
+  enter(enterCtx) {
+    const { enterQueue, refreshTokenRetry: { attempts = 0 } = {} } = enterCtx;
+    return {
+      ...enterCtx,
+      refreshTokenRetry: {
+        retryQueue: [...enterQueue, new RetryWithAnonToken()],
+        attempts: attempts + 1,
+      }
+    }
+  }
+
+  error(errorCtx) {
+    const { authToken, clientId, tokenStore, endpointFns, refreshTokenRetry: { retryQueue, attempts } } = errorCtx;
+
+    if (attempts > 1) {
+      return errorCtx;
+    }
+
+    if (errorCtx.res && errorCtx.res.status === 401 && authToken.refresh_token) {
+      return run([
+        saveTokenMiddleware,
+        contextRunner([
+          new AddAuthTokenResponseToCtx(),
+          endpointFns.auth.token,
+        ]),
+      ])({
+        params: {
+          client_id: clientId,
+          grant_type: 'refresh_token',
+          refresh_token: authToken.refresh_token,
+        },
+        tokenStore,
+      }).then(({ authToken }) => {
+        return { ...errorCtx, authToken, enterQueue: retryQueue, error: null };
+      });
+    }
+
+    return errorCtx;
+  }
+}
+
+class RetryWithAnonToken {
+  enter(enterCtx) {
+    const { enterQueue, anonTokenRetry: { attempts = 0 } = {} } = enterCtx;
+    return {
+      ...enterCtx,
+      anonTokenRetry: {
+        retryQueue: [...enterQueue, new RetryWithAnonToken()],
+        attempts: attempts + 1,
+      }
+    }
+  }
+
+  error(errorCtx) {
+    const { clientId, tokenStore, endpointFns, anonTokenRetry: { retryQueue, attempts } } = errorCtx;
+
+    if (attempts > 1) {
+      return errorCtx;
+    }
+
+    if (errorCtx.res && errorCtx.res.status == 401) {
+      return run([
+        saveTokenMiddleware,
+        contextRunner([
+          new AddAuthTokenResponseToCtx(),
+          endpointFns.auth.token,
+        ]),
+      ])({
+        params: {
+          client_id: clientId,
+          grant_type: 'client_credentials',
+          scope: 'public-read',
+        },
+        tokenStore,
+      }).then(({ authToken }) => {
+        return { ...errorCtx, authToken, enterQueue: retryQueue, error: null };
+      });
+    }
+
+    return errorCtx;
+  }
+}
+
 export const clearTokenMiddleware = (enterCtx, next) =>
   next(enterCtx).then((leaveCtx) => {
     const { tokenStore } = leaveCtx;
@@ -150,6 +234,39 @@ export const fetchRefreshTokenForRevoke = (enterCtx, next) => {
   // Return Promise and halt the middleware chain
   return Promise.resolve(enterCtx);
 };
+
+class FetchAuthToken {
+  enter(enterCtx) {
+    const { tokenStore, endpointFns, clientId } = enterCtx;
+    const storedToken = tokenStore && tokenStore.getToken();
+
+    if (storedToken) {
+      return Promise.resolve({ ...enterCtx, authToken: storedToken });
+    }
+
+    return run([
+      saveTokenMiddleware,
+      contextRunner([
+        new AddAuthTokenResponseToCtx(),
+        endpointFns.auth.token,
+      ]),
+    ])({
+      params: {
+        client_id: clientId,
+        grant_type: 'client_credentials',
+        scope: 'public-read',
+      },
+      tokenStore,
+    }).then(({ authToken }) => ({ ...enterCtx, authToken }));
+  }
+}
+
+export const authenticateInterceptors = [
+  new FetchAuthToken(),
+  new RetryWithAnonToken(),
+  new RetryWithRefreshToken(),
+  new AddAuthTokenHeader(),
+]
 
 export const authenticate = run([
   fetchAuthToken,
