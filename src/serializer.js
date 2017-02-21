@@ -188,11 +188,19 @@ export const reader = (customReaders = []) => {
   });
 };
 
+const MapHandler = [Object, transit.makeWriteHandler({
+  tag: () => 'map',
+  rep: v => _.reduce(v, (map, val, key) => {
+    map.set(transit.keyword(key), val);
+    return map;
+  }, transit.map()),
+})];
+
 export const writer = (customWriters = []) => {
   const ownHandlers = constructWriteHandlers(customWriters);
 
   return transit.writer('json', {
-    handlers: transit.map(ownHandlers),
+    handlers: transit.map([...ownHandlers, ...MapHandler]),
 
     // This is only needed for the REPL
     // TODO This could be stripped out for production build
