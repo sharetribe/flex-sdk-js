@@ -112,6 +112,7 @@ const endpointDefinitions = [
   { apiName: 'api', path: 'listings/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
   { apiName: 'api', path: 'listings/query', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
   { apiName: 'api', path: 'listings/search', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
+  { apiName: 'api', path: 'listings/create', root: true, method: 'post', interceptors: [...authenticateInterceptors] },
   { apiName: 'auth', path: 'token', root: false, method: 'post' },
   { apiName: 'auth', path: 'revoke', root: false, method: 'post' },
 ];
