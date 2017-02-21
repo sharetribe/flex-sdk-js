@@ -20,7 +20,7 @@ const adapterHelper =
         adapterDef.call(null, config, resolve, rejectWithError);
       });
 
-const parseFormData = data => _.fromPairs(data.split('&').map(keyValue => keyValue.split('=')));
+const parseFormData = data => _.fromPairs(data.split('&').map(keyValue => keyValue.split('=').map(decodeURIComponent)));
 
 const revoke = (config, resolve, reject) => {
   const formData = parseFormData(config.data);
