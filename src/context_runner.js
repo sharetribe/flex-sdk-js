@@ -1,10 +1,22 @@
+const DEBUG = false;
+
 const resolve = ctx => Promise.resolve(ctx);
 
 const buildCtx = (params = {}, middleware) =>
   ({ ...params, enterQueue: [...middleware].reverse(), leaveStack: [] });
 
-const tryExecuteMw = (ctx, mw, stage) =>
-  resolve(ctx).then(mw[stage] || resolve).catch((error) => {
+const tryExecuteMw = (ctx, mw, stage) => {
+  /* eslint-disable no-console */
+  /* eslint-disable no-undef */
+  if (DEBUG) {
+    if (mw[stage]) {
+      console.log(`Executing ${mw.constructor.name}#${stage}`);
+    }
+  }
+  /* eslint-enable no-console */
+  /* eslint-enable no-undef */
+
+  return resolve(ctx).then(mw[stage] || resolve).catch((error) => {
     const errorCtx = error.ctx || ctx;
     return Promise.resolve({
       ...errorCtx,
@@ -13,6 +25,7 @@ const tryExecuteMw = (ctx, mw, stage) =>
       errorStage: stage,
     });
   });
+};
 
 const nextMw = (ctx) => {
   const leaveStack = [...ctx.leaveStack];

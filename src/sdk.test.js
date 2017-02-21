@@ -323,4 +323,36 @@ describe('new SharetribeSdk', () => {
       });
     }));
   });
+
+  describe('authInfo', () => {
+    it('returns authentication information', () => {
+      const tokenStore = memoryStore();
+
+      const sdk = new SharetribeSdk({
+        baseUrl: '',
+        clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+        endpoints: [],
+        adapter: fake(),
+        tokenStore,
+      });
+
+      return report(sdk.authInfo()
+                       .then((authInfo) => {
+                         // No auth info yet.
+                         expect(authInfo.grantType).toBeUndefined();
+                       })
+                       .then(() => sdk.marketplace.show().then(sdk.authInfo).then((authInfo) => {
+                         // Anonymous token
+                         expect(authInfo.grantType).toEqual('client_credentials');
+                       }))
+                       .then(() => sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(sdk.authInfo).then((authInfo) => {
+                         // Login token
+                         expect(authInfo.grantType).toEqual('refresh_token');
+                       }))
+                       .then(() => sdk.logout().then(sdk.authInfo).then((authInfo) => {
+                         // Logout
+                         expect(authInfo.grantType).toBeUndefined();
+                       })));
+    });
+  });
 });
