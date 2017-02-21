@@ -79,7 +79,10 @@ const apis = {
     const { reader, writer } = createTransitConverters(typeHandlers);
 
     return {
-      headers: { Accept: 'application/transit' },
+      headers: {
+        'Content-Type': 'application/transit+json',
+        Accept: 'application/transit+json',
+      },
       baseURL: `${baseUrl}/${version}`,
       transformRequest: [
         // logAndReturn,
