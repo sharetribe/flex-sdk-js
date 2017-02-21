@@ -7,7 +7,7 @@
 		exports["sharetribeSdk"] = factory(require("axios"));
 	else
 		root["sharetribeSdk"] = factory(root["axios"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_86__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_87__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 87);
+/******/ 	return __webpack_require__(__webpack_require__.s = 88);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -137,8 +137,8 @@ module.exports = isArray;
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isFunction = __webpack_require__(75),
-    isLength = __webpack_require__(76);
+var isFunction = __webpack_require__(76),
+    isLength = __webpack_require__(77);
 
 /**
  * Checks if `value` is array-like. A value is considered array-like if it's
@@ -329,6 +329,8 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+var DEBUG = false;
+
 var resolve = function resolve(ctx) {
   return Promise.resolve(ctx);
 };
@@ -340,6 +342,16 @@ var buildCtx = function buildCtx() {
 };
 
 var tryExecuteMw = function tryExecuteMw(ctx, mw, stage) {
+  /* eslint-disable no-console */
+  /* eslint-disable no-undef */
+  if (DEBUG) {
+    if (mw[stage]) {
+      console.log('Executing ' + mw.constructor.name + '#' + stage);
+    }
+  }
+  /* eslint-enable no-console */
+  /* eslint-enable no-undef */
+
   return resolve(ctx).then(mw[stage] || resolve).catch(function (error) {
     var errorCtx = error.ctx || ctx;
     return Promise.resolve(_extends({}, errorCtx, {
@@ -767,27 +779,27 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _get2 = __webpack_require__(72);
+var _get2 = __webpack_require__(73);
 
 var _get3 = _interopRequireDefault(_get2);
 
-var _set2 = __webpack_require__(80);
+var _set2 = __webpack_require__(81);
 
 var _set3 = _interopRequireDefault(_set2);
 
-var _mapValues2 = __webpack_require__(78);
+var _mapValues2 = __webpack_require__(79);
 
 var _mapValues3 = _interopRequireDefault(_mapValues2);
 
-var _reduce2 = __webpack_require__(79);
+var _compact2 = __webpack_require__(67);
 
-var _reduce3 = _interopRequireDefault(_reduce2);
+var _compact3 = _interopRequireDefault(_compact2);
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _axios = __webpack_require__(86);
+var _axios = __webpack_require__(87);
 
 var _axios2 = _interopRequireDefault(_axios);
 
@@ -820,13 +832,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 /* eslint-disable class-methods-use-this */
-
-var formData = function formData(params) {
-  return (0, _reduce3.default)(params, function (pairs, v, k) {
-    pairs.push(k + '=' + v);
-    return pairs;
-  }, []).join('&');
-};
 
 var defaultSdkConfig = {
   baseUrl: 'https://api.sharetribe.com',
@@ -946,7 +951,7 @@ var apis = {
       },
       baseURL: baseUrl + '/' + version + '/',
       transformRequest: [function (data) {
-        return formData(data);
+        return (0, _utils.formData)(data);
       }],
       adapter: adapter
     };
@@ -959,7 +964,7 @@ var loginInterceptors = [defaultParamsInterceptor({ grant_type: 'password', scop
 
 var logoutInterceptors = [new _authenticate.FetchAuthToken(), new _authenticate.AddAuthTokenHeader(), new _authenticate.ClearTokenMiddleware(), new _authenticate.FetchRefreshTokenForRevoke()];
 
-var additionalSdkFnDefinitions = [{ path: 'login', endpointInterceptorName: 'auth.token', interceptors: loginInterceptors }, { path: 'logout', endpointInterceptorName: 'auth.revoke', interceptors: [].concat(logoutInterceptors) }];
+var additionalSdkFnDefinitions = [{ path: 'login', endpointInterceptorName: 'auth.token', interceptors: loginInterceptors }, { path: 'logout', endpointInterceptorName: 'auth.revoke', interceptors: [].concat(logoutInterceptors) }, { path: 'authInfo', interceptors: [new _authenticate.AuthInfo()] }];
 
 // const logAndReturn = (data) => {
 //   console.log(data);
@@ -1068,7 +1073,7 @@ var createSdkFn = function createSdkFn(_ref7) {
       interceptors = _ref7.interceptors;
   return function () {
     var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    return (0, _context_runner2.default)([].concat(_toConsumableArray(interceptors), [endpointInterceptor]))(_extends({}, ctx, { params: params })).then(function (_ref8) {
+    return (0, _context_runner2.default)((0, _compact3.default)([].concat(_toConsumableArray(interceptors), [endpointInterceptor])))(_extends({}, ctx, { params: params })).then(function (_ref8) {
       var res = _ref8.res;
       return res;
     });
@@ -1160,7 +1165,8 @@ function SharetribeSdk(userSdkConfig) {
   var endpointSdkFns = endpointDefs.map(function (_ref11) {
     var path = _ref11.sdkFnPath,
         endpointInterceptor = _ref11.endpointInterceptor,
-        interceptors = _ref11.interceptors;
+        _ref11$interceptors = _ref11.interceptors,
+        interceptors = _ref11$interceptors === undefined ? [] : _ref11$interceptors;
     return { path: path, fn: createSdkFn({ ctx: ctx, endpointInterceptor: endpointInterceptor, interceptors: interceptors }) };
   });
 
@@ -1199,7 +1205,7 @@ exports.default = SharetribeSdk;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.authenticateInterceptors = exports.FetchAuthToken = exports.FetchRefreshTokenForRevoke = exports.ClearTokenMiddleware = exports.AddAuthTokenHeader = exports.AddAuthTokenResponseToCtx = exports.SaveTokenMiddleware = undefined;
+exports.authenticateInterceptors = exports.AuthInfo = exports.FetchAuthToken = exports.FetchRefreshTokenForRevoke = exports.ClearTokenMiddleware = exports.AddAuthTokenHeader = exports.AddAuthTokenResponseToCtx = exports.SaveTokenMiddleware = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -1486,6 +1492,31 @@ var FetchAuthToken = exports.FetchAuthToken = function () {
   return FetchAuthToken;
 }();
 
+var AuthInfo = exports.AuthInfo = function () {
+  function AuthInfo() {
+    _classCallCheck(this, AuthInfo);
+  }
+
+  _createClass(AuthInfo, [{
+    key: 'enter',
+    value: function enter(ctx) {
+      var tokenStore = ctx.tokenStore;
+
+      var storedToken = tokenStore && tokenStore.getToken();
+
+      if (storedToken) {
+        var grantType = storedToken.refresh_token ? 'refresh_token' : 'client_credentials';
+
+        return _extends({}, ctx, { res: { grantType: grantType } });
+      }
+
+      return _extends({}, ctx, { res: {} });
+    }
+  }]);
+
+  return AuthInfo;
+}();
+
 var authenticateInterceptors = exports.authenticateInterceptors = [new FetchAuthToken(), new RetryWithAnonToken(), new RetryWithRefreshToken(), new AddAuthTokenHeader()];
 
 /***/ },
@@ -1594,11 +1625,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.writer = exports.reader = undefined;
 
-var _flatten2 = __webpack_require__(70);
+var _flatten2 = __webpack_require__(71);
 
 var _flatten3 = _interopRequireDefault(_flatten2);
 
-var _find2 = __webpack_require__(68);
+var _find2 = __webpack_require__(69);
 
 var _find3 = _interopRequireDefault(_find2);
 
@@ -1606,7 +1637,7 @@ var _map2 = __webpack_require__(15);
 
 var _map3 = _interopRequireDefault(_map2);
 
-var _fromPairs2 = __webpack_require__(71);
+var _fromPairs2 = __webpack_require__(72);
 
 var _fromPairs3 = _interopRequireDefault(_fromPairs2);
 
@@ -1618,7 +1649,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _transitJs = __webpack_require__(85);
+var _transitJs = __webpack_require__(86);
 
 var _transitJs2 = _interopRequireDefault(_transitJs);
 
@@ -1895,15 +1926,19 @@ var createDefaultTokenStore = exports.createDefaultTokenStore = function createD
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-   value: true
+  value: true
 });
-exports.fnPath = exports.trimEndSlash = undefined;
+exports.formData = exports.fnPath = exports.trimEndSlash = undefined;
 
-var _without2 = __webpack_require__(84);
+var _reduce2 = __webpack_require__(80);
+
+var _reduce3 = _interopRequireDefault(_reduce2);
+
+var _without2 = __webpack_require__(85);
 
 var _without3 = _interopRequireDefault(_without2);
 
-var _trimEnd2 = __webpack_require__(83);
+var _trimEnd2 = __webpack_require__(84);
 
 var _trimEnd3 = _interopRequireDefault(_trimEnd2);
 
@@ -1921,11 +1956,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
    ```
  */
 var trimEndSlash = exports.trimEndSlash = function trimEndSlash(url) {
-   return (0, _trimEnd3.default)(url, '/');
+  return (0, _trimEnd3.default)(url, '/');
 };
 
 var fnPath = exports.fnPath = function fnPath(path) {
-   return (0, _without3.default)(path.split('/'), '');
+  return (0, _without3.default)(path.split('/'), '');
+};
+
+var formData = exports.formData = function formData(params) {
+  return (0, _reduce3.default)(params, function (pairs, v, k) {
+    pairs.push(encodeURIComponent(k) + '=' + encodeURIComponent(v));
+    return pairs;
+  }, []).join('&');
 };
 
 /***/ },
@@ -2311,7 +2353,7 @@ module.exports = asciiToArray;
 /***/ function(module, exports, __webpack_require__) {
 
 var baseAssignValue = __webpack_require__(9),
-    eq = __webpack_require__(67);
+    eq = __webpack_require__(68);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -3047,7 +3089,7 @@ module.exports = stubFalse;
 /***/ function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(26),
-    isArguments = __webpack_require__(73),
+    isArguments = __webpack_require__(74),
     isArray = __webpack_require__(1);
 
 /** Built-in value references. */
@@ -3275,6 +3317,43 @@ module.exports = asciiToArray;
 /***/ function(module, exports) {
 
 /**
+ * Creates an array with all falsey values removed. The values `false`, `null`,
+ * `0`, `""`, `undefined`, and `NaN` are falsey.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Array
+ * @param {Array} array The array to compact.
+ * @returns {Array} Returns the new array of filtered values.
+ * @example
+ *
+ * _.compact([0, 1, false, 2, '', 3]);
+ * // => [1, 2, 3]
+ */
+function compact(array) {
+  var index = -1,
+      length = array == null ? 0 : array.length,
+      resIndex = 0,
+      result = [];
+
+  while (++index < length) {
+    var value = array[index];
+    if (value) {
+      result[resIndex++] = value;
+    }
+  }
+  return result;
+}
+
+module.exports = compact;
+
+
+/***/ },
+/* 68 */
+/***/ function(module, exports) {
+
+/**
  * Performs a
  * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
  * comparison between two values to determine if they are equivalent.
@@ -3314,11 +3393,11 @@ module.exports = eq;
 
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 var createFind = __webpack_require__(53),
-    findIndex = __webpack_require__(69);
+    findIndex = __webpack_require__(70);
 
 /**
  * Iterates over elements of `collection`, returning the first element
@@ -3362,12 +3441,12 @@ module.exports = find;
 
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 var baseFindIndex = __webpack_require__(35),
     baseIteratee = __webpack_require__(0),
-    toInteger = __webpack_require__(81);
+    toInteger = __webpack_require__(82);
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
@@ -3423,7 +3502,7 @@ module.exports = findIndex;
 
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 var baseFlatten = __webpack_require__(36);
@@ -3451,7 +3530,7 @@ module.exports = flatten;
 
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports) {
 
 /**
@@ -3485,7 +3564,7 @@ module.exports = fromPairs;
 
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 var baseGet = __webpack_require__(38);
@@ -3524,7 +3603,7 @@ module.exports = get;
 
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports) {
 
 /**
@@ -3548,11 +3627,11 @@ module.exports = stubFalse;
 
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArrayLike = __webpack_require__(2),
-    isObjectLike = __webpack_require__(77);
+    isObjectLike = __webpack_require__(78);
 
 /**
  * This method is like `_.isArrayLike` except that it also checks if `value`
@@ -3587,7 +3666,7 @@ module.exports = isArrayLikeObject;
 
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 var baseGetTag = __webpack_require__(39),
@@ -3630,7 +3709,7 @@ module.exports = isFunction;
 
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports) {
 
 /** Used as references for various `Number` constants. */
@@ -3671,7 +3750,7 @@ module.exports = isLength;
 
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports) {
 
 /**
@@ -3706,7 +3785,7 @@ module.exports = isObjectLike;
 
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 var baseAssignValue = __webpack_require__(9),
@@ -3755,7 +3834,7 @@ module.exports = mapValues;
 
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arrayReduce = __webpack_require__(31),
@@ -3812,7 +3891,7 @@ module.exports = reduce;
 
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 var baseSet = __webpack_require__(43);
@@ -3853,33 +3932,6 @@ module.exports = set;
 
 
 /***/ },
-/* 81 */
-/***/ function(module, exports) {
-
-/**
- * This method returns the first argument it receives.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Util
- * @param {*} value Any value.
- * @returns {*} Returns `value`.
- * @example
- *
- * var object = { 'a': 1 };
- *
- * console.log(_.identity(object) === object);
- * // => true
- */
-function identity(value) {
-  return value;
-}
-
-module.exports = identity;
-
-
-/***/ },
 /* 82 */
 /***/ function(module, exports) {
 
@@ -3908,13 +3960,40 @@ module.exports = identity;
 
 /***/ },
 /* 83 */
+/***/ function(module, exports) {
+
+/**
+ * This method returns the first argument it receives.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Util
+ * @param {*} value Any value.
+ * @returns {*} Returns `value`.
+ * @example
+ *
+ * var object = { 'a': 1 };
+ *
+ * console.log(_.identity(object) === object);
+ * // => true
+ */
+function identity(value) {
+  return value;
+}
+
+module.exports = identity;
+
+
+/***/ },
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 var baseToString = __webpack_require__(45),
     castSlice = __webpack_require__(49),
     charsEndIndex = __webpack_require__(50),
     stringToArray = __webpack_require__(64),
-    toString = __webpack_require__(82);
+    toString = __webpack_require__(83);
 
 /** Used to match leading and trailing whitespace. */
 var reTrimEnd = /\s+$/;
@@ -3956,12 +4035,12 @@ module.exports = trimEnd;
 
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 var baseDifference = __webpack_require__(34),
     baseRest = __webpack_require__(42),
-    isArrayLikeObject = __webpack_require__(74);
+    isArrayLikeObject = __webpack_require__(75);
 
 /**
  * Creates an array excluding all given values using
@@ -3993,7 +4072,7 @@ module.exports = without;
 
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports) {
 
 // transit-js 0.8.847
@@ -7075,13 +7154,13 @@ writeCache:com.cognitect.transit.caching.writeCache});
 
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_86__;
+module.exports = __WEBPACK_EXTERNAL_MODULE_87__;
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
