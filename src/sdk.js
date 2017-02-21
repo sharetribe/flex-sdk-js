@@ -9,7 +9,8 @@ import { authenticateInterceptors,
          FetchAuthToken,
          AddAuthTokenHeader,
          SaveTokenMiddleware,
-         AddAuthTokenResponseToCtx } from './authenticate';
+         AddAuthTokenResponseToCtx,
+         AuthInfo } from './authenticate';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
 
@@ -137,6 +138,7 @@ const logoutInterceptors = [
 const additionalSdkFnDefinitions = [
   { path: 'login', endpointInterceptorName: 'auth.token', interceptors: loginInterceptors },
   { path: 'logout', endpointInterceptorName: 'auth.revoke', interceptors: [...logoutInterceptors] },
+  { path: 'authInfo', interceptors: [new AuthInfo()] },
 ];
 
 // const logAndReturn = (data) => {
@@ -226,10 +228,10 @@ const createEndpointInterceptor = ({ method, url, httpOpts }) => {
  */
 const createSdkFn = ({ ctx, endpointInterceptor, interceptors }) =>
   (params = {}) =>
-    contextRunner([
+    contextRunner(_.compact([
       ...interceptors,
       endpointInterceptor,
-    ])({ ...ctx, params }).then(({ res }) => res);
+    ]))({ ...ctx, params }).then(({ res }) => res);
 
 // Take SDK configurations, do transformation and return.
 const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({

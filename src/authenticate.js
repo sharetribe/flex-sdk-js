@@ -173,6 +173,21 @@ export class FetchAuthToken {
   }
 }
 
+export class AuthInfo {
+  enter(ctx) {
+    const { tokenStore } = ctx;
+    const storedToken = tokenStore && tokenStore.getToken();
+
+    if (storedToken) {
+      const grantType = storedToken.refresh_token ? 'refresh_token' : 'client_credentials';
+
+      return { ...ctx, res: { grantType } };
+    }
+
+    return { ...ctx, res: {} };
+  }
+}
+
 export const authenticateInterceptors = [
   new FetchAuthToken(),
   new RetryWithAnonToken(),
