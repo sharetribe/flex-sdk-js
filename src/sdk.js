@@ -301,7 +301,7 @@ export default class SharetribeSdk {
 
     // Create SDK functions from the defined endpoints
     const endpointSdkFns = endpointDefs.map(
-      ({ sdkFnPath: path, endpointInterceptor, interceptors }) =>
+      ({ sdkFnPath: path, endpointInterceptor, interceptors = [] }) =>
         ({ path, fn: createSdkFn({ ctx, endpointInterceptor, interceptors }) }));
 
     // Create additional SDK functions
