@@ -1,6 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
-import { fnPath as urlPathToFnPath, trimEndSlash } from './utils';
+import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
 import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
 import { authenticateInterceptors,
@@ -15,11 +15,6 @@ import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
 
 /* eslint-disable class-methods-use-this */
-
-const formData = params => _.reduce(params, (pairs, v, k) => {
-  pairs.push(`${k}=${v}`);
-  return pairs;
-}, []).join('&');
 
 const defaultSdkConfig = {
   baseUrl: 'https://api.sharetribe.com',

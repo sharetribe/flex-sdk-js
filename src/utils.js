@@ -14,3 +14,8 @@ import _ from 'lodash';
 export const trimEndSlash = url => _.trimEnd(url, '/');
 
 export const fnPath = path => _.without(path.split('/'), '');
+
+export const formData = params => _.reduce(params, (pairs, v, k) => {
+  pairs.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
+  return pairs;
+}, []).join('&');

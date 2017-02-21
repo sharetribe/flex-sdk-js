@@ -1,4 +1,4 @@
-import { fnPath, trimEndSlash } from './utils';
+import { fnPath, trimEndSlash, formData } from './utils';
 
 describe('utils', () => {
   describe('pathToMethodName', () => {
@@ -18,4 +18,11 @@ describe('utils', () => {
       expect(trimEndSlash('http://www.api.com//')).toEqual('http://www.api.com');
     });
   });
+
+  describe('formData', () => {
+    it('encodes params to formData', () => {
+      expect(formData({ username: 'joe.dunphy@example.com', password: '}4$3.872487=3&&]/6?.'}))
+        .toEqual('username=joe.dunphy%40example.com&password=%7D4%243.872487%3D3%26%26%5D%2F6%3F.')
+    });
+  })
 });
