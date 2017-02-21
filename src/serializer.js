@@ -189,9 +189,21 @@ export const reader = (customReaders = []) => {
 };
 
 export const writer = (customWriters = []) => {
-  const handlers = constructWriteHandlers(customWriters);
+  const ownHandlers = constructWriteHandlers(customWriters);
 
   return transit.writer('json', {
-    handlers: transit.map(handlers),
+    handlers: transit.map(ownHandlers),
+
+    // This is only needed for the REPL
+    // TODO This could be stripped out for production build
+    handlerForForeign: (x, handlers) => {
+      if (Array.isArray(x)) {
+        return handlers.get('array');
+      } else if (typeof x === 'object') {
+        return handlers.get('map');
+      }
+
+      return null;
+    },
   });
 };
