@@ -19,9 +19,14 @@ const createStore = ({ clientId, req, res }) => {
     res.cookie(key, JSON.stringify(tokenData), { maxAge: 1000 * 60 * 60 * 24 * expiration });
   };
 
+  const removeToken = () => {
+    res.clearCookie(key);
+  };
+
   return {
     getToken,
     setToken,
+    removeToken,
   };
 };
 

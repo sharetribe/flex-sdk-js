@@ -352,6 +352,10 @@ describe('new SharetribeSdk', () => {
                        .then(() => sdk.logout().then(sdk.authInfo).then((authInfo) => {
                          // Logout
                          expect(authInfo.grantType).toBeUndefined();
+                       }))
+                       .then(() => sdk.logout().then(sdk.authInfo).then((authInfo) => {
+                         // Logging out already logged out user does nothing
+                         expect(authInfo.grantType).toBeUndefined();
                        })));
     });
   });

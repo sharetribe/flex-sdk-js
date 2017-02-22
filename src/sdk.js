@@ -6,7 +6,7 @@ import paramsSerializer from './params_serializer';
 import { authenticateInterceptors,
          FetchRefreshTokenForRevoke,
          ClearTokenMiddleware,
-         FetchAuthToken,
+         FetchAuthTokenFromStore,
          AddAuthTokenHeader,
          SaveTokenMiddleware,
          AddAuthTokenResponseToCtx,
@@ -128,7 +128,7 @@ const loginInterceptors = [
 ];
 
 const logoutInterceptors = [
-  new FetchAuthToken(),
+  new FetchAuthTokenFromStore(),
   new AddAuthTokenHeader(),
   new ClearTokenMiddleware(),
   new FetchRefreshTokenForRevoke(),

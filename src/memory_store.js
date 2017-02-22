@@ -3,10 +3,12 @@ const createStore = () => {
 
   const getToken = () => memo;
   const setToken = (tokenData) => { memo = tokenData; };
+  const removeToken = () => { memo = null; };
 
   return {
     getToken,
     setToken,
+    removeToken,
   };
 };
 

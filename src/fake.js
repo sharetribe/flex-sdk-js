@@ -304,6 +304,15 @@ const requireAuth = (config, reject) => {
     refreshedToken,
   ];
 
+  if (!config.headers.Authorization) {
+    return reject({
+      status: 401,
+      data: '{}', // FIXME This is not what the server sends
+
+      __additionalTestInfo: 'Authorization header missing',
+    });
+  }
+
   const authorized = expectedAuths.find(
     expected => expected.toLowerCase() === config.headers.Authorization.toLowerCase());
 

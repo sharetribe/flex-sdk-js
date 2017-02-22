@@ -11,10 +11,14 @@ const createStore = (clientId) => {
   const setToken = (tokenData) => {
     Cookies.set(key, tokenData, { expires: expiration });
   };
+  const removeToken = () => {
+    Cookies.remove(key);
+  };
 
   return {
     getToken,
     setToken,
+    removeToken,
   };
 };
 
