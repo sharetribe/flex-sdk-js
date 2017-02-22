@@ -1,4 +1,3 @@
-const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const webpack = require('webpack');
 
 // Shared configs
@@ -21,11 +20,7 @@ const output = target => ({
   libraryTarget: 'umd',
 });
 
-const plugins = [
-  // new LodashModuleReplacementPlugin({
-  //   collections: true,
-  // }),
-];
+const plugins = [];
 
 // Node configs
 const nodeConfig = {
@@ -47,7 +42,6 @@ const webConfig = {
   module,
   plugins: [
     ...plugins,
-    // new webpack.optimize.UglifyJsPlugin(),
   ],
 };
 
