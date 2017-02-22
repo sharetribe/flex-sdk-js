@@ -22,9 +22,9 @@ const output = target => ({
 });
 
 const plugins = [
-  new LodashModuleReplacementPlugin({
-    collections: true,
-  }),
+  // new LodashModuleReplacementPlugin({
+  //   collections: true,
+  // }),
 ];
 
 // Node configs
