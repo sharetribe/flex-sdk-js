@@ -14,7 +14,7 @@ JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetrib
 - [X] Universal: Runs in [Node.js](https://nodejs.org/) and in browser
 - [ ] Direct and predictable mapping from API methods and parameters to SDK methods and parameters
 - [X] Encodes/decodes basic types, such as UUID, Money and GeoLocation.
-- [ ] Easy authentication
+- [X] Easy authentication
 - [ ] Clear documentation
 - [ ] Human-readable and understandable error messages for debugging
 - [ ] Structured (JSON) error messages for logging
