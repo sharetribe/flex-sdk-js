@@ -47,7 +47,7 @@ const webConfig = {
   module,
   plugins: [
     ...plugins,
-    new webpack.optimize.UglifyJsPlugin(),
+    // new webpack.optimize.UglifyJsPlugin(),
   ],
 };
 
