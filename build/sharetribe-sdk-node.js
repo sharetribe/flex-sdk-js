@@ -2872,7 +2872,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 // eslint-disable-next-line no-undef
 var hasBrowserCookies = exports.hasBrowserCookies = function hasBrowserCookies() {
-   return (typeof document === 'undefined' ? 'undefined' : _typeof(document)) === 'object' && typeof document.cookies === 'string';
+   return (typeof document === 'undefined' ? 'undefined' : _typeof(document)) === 'object' && typeof document.cookie === 'string';
 };
 
 /***/ },
