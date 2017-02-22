@@ -39,7 +39,6 @@ app.get('/', (req, res) => {
   });
 
   const params = {
-    marketplace_id: marketplaceId,
     include: ['author'],
   };
 

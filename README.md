@@ -298,7 +298,7 @@ The following globals are available:
 Fetch and log all listings in a marketplace:
 
 ```
-> res = sdk.marketplace.show({marketplace_id: '16c6a4b8-88ee-429b-835a-6725206cd08c'})
+> res = sdk.marketplace.show()
 > res.then((response) => console.log(response.data))
 > { data:
    { id: UUID { uuid: '16c6a4b8-88ee-429b-835a-6725206cd08c' },

@@ -55,7 +55,7 @@ console.log('  ');
 console.log('  Fetch and log all listings in a marketplace:');
 console.log('  ');
 console.log('  ```'.block);
-console.log('  > res = sdk.marketplace.show({marketplace_id: \'16c6a4b8-88ee-429b-835a-6725206cd08c\'})'.block);
+console.log('  > res = sdk.marketplace.show()'.block);
 console.log('  > res.then((response) => console.log(response.data))'.block);
 console.log('  > { data:'.block);
 console.log('     { id: UUID { uuid: \'16c6a4b8-88ee-429b-835a-6725206cd08c\' },'.block);

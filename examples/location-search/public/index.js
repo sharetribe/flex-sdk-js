@@ -109,7 +109,7 @@
       var originVal = el.origin.value;
       var boundsVal = el.bounds.value;
 
-      var params = { marketplace_id: marketplaceId, include: ['author'] };
+      var params = { include: ['author'] };
 
       if (originVal) {
         params.origin = originVal;
