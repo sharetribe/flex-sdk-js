@@ -127,7 +127,7 @@ export class ClearTokenMiddleware {
     const { tokenStore } = ctx;
 
     if (tokenStore) {
-      tokenStore.setToken(null);
+      tokenStore.removeToken();
     }
 
     return ctx;
