@@ -15,7 +15,6 @@ const app = express();
 const sharetribeSdk = require('../../src/index');
 
 const clientId = '08ec69f6-d37e-414d-83eb-324e94afddf0';
-const marketplaceId = '16c6a4b8-88ee-429b-835a-6725206cd08c';
 
 const htmlTemplate = fs.readFileSync('./index.html', 'utf8');
 
