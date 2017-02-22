@@ -20,7 +20,9 @@ export class SaveTokenMiddleware {
     const { authToken, tokenStore } = ctx;
 
     if (tokenStore) {
-      tokenStore.setToken(authToken);
+      return Promise.resolve()
+                    .then(() => tokenStore.setToken(authToken))
+                    .then(() => ctx);
     }
 
     return ctx;
@@ -38,6 +40,11 @@ export class AddAuthTokenResponseToCtx {
 export class AddAuthTokenHeader {
   enter(ctx) {
     const { authToken } = ctx;
+
+    if (!authToken) {
+      return ctx;
+    }
+
     const authHeaders = { Authorization: constructAuthHeader(authToken) };
     return { ...ctx, headers: authHeaders };
   }
@@ -127,7 +134,9 @@ export class ClearTokenMiddleware {
     const { tokenStore } = ctx;
 
     if (tokenStore) {
-      tokenStore.removeToken();
+      return Promise.resolve()
+                    .then(tokenStore.removeToken)
+                    .then(() => ctx);
     }
 
     return ctx;
@@ -136,7 +145,7 @@ export class ClearTokenMiddleware {
 
 export class FetchRefreshTokenForRevoke {
   enter(ctx) {
-    const { authToken: { refresh_token: token } } = ctx;
+    const { authToken: { refresh_token: token } = {} } = ctx;
 
     if (token) {
       return { ...ctx, params: { token } };
@@ -149,13 +158,12 @@ export class FetchRefreshTokenForRevoke {
   }
 }
 
-export class FetchAuthToken {
-  enter(enterCtx) {
-    const { tokenStore, endpointInterceptors, clientId } = enterCtx;
-    const storedToken = tokenStore && tokenStore.getToken();
+export class FetchAuthTokenFromApi {
+  enter(ctx) {
+    const { tokenStore, authToken, endpointInterceptors, clientId } = ctx;
 
-    if (storedToken) {
-      return Promise.resolve({ ...enterCtx, authToken: storedToken });
+    if (authToken) {
+      return ctx;
     }
 
     return contextRunner([
@@ -169,19 +177,48 @@ export class FetchAuthToken {
         scope: 'public-read',
       },
       tokenStore,
-    }).then(({ authToken }) => ({ ...enterCtx, authToken }));
+    }).then(({ authToken: newAuthToken }) => ({ ...ctx, authToken: newAuthToken }));
+  }
+}
+
+export class FetchAuthTokenFromStore {
+  enter(enterCtx) {
+    const { tokenStore } = enterCtx;
+
+    if (!tokenStore) {
+      return enterCtx;
+    }
+
+    return Promise.resolve()
+                  .then(tokenStore.getToken)
+                  .then((storedToken) => {
+                    if (storedToken) {
+                      return { ...enterCtx, authToken: storedToken };
+                    }
+
+                    return enterCtx;
+                  });
   }
 }
 
 export class AuthInfo {
   enter(ctx) {
     const { tokenStore } = ctx;
-    const storedToken = tokenStore && tokenStore.getToken();
 
-    if (storedToken) {
-      const grantType = storedToken.refresh_token ? 'refresh_token' : 'client_credentials';
+    if (tokenStore) {
+      return Promise.resolve()
+                    .then(tokenStore.getToken)
+                    .then((storedToken) => {
+                      if (storedToken) {
+                        const grantType = storedToken.refresh_token ?
+                                        'refresh_token' :
+                                        'client_credentials';
 
-      return { ...ctx, res: { grantType } };
+                        return { ...ctx, res: { grantType } };
+                      }
+
+                      return { ...ctx, res: {} };
+                    });
     }
 
     return { ...ctx, res: {} };
@@ -189,7 +226,8 @@ export class AuthInfo {
 }
 
 export const authenticateInterceptors = [
-  new FetchAuthToken(),
+  new FetchAuthTokenFromStore(),
+  new FetchAuthTokenFromApi(),
   new RetryWithAnonToken(),
   new RetryWithRefreshToken(),
   new AddAuthTokenHeader(),
