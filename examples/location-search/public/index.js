@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-(function() {
+(function(global) {
 
   var marketplaceId = '16c6a4b8-88ee-429b-835a-6725206cd08c';
 
@@ -35,6 +35,11 @@
     }, {});
   };
 
+  var sdk = sharetribeSdk.createInstance({
+    clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+    baseUrl: 'http://localhost:8088/',
+  });
+
   function initMap() {
     var myLatLng = {lat: 0, lng: 0};
 
@@ -56,11 +61,6 @@
       el.savedPos.textContent = [event.latLng.lat(), event.latLng.lng()].join(',');
       clickMarker.setPosition(event.latLng);
       clickMarker.setMap(map);
-    });
-
-    var sdk = sharetribeSdk.createInstance({
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      baseUrl: 'http://localhost:8088/',
     });
 
     el.login.addEventListener('click', function() {
@@ -131,4 +131,5 @@
   }
 
   initMap();
-})();
+  global.sdk = sdk;
+})(window);
