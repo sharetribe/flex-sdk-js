@@ -79,7 +79,10 @@ const apis = {
     const { reader, writer } = createTransitConverters(typeHandlers);
 
     return {
-      headers: { Accept: 'application/transit' },
+      headers: {
+        'Content-Type': 'application/transit+json',
+        Accept: 'application/transit+json',
+      },
       baseURL: `${baseUrl}/${version}`,
       transformRequest: [
         // logAndReturn,
@@ -112,6 +115,7 @@ const endpointDefinitions = [
   { apiName: 'api', path: 'listings/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
   { apiName: 'api', path: 'listings/query', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
   { apiName: 'api', path: 'listings/search', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
+  { apiName: 'api', path: 'listings/create', root: true, method: 'post', interceptors: [...authenticateInterceptors] },
   { apiName: 'auth', path: 'token', root: false, method: 'post' },
   { apiName: 'auth', path: 'revoke', root: false, method: 'post' },
 ];

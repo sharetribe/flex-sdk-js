@@ -1,3 +1,4 @@
+import transit from 'transit-js';
 import { reader, writer } from './serializer';
 import { UUID, LatLng } from './types';
 
@@ -16,6 +17,36 @@ describe('serializer', () => {
     const w = writer();
 
     expect(r.read(w.write(testData))).toEqual(testData);
+  });
+
+  it('writes map keys as symbols', () => {
+    const testData = {
+      a: 1,
+      b: { c: { d: 2 } }, // handles nested objects recursively
+      e: [{ f: 3 }, { g: 4 }], // handles nested objects in arrays
+    };
+
+    const expectedData = transit.map();
+    expectedData.set(transit.keyword('a'), 1);
+
+    const b = transit.map();
+    const c = transit.map();
+
+    c.set(transit.keyword('d'), 2);
+    b.set(transit.keyword('c'), c);
+
+    const f = transit.map();
+    f.set(transit.keyword('f'), 3);
+    const g = transit.map();
+    g.set(transit.keyword('g'), 4);
+
+    expectedData.set(transit.keyword('b'), b);
+    expectedData.set(transit.keyword('e'), [f, g]);
+
+    const w = writer();
+    const transitReader = transit.reader();
+
+    expect(transit.equals(transitReader.read(w.write(testData)), expectedData)).toEqual(true);
   });
 
   it('handles UUIDs', () => {
