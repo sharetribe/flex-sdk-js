@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <title>axios - file upload example</title>
+    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+  </head>
+  <body class="container">
+    <h1>file upload</h1>
+
+    <form role="form" class="form" onsubmit="return false;">
+      <div class="form-group">
+        <label for="file">File</label>
+        <input id="file" type="file" class="form-control"/>
+      </div>
+      <button id="upload" type="button" class="btn btn-primary">Upload</button>
+    </form>
+
+    <div id="output" class="container"></div>
+
+    <script src="/axios.js"></script>
+    <script>
+      (function () {
+        var output = document.getElementById('output');
+        document.getElementById('upload').onclick = function () {
+          var data = new FormData();
+          data.append('image', document.getElementById('file').files[0]);
+          var config = {
+            baseURL: 'http://localhost:9999/v1/api',
+            headers: {
+             Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODc3OTk5NTIsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.Fowodx9Awlidsmndn64r2IGTDeNdGtWsn251f5ZmAtU"
+            },
+            onUploadProgress: function(pe) {
+              var percentCompleted = Math.round( (pe.loaded * 100) / pe.total );
+              console.log("Progress: [loaded: " + pe.loaded + ", total: " + pe.total + ", %: " + percentCompleted + "]");
+            }
+          };
+          axios.post('/listings/upload_image', data, config)
+            .then(function (res) {
+              output.className = 'container';
+              output.innerHTML = res.data;
+            })
+            .catch(function (err) {
+              output.className = 'container text-danger';
+              output.innerHTML = err.message;
+            });
+        };
+      })();
+    </script>
+  </body>
+</html>
