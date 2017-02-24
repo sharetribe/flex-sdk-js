@@ -140,16 +140,18 @@ class TransitRequest {
 class MultipartRequest {
   enter({ params, ...ctx }) {
     if (_.isPlainObject(params)) {
+      /* eslint-disable no-undef */
       if (typeof FormData === 'undefined') {
         throw new Error('Don\'t know how to create multipart request from Object, when the FormData is undefined');
       }
 
-      const formData = _.reduce(params, (fd, val, key) => {
+      const formDataObj = _.reduce(params, (fd, val, key) => {
         fd.append(key, val);
         return fd;
       }, new FormData());
+      /* eslint-enable no-undef */
 
-      return { params: formData, ...ctx };
+      return { params: formDataObj, ...ctx };
     }
 
     return { params, ...ctx };

@@ -7,6 +7,7 @@ require('babel-register');
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+
 const app = express();
 
 const htmlTemplate = fs.readFileSync('./index.html', 'utf8');

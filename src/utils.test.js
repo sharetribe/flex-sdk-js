@@ -13,7 +13,7 @@ describe('utils', () => {
     it('camelizes it', () => {
       expect(fnPath('/listings/upload_image')).toEqual(['listings', 'uploadImage']);
       expect(fnPath('/listings/upload_new_awesome_image')).toEqual(['listings', 'uploadNewAwesomeImage']);
-    })
+    });
   });
 
   describe('trimEndSlash', () => {
