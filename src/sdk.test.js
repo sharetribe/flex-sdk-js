@@ -38,7 +38,7 @@ const createSdk = (config) => {
   const adapter = fake();
   const sdk = new SharetribeSdk({
     ...defaults,
-    adapter,
+    adapter: adapter.adapterFn,
     tokenStore,
     ...config,
   });
