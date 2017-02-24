@@ -19,6 +19,37 @@ const report = responsePromise =>
     throw error;
   });
 
+/**
+   Helper to create SDK instance for tests with default configurations.
+
+   Pass additional configurations in `config` param to override defaults.
+
+   Returns a map that contains all the instances that might be useful for
+   tests, i.e. sdk, tokenStore and adapter.
+ */
+const createSdk = (config) => {
+  const defaults = {
+    baseUrl: '',
+    clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+    endpoints: [],
+  }
+
+  const tokenStore = memoryStore();
+  const adapter = fake();
+  const sdk = new SharetribeSdk({
+    ...defaults,
+    adapter,
+    tokenStore,
+    ...config,
+  });
+
+  return {
+    tokenStore,
+    adapter,
+    sdk,
+  }
+}
+
 describe('new SharetribeSdk', () => {
   it('validates presence of clientId', () => {
     expect(() => new SharetribeSdk({
@@ -27,7 +58,7 @@ describe('new SharetribeSdk', () => {
   });
 
   it('creates new endpoints', () => {
-    const inst = new SharetribeSdk({
+    const sdk = new SharetribeSdk({
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
       endpoints: [{
@@ -37,20 +68,13 @@ describe('new SharetribeSdk', () => {
       tokenStore: memoryStore(),
     });
 
-    expect(inst.posts.showAll).toBeInstanceOf(Function);
+    expect(sdk.posts.showAll).toBeInstanceOf(Function);
   });
 
   it('calls users endpoint with query params', () => {
-    const inst = new SharetribeSdk({
-      baseUrl: '',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      typeHandlers: [],
-      endpoints: [],
-      adapter: fake(),
-      tokenStore: memoryStore(),
-    });
+    const { sdk } = createSdk();
 
-    return report(inst.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    return report(sdk.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 
@@ -63,16 +87,9 @@ describe('new SharetribeSdk', () => {
   });
 
   it('calls marketplace endpoint with query params', () => {
-    const inst = new SharetribeSdk({
-      baseUrl: '',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      typeHandlers: [],
-      endpoints: [],
-      adapter: fake(),
-      tokenStore: memoryStore(),
-    });
+    const { sdk } = createSdk();
 
-    return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 
@@ -85,16 +102,9 @@ describe('new SharetribeSdk', () => {
   });
 
   it('calls listing search with query params', () => {
-    const inst = new SharetribeSdk({
-      baseUrl: '',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      typeHandlers: [],
-      endpoints: [],
-      adapter: fake(),
-      tokenStore: memoryStore(),
-    });
+    const { sdk } = createSdk();
 
-    return inst.listings.search({ id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'), origin: new LatLng(40.00, -70.00) }).then((res) => {
+    return sdk.listings.search({ id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'), origin: new LatLng(40.00, -70.00) }).then((res) => {
       const data = res.data.data;
 
       expect(data.length).toEqual(2);
@@ -121,16 +131,11 @@ describe('new SharetribeSdk', () => {
       writer: v => new UUID(v.myUuid), // writer fn type: MyUuid -> UUID
     }];
 
-    const inst = new SharetribeSdk({
-      baseUrl: '',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      endpoints: [],
-      adapter: fake(),
+    const { sdk } = createSdk({
       typeHandlers: handlers,
-      tokenStore: memoryStore(),
     });
 
-    return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 
@@ -143,24 +148,18 @@ describe('new SharetribeSdk', () => {
   });
 
   it('reads auth token from store and includes it in request headers', () => {
-    const inst = new SharetribeSdk({
-      baseUrl: '',
-
+    const { sdk, tokenStore } = createSdk({
       // The Fake server doesn't know this clientId. However, the request passes because
       // the access_token is in the store
       clientId: 'daaf8871-4723-45b8-bc97-9e335f46966d',
-
-      endpoints: [],
-      adapter: fake(),
-      tokenStore: {
-        getToken: () => ({
-          access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo',
-          token_type: 'bearer',
-        }),
-      },
     });
 
-    return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    tokenStore.setToken({
+      access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo',
+      token_type: 'bearer',
+    });
+
+    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 
@@ -173,17 +172,9 @@ describe('new SharetribeSdk', () => {
   });
 
   it('stores the auth token to the store', () => {
-    const tokenStore = memoryStore();
+    const { sdk, tokenStore } = createSdk();
 
-    const inst = new SharetribeSdk({
-      baseUrl: '',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      endpoints: [],
-      adapter: fake(),
-      tokenStore,
-    });
-
-    return inst.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
       const attrs = resource.attributes;
       const token = tokenStore.getToken();
@@ -201,15 +192,7 @@ describe('new SharetribeSdk', () => {
   });
 
   it('stores auth token after login', () => {
-    const tokenStore = memoryStore();
-
-    const sdk = new SharetribeSdk({
-      baseUrl: '',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      endpoints: [],
-      adapter: fake(),
-      tokenStore,
-    });
+    const { sdk, tokenStore } = createSdk();
 
     // First we get the anonymous token
     return report(sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
@@ -223,15 +206,7 @@ describe('new SharetribeSdk', () => {
   });
 
   it('refreshes login token', () => {
-    const tokenStore = memoryStore();
-
-    const sdk = new SharetribeSdk({
-      baseUrl: '',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      endpoints: [],
-      adapter: fake(),
-      tokenStore,
-    });
+    const { sdk, tokenStore } = createSdk();
 
     // First, login
     return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
@@ -260,15 +235,7 @@ describe('new SharetribeSdk', () => {
   });
 
   it('refreshes anonymous token', () => {
-    const tokenStore = memoryStore();
-
-    const sdk = new SharetribeSdk({
-      baseUrl: '',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      endpoints: [],
-      adapter: fake(),
-      tokenStore,
-    });
+    const { sdk, tokenStore } = createSdk();
 
     // First we get the anonymous token
     return report(sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
@@ -297,15 +264,7 @@ describe('new SharetribeSdk', () => {
   });
 
   it('revokes token (a.k.a logout)', () => {
-    const tokenStore = memoryStore();
-
-    const sdk = new SharetribeSdk({
-      baseUrl: '',
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      endpoints: [],
-      adapter: fake(),
-      tokenStore,
-    });
+    const { sdk, tokenStore } = createSdk();
 
     // First, login
     return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
@@ -326,15 +285,7 @@ describe('new SharetribeSdk', () => {
 
   describe('authInfo', () => {
     it('returns authentication information', () => {
-      const tokenStore = memoryStore();
-
-      const sdk = new SharetribeSdk({
-        baseUrl: '',
-        clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-        endpoints: [],
-        adapter: fake(),
-        tokenStore,
-      });
+      const { sdk, tokenStore } = createSdk();
 
       return report(sdk.authInfo()
                        .then((authInfo) => {
