@@ -1,4 +1,4 @@
-/* eslint-disable import/prefer-default-export */
+import _ from 'lodash';
 
 /**
    UUID type
@@ -24,3 +24,45 @@ export class LatLngBounds {
     this.sw = sw;
   }
 }
+
+//
+// Map containing the type name for serialization and the type class
+//
+const types = {
+  UUID,
+  LatLng,
+  LatLngBounds,
+};
+
+//
+// JSON replacer
+//
+export const replacer = (key = null, value) => {
+  const type = _.findKey(types, typeClass => value instanceof typeClass);
+
+  if (type) {
+    // eslint-disable-next-line no-underscore-dangle
+    return { ...value, _sdkType: type };
+  }
+
+  return value;
+};
+
+//
+// JSON reviver
+//
+export const reviver = (key = null, value) => {
+  // eslint-disable-next-line no-underscore-dangle
+  const type = value && value._sdkType;
+
+  switch (type) {
+    case 'LatLng':
+      return new LatLng(value.lat, value.lng);
+    case 'LatLngBounds':
+      return new LatLngBounds(value.ne, value.sw);
+    case 'UUID':
+      return new UUID(value.uuid);
+    default:
+      return value;
+  }
+};
