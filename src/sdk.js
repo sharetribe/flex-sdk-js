@@ -135,15 +135,15 @@ const sdkFnDefsFromEndpointDefs = epDefs => epDefs
    - method: HTTP method
  */
 const endpointDefinitions = [
-  { apiName: 'api', path: 'marketplace/show', internal: false, method: 'get' },
-  { apiName: 'api', path: 'users/show', internal: false, method: 'get' },
-  { apiName: 'api', path: 'listings/show', internal: false, method: 'get' },
-  { apiName: 'api', path: 'listings/query', internal: false, method: 'get' },
-  { apiName: 'api', path: 'listings/search', internal: false, method: 'get' },
-  { apiName: 'api', path: 'listings/create', internal: false, method: 'post' },
-  { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post' },
-  { apiName: 'auth', path: 'token', internal: true, method: 'post' },
-  { apiName: 'auth', path: 'revoke', internal: true, method: 'post' },
+  { apiName: 'api', path: 'marketplace/show', internal: false, method: 'get', interceptors: [] },
+  { apiName: 'api', path: 'users/show', internal: false, method: 'get', interceptors: [] },
+  { apiName: 'api', path: 'listings/show', internal: false, method: 'get', interceptors: [] },
+  { apiName: 'api', path: 'listings/query', internal: false, method: 'get', interceptors: [] },
+  { apiName: 'api', path: 'listings/search', internal: false, method: 'get', interceptors: [] },
+  { apiName: 'api', path: 'listings/create', internal: false, method: 'post', interceptors: [] },
+  { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post', interceptors: [] },
+  { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
+  { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
 ];
 
 const loginInterceptors = [
@@ -268,11 +268,11 @@ const createEndpointInterceptor = ({ method, url, httpOpts }) => {
 
    It's meant to used by the user of the SDK.
  */
-const createSdkFn = ({ ctx, endpointInterceptor, interceptors }) =>
+const createSdkFn = ({ ctx, endpointInterceptors, interceptors }) =>
   (params = {}) =>
     contextRunner(_.compact([
       ...interceptors,
-      endpointInterceptor,
+      ...endpointInterceptors,
     ]))({ ...ctx, params }).then(({ res }) => res);
 
 // Take SDK configurations, do transformation and return.
@@ -316,13 +316,15 @@ export default class SharetribeSdk {
       const url = [apiName, path].join('/');
       const httpOpts = apiConfigs[apiName];
 
-      const endpointInterceptor = createEndpointInterceptor({ method, url, httpOpts });
+      const endpointInterceptors = [
+        createEndpointInterceptor({ method, url, httpOpts }),
+      ]
 
       return {
         ...epDef,
         fnPath,
         fullFnPath,
-        endpointInterceptor,
+        endpointInterceptors,
       };
     });
 
@@ -331,8 +333,8 @@ export default class SharetribeSdk {
     // This object can be passed to other interceptors in the interceptor context so they
     // are able to do API calls (e.g. authentication interceptors)
     const endpointInterceptors = endpointDefs.reduce(
-      (acc, { fullFnPath, endpointInterceptor }) =>
-        _.set(acc, fullFnPath, endpointInterceptor), {});
+      (acc, { fullFnPath, endpointInterceptors: interceptors }) =>
+        _.set(acc, fullFnPath, interceptors), {});
 
     // Create a context object that will be passed to the interceptor context runner
     const ctx = {
@@ -353,7 +355,7 @@ export default class SharetribeSdk {
             path,
             fn: createSdkFn({
               ctx,
-              endpointInterceptor: _.get(endpointInterceptors, endpointInterceptorPath),
+              endpointInterceptors: _.get(endpointInterceptors, endpointInterceptorPath) || [],
               interceptors,
             }),
           }));
