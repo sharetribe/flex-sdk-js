@@ -17,7 +17,7 @@
 
     <div id="output" class="container"></div>
 
-    <script src="./sharetribe-sdk-web.js"></script>
+    <script src="./build/sharetribe-sdk-web.js"></script>
     <script>
      (function () {
        var sdk = sharetribeSdk.createInstance({
@@ -35,7 +35,7 @@
          sdk.listings.upload_image({ image: file })
               .then(function (res) {
                 output.className = 'container';
-                output.innerHTML = res.data;
+                output.innerHTML = JSON.stringify(res.data, null, 2);
               })
               .catch(function (err) {
                 output.className = 'container text-danger';
