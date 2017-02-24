@@ -9,6 +9,11 @@ describe('utils', () => {
       expect(fnPath('/users/')).toEqual(['users']);
       expect(fnPath('/users/create/')).toEqual(['users', 'create']);
     });
+
+    it('camelizes it', () => {
+      expect(fnPath('/listings/upload_image')).toEqual(['listings', 'uploadImage']);
+      expect(fnPath('/listings/upload_new_awesome_image')).toEqual(['listings', 'uploadNewAwesomeImage']);
+    })
   });
 
   describe('trimEndSlash', () => {

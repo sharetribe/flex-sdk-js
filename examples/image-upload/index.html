@@ -32,7 +32,7 @@
        document.getElementById('upload').onclick = function () {
          const file = document.getElementById('file').files[0];
 
-         sdk.listings.upload_image({ image: file })
+         sdk.listings.uploadImage({ image: file })
               .then(function (res) {
                 output.className = 'container';
                 output.innerHTML = JSON.stringify(res.data, null, 2);
