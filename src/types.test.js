@@ -3,7 +3,7 @@ import {
   LatLng,
   LatLngBounds,
   replacer,
-  reviever,
+  reviver,
 } from './types';
 
 describe('JSON parse/stringify', () => {
@@ -19,25 +19,25 @@ describe('JSON parse/stringify', () => {
   const expectedJsonRep = {
     "uuid": {
       "uuid": "27786d1c-f16b-411b-b1fc-176969a91338",
-      "__type": "UUID"
+      "_sdkType": "UUID"
     },
     "latlng": {
       "lat": 12.34,
       "lng": 45.56,
-      "__type": "LatLng"
+      "_sdkType": "LatLng"
     },
     "latlngbounds": {
       "ne": {
         "lat": 12.34,
         "lng": 23.45,
-        "__type": "LatLng"
+        "_sdkType": "LatLng"
       },
       "sw": {
         "lat": 34.56,
         "lng": 45.67,
-        "__type": "LatLng"
+        "_sdkType": "LatLng"
       },
-      "__type": "LatLngBounds"
+      "_sdkType": "LatLngBounds"
     },
   };
   /* eslint-enable quote-props */
@@ -51,7 +51,7 @@ describe('JSON parse/stringify', () => {
   });
 
   it('parses types', () => {
-    const parsed = JSON.parse(JSON.stringify(testData, replacer), reviever);
+    const parsed = JSON.parse(JSON.stringify(testData, replacer), reviver);
 
     expect(parsed).toEqual(testData);
   });

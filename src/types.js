@@ -42,18 +42,18 @@ export const replacer = (key = null, value) => {
 
   if (type) {
     // eslint-disable-next-line no-underscore-dangle
-    return { ...value, __type: type };
+    return { ...value, _sdkType: type };
   }
 
   return value;
 };
 
 //
-// JSON reviever
+// JSON reviver
 //
-export const reviever = (key = null, value) => {
+export const reviver = (key = null, value) => {
   // eslint-disable-next-line no-underscore-dangle
-  const type = value && value.__type;
+  const type = value && value._sdkType;
 
   switch (type) {
     case 'LatLng':
