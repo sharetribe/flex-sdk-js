@@ -76,18 +76,14 @@ const createTransitConverters = (typeHandlers) => {
  */
 const apis = {
   api: ({ baseUrl, version, adapter, typeHandlers }) => {
-    const { reader, writer } = createTransitConverters(typeHandlers);
+    const { reader } = createTransitConverters(typeHandlers);
 
     return {
       headers: {
-        'Content-Type': 'application/transit+json',
         Accept: 'application/transit+json',
       },
       baseURL: `${baseUrl}/${version}`,
-      transformRequest: [
-        // logAndReturn,
-        data => writer.write(data),
-      ],
+      transformRequest: [],
       transformResponse: [
         // logAndReturn,
         data => reader.read(data),
@@ -125,6 +121,22 @@ const sdkFnDefsFromEndpointDefs = epDefs => epDefs
     };
   });
 
+class TransitRequest {
+  enter({ params, headers = {}, typeHandlers, ...ctx }) {
+    const { writer } = createTransitConverters(typeHandlers);
+
+    return {
+      params: writer.write(params),
+      headers: {
+        ...headers,
+        'Content-Type': 'application/transit+json',
+      },
+      typeHandlers,
+      ...ctx,
+    };
+  }
+}
+
 /**
    List of all known endpoints
 
@@ -140,7 +152,7 @@ const endpointDefinitions = [
   { apiName: 'api', path: 'listings/show', internal: false, method: 'get', interceptors: [] },
   { apiName: 'api', path: 'listings/query', internal: false, method: 'get', interceptors: [] },
   { apiName: 'api', path: 'listings/search', internal: false, method: 'get', interceptors: [] },
-  { apiName: 'api', path: 'listings/create', internal: false, method: 'post', interceptors: [] },
+  { apiName: 'api', path: 'listings/create', internal: false, method: 'post', interceptors: [new TransitRequest()] },
   { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post', interceptors: [] },
   { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
   { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
@@ -342,6 +354,7 @@ export default class SharetribeSdk {
       tokenStore: sdkConfig.tokenStore,
       endpointInterceptors,
       clientId: sdkConfig.clientId,
+      typeHandlers: sdkConfig.typeHandlers,
     };
 
     const userDefinedSdkFnDefs = sdkFnDefsFromEndpointDefs(sdkConfig.endpoints);

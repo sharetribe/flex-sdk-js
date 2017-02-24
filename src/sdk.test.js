@@ -297,7 +297,11 @@ describe('new SharetribeSdk', () => {
     const transitEncoded = '["^ ","~:title","A new hope","~:description","Our Nth listing!","~:address","Bulevardi 14, Helsinki, Finland","~:geolocation",["~#geo",[10.152,15.375]]]';
 
     return report(sdk.listings.create(testData)).then(() => {
-      expect(_.last(adapter.requests).data).toEqual(transitEncoded);
+      const req = _.last(adapter.requests);
+      expect(req.data).toEqual(transitEncoded);
+      expect(req.headers).toEqual(expect.objectContaining({
+        'Content-Type': 'application/transit+json',
+      }));
     });
   });
 
