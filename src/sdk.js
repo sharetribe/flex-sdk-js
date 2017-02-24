@@ -233,10 +233,10 @@ const doRequest = ({ params = {}, httpOpts }) => {
 };
 
 /**
-   Creates an endpoint interceptor that calls the endpoint with the
+   Creates a list of endpoint interceptors that call the endpoint with the
    given parameters.
 */
-const createEndpointInterceptor = ({ method, url, httpOpts }) => {
+const createEndpointInterceptors = ({ method, url, httpOpts }) => {
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
   return {
@@ -310,15 +310,16 @@ export default class SharetribeSdk {
 
     // Read the endpoint definitions and do some mapping
     const endpointDefs = [...endpointDefinitions, ...sdkConfig.endpoints].map((epDef) => {
-      const { path, apiName, method } = epDef;
+      const { path, apiName, method, interceptors = [] } = epDef;
       const fnPath = urlPathToFnPath(path);
       const fullFnPath = [apiName, ...fnPath];
       const url = [apiName, path].join('/');
       const httpOpts = apiConfigs[apiName];
 
       const endpointInterceptors = [
-        createEndpointInterceptor({ method, url, httpOpts }),
-      ]
+        ...interceptors,
+        createEndpointInterceptors({ method, url, httpOpts }),
+      ];
 
       return {
         ...epDef,

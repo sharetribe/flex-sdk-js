@@ -33,7 +33,7 @@ const createSdk = (config) => {
     baseUrl: '',
     clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
     endpoints: [],
-  }
+  };
 
   const tokenStore = memoryStore();
   const adapter = fake();
@@ -48,8 +48,8 @@ const createSdk = (config) => {
     tokenStore,
     adapter,
     sdk,
-  }
-}
+  };
+};
 
 describe('new SharetribeSdk', () => {
   it('validates presence of clientId', () => {
@@ -288,13 +288,13 @@ describe('new SharetribeSdk', () => {
     const { sdk, adapter } = createSdk();
 
     const testData = {
-      "title": "A new hope",
-      "description": "Our Nth listing!",
-      "address": "Bulevardi 14, Helsinki, Finland",
-      "geolocation": new LatLng(10.152, 15.375),
-    }
+      title: 'A new hope',
+      description: 'Our Nth listing!',
+      address: 'Bulevardi 14, Helsinki, Finland',
+      geolocation: new LatLng(10.152, 15.375),
+    };
 
-    const transitEncoded = "[\"^ \",\"~:title\",\"A new hope\",\"~:description\",\"Our Nth listing!\",\"~:address\",\"Bulevardi 14, Helsinki, Finland\",\"~:geolocation\",[\"~#geo\",[10.152,15.375]]]"
+    const transitEncoded = '["^ ","~:title","A new hope","~:description","Our Nth listing!","~:address","Bulevardi 14, Helsinki, Finland","~:geolocation",["~#geo",[10.152,15.375]]]';
 
     return report(sdk.listings.create(testData)).then(() => {
       expect(_.last(adapter.requests).data).toEqual(transitEncoded);
@@ -303,7 +303,7 @@ describe('new SharetribeSdk', () => {
 
   describe('authInfo', () => {
     it('returns authentication information', () => {
-      const { sdk, tokenStore } = createSdk();
+      const { sdk } = createSdk();
 
       return report(sdk.authInfo()
                        .then((authInfo) => {

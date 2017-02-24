@@ -346,7 +346,7 @@ const createAdapter = () => {
           // This is a dummy implementation. Real API, obviously, returns something else.
           // For the sake of simplicity, we don't require authentication.
           // Returns: Transit encoded empty map.
-          return resolve({ data: "[\"^ \"]" });
+          return resolve({ data: '["^ "]' });
         case '/v1/auth/token':
           return auth(config, resolve, reject);
         case '/v1/auth/revoke':
