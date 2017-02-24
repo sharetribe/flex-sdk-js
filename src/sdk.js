@@ -137,6 +137,25 @@ class TransitRequest {
   }
 }
 
+class MultipartRequest {
+  enter({ params, ...ctx }) {
+    if (_.isPlainObject(params)) {
+      if (typeof FormData === 'undefined') {
+        throw new Error('Don\'t know how to create multipart request from Object, when the FormData is undefined');
+      }
+
+      const formData = _.reduce(params, (fd, val, key) => {
+        fd.append(key, val);
+        return fd;
+      }, new FormData());
+
+      return { params: formData, ...ctx };
+    }
+
+    return { params, ...ctx };
+  }
+}
+
 /**
    List of all known endpoints
 
@@ -153,7 +172,7 @@ const endpointDefinitions = [
   { apiName: 'api', path: 'listings/query', internal: false, method: 'get', interceptors: [] },
   { apiName: 'api', path: 'listings/search', internal: false, method: 'get', interceptors: [] },
   { apiName: 'api', path: 'listings/create', internal: false, method: 'post', interceptors: [new TransitRequest()] },
-  { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post', interceptors: [] },
+  { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post', interceptors: [new MultipartRequest()] },
   { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
   { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
 ];

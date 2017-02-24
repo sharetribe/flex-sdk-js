@@ -30,11 +30,9 @@
        var output = document.getElementById('output');
 
        document.getElementById('upload').onclick = function () {
+         const file = document.getElementById('file').files[0];
 
-         var data = new FormData();
-         data.append('image', document.getElementById('file').files[0]);
-
-         sdk.listings.upload_image(data)
+         sdk.listings.upload_image({ image: file })
               .then(function (res) {
                 output.className = 'container';
                 output.innerHTML = res.data;
