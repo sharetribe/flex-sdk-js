@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { UUID, LatLng } from './types';
 import fake from './fake';
 import SharetribeSdk from './sdk';
@@ -281,6 +282,23 @@ describe('new SharetribeSdk', () => {
         });
       });
     }));
+  });
+
+  it('encodes new listing post body to Transit', () => {
+    const { sdk, adapter } = createSdk();
+
+    const testData = {
+      "title": "A new hope",
+      "description": "Our Nth listing!",
+      "address": "Bulevardi 14, Helsinki, Finland",
+      "geolocation": new LatLng(10.152, 15.375),
+    }
+
+    const transitEncoded = "[\"^ \",\"~:title\",\"A new hope\",\"~:description\",\"Our Nth listing!\",\"~:address\",\"Bulevardi 14, Helsinki, Finland\",\"~:geolocation\",[\"~#geo\",[10.152,15.375]]]"
+
+    return report(sdk.listings.create(testData)).then(() => {
+      expect(_.last(adapter.requests).data).toEqual(transitEncoded);
+    });
   });
 
   describe('authInfo', () => {

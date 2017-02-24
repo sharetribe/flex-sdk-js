@@ -341,6 +341,12 @@ const createAdapter = () => {
           return requireAuth(config, reject).then(() => marketplace.show(config, resolve));
         case '/v1/api/listings/search':
           return requireAuth(config, reject).then(() => listings.search(config, resolve));
+        case '/v1/api/listings/create':
+          // Warning!
+          // This is a dummy implementation. Real API, obviously, returns something else.
+          // For the sake of simplicity, we don't require authentication.
+          // Returns: Transit encoded empty map.
+          return resolve({ data: "[\"^ \"]" });
         case '/v1/auth/token':
           return auth(config, resolve, reject);
         case '/v1/auth/revoke':
