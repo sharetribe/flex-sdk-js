@@ -109,16 +109,41 @@ const apis = {
   }),
 };
 
+/**
+   Take endpoint definitions and return SDK function definition.
+ */
+const sdkFnDefsFromEndpointDefs = epDefs => epDefs
+  .filter(({ internal = false }) => !internal)
+  .map(({ apiName, path }) => {
+    const fnPath = urlPathToFnPath(path);
+    const fullFnPath = [apiName, ...fnPath];
+
+    return {
+      path: fnPath,
+      endpointInterceptorPath: fullFnPath,
+      interceptors: [...authenticateInterceptors],
+    };
+  });
+
+/**
+   List of all known endpoints
+
+   - apiName: api / auth
+   - path: URL path to the endpoint
+   - internal: Is this method SDK internal only,
+     or will it be part of the public SDK interface
+   - method: HTTP method
+ */
 const endpointDefinitions = [
-  { apiName: 'api', path: 'marketplace/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'users/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/query', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/search', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/create', root: true, method: 'post', interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/upload_image', root: true, method: 'post', interceptors: [...authenticateInterceptors] },
-  { apiName: 'auth', path: 'token', root: false, method: 'post' },
-  { apiName: 'auth', path: 'revoke', root: false, method: 'post' },
+  { apiName: 'api', path: 'marketplace/show', internal: false, method: 'get' },
+  { apiName: 'api', path: 'users/show', internal: false, method: 'get' },
+  { apiName: 'api', path: 'listings/show', internal: false, method: 'get' },
+  { apiName: 'api', path: 'listings/query', internal: false, method: 'get' },
+  { apiName: 'api', path: 'listings/search', internal: false, method: 'get' },
+  { apiName: 'api', path: 'listings/create', internal: false, method: 'post' },
+  { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post' },
+  { apiName: 'auth', path: 'token', internal: true, method: 'post' },
+  { apiName: 'auth', path: 'revoke', internal: true, method: 'post' },
 ];
 
 const loginInterceptors = [
@@ -135,9 +160,26 @@ const logoutInterceptors = [
   new FetchRefreshTokenForRevoke(),
 ];
 
+/**
+   List of SDK methods that will be part of the SDKs public interface.
+   The list is created from the `endpointDefinitions` list.
+
+   The objects in the list have following fields:
+
+   - path (String | Array): The function name and path. I.e. if the path is `listings.show`,
+     then there will be a public SDK method `sdk.listings.show`
+   - endpointInterceptorPath (String | Array): Path to endpoint interceptor
+   - interceptors: List of additional interceptors.
+
+ */
+const endpointSdkFnDefinitions = sdkFnDefsFromEndpointDefs(endpointDefinitions);
+
+/**
+   List of SDK methods that are not derived from the endpoints.
+ */
 const additionalSdkFnDefinitions = [
-  { path: 'login', endpointInterceptorName: 'auth.token', interceptors: loginInterceptors },
-  { path: 'logout', endpointInterceptorName: 'auth.revoke', interceptors: [...logoutInterceptors] },
+  { path: 'login', endpointInterceptorPath: 'auth.token', interceptors: loginInterceptors },
+  { path: 'logout', endpointInterceptorPath: 'auth.revoke', interceptors: [...logoutInterceptors] },
   { path: 'authInfo', interceptors: [new AuthInfo()] },
 ];
 
@@ -268,10 +310,9 @@ export default class SharetribeSdk {
 
     // Read the endpoint definitions and do some mapping
     const endpointDefs = [...endpointDefinitions, ...sdkConfig.endpoints].map((epDef) => {
-      const { path, apiName, root, method } = epDef;
+      const { path, apiName, method } = epDef;
       const fnPath = urlPathToFnPath(path);
       const fullFnPath = [apiName, ...fnPath];
-      const sdkFnPath = root ? fnPath : fullFnPath;
       const url = [apiName, path].join('/');
       const httpOpts = apiConfigs[apiName];
 
@@ -281,7 +322,6 @@ export default class SharetribeSdk {
         ...epDef,
         fnPath,
         fullFnPath,
-        sdkFnPath,
         endpointInterceptor,
       };
     });
@@ -301,24 +341,24 @@ export default class SharetribeSdk {
       clientId: sdkConfig.clientId,
     };
 
-    // Create SDK functions from the defined endpoints
-    const endpointSdkFns = endpointDefs.map(
-      ({ sdkFnPath: path, endpointInterceptor, interceptors = [] }) =>
-        ({ path, fn: createSdkFn({ ctx, endpointInterceptor, interceptors }) }));
+    const userDefinedSdkFnDefs = sdkFnDefsFromEndpointDefs(sdkConfig.endpoints);
 
-    // Create additional SDK functions
-    const additionalSdkFns = additionalSdkFnDefinitions.map(
-      ({ path, endpointInterceptorName, interceptors }) =>
-        ({
-          path,
-          fn: createSdkFn({
-            ctx,
-            endpointInterceptor: _.get(endpointInterceptors, endpointInterceptorName),
-            interceptors,
-          }),
-        }));
+    // Create SDK functions
+    const sdkFns = [
+      ...endpointSdkFnDefinitions,
+      ...additionalSdkFnDefinitions,
+      ...userDefinedSdkFnDefs].map(
+        ({ path, endpointInterceptorPath, interceptors }) =>
+          ({
+            path,
+            fn: createSdkFn({
+              ctx,
+              endpointInterceptor: _.get(endpointInterceptors, endpointInterceptorPath),
+              interceptors,
+            }),
+          }));
 
     // Assign SDK functions to 'this'
-    [...endpointSdkFns, ...additionalSdkFns].forEach(({ path, fn }) => _.set(this, path, fn));
+    sdkFns.forEach(({ path, fn }) => _.set(this, path, fn));
   }
 }
