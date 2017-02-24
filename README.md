@@ -12,7 +12,7 @@ JavaScript implementation of Sharetribe SDK to provide easy access to [Sharetrib
 
 - [X] [Promise-based](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) asynchronous API
 - [X] Universal: Runs in [Node.js](https://nodejs.org/) and in browser
-- [ ] Direct and predictable mapping from API methods and parameters to SDK methods and parameters
+- [X] Direct and predictable mapping from API methods and parameters to SDK methods and parameters
 - [X] Encodes/decodes basic types, such as UUID, Money and GeoLocation.
 - [X] Easy authentication
 - [ ] Clear documentation
@@ -199,12 +199,7 @@ You can find all examples under the `[examples/](./examples)` directory:
 
 - [Fetch listings form local server (localhost:8080)](./examples/local-server)
 - [Location search from local server (localhost:8080)](./examples/location-search)
-
-**Please note!** The following examples **ARE CURRENTLY BROKEN** due to the recent changes. They will be fixed very soon.
-
-- [Hello World example in Node.js](./examples/hello-world-node)
-- [Hello World example in browser](./examples/hello-world-browser)
-- [Universal example: Use the SDK in browser and server to fetch the current ISS space station location](./examples/iss)
+- [Image upload from browser to local server (localhost:8080)](./examples/image-upload)
 
 # Installation [DRAFT]
 
@@ -216,14 +211,36 @@ npm install sharetribe-sdk
 
 Full documentation is available at [TODO Add link to Slate](./)
 
-## Types [DRAFT]
+## Types
 
 The SDK provides some basic types that complement the data types that JavaScript supports out-of-the box. The type conversion is handled by the SDK under the hood.
 
 The full list of supported types:
 
-* UUID - Represents UUIDs ([Universally unique identifiers](https://en.wikipedia.org/wiki/Universally_unique_identifier)) // TODO Add link to doc
-* TODO: Add more types here...
+* UUID - Represents UUIDs ([Universally unique identifiers](https://en.wikipedia.org/wiki/Universally_unique_identifier))
+* LatLng(lat: number, lng: number) - Geolocation point
+* LatLngBounds(ne: LatLng, sw: LatLng) - Bounding box limited by North-East and South-West corners
+
+### Serializing to JSON
+
+The SDK provides two functions that help you to save the type information even when the data is serialized to JSON and deserialized from JSON:
+
+- `types.reviver`: Function to be passed to `JSON.parse`
+- `types.replacer`: Function to be passed to `JSON.stringify`
+
+Example:
+
+```js
+const { types: { reviver, replacer } } = require('sharetribe-sdk');
+
+const testData = {
+  id: new UUID('f989541d-7e96-4c8a-b550-dff1eef25815')
+};
+
+const roundtrip = JSON.parse(JSON.stringify(testData, replacer), reviver);
+
+expect(roundtrip.constructor.name).toEqual('UUID');
+```
 
 ### Using your own types
 
