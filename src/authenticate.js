@@ -74,7 +74,7 @@ class RetryWithRefreshToken {
       return contextRunner([
         new SaveTokenMiddleware(),
         new AddAuthTokenResponseToCtx(),
-        endpointInterceptors.auth.token,
+        ...endpointInterceptors.auth.token,
       ])({
         params: {
           client_id: clientId,
@@ -114,7 +114,7 @@ class RetryWithAnonToken {
       return contextRunner([
         new SaveTokenMiddleware(),
         new AddAuthTokenResponseToCtx(),
-        endpointInterceptors.auth.token,
+        ...endpointInterceptors.auth.token,
       ])({
         params: {
           client_id: clientId,
@@ -169,7 +169,7 @@ export class FetchAuthTokenFromApi {
     return contextRunner([
       new SaveTokenMiddleware(),
       new AddAuthTokenResponseToCtx(),
-      endpointInterceptors.auth.token,
+      ...endpointInterceptors.auth.token,
     ])({
       params: {
         client_id: clientId,

@@ -76,18 +76,14 @@ const createTransitConverters = (typeHandlers) => {
  */
 const apis = {
   api: ({ baseUrl, version, adapter, typeHandlers }) => {
-    const { reader, writer } = createTransitConverters(typeHandlers);
+    const { reader } = createTransitConverters(typeHandlers);
 
     return {
       headers: {
-        'Content-Type': 'application/transit+json',
         Accept: 'application/transit+json',
       },
       baseURL: `${baseUrl}/${version}`,
-      transformRequest: [
-        // logAndReturn,
-        data => writer.write(data),
-      ],
+      transformRequest: [],
       transformResponse: [
         // logAndReturn,
         data => reader.read(data),
@@ -109,15 +105,78 @@ const apis = {
   }),
 };
 
+/**
+   Take endpoint definitions and return SDK function definition.
+ */
+const sdkFnDefsFromEndpointDefs = epDefs => epDefs
+  .filter(({ internal = false }) => !internal)
+  .map(({ apiName, path }) => {
+    const fnPath = urlPathToFnPath(path);
+    const fullFnPath = [apiName, ...fnPath];
+
+    return {
+      path: fnPath,
+      endpointInterceptorPath: fullFnPath,
+      interceptors: [...authenticateInterceptors],
+    };
+  });
+
+class TransitRequest {
+  enter({ params, headers = {}, typeHandlers, ...ctx }) {
+    const { writer } = createTransitConverters(typeHandlers);
+
+    return {
+      params: writer.write(params),
+      headers: {
+        ...headers,
+        'Content-Type': 'application/transit+json',
+      },
+      typeHandlers,
+      ...ctx,
+    };
+  }
+}
+
+class MultipartRequest {
+  enter({ params, ...ctx }) {
+    if (_.isPlainObject(params)) {
+      /* eslint-disable no-undef */
+      if (typeof FormData === 'undefined') {
+        throw new Error('Don\'t know how to create multipart request from Object, when the FormData is undefined');
+      }
+
+      const formDataObj = _.reduce(params, (fd, val, key) => {
+        fd.append(key, val);
+        return fd;
+      }, new FormData());
+      /* eslint-enable no-undef */
+
+      return { params: formDataObj, ...ctx };
+    }
+
+    return { params, ...ctx };
+  }
+}
+
+/**
+   List of all known endpoints
+
+   - apiName: api / auth
+   - path: URL path to the endpoint
+   - internal: Is this method SDK internal only,
+     or will it be part of the public SDK interface
+   - method: HTTP method
+ */
 const endpointDefinitions = [
-  { apiName: 'api', path: 'marketplace/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'users/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/show', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/query', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/search', root: true, method: 'get', interceptors: [...authenticateInterceptors] },
-  { apiName: 'api', path: 'listings/create', root: true, method: 'post', interceptors: [...authenticateInterceptors] },
-  { apiName: 'auth', path: 'token', root: false, method: 'post' },
-  { apiName: 'auth', path: 'revoke', root: false, method: 'post' },
+  { apiName: 'api', path: 'marketplace/show', internal: false, method: 'get', interceptors: [] },
+  { apiName: 'api', path: 'users/show', internal: false, method: 'get', interceptors: [] },
+  { apiName: 'api', path: 'listings/show', internal: false, method: 'get', interceptors: [] },
+  { apiName: 'api', path: 'listings/query', internal: false, method: 'get', interceptors: [] },
+  { apiName: 'api', path: 'listings/search', internal: false, method: 'get', interceptors: [] },
+  { apiName: 'api', path: 'listings/create', internal: false, method: 'post', interceptors: [new TransitRequest()] },
+  { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post', interceptors: [new MultipartRequest()] },
+  { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
+  { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
 ];
 
 const loginInterceptors = [
@@ -134,9 +193,26 @@ const logoutInterceptors = [
   new FetchRefreshTokenForRevoke(),
 ];
 
+/**
+   List of SDK methods that will be part of the SDKs public interface.
+   The list is created from the `endpointDefinitions` list.
+
+   The objects in the list have following fields:
+
+   - path (String | Array): The function name and path. I.e. if the path is `listings.show`,
+     then there will be a public SDK method `sdk.listings.show`
+   - endpointInterceptorPath (String | Array): Path to endpoint interceptor
+   - interceptors: List of additional interceptors.
+
+ */
+const endpointSdkFnDefinitions = sdkFnDefsFromEndpointDefs(endpointDefinitions);
+
+/**
+   List of SDK methods that are not derived from the endpoints.
+ */
 const additionalSdkFnDefinitions = [
-  { path: 'login', endpointInterceptorName: 'auth.token', interceptors: loginInterceptors },
-  { path: 'logout', endpointInterceptorName: 'auth.revoke', interceptors: [...logoutInterceptors] },
+  { path: 'login', endpointInterceptorPath: 'auth.token', interceptors: loginInterceptors },
+  { path: 'logout', endpointInterceptorPath: 'auth.revoke', interceptors: [...logoutInterceptors] },
   { path: 'authInfo', interceptors: [new AuthInfo()] },
 ];
 
@@ -190,10 +266,10 @@ const doRequest = ({ params = {}, httpOpts }) => {
 };
 
 /**
-   Creates an endpoint interceptor that calls the endpoint with the
+   Creates a list of endpoint interceptors that call the endpoint with the
    given parameters.
 */
-const createEndpointInterceptor = ({ method, url, httpOpts }) => {
+const createEndpointInterceptors = ({ method, url, httpOpts }) => {
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
   return {
@@ -225,11 +301,11 @@ const createEndpointInterceptor = ({ method, url, httpOpts }) => {
 
    It's meant to used by the user of the SDK.
  */
-const createSdkFn = ({ ctx, endpointInterceptor, interceptors }) =>
+const createSdkFn = ({ ctx, endpointInterceptors, interceptors }) =>
   (params = {}) =>
     contextRunner(_.compact([
       ...interceptors,
-      endpointInterceptor,
+      ...endpointInterceptors,
     ]))({ ...ctx, params }).then(({ res }) => res);
 
 // Take SDK configurations, do transformation and return.
@@ -267,21 +343,22 @@ export default class SharetribeSdk {
 
     // Read the endpoint definitions and do some mapping
     const endpointDefs = [...endpointDefinitions, ...sdkConfig.endpoints].map((epDef) => {
-      const { path, apiName, root, method } = epDef;
+      const { path, apiName, method, interceptors = [] } = epDef;
       const fnPath = urlPathToFnPath(path);
       const fullFnPath = [apiName, ...fnPath];
-      const sdkFnPath = root ? fnPath : fullFnPath;
       const url = [apiName, path].join('/');
       const httpOpts = apiConfigs[apiName];
 
-      const endpointInterceptor = createEndpointInterceptor({ method, url, httpOpts });
+      const endpointInterceptors = [
+        ...interceptors,
+        createEndpointInterceptors({ method, url, httpOpts }),
+      ];
 
       return {
         ...epDef,
         fnPath,
         fullFnPath,
-        sdkFnPath,
-        endpointInterceptor,
+        endpointInterceptors,
       };
     });
 
@@ -290,34 +367,35 @@ export default class SharetribeSdk {
     // This object can be passed to other interceptors in the interceptor context so they
     // are able to do API calls (e.g. authentication interceptors)
     const endpointInterceptors = endpointDefs.reduce(
-      (acc, { fullFnPath, endpointInterceptor }) =>
-        _.set(acc, fullFnPath, endpointInterceptor), {});
+      (acc, { fullFnPath, endpointInterceptors: interceptors }) =>
+        _.set(acc, fullFnPath, interceptors), {});
 
     // Create a context object that will be passed to the interceptor context runner
     const ctx = {
       tokenStore: sdkConfig.tokenStore,
       endpointInterceptors,
       clientId: sdkConfig.clientId,
+      typeHandlers: sdkConfig.typeHandlers,
     };
 
-    // Create SDK functions from the defined endpoints
-    const endpointSdkFns = endpointDefs.map(
-      ({ sdkFnPath: path, endpointInterceptor, interceptors = [] }) =>
-        ({ path, fn: createSdkFn({ ctx, endpointInterceptor, interceptors }) }));
+    const userDefinedSdkFnDefs = sdkFnDefsFromEndpointDefs(sdkConfig.endpoints);
 
-    // Create additional SDK functions
-    const additionalSdkFns = additionalSdkFnDefinitions.map(
-      ({ path, endpointInterceptorName, interceptors }) =>
-        ({
-          path,
-          fn: createSdkFn({
-            ctx,
-            endpointInterceptor: _.get(endpointInterceptors, endpointInterceptorName),
-            interceptors,
-          }),
-        }));
+    // Create SDK functions
+    const sdkFns = [
+      ...endpointSdkFnDefinitions,
+      ...additionalSdkFnDefinitions,
+      ...userDefinedSdkFnDefs].map(
+        ({ path, endpointInterceptorPath, interceptors }) =>
+          ({
+            path,
+            fn: createSdkFn({
+              ctx,
+              endpointInterceptors: _.get(endpointInterceptors, endpointInterceptorPath) || [],
+              interceptors,
+            }),
+          }));
 
     // Assign SDK functions to 'this'
-    [...endpointSdkFns, ...additionalSdkFns].forEach(({ path, fn }) => _.set(this, path, fn));
+    sdkFns.forEach(({ path, fn }) => _.set(this, path, fn));
   }
 }

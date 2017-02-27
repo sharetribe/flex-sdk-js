@@ -326,22 +326,36 @@ const requireAuth = (config, reject) => {
   return Promise.resolve();
 };
 
-const createAdapter = () =>
-  adapterHelper((config, resolve, reject) => {
-    switch (config.url) {
-      case '/v1/api/users/show':
-        return requireAuth(config, reject).then(() => users.show(config, resolve));
-      case '/v1/api/marketplace/show':
-        return requireAuth(config, reject).then(() => marketplace.show(config, resolve));
-      case '/v1/api/listings/search':
-        return requireAuth(config, reject).then(() => listings.search(config, resolve));
-      case '/v1/auth/token':
-        return auth(config, resolve, reject);
-      case '/v1/auth/revoke':
-        return revoke(config, resolve, reject);
-      default:
-        throw new Error(`Not implemented to Fake adapter: ${config.url}`);
-    }
-  });
+const createAdapter = () => {
+  const requests = [];
+
+  return {
+    requests,
+    adapterFn: adapterHelper((config, resolve, reject) => {
+      requests.push(config);
+
+      switch (config.url) {
+        case '/v1/api/users/show':
+          return requireAuth(config, reject).then(() => users.show(config, resolve));
+        case '/v1/api/marketplace/show':
+          return requireAuth(config, reject).then(() => marketplace.show(config, resolve));
+        case '/v1/api/listings/search':
+          return requireAuth(config, reject).then(() => listings.search(config, resolve));
+        case '/v1/api/listings/create':
+          // Warning!
+          // This is a dummy implementation. Real API, obviously, returns something else.
+          // For the sake of simplicity, we don't require authentication.
+          // Returns: Transit encoded empty map.
+          return resolve({ data: '["^ "]' });
+        case '/v1/auth/token':
+          return auth(config, resolve, reject);
+        case '/v1/auth/revoke':
+          return revoke(config, resolve, reject);
+        default:
+          throw new Error(`Not implemented to Fake adapter: ${config.url}`);
+      }
+    }),
+  };
+};
 
 export default createAdapter;
