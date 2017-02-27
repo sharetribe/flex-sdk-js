@@ -175,6 +175,7 @@ const endpointDefinitions = [
   { apiName: 'api', path: 'listings/search', internal: false, method: 'get', interceptors: [] },
   { apiName: 'api', path: 'listings/create', internal: false, method: 'post', interceptors: [new TransitRequest()] },
   { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post', interceptors: [new MultipartRequest()] },
+  { apiName: 'api', path: 'listings/add_image', internal: false, method: 'post', interceptors: [new TransitRequest()] },
   { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
   { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
 ];
