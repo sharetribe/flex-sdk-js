@@ -170,6 +170,7 @@ class MultipartRequest {
 const endpointDefinitions = [
   { apiName: 'api', path: 'marketplace/show', internal: false, method: 'get', interceptors: [] },
   { apiName: 'api', path: 'users/show', internal: false, method: 'get', interceptors: [] },
+  { apiName: 'api', path: 'users/me', internal: false, method: 'get', interceptors: [] },
   { apiName: 'api', path: 'listings/show', internal: false, method: 'get', interceptors: [] },
   { apiName: 'api', path: 'listings/query', internal: false, method: 'get', interceptors: [] },
   { apiName: 'api', path: 'listings/search', internal: false, method: 'get', interceptors: [] },
