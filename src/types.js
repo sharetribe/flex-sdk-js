@@ -25,6 +25,22 @@ export class LatLngBounds {
   }
 }
 
+/**
+   Money type to represent money
+
+   - `amount`: The money amount in `minor` unit. In most cases, the minor unit means cents.
+               However, in currencies without cents, e.g. Japanese Yen, the `amount` value
+               is the number of Yens.
+   - `currency`: ISO 4217 currency code
+
+   Examples:
+
+   ```
+   new Money(5000, "USD") // $50
+   new Money(150, "EUR")  // 1.5€
+   new Money(2500, "JPY") // ¥2500
+   ```
+*/
 export class Money {
   constructor(amount, currency) {
     this.amount = amount;
