@@ -887,7 +887,7 @@ module.exports = keys;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.reviver = exports.replacer = exports.LatLngBounds = exports.LatLng = exports.UUID = undefined;
+exports.reviver = exports.replacer = exports.Money = exports.LatLngBounds = exports.LatLng = exports.UUID = undefined;
 
 var _findKey2 = __webpack_require__(197);
 
@@ -924,6 +924,31 @@ var LatLngBounds = exports.LatLngBounds = function LatLngBounds(ne, sw) {
   this.sw = sw;
 };
 
+/**
+   Money type to represent money
+
+   - `amount`: The money amount in `minor` unit. In most cases, the minor unit means cents.
+               However, in currencies without cents, e.g. Japanese Yen, the `amount` value
+               is the number of Yens.
+   - `currency`: ISO 4217 currency code
+
+   Examples:
+
+   ```
+   new Money(5000, "USD") // $50
+   new Money(150, "EUR")  // 1.5€
+   new Money(2500, "JPY") // ¥2500
+   ```
+*/
+
+
+var Money = exports.Money = function Money(amount, currency) {
+  _classCallCheck(this, Money);
+
+  this.amount = amount;
+  this.currency = currency;
+};
+
 //
 // Map containing the type name for serialization and the type class
 //
@@ -932,7 +957,8 @@ var LatLngBounds = exports.LatLngBounds = function LatLngBounds(ne, sw) {
 var types = {
   UUID: UUID,
   LatLng: LatLng,
-  LatLngBounds: LatLngBounds
+  LatLngBounds: LatLngBounds,
+  Money: Money
 };
 
 //
@@ -971,6 +997,8 @@ var reviver = exports.reviver = function reviver() {
       return new LatLngBounds(value.ne, value.sw);
     case 'UUID':
       return new UUID(value.uuid);
+    case 'Money':
+      return new Money(value.amount, value.currency);
     default:
       return value;
   }
@@ -5161,7 +5189,7 @@ var MultipartRequest = function () {
  */
 
 
-var endpointDefinitions = [{ apiName: 'api', path: 'marketplace/show', internal: false, method: 'get', interceptors: [] }, { apiName: 'api', path: 'users/show', internal: false, method: 'get', interceptors: [] }, { apiName: 'api', path: 'listings/show', internal: false, method: 'get', interceptors: [] }, { apiName: 'api', path: 'listings/query', internal: false, method: 'get', interceptors: [] }, { apiName: 'api', path: 'listings/search', internal: false, method: 'get', interceptors: [] }, { apiName: 'api', path: 'listings/create', internal: false, method: 'post', interceptors: [new TransitRequest()] }, { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post', interceptors: [new MultipartRequest()] }, { apiName: 'api', path: 'listings/add_image', internal: false, method: 'post', interceptors: [new TransitRequest()] }, { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] }, { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] }];
+var endpointDefinitions = [{ apiName: 'api', path: 'marketplace/show', internal: false, method: 'get', interceptors: [] }, { apiName: 'api', path: 'users/show', internal: false, method: 'get', interceptors: [] }, { apiName: 'api', path: 'users/me', internal: false, method: 'get', interceptors: [] }, { apiName: 'api', path: 'listings/show', internal: false, method: 'get', interceptors: [] }, { apiName: 'api', path: 'listings/query', internal: false, method: 'get', interceptors: [] }, { apiName: 'api', path: 'listings/search', internal: false, method: 'get', interceptors: [] }, { apiName: 'api', path: 'listings/create', internal: false, method: 'post', interceptors: [new TransitRequest()] }, { apiName: 'api', path: 'listings/update', internal: false, method: 'post', interceptors: [new TransitRequest()] }, { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post', interceptors: [new MultipartRequest()] }, { apiName: 'api', path: 'listings/add_image', internal: false, method: 'post', interceptors: [new TransitRequest()] }, { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] }, { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] }];
 
 var loginInterceptors = [defaultParamsInterceptor({ grant_type: 'password', scope: 'user' }), new AddClientIdToParams(), new _authenticate.SaveTokenMiddleware(), new _authenticate.AddAuthTokenResponseToCtx()];
 
@@ -6849,7 +6877,8 @@ var composeWriter = function composeWriter(defaultWriter, customWriter) {
  */
 var typeMap = {
   u: _types.UUID,
-  geo: _types.LatLng
+  geo: _types.LatLng,
+  mn: _types.Money
 };
 
 /**
@@ -6869,6 +6898,15 @@ var defaultReaders = [{
 
     return new _types.LatLng(lat, lng);
   }
+}, {
+  type: _types.Money,
+  reader: function reader(_ref3) {
+    var _ref4 = _slicedToArray(_ref3, 2),
+        amount = _ref4[0],
+        currency = _ref4[1];
+
+    return new _types.Money(amount, currency);
+  }
 }];
 
 /**
@@ -6883,6 +6921,11 @@ var defaultWriters = [{
   type: _types.LatLng,
   writer: function writer(v) {
     return [v.lat, v.lng];
+  }
+}, {
+  type: _types.Money,
+  writer: function writer(v) {
+    return [v.amount, v.currency];
   }
 }];
 
