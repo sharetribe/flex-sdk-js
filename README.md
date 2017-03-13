@@ -220,6 +220,7 @@ The full list of supported types:
 * UUID - Represents UUIDs ([Universally unique identifiers](https://en.wikipedia.org/wiki/Universally_unique_identifier))
 * LatLng(lat: number, lng: number) - Geolocation point
 * LatLngBounds(ne: LatLng, sw: LatLng) - Bounding box limited by North-East and South-West corners
+* Money(amount: number, currency: string) - Money with currency (amount is integer representing the amount in minor unit, i.e. cents)
 
 ### Serializing to JSON
 
