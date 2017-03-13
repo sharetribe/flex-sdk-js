@@ -160,6 +160,29 @@ const users = {
 };
 
 const listings = {
+  create: (config, resolve) => {
+    let res;
+
+    if (config.params.expand === true) {
+      res = `["^ ",
+        "~:data", ["^ ",
+          "~:id", "~u58c660f5-a39a-49a5-9270-8a917b7d6c9e",
+          "~:type", "~:listing",
+          "~:attributes", ["^ ",
+            "~:title", "Pelago bike",
+            "~:description", "City bike for city hipster!",
+            "~:price", ["~#mn", [12000, "USD"]],
+            "~:address", "Bulevardi 14, 00200 Helsinki, Finland",
+            "~:geolocation", ["~#geo", [40.0, 73.0]]]]]`;
+    } else {
+      res = `["^ ",
+        "~:data", ["^ ",
+          "~:id", "~u58c6610d-1ffd-4fa5-b386-4f9b6e46e732",
+          "~:type", "~:listing"]]`;
+    }
+
+    return resolve({ data: res });
+  },
   search: (config, resolve) => {
     const res = `[
                    "^ ",
@@ -342,11 +365,7 @@ const createAdapter = () => {
         case '/v1/api/listings/search':
           return requireAuth(config, reject).then(() => listings.search(config, resolve));
         case '/v1/api/listings/create':
-          // Warning!
-          // This is a dummy implementation. Real API, obviously, returns something else.
-          // For the sake of simplicity, we don't require authentication.
-          // Returns: Transit encoded empty map.
-          return resolve({ data: '["^ "]' });
+          return requireAuth(config, reject).then(() => listings.create(config, resolve));
         case '/v1/auth/token':
           return auth(config, resolve, reject);
         case '/v1/auth/revoke':

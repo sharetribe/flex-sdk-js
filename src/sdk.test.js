@@ -296,13 +296,15 @@ describe('new SharetribeSdk', () => {
 
     const transitEncoded = '["^ ","~:title","A new hope","~:description","Our Nth listing!","~:address","Bulevardi 14, Helsinki, Finland","~:geolocation",["~#geo",[10.152,15.375]]]';
 
-    return report(sdk.listings.create(testData)).then(() => {
-      const req = _.last(adapter.requests);
-      expect(req.data).toEqual(transitEncoded);
-      expect(req.headers).toEqual(expect.objectContaining({
-        'Content-Type': 'application/transit+json',
-      }));
-    });
+    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+                     .then(() => sdk.listings.create(testData))
+                     .then(() => {
+                       const req = _.last(adapter.requests);
+                       expect(req.data).toEqual(transitEncoded);
+                       expect(req.headers).toEqual(expect.objectContaining({
+                         'Content-Type': 'application/transit+json',
+                       }));
+                     }));
   });
 
   describe('authInfo', () => {
@@ -331,5 +333,41 @@ describe('new SharetribeSdk', () => {
                          expect(authInfo.grantType).toBeUndefined();
                        })));
     });
+  });
+
+  it('allows sending query params in POST request (such as `expand=true`)', () => {
+    const { sdk } = createSdk();
+
+    const params = {
+      title: 'Pelago bike',
+      description: 'City bike for city hipster!',
+      address: 'Bulevardi 14, 00200 Helsinki, Finland',
+      geolocation: new LatLng(40.00, 73.00),
+    };
+
+    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+                     .then(() => sdk.listings.create(params))
+                     .then((res) => {
+                       const data = res.data.data;
+                       const attrs = data.attributes;
+
+                       expect(data).toEqual(expect.objectContaining({
+                         id: expect.any(UUID),
+                         type: 'listing',
+                       }));
+                       expect(attrs).toBeUndefined();
+                     })
+
+                     .then(() => sdk.listings.create(params, { expand: true }))
+                     .then((res) => {
+                       const data = res.data.data;
+                       const attrs = data.attributes;
+
+                       expect(data).toEqual(expect.objectContaining({
+                         id: expect.any(UUID),
+                         type: 'listing',
+                       }));
+                       expect(attrs).toBeDefined();
+                     }));
   });
 });
