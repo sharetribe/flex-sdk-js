@@ -1,6 +1,6 @@
 import transit from 'transit-js';
 import _ from 'lodash';
-import { UUID, LatLng } from './types';
+import { UUID, LatLng, Money } from './types';
 
 /**
    Composes two readers (default and custom) so that:
@@ -83,6 +83,7 @@ const composeWriter = (defaultWriter, customWriter) => {
 const typeMap = {
   u: UUID,
   geo: LatLng,
+  mn: Money,
 };
 
 /**
@@ -97,6 +98,10 @@ const defaultReaders = [
     type: LatLng,
     reader: ([lat, lng]) => new LatLng(lat, lng),
   },
+  {
+    type: Money,
+    reader: ([amount, currency]) => new Money(amount, currency),
+  },
 ];
 
 /**
@@ -110,6 +115,10 @@ const defaultWriters = [
   {
     type: LatLng,
     writer: v => [v.lat, v.lng],
+  },
+  {
+    type: Money,
+    writer: v => [v.amount, v.currency],
   },
 ];
 

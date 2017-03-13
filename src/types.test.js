@@ -2,6 +2,7 @@ import {
   UUID,
   LatLng,
   LatLngBounds,
+  Money,
   replacer,
   reviver,
 } from './types';
@@ -11,6 +12,7 @@ describe('JSON parse/stringify', () => {
     uuid: new UUID('27786d1c-f16b-411b-b1fc-176969a91338'),
     latlng: new LatLng(12.34, 45.56),
     latlngbounds: new LatLngBounds(new LatLng(12.34, 23.45), new LatLng(34.56, 45.67)),
+    money: new Money(5000, 'USD'),
   };
 
   /* eslint-disable quote-props */
@@ -39,6 +41,11 @@ describe('JSON parse/stringify', () => {
       },
       "_sdkType": "LatLngBounds"
     },
+    "money": {
+      "amount": 5000,
+      "currency": "USD",
+      "_sdkType": "Money"
+    }
   };
   /* eslint-enable quote-props */
   /* eslint-enable quotes */

@@ -1,6 +1,6 @@
 import transit from 'transit-js';
 import { reader, writer } from './serializer';
-import { UUID, LatLng } from './types';
+import { UUID, LatLng, Money } from './types';
 
 describe('serializer', () => {
   it('reads and writes transit', () => {
@@ -63,6 +63,17 @@ describe('serializer', () => {
   it('handles LatLngs', () => {
     const testData = {
       location: new LatLng(12.34, 56.78),
+    };
+
+    const r = reader();
+    const w = writer();
+
+    expect(r.read(w.write(testData))).toEqual(testData);
+  });
+
+  it('handles Money', () => {
+    const testData = {
+      price: new Money(5000, 'EUR'),
     };
 
     const r = reader();

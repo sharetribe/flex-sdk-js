@@ -25,6 +25,29 @@ export class LatLngBounds {
   }
 }
 
+/**
+   Money type to represent money
+
+   - `amount`: The money amount in `minor` unit. In most cases, the minor unit means cents.
+               However, in currencies without cents, e.g. Japanese Yen, the `amount` value
+               is the number of Yens.
+   - `currency`: ISO 4217 currency code
+
+   Examples:
+
+   ```
+   new Money(5000, "USD") // $50
+   new Money(150, "EUR")  // 1.5€
+   new Money(2500, "JPY") // ¥2500
+   ```
+*/
+export class Money {
+  constructor(amount, currency) {
+    this.amount = amount;
+    this.currency = currency;
+  }
+}
+
 //
 // Map containing the type name for serialization and the type class
 //
@@ -32,6 +55,7 @@ const types = {
   UUID,
   LatLng,
   LatLngBounds,
+  Money,
 };
 
 //
@@ -62,6 +86,8 @@ export const reviver = (key = null, value) => {
       return new LatLngBounds(value.ne, value.sw);
     case 'UUID':
       return new UUID(value.uuid);
+    case 'Money':
+      return new Money(value.amount, value.currency);
     default:
       return value;
   }
