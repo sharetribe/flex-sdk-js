@@ -14,9 +14,14 @@ const sdk = sharetribeSdk.createInstance({
   tokenStore: sharetribeSdk.tokenStore.memoryStore(),
 });
 
-const ctx = repl.start('> ').context;
+// Start REPL
+const replInstance = repl.start('> ');
+
+// Attach history
+require('repl.history')(replInstance, './.repl_history');
 
 // Assign SDK as global
+const ctx = replInstance.context;
 ctx.sdk = sdk;
 ctx.sharetribeSdk = sharetribeSdk;
 Object.assign(ctx, sharetribeSdk.types);

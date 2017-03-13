@@ -11,3 +11,6 @@ node_modules
 npm-debug.log
 
 .DS_Store
+
+# REPL history
+.repl_history
