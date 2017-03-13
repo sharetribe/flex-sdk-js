@@ -25,6 +25,13 @@ export class LatLngBounds {
   }
 }
 
+export class Money {
+  constructor(amount, currency) {
+    this.amount = amount;
+    this.currency = currency;
+  }
+}
+
 //
 // Map containing the type name for serialization and the type class
 //
@@ -32,6 +39,7 @@ const types = {
   UUID,
   LatLng,
   LatLngBounds,
+  Money,
 };
 
 //
@@ -62,6 +70,8 @@ export const reviver = (key = null, value) => {
       return new LatLngBounds(value.ne, value.sw);
     case 'UUID':
       return new UUID(value.uuid);
+    case 'Money':
+      return new Money(value.amount, value.currency);
     default:
       return value;
   }
