@@ -101,6 +101,35 @@ sdk.listings.search({
 });
 ```
 
+## Methods and parameters [DRAFT]
+
+The SDK provides direct mapping of Marketplace API endpoints to SDK methods. Marketplace API endpoints are the endpoints with URL starting with prefix `/api`.
+
+For example:
+
+* `GET /api/marketplace/show => sdk.marketplace.show(queryParams: {})`
+* `GET /api/listings/query   => sdk.listings.query(queryParams: {})`
+* `GET /api/users/me         => sdk.users.me(queryParams: {})`
+* `POST /api/listings/create => sdk.listings.show(bodyParams: {}, queryParams: {})`
+
+Please note the different number of parameters (arity):
+
+* `GET` endpoint SDK method arity is 1. The first parameter is the `queryParams`
+* `POST` endpoint SDK method arity is 2. The first parameter is the `bodyParams`, second is the `queryParams`
+
+To see what are the expected parameters for each endpoint, please see the [API documentation]() (TODO Add link to API documentation).
+
+The `/auth` endpoints don't have direct SDK mapping. Instead, you should use these two SDK methods:
+
+* `sdk.login({username: string, password: string})`
+* `sdk.logout()`
+
+## Response format [DRAFT]
+
+TODO!
+
+Write down the response format when the error format is decided and implemented.
+
 ## Config options
 
 There are a few config options that can given for the initializatio function:
@@ -201,10 +230,10 @@ You can find all examples under the `[examples/](./examples)` directory:
 - [Location search from local server (localhost:8080)](./examples/location-search)
 - [Image upload from browser to local server (localhost:8080)](./examples/image-upload)
 
-# Installation [DRAFT]
+# Installation
 
 ```
-npm install sharetribe-sdk
+npm install sharetribe-sdk --save
 ```
 
 # Documentation [DRAFT]
@@ -330,7 +359,7 @@ Fetch and log all listings in a marketplace:
   included: [] }
 ```
 
-# Author [DRAFT]
+# Author
 
 Developed and maintained by [Sharetribe](https://www.sharetribe.com).
 
