@@ -46,5 +46,9 @@
     "js-cookie": "^2.1.3",
     "lodash": "^4.17.4",
     "transit-js": "^0.8.846"
+  },
+  "babel": {
+    "plugins": ["lodash"],
+    "presets": ["es2015", "stage-3"]
   }
 }
