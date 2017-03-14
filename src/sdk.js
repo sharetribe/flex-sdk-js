@@ -203,6 +203,7 @@ const loginInterceptors = [
 
 const logoutInterceptors = [
   new FetchAuthTokenFromStore(),
+  new RetryWithRefreshToken(),
   new AddAuthTokenHeader(),
   new ClearTokenMiddleware(),
   new FetchRefreshTokenForRevoke(),

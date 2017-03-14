@@ -284,6 +284,33 @@ describe('new SharetribeSdk', () => {
     }));
   });
 
+  it('refreshes token before revoke', () => {
+    const { sdk, tokenStore } = createSdk();
+
+    // First, login
+    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+      expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
+
+      // Remove auth token from the store to simulate a
+      // situation where access_token is invalid
+      // eslint-disable-next-line no-unused-vars
+      const { access_token, ...rest } = tokenStore.getToken();
+      tokenStore.setToken({ access_token: 'invalid_token', ...rest });
+
+      // Revoke token
+      return sdk.logout().then((res) => {
+        expect(res.data.action).toEqual('revoked');
+
+        expect(tokenStore.getToken()).toEqual(null);
+
+        return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+          expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
+        });
+      });
+    }));
+
+  });
+
   it('encodes new listing post body to Transit', () => {
     const { sdk, adapter } = createSdk();
 
