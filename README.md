@@ -126,7 +126,7 @@ The `/auth` endpoints don't have direct SDK mapping. Instead, you should use the
 
 ## Response format
 
-SDK returns always a `Promise`. The value of the Promise differs whether the response is successful (resolved) or failure (rejected).
+SDK returns always a `Promise`. The value of the Promise differs whether the response is successful (fulfilled) or failure (rejected).
 
 ### Success response
 
