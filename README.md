@@ -124,11 +124,63 @@ The `/auth` endpoints don't have direct SDK mapping. Instead, you should use the
 * `sdk.login({username: string, password: string})`
 * `sdk.logout()`
 
-## Response format [DRAFT]
+## Response format
 
-TODO!
+SDK returns always a `Promise`. The value of the Promise differs whether the response is successful (resolved) or failure (rejected).
 
-Write down the response format when the error format is decided and implemented.
+### Success response
+
+A successful response will have the following format:
+
+```
+{
+  status: 200,
+  statusText: 'OK',
+  data: // The data returned by the API
+}
+```
+
+### Error response
+
+A error response will have the following format:
+
+```
+{
+  status: <HTTP Status code, 4xx or 5xx>,
+  statusText: <HTTP Status text>,
+  data: // The data returned by the API, for example:
+  {
+    errors: [
+      {
+        status: 400,
+        code: 'bad-request',
+        title: 'Bad request',
+        details: { // Not part of the public API
+          error: {
+            'body-params': {
+              title: 'missing-required-key'
+            }
+          }
+        }
+      }
+    ]
+  },
+  details: { // Not part of the public API
+    ctx: {
+      // The internal context object used by SDK
+    },
+    config: {
+      // The internal configurations object used by SDK
+    }
+  }
+}
+```
+
+Please note that the `details` (both of them) are not part of the public API. This means that:
+
+- You can use `details` for debugging and error tracking
+- You SHOULD NOT write code that depends on the content of `details`.
+- The content of `details` is not well specified and may change
 
 ## Config options
 
