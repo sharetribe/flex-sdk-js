@@ -308,7 +308,10 @@ describe('new SharetribeSdk', () => {
         });
       });
     }));
+  });
 
+  xit('refreshes token before revoke, but if the refresh fails, return OK.', () => {
+    // TODO;
   });
 
   it('encodes new listing post body to Transit', () => {
