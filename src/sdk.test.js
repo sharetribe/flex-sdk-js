@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { UUID, LatLng } from './types';
-import fake from './fake';
+import { createAdapter, createTokenStore as createFakeTokenStore } from './fake';
 import SharetribeSdk from './sdk';
 import memoryStore from './memory_store';
 
@@ -28,7 +28,7 @@ const report = responsePromise =>
    Returns a map that contains all the instances that might be useful for
    tests, i.e. sdk, tokenStore and adapter.
  */
-const createSdk = (config) => {
+const createSdk = (config = {}) => {
   const defaults = {
     baseUrl: '',
     clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
@@ -36,12 +36,13 @@ const createSdk = (config) => {
   };
 
   const tokenStore = memoryStore();
-  const adapter = fake();
+  const adapter = config.adapter || createAdapter();
+
   const sdk = new SharetribeSdk({
     ...defaults,
-    adapter: adapter.adapterFn,
     tokenStore,
     ...config,
+    adapter: adapter.adapterFn,
   });
 
   return {
@@ -149,16 +150,21 @@ describe('new SharetribeSdk', () => {
   });
 
   it('reads auth token from store and includes it in request headers', () => {
+    const fakeTokenStore = createFakeTokenStore();
+    const adapter = createAdapter({
+      tokenStore: fakeTokenStore,
+    });
+
     const { sdk, tokenStore } = createSdk({
       // The Fake server doesn't know this clientId. However, the request passes because
       // the access_token is in the store
       clientId: 'daaf8871-4723-45b8-bc97-9e335f46966d',
+      adapter,
     });
 
-    tokenStore.setToken({
-      access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo',
-      token_type: 'bearer',
-    });
+    const anonToken = fakeTokenStore.createAnonToken();
+
+    tokenStore.setToken(anonToken);
 
     return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;

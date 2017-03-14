@@ -340,7 +340,7 @@ const listings = {
   },
 };
 
-const requireAuth = (config, reject) => {
+const requireAuth = (config, reject, tokenStore) => {
   // TODO Err... this is quite adhoc :)
   // Consider a more robust implementation: Inject a list of auth
   // tokens returned by the fake adapter. When a token is returned,
@@ -350,11 +350,18 @@ const requireAuth = (config, reject) => {
   const loggedInToken = 'Bearer dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44';
   const refreshedToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODcwMDYyNjgsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.t2XeBug85fPPxo3M8mVkKUvs7bUQdAQdoOwgT2qr8io';
 
-  const expectedAuths = [
-    anonToken,
-    loggedInToken,
-    refreshedToken,
-  ];
+  let expectedAuths;
+
+  if (tokenStore) {
+    expectedAuths = tokenStore.list().map(token => `${token.token_type} ${token.access_token}`);
+  } else {
+    console.warn("[DEPRECATED] Using deprecated authentication testing method");
+    expectedAuths = [
+      anonToken,
+      loggedInToken,
+      refreshedToken,
+    ];
+  }
 
   if (!config.headers.Authorization) {
     return reject({
@@ -378,8 +385,81 @@ const requireAuth = (config, reject) => {
   return Promise.resolve();
 };
 
-const createAdapter = () => {
+// TokenStore methods:
+// - createAnonToken(): create and return anon token
+// - createRefreshToken(login, user)
+// - revokeAccessToken()
+// - revokeRefreshToken()
+// - listActive(): returns list of tokens
+// - listRevoked(): returns list of revoked tokens
+// - last(): returns the last created token
+// - login(username, password): creates new token if valid login, otherwise nil
+
+export const createTokenStore = () => {
+  let activeTokens = [];
+  let revoked = [];
+  let anonAccessCount = 0;
+  let passwordAccessCount = 0;
+  let passwordRefreshCount = 0;
+
+  // Private
+
+  const generateAnonAccessToken = () => {
+    anonAccessCount += 1;
+    return  `anonymous-access-${anonAccessCount}`;
+  }
+
+  const generatePasswordAccessToken = (username, password) => {
+    passwordAccessCount += 1;
+    return `${username}-${password}-access-${passwordAccessCount}`;
+  }
+
+  const generatePasswordRefreshToken = (username, password) => {
+    passwordRefreshCount += 1;
+    return `${username}-${password}-refresh-${passwordRefreshCount}`;
+  }
+
+  // Public
+
+  const createAnonToken = () => {
+    const token = {
+      access_token: generateAnonAccessToken(),
+      token_type: 'bearer',
+      expires_in: 86400
+    };
+    activeTokens.push(token);
+
+    return token;
+  }
+
+  const createRefreshToken = (username, password) => {
+    const token = {
+      access_token: generatePasswordAccessToken(username, password),
+      refresh_token: generatePasswordRefreshToken(username, password),
+      token_type: 'bearer',
+      expires_in: 86400,
+    }
+    activeTokens.push(token);
+
+    return token;
+  }
+
+  const last = () => _.last(activeTokens);
+
+  const list = () => activeTokens;
+
+  return {
+    createAnonToken,
+    createRefreshToken,
+    last,
+    list,
+  }
+}
+
+export const createAdapter = ({tokenStore} = {}) => {
   const requests = [];
+
+  const fakeTokenStore = tokenStore;
 
   return {
     requests,
@@ -388,13 +468,13 @@ const createAdapter = () => {
 
       switch (config.url) {
         case '/v1/api/users/show':
-          return requireAuth(config, reject).then(() => users.show(config, resolve));
+          return requireAuth(config, reject, fakeTokenStore).then(() => users.show(config, resolve));
         case '/v1/api/marketplace/show':
-          return requireAuth(config, reject).then(() => marketplace.show(config, resolve));
+          return requireAuth(config, reject, fakeTokenStore).then(() => marketplace.show(config, resolve));
         case '/v1/api/listings/search':
-          return requireAuth(config, reject).then(() => listings.search(config, resolve));
+          return requireAuth(config, reject, fakeTokenStore).then(() => listings.search(config, resolve));
         case '/v1/api/listings/create':
-          return requireAuth(config, reject).then(() => listings.create(config, resolve, reject));
+          return requireAuth(config, reject, fakeTokenStore).then(() => listings.create(config, resolve, reject));
         case '/v1/auth/token':
           return auth(config, resolve, reject);
         case '/v1/auth/revoke':
@@ -405,5 +485,3 @@ const createAdapter = () => {
     }),
   };
 };
-
-export default createAdapter;
