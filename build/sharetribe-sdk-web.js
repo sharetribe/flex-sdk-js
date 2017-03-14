@@ -5244,27 +5244,33 @@ var handleFailureResponse = function handleFailureResponse(error) {
   throw error;
 };
 
+// GET requests: `params` includes query params. `queryParams` will be ignored
+// POST requests: `params` includes body params. `queryParams` includes URL query params
 var doRequest = function doRequest(_ref9) {
   var _ref9$params = _ref9.params,
       params = _ref9$params === undefined ? {} : _ref9$params,
+      _ref9$queryParams = _ref9.queryParams,
+      queryParams = _ref9$queryParams === undefined ? {} : _ref9$queryParams,
       httpOpts = _ref9.httpOpts;
   var _httpOpts$method = httpOpts.method,
       method = _httpOpts$method === undefined ? 'get' : _httpOpts$method;
 
 
-  var bodyParams = null;
-  var queryParams = null;
+  var data = null;
+  var query = null;
 
   if (method.toLowerCase() === 'post') {
-    bodyParams = params;
+    data = params;
+    query = queryParams;
   } else {
-    queryParams = params;
+    query = params;
+    // leave `data` null
   }
 
   var req = _extends({}, httpOpts, {
     method: method,
-    params: queryParams,
-    data: bodyParams
+    data: data,
+    params: query
   });
 
   return _axios2.default.request(req).then(handleSuccessResponse).catch(handleFailureResponse);
@@ -5285,10 +5291,12 @@ var createEndpointInterceptors = function createEndpointInterceptors(_ref10) {
   return {
     enter: function enter(ctx) {
       var params = ctx.params,
+          queryParams = ctx.queryParams,
           headers = ctx.headers;
 
       return doRequest({
         params: params,
+        queryParams: queryParams,
         httpOpts: _extends({
           method: method || 'get',
           // Merge additional headers
@@ -5319,13 +5327,19 @@ var createSdkFn = function createSdkFn(_ref11) {
   var ctx = _ref11.ctx,
       endpointInterceptors = _ref11.endpointInterceptors,
       interceptors = _ref11.interceptors;
-  return function () {
-    var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    return (0, _context_runner2.default)((0, _compact3.default)([].concat(_toConsumableArray(interceptors), _toConsumableArray(endpointInterceptors))))(_extends({}, ctx, { params: params })).then(function (_ref12) {
-      var res = _ref12.res;
-      return res;
-    });
-  };
+  return (
+
+    // GET requests: `params` includes query params. `queryParams` will be ignored
+    // POST requests: `params` includes body params. `queryParams` includes URL query params
+    function () {
+      var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var queryParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      return (0, _context_runner2.default)((0, _compact3.default)([].concat(_toConsumableArray(interceptors), _toConsumableArray(endpointInterceptors))))(_extends({}, ctx, { params: params, queryParams: queryParams })).then(function (_ref12) {
+        var res = _ref12.res;
+        return res;
+      });
+    }
+  );
 };
 
 // Take SDK configurations, do transformation and return.
