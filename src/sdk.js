@@ -246,23 +246,27 @@ const handleFailureResponse = (error) => {
   throw error;
 };
 
-const doRequest = ({ params = {}, httpOpts }) => {
+// GET requests: `params` includes query params. `queryParams` will be ignored
+// POST requests: `params` includes body params. `queryParams` includes URL query params
+const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
   const { method = 'get' } = httpOpts;
 
-  let bodyParams = null;
-  let queryParams = null;
+  let data = null;
+  let query = null;
 
   if (method.toLowerCase() === 'post') {
-    bodyParams = params;
+    data = params;
+    query = queryParams;
   } else {
-    queryParams = params;
+    query = params;
+    // leave `data` null
   }
 
   const req = {
     ...httpOpts,
     method,
-    params: queryParams,
-    data: bodyParams,
+    data,
+    params: query,
   };
 
   return axios.request(req).then(handleSuccessResponse).catch(handleFailureResponse);
@@ -277,9 +281,10 @@ const createEndpointInterceptors = ({ method, url, httpOpts }) => {
 
   return {
     enter: (ctx) => {
-      const { params, headers } = ctx;
+      const { params, queryParams, headers } = ctx;
       return doRequest({
         params,
+        queryParams,
         httpOpts: {
           method: (method || 'get'),
           // Merge additional headers
@@ -305,11 +310,14 @@ const createEndpointInterceptors = ({ method, url, httpOpts }) => {
    It's meant to used by the user of the SDK.
  */
 const createSdkFn = ({ ctx, endpointInterceptors, interceptors }) =>
-  (params = {}) =>
+
+  // GET requests: `params` includes query params. `queryParams` will be ignored
+  // POST requests: `params` includes body params. `queryParams` includes URL query params
+  (params = {}, queryParams = {}) =>
     contextRunner(_.compact([
       ...interceptors,
       ...endpointInterceptors,
-    ]))({ ...ctx, params }).then(({ res }) => res);
+    ]))({ ...ctx, params, queryParams }).then(({ res }) => res);
 
 // Take SDK configurations, do transformation and return.
 const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
