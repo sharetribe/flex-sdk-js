@@ -3,10 +3,12 @@ import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
 import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
-import { authenticateInterceptors,
-         FetchRefreshTokenForRevoke,
+import { FetchRefreshTokenForRevoke,
          ClearTokenMiddleware,
          FetchAuthTokenFromStore,
+         FetchAuthTokenFromApi,
+         RetryWithAnonToken,
+         RetryWithRefreshToken,
          AddAuthTokenHeader,
          SaveTokenMiddleware,
          AddAuthTokenResponseToCtx,
@@ -182,6 +184,14 @@ const endpointDefinitions = [
   { apiName: 'api', path: 'listings/add_image', internal: false, method: 'post', interceptors: [new TransitRequest()] },
   { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
   { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
+];
+
+const authenticateInterceptors = [
+  new FetchAuthTokenFromStore(),
+  new FetchAuthTokenFromApi(),
+  new RetryWithAnonToken(),
+  new RetryWithRefreshToken(),
+  new AddAuthTokenHeader(),
 ];
 
 const loginInterceptors = [
