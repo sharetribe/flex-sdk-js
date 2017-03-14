@@ -5087,6 +5087,8 @@ var apis = {
       transformRequest: [function (data) {
         return (0, _utils.formData)(data);
       }],
+      // using default transformRequest, which can handle JSON and fallback to plain
+      // test if JSON parsing fails
       adapter: adapter
     };
   }
@@ -5228,22 +5230,6 @@ var handleSuccessResponse = function handleSuccessResponse(response) {
   return { status: status, statusText: statusText, data: data };
 };
 
-var handleFailureResponse = function handleFailureResponse(error) {
-  var response = error.response;
-
-  if (response) {
-    // The request was made, but the server responses with a status code
-    // other than 2xx
-
-    // TODO Server should send the error JSON. When that is implemented, parse the JSON
-    // and return nicely formatted error.
-    throw error;
-  }
-
-  // Something happened in setting up the request that triggered an Error
-  throw error;
-};
-
 // GET requests: `params` includes query params. `queryParams` will be ignored
 // POST requests: `params` includes body params. `queryParams` includes URL query params
 var doRequest = function doRequest(_ref9) {
@@ -5273,7 +5259,7 @@ var doRequest = function doRequest(_ref9) {
     params: query
   });
 
-  return _axios2.default.request(req).then(handleSuccessResponse).catch(handleFailureResponse);
+  return _axios2.default.request(req).then(handleSuccessResponse);
 };
 
 /**
@@ -5315,6 +5301,38 @@ var createEndpointInterceptors = function createEndpointInterceptors(_ref10) {
     }
   };
 };
+
+var formatError = function formatError(e) {
+  /* eslint-disable no-param-reassign */
+  e.details = {};
+
+  if (e.response) {
+    var _e$response = e.response,
+        status = _e$response.status,
+        statusText = _e$response.statusText,
+        data = _e$response.data;
+
+    Object.assign(e, { status: status, statusText: statusText, data: data });
+    delete e.response;
+  }
+
+  if (e.ctx) {
+    // Move context `ctx` under `details`, i.e. to the non-public part.
+    e.details.ctx = e.ctx;
+    delete e.ctx;
+  }
+
+  if (e.config) {
+    // Axios attachs the config object that was used to the error.
+    // Move it under `details`, i.e. to the non-public part.
+    e.details.config = e.config;
+    delete e.config;
+  }
+
+  throw e;
+  /* eslint-enable no-param-reassign */
+};
+
 /**
    Creates a new SDK function.
 
@@ -5337,7 +5355,7 @@ var createSdkFn = function createSdkFn(_ref11) {
       return (0, _context_runner2.default)((0, _compact3.default)([].concat(_toConsumableArray(interceptors), _toConsumableArray(endpointInterceptors))))(_extends({}, ctx, { params: params, queryParams: queryParams })).then(function (_ref12) {
         var res = _ref12.res;
         return res;
-      });
+      }).catch(formatError);
     }
   );
 };
