@@ -101,6 +101,8 @@ const apis = {
     transformRequest: [
       data => formData(data),
     ],
+    // using default transformRequest, which can handle JSON and fallback to plain
+    // test if JSON parsing fails
     adapter,
   }),
 };
@@ -230,22 +232,6 @@ const handleSuccessResponse = (response) => {
   return { status, statusText, data };
 };
 
-const handleFailureResponse = (error) => {
-  const response = error.response;
-
-  if (response) {
-    // The request was made, but the server responses with a status code
-    // other than 2xx
-
-    // TODO Server should send the error JSON. When that is implemented, parse the JSON
-    // and return nicely formatted error.
-    throw error;
-  }
-
-  // Something happened in setting up the request that triggered an Error
-  throw error;
-};
-
 // GET requests: `params` includes query params. `queryParams` will be ignored
 // POST requests: `params` includes body params. `queryParams` includes URL query params
 const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
@@ -269,7 +255,7 @@ const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
     params: query,
   };
 
-  return axios.request(req).then(handleSuccessResponse).catch(handleFailureResponse);
+  return axios.request(req).then(handleSuccessResponse);
 };
 
 /**
@@ -301,6 +287,34 @@ const createEndpointInterceptors = ({ method, url, httpOpts }) => {
     },
   };
 };
+
+const formatError = (e) => {
+  /* eslint-disable no-param-reassign */
+  e.details = {};
+
+  if (e.response) {
+    const { status, statusText, data } = e.response;
+    Object.assign(e, { status, statusText, data });
+    delete e.response;
+  }
+
+  if (e.ctx) {
+    // Move context `ctx` under `details`, i.e. to the non-public part.
+    e.details.ctx = e.ctx;
+    delete e.ctx;
+  }
+
+  if (e.config) {
+    // Axios attachs the config object that was used to the error.
+    // Move it under `details`, i.e. to the non-public part.
+    e.details.config = e.config;
+    delete e.config;
+  }
+
+  throw e;
+  /* eslint-enable no-param-reassign */
+};
+
 /**
    Creates a new SDK function.
 
@@ -317,7 +331,9 @@ const createSdkFn = ({ ctx, endpointInterceptors, interceptors }) =>
     contextRunner(_.compact([
       ...interceptors,
       ...endpointInterceptors,
-    ]))({ ...ctx, params, queryParams }).then(({ res }) => res);
+    ]))({ ...ctx, params, queryParams })
+    .then(({ res }) => res)
+    .catch(formatError);
 
 // Take SDK configurations, do transformation and return.
 const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({

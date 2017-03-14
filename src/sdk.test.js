@@ -370,4 +370,68 @@ describe('new SharetribeSdk', () => {
                        expect(attrs).toBeDefined();
                      }));
   });
+
+  it('returns error in expected error format, data as plain text', () => {
+    const { sdk } = createSdk();
+
+    return report(sdk.login({ username: 'wrong username', password: 'wrong password' })
+                     .then(() => {
+                       // Fail
+                       expect(true).toEqual(false);
+                     })
+                     .catch((e) => {
+                       expect(e).toBeInstanceOf(Error);
+                       expect(e).toEqual(expect.objectContaining({
+                         status: 401,
+                         statusText: 'Unauthorized',
+                         data: 'Unauthorized',
+                         details: expect.objectContaining({
+                           ctx: expect.any(Object),
+                         }),
+                       }));
+                       return Promise.resolve();
+                     }));
+  });
+
+  it('returns error in expected error format, data as an object', () => {
+    const { sdk } = createSdk();
+
+    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+                     .then(() => sdk.listings.create())
+                     .then(() => {
+                       // Fail
+                       expect(true).toEqual(false);
+                     })
+                     .catch((e) => {
+                       expect(e).toBeInstanceOf(Error);
+                       expect(e).toEqual(expect.objectContaining({
+                         status: 400,
+                         statusText: 'Bad Request',
+                         data: expect.objectContaining({
+                           errors: [
+                             expect.objectContaining({
+                               id: expect.any(UUID),
+                               status: 400,
+                               code: 'bad-request',
+                               title: 'Bad request',
+                               details: {
+                                 error: {
+                                   'body-params': {
+                                     title: 'missing-required-key',
+                                     description: 'missing-required-key',
+                                     address: 'missing-required-key',
+                                     geolocation: 'missing-required-key',
+                                   },
+                                 },
+                               },
+                             }),
+                           ],
+                         }),
+                         details: expect.objectContaining({
+                           ctx: expect.any(Object),
+                         }),
+                       }));
+                       return Promise.resolve();
+                     }));
+  });
 });

@@ -1,4 +1,7 @@
 import _ from 'lodash';
+import t from 'transit-js';
+
+const reader = t.reader('json');
 
 /**
    This file implements a fake adapters for testing purposes only.
@@ -79,7 +82,8 @@ const auth = (config, resolve, reject) => {
 
   return reject({
     status: 401,
-    data: '{}', // FIXME This is not what the server sends
+    statusText: 'Unauthorized',
+    data: 'Unauthorized',
 
     // Add additional information to help debugging when testing.
     // This key is NOT returned by the real API.
@@ -160,7 +164,31 @@ const users = {
 };
 
 const listings = {
-  create: (config, resolve) => {
+  create: (config, resolve, reject) => {
+    const body = reader.read(config.data);
+
+    const requiredFields = ['title', 'description', 'address', 'geolocation'].map(k => body.get(t.keyword(k)));
+
+    if (requiredFields.some(v => v == null)) {
+      return reject({
+        status: 400,
+        statusText: 'Bad Request',
+        data: `["^ ",
+          "~:errors", [
+            ["^ ",
+              "~:id", "~u57b3f476-19a0-4e07-9a44-923d9dbbe361",
+              "~:status", 400,
+              "~:code", "bad-request",
+              "~:title", "Bad request",
+              "~:details", ["^ ",
+                "~:error", ["^ ",
+                  "~:body-params", ["^ ",
+                    "^4", "missing-required-key",
+                    "~:description", "missing-required-key",
+                    "~:address", "missing-required-key",
+                    "~:geolocation", "missing-required-key"]]]]]]` });
+    }
+
     let res;
 
     if (config.params.expand === true) {
@@ -365,7 +393,7 @@ const createAdapter = () => {
         case '/v1/api/listings/search':
           return requireAuth(config, reject).then(() => listings.search(config, resolve));
         case '/v1/api/listings/create':
-          return requireAuth(config, reject).then(() => listings.create(config, resolve));
+          return requireAuth(config, reject).then(() => listings.create(config, resolve, reject));
         case '/v1/auth/token':
           return auth(config, resolve, reject);
         case '/v1/auth/revoke':
