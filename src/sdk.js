@@ -109,22 +109,6 @@ const apis = {
   }),
 };
 
-/**
-   Take endpoint definitions and return SDK function definition.
- */
-const sdkFnDefsFromEndpointDefs = epDefs => epDefs
-  .filter(({ internal = false }) => !internal)
-  .map(({ apiName, path }) => {
-    const fnPath = urlPathToFnPath(path);
-    const fullFnPath = [apiName, ...fnPath];
-
-    return {
-      path: fnPath,
-      endpointInterceptorPath: fullFnPath,
-      interceptors: [...authenticateInterceptors],
-    };
-  });
-
 class TransitRequest {
   enter({ params, headers = {}, typeHandlers, ...ctx }) {
     const { writer } = createTransitConverters(typeHandlers);
@@ -208,6 +192,22 @@ const logoutInterceptors = [
   new ClearTokenMiddleware(),
   new FetchRefreshTokenForRevoke(),
 ];
+
+/**
+   Take endpoint definitions and return SDK function definition.
+ */
+const sdkFnDefsFromEndpointDefs = epDefs => epDefs
+  .filter(({ internal = false }) => !internal)
+  .map(({ apiName, path }) => {
+    const fnPath = urlPathToFnPath(path);
+    const fullFnPath = [apiName, ...fnPath];
+
+    return {
+      path: fnPath,
+      endpointInterceptorPath: fullFnPath,
+      interceptors: [...authenticateInterceptors],
+    };
+  });
 
 /**
    List of SDK methods that will be part of the SDKs public interface.
