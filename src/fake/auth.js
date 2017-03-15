@@ -24,29 +24,20 @@ export const revoke = (config, resolve, reject, tokenStore) => {
 
 export const token = (config, resolve, reject, fakeTokenStore) => {
   const formData = parseFormData(config.data);
+  let res;
 
   if (formData.client_id === '08ec69f6-d37e-414d-83eb-324e94afddf0') {
     if (formData.grant_type === 'client_credentials') {
-      const res = fakeTokenStore.createAnonToken();
-
-      return resolve({ data: res });
+      res = fakeTokenStore.createAnonToken();
+    } else if (formData.grant_type === 'password') {
+      res = fakeTokenStore.createPasswordToken(formData.username, formData.password);
+    } else if (formData.grant_type === 'refresh_token') {
+      res = fakeTokenStore.freshPasswordToken(formData.refresh_token);
     }
+  }
 
-    if (formData.grant_type === 'password') {
-      const res = fakeTokenStore.createPasswordToken(formData.username, formData.password);
-
-      if (res) {
-        return resolve({ data: res });
-      }
-    }
-
-    if (formData.grant_type === 'refresh_token') {
-      const res = fakeTokenStore.freshPasswordToken(formData.refresh_token);
-
-      if (res) {
-        return resolve({ data: res });
-      }
-    }
+  if (res) {
+    return resolve({ data: JSON.stringify(res) });
   }
 
   return reject({
