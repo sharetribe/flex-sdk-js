@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import contextRunner from './context_runner';
 
 /* eslint-disable class-methods-use-this */
@@ -83,7 +85,9 @@ export class RetryWithRefreshToken {
         },
         tokenStore,
       }).then(({ authToken: newAuthToken }) =>
-        ({ ...errorCtx, authToken: newAuthToken, enterQueue: retryQueue, error: null }));
+        ({ ...errorCtx, authToken: newAuthToken, enterQueue: retryQueue, error: null }))
+        .catch(e =>
+          ({ ...errorCtx, refreshTokenRetry: { retryQueue, attempts, res: e.response } }));
     }
 
     return errorCtx;
@@ -129,14 +133,40 @@ export class RetryWithAnonToken {
   }
 }
 
-export class ClearTokenMiddleware {
-  leave(ctx) {
+/**
+  Clears token after revoke.
+
+  If the `revoke` call was successful, clear token.
+
+  If the `revoke` call was unsuccessful, and the reason
+  was that we we're not authorized (401), rescue the chain
+  and clear token
+
+  Otherwise, do nothing.
+*/
+export class ClearTokenAfterRevokeMiddleware {
+  static clearTokenAndResque(ctx) {
     const { tokenStore } = ctx;
 
     if (tokenStore) {
       return Promise.resolve()
                     .then(tokenStore.removeToken)
-                    .then(() => ctx);
+                    .then(() => ({ ...ctx, error: null }));
+    }
+
+    return { ...ctx, error: null };
+  }
+
+  leave(ctx) {
+    return ClearTokenAfterRevokeMiddleware.clearTokenAndResque(ctx);
+  }
+
+  error(ctx) {
+    const { status } = ctx.res || {};
+    const retryStatus = _.get(ctx, ['refreshTokenRetry', 'res', 'status']);
+
+    if (status === 401 && retryStatus === 401) {
+      return ClearTokenAfterRevokeMiddleware.clearTokenAndResque(ctx);
     }
 
     return ctx;

@@ -301,8 +301,52 @@ describe('new SharetribeSdk', () => {
     }));
   });
 
-  xit('refreshes token before revoke, but if the refresh fails, return OK.', () => {
-    // TODO;
+  it('refreshes token after unsuccessful revoke, but if the refresh fails because of 401, return OK.', () => {
+    const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
+
+    // First, login
+    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+      const { access_token, refresh_token } = sdkTokenStore.getToken();
+      expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
+
+      adapterTokenStore.expireAccessToken(access_token);
+      adapterTokenStore.revokePasswordToken(refresh_token);
+
+      // Revoke token
+      return sdk.logout().then(() => {
+        expect(sdkTokenStore.getToken()).toEqual(null);
+
+        return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+          expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
+        });
+      });
+    }));
+  });
+
+  it('refreshes token after unsuccessful revoke, but if the refresh fails because of network error, fail.', () => {
+    const { sdk, sdkTokenStore, adapterTokenStore, adapter } = createSdk();
+
+    // Two requests passes (login and first revoke try), but after that the server goes down
+    adapter.offlineAfter(2);
+
+    // First, login
+    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+      const { access_token, refresh_token } = sdkTokenStore.getToken();
+      expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
+
+      adapterTokenStore.expireAccessToken(access_token);
+      adapterTokenStore.revokePasswordToken(refresh_token);
+
+      // Revoke token
+      return sdk.logout()
+                .then(() => {
+                  // Should not pass
+                  expect(true).toEqual(false);
+                }).catch(() => {
+                  expect(sdkTokenStore.getToken().access_token).toEqual(access_token);
+                  expect(sdkTokenStore.getToken().refresh_token).toEqual(refresh_token);
+                });
+    }));
   });
 
   it('encodes new listing post body to Transit', () => {
