@@ -13,11 +13,15 @@ const adapterHelper =
   adapterDef =>
     config =>
       new Promise((resolve, reject) => {
-        const rejectWithError = (response) => {
-          const error = new Error(`Request failed with status code ${response.status}`);
-          error.response = response;
+        const rejectWithError = (errorOrResponse) => {
+          if (errorOrResponse instanceof Error) {
+            return reject(errorOrResponse);
+          }
 
-          reject(error);
+          const error = new Error(`Request failed with status code ${errorOrResponse.status}`);
+          error.response = errorOrResponse;
+
+          return reject(error);
         };
 
         adapterDef.call(null, config, resolve, rejectWithError);
@@ -96,13 +100,22 @@ const router = (config, resolve, reject, tokenStore) => {
 const createAdapter = () => {
   const requests = [];
   const tokenStore = createTokenStore();
+  let offlineAfter;
+  const offline = () => offlineAfter != null && requests.length > offlineAfter;
 
   return {
     requests,
     tokenStore,
+    offlineAfter: (numOfRequests) => {
+      offlineAfter = numOfRequests;
+    },
     adapterFn: adapterHelper((config, resolve, reject) => {
       // Store each request to `requests` array
       requests.push(config);
+
+      if (offline()) {
+        return reject(new Error('Network error'));
+      }
 
       // Call router to handle the request
       return router(config, resolve, reject, tokenStore);

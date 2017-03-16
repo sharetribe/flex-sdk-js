@@ -4,7 +4,7 @@ import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
 import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
 import { FetchRefreshTokenForRevoke,
-         ClearTokenMiddleware,
+         ClearTokenAfterRevokeMiddleware,
          FetchAuthTokenFromStore,
          FetchAuthTokenFromApi,
          RetryWithAnonToken,
@@ -187,9 +187,9 @@ const loginInterceptors = [
 
 const logoutInterceptors = [
   new FetchAuthTokenFromStore(),
+  new ClearTokenAfterRevokeMiddleware(),
   new RetryWithRefreshToken(),
   new AddAuthTokenHeader(),
-  new ClearTokenMiddleware(),
   new FetchRefreshTokenForRevoke(),
 ];
 
