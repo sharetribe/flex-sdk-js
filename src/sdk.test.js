@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { UUID, LatLng } from './types';
-import fake from './fake';
+import createAdapter from './fake/adapter';
 import SharetribeSdk from './sdk';
 import memoryStore from './memory_store';
 
@@ -26,28 +26,30 @@ const report = responsePromise =>
    Pass additional configurations in `config` param to override defaults.
 
    Returns a map that contains all the instances that might be useful for
-   tests, i.e. sdk, tokenStore and adapter.
+   tests, i.e. sdk, sdkTokenStore and adapter.
  */
-const createSdk = (config) => {
+const createSdk = (config = {}) => {
   const defaults = {
     baseUrl: '',
     clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
     endpoints: [],
   };
 
-  const tokenStore = memoryStore();
-  const adapter = fake();
+  const sdkTokenStore = memoryStore();
+  const adapter = createAdapter();
+
   const sdk = new SharetribeSdk({
     ...defaults,
-    adapter: adapter.adapterFn,
-    tokenStore,
+    tokenStore: sdkTokenStore,
     ...config,
+    adapter: adapter.adapterFn,
   });
 
   return {
-    tokenStore,
+    sdkTokenStore,
     adapter,
     sdk,
+    adapterTokenStore: adapter.tokenStore,
   };
 };
 
@@ -149,16 +151,15 @@ describe('new SharetribeSdk', () => {
   });
 
   it('reads auth token from store and includes it in request headers', () => {
-    const { sdk, tokenStore } = createSdk({
+    const { sdk, sdkTokenStore, adapterTokenStore } = createSdk({
       // The Fake server doesn't know this clientId. However, the request passes because
       // the access_token is in the store
       clientId: 'daaf8871-4723-45b8-bc97-9e335f46966d',
     });
 
-    tokenStore.setToken({
-      access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo',
-      token_type: 'bearer',
-    });
+    const anonToken = adapterTokenStore.createAnonToken();
+
+    sdkTokenStore.setToken(anonToken);
 
     return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
@@ -173,12 +174,12 @@ describe('new SharetribeSdk', () => {
   });
 
   it('stores the auth token to the store', () => {
-    const { sdk, tokenStore } = createSdk();
+    const { sdk, sdkTokenStore } = createSdk();
 
     return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
       const resource = res.data.data;
       const attrs = resource.attributes;
-      const token = tokenStore.getToken();
+      const token = sdkTokenStore.getToken();
 
       expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
       expect(attrs).toEqual(expect.objectContaining({
@@ -186,42 +187,38 @@ describe('new SharetribeSdk', () => {
         description: 'Meet and greet with fanatical sky divers.',
       }));
 
-      expect(token.access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
+      expect(token.access_token).toEqual('anonymous-access-1');
       expect(token.token_type).toEqual('bearer');
       expect(token.expires_in).toEqual(86400);
     });
   });
 
   it('stores auth token after login', () => {
-    const { sdk, tokenStore } = createSdk();
+    const { sdk, sdkTokenStore } = createSdk();
 
     // First we get the anonymous token
     return report(sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
-      expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
+      expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
 
       // After login, the anonymous token will be overriden
       return sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
-        expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
+        expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
       });
     }));
   });
 
   it('refreshes login token', () => {
-    const { sdk, tokenStore } = createSdk();
+    const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
 
     // First, login
     return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
-      expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
+      const { access_token } = sdkTokenStore.getToken();
+      expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
 
-      // Remove auth token from the store to simulate a
-      // situation where access_token is invalid but refresh_token is
-      // still valid
-      // eslint-disable-next-line no-unused-vars
-      const { access_token, ...rest } = tokenStore.getToken();
-      tokenStore.setToken({ access_token: 'invalid_token', ...rest });
+      adapterTokenStore.expireAccessToken(access_token);
 
       return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
-        expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODcwMDYyNjgsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.t2XeBug85fPPxo3M8mVkKUvs7bUQdAQdoOwgT2qr8io');
+        expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-secret-joe-access-2');
 
         const resource = res.data.data;
         const attrs = resource.attributes;
@@ -236,20 +233,17 @@ describe('new SharetribeSdk', () => {
   });
 
   it('refreshes anonymous token', () => {
-    const { sdk, tokenStore } = createSdk();
+    const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
 
     // First we get the anonymous token
     return report(sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
-      expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
+      const { access_token } = sdkTokenStore.getToken();
+      expect(access_token).toEqual('anonymous-access-1');
 
-      // Remove auth token from the store to simulate a
-      // situation where access_token is invalid
-      // eslint-disable-next-line no-unused-vars
-      const { access_token, ...rest } = tokenStore.getToken();
-      tokenStore.setToken({ access_token: 'invalid_token', ...rest });
+      adapterTokenStore.expireAccessToken(access_token);
 
       return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
-        expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
+        expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-2');
 
 
         const resource = res.data.data;
@@ -265,46 +259,43 @@ describe('new SharetribeSdk', () => {
   });
 
   it('revokes token (a.k.a logout)', () => {
-    const { sdk, tokenStore } = createSdk();
+    const { sdk, sdkTokenStore } = createSdk();
 
     // First, login
     return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
-      expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
+      expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
 
       // Revoke token
       return sdk.logout().then((res) => {
         expect(res.data.action).toEqual('revoked');
 
-        expect(tokenStore.getToken()).toEqual(null);
+        expect(sdkTokenStore.getToken()).toEqual(null);
 
         return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
-          expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
+          expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
         });
       });
     }));
   });
 
   it('refreshes token before revoke', () => {
-    const { sdk, tokenStore } = createSdk();
+    const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
 
     // First, login
     return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
-      expect(tokenStore.getToken().access_token).toEqual('dyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InVzZXIiLCJleHAiOjE0ODY2NTY1NzEsInVzZXItaWQiOiIzYzA3M2ZhZS02MTcyLTRlNzUtOGI5Mi1mNTYwZDU4Y2Q0N2MifQ.XdRyKz6_Nc6QJDGZIZ7URdOz7V3tBCkD9olRTYIBL44');
+      const { access_token } = sdkTokenStore.getToken();
+      expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
 
-      // Remove auth token from the store to simulate a
-      // situation where access_token is invalid
-      // eslint-disable-next-line no-unused-vars
-      const { access_token, ...rest } = tokenStore.getToken();
-      tokenStore.setToken({ access_token: 'invalid_token', ...rest });
+      adapterTokenStore.expireAccessToken(access_token);
 
       // Revoke token
       return sdk.logout().then((res) => {
         expect(res.data.action).toEqual('revoked');
 
-        expect(tokenStore.getToken()).toEqual(null);
+        expect(sdkTokenStore.getToken()).toEqual(null);
 
         return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
-          expect(tokenStore.getToken().access_token).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYXJrZXRwbGFjZS1pZCI6IjE2YzZhNGI4LTg4ZWUtNDI5Yi04MzVhLTY3MjUyMDZjZDA4YyIsImNsaWVudC1pZCI6IjA4ZWM2OWY2LWQzN2UtNDE0ZC04M2ViLTMyNGU5NGFmZGRmMCIsInRlbmFuY3ktaWQiOiIxNmM2YTRiOC04OGVlLTQyOWItODM1YS02NzI1MjA2Y2QwOGMiLCJzY29wZSI6InB1YmxpYy1yZWFkIiwiZXhwIjoxNDg2NDcwNDg3fQ.6l_rV-hLbod-lfakhQTNxF7yY-4SEtaVGIPq2pO_2zo');
+          expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
         });
       });
     }));
