@@ -29,7 +29,8 @@ const revoke = (config, resolve, reject) => {
   const formData = parseFormData(config.data);
 
   if (formData.token) {
-    if (formData.token === '74344396-d9af-458a-adbc-7ff1cb2661d0-fcaeb2c8-6089-4dc3-aa47-7c1ef57f9163') {
+    if (formData.token === '74344396-d9af-458a-adbc-7ff1cb2661d0-fcaeb2c8-6089-4dc3-aa47-7c1ef57f9163' ||
+        formData.token === 'c78e62a1-5640-460d-a476-e1c3b6b274f8--0fe0fb97-b304-4a71-860c-267b90f777f6') {
       // FIXME The `data` is not what the server returns
       return resolve({ data: { action: 'revoked' } });
     }
@@ -397,7 +398,7 @@ const createAdapter = () => {
         case '/v1/auth/token':
           return auth(config, resolve, reject);
         case '/v1/auth/revoke':
-          return revoke(config, resolve, reject);
+          return requireAuth(config, reject).then(() => revoke(config, resolve, reject));
         default:
           throw new Error(`Not implemented to Fake adapter: ${config.url}`);
       }

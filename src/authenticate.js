@@ -50,7 +50,7 @@ export class AddAuthTokenHeader {
   }
 }
 
-class RetryWithRefreshToken {
+export class RetryWithRefreshToken {
   enter(enterCtx) {
     const { enterQueue, refreshTokenRetry: { attempts = 0 } = {} } = enterCtx;
     return {
@@ -90,7 +90,7 @@ class RetryWithRefreshToken {
   }
 }
 
-class RetryWithAnonToken {
+export class RetryWithAnonToken {
   enter(enterCtx) {
     const { enterQueue, anonTokenRetry: { attempts = 0 } = {} } = enterCtx;
     return {
@@ -224,11 +224,3 @@ export class AuthInfo {
     return { ...ctx, res: {} };
   }
 }
-
-export const authenticateInterceptors = [
-  new FetchAuthTokenFromStore(),
-  new FetchAuthTokenFromApi(),
-  new RetryWithAnonToken(),
-  new RetryWithRefreshToken(),
-  new AddAuthTokenHeader(),
-];

@@ -3,10 +3,12 @@ import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
 import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
-import { authenticateInterceptors,
-         FetchRefreshTokenForRevoke,
+import { FetchRefreshTokenForRevoke,
          ClearTokenMiddleware,
          FetchAuthTokenFromStore,
+         FetchAuthTokenFromApi,
+         RetryWithAnonToken,
+         RetryWithRefreshToken,
          AddAuthTokenHeader,
          SaveTokenMiddleware,
          AddAuthTokenResponseToCtx,
@@ -107,22 +109,6 @@ const apis = {
   }),
 };
 
-/**
-   Take endpoint definitions and return SDK function definition.
- */
-const sdkFnDefsFromEndpointDefs = epDefs => epDefs
-  .filter(({ internal = false }) => !internal)
-  .map(({ apiName, path }) => {
-    const fnPath = urlPathToFnPath(path);
-    const fullFnPath = [apiName, ...fnPath];
-
-    return {
-      path: fnPath,
-      endpointInterceptorPath: fullFnPath,
-      interceptors: [...authenticateInterceptors],
-    };
-  });
-
 class TransitRequest {
   enter({ params, headers = {}, typeHandlers, ...ctx }) {
     const { writer } = createTransitConverters(typeHandlers);
@@ -184,6 +170,14 @@ const endpointDefinitions = [
   { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
 ];
 
+const authenticateInterceptors = [
+  new FetchAuthTokenFromStore(),
+  new FetchAuthTokenFromApi(),
+  new RetryWithAnonToken(),
+  new RetryWithRefreshToken(),
+  new AddAuthTokenHeader(),
+];
+
 const loginInterceptors = [
   defaultParamsInterceptor({ grant_type: 'password', scope: 'user' }),
   new AddClientIdToParams(),
@@ -193,10 +187,27 @@ const loginInterceptors = [
 
 const logoutInterceptors = [
   new FetchAuthTokenFromStore(),
+  new RetryWithRefreshToken(),
   new AddAuthTokenHeader(),
   new ClearTokenMiddleware(),
   new FetchRefreshTokenForRevoke(),
 ];
+
+/**
+   Take endpoint definitions and return SDK function definition.
+ */
+const sdkFnDefsFromEndpointDefs = epDefs => epDefs
+  .filter(({ internal = false }) => !internal)
+  .map(({ apiName, path }) => {
+    const fnPath = urlPathToFnPath(path);
+    const fullFnPath = [apiName, ...fnPath];
+
+    return {
+      path: fnPath,
+      endpointInterceptorPath: fullFnPath,
+      interceptors: [...authenticateInterceptors],
+    };
+  });
 
 /**
    List of SDK methods that will be part of the SDKs public interface.
