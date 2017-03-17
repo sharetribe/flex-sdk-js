@@ -210,23 +210,3 @@ export class FetchAuthTokenFromApi {
     }).then(({ authToken: newAuthToken }) => ({ ...ctx, authToken: newAuthToken }));
   }
 }
-
-export class FetchAuthTokenFromStore {
-  enter(enterCtx) {
-    const { tokenStore } = enterCtx;
-
-    if (!tokenStore) {
-      return enterCtx;
-    }
-
-    return Promise.resolve()
-                  .then(tokenStore.getToken)
-                  .then((storedToken) => {
-                    if (storedToken) {
-                      return { ...enterCtx, authToken: storedToken };
-                    }
-
-                    return enterCtx;
-                  });
-  }
-}

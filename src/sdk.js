@@ -5,7 +5,6 @@ import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
 import { FetchRefreshTokenForRevoke,
          ClearTokenAfterRevokeMiddleware,
-         FetchAuthTokenFromStore,
          FetchAuthTokenFromApi,
          RetryWithAnonToken,
          RetryWithRefreshToken,
@@ -13,6 +12,7 @@ import { FetchRefreshTokenForRevoke,
          SaveTokenMiddleware,
          AddAuthTokenResponseToCtx,
 } from './authenticate';
+import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
 import AuthInfo from './interceptors/auth_info';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
