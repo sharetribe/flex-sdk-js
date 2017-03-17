@@ -4,9 +4,10 @@ import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
 import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
 import {
-         RetryWithRefreshToken,
+
          AddAuthTokenHeader,
 } from './authenticate';
+import RetryWithRefreshToken from './interceptors/retry_with_refresh_token';
 import RetryWithAnonToken from './interceptors/retry_with_anon_token';
 import ClearTokenAfterRevoke from './interceptors/clear_token_after_revoke';
 import FetchRefreshTokenForRevoke from './interceptors/fetch_refresh_token_for_revoke';
