@@ -12,6 +12,7 @@ import AddAuthTokenResponse from './interceptors/add_auth_token_response';
 import SaveToken from './interceptors/save_token';
 import FetchAuthTokenFromApi from './interceptors/fetch_auth_token_from_api';
 import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
+import AddClientIdToParams from './interceptors/add_client_id_to_params';
 import AuthInfo from './interceptors/auth_info';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
@@ -31,12 +32,6 @@ const defaultParamsInterceptor = (defaultParams = {}) =>
     enter: ({ params: ctxParams, ...ctx }) =>
       ({ ...ctx, params: { ...defaultParams, ...ctxParams } }),
   });
-
-class AddClientIdToParams {
-  enter({ clientId, params, ...ctx }) {
-    return { ...ctx, clientId, params: { ...params, client_id: clientId } };
-  }
-}
 
 const createTransitConverters = (typeHandlers) => {
   const { readers, writers } = typeHandlers.reduce((memo, handler) => {
