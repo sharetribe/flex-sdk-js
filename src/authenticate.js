@@ -230,27 +230,3 @@ export class FetchAuthTokenFromStore {
                   });
   }
 }
-
-export class AuthInfo {
-  enter(ctx) {
-    const { tokenStore } = ctx;
-
-    if (tokenStore) {
-      return Promise.resolve()
-                    .then(tokenStore.getToken)
-                    .then((storedToken) => {
-                      if (storedToken) {
-                        const grantType = storedToken.refresh_token ?
-                                        'refresh_token' :
-                                        'client_credentials';
-
-                        return { ...ctx, res: { grantType } };
-                      }
-
-                      return { ...ctx, res: {} };
-                    });
-    }
-
-    return { ...ctx, res: {} };
-  }
-}

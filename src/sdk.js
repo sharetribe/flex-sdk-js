@@ -12,7 +12,8 @@ import { FetchRefreshTokenForRevoke,
          AddAuthTokenHeader,
          SaveTokenMiddleware,
          AddAuthTokenResponseToCtx,
-         AuthInfo } from './authenticate';
+} from './authenticate';
+import AuthInfo from './interceptors/auth_info';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
 
