@@ -1,12 +1,3 @@
-import _ from 'lodash';
-
-import contextRunner from './context_runner';
-
-import SaveToken from './interceptors/save_token';
-import AddAuthTokenResponse from './interceptors/add_auth_token_response';
-
-/* eslint-disable class-methods-use-this */
-
 const constructAuthHeader = (authToken) => {
   /* eslint-disable camelcase */
   const token_type = authToken.token_type && authToken.token_type.toLowerCase();
@@ -20,7 +11,14 @@ const constructAuthHeader = (authToken) => {
   /* eslint-enable camelcase */
 };
 
-export class AddAuthTokenHeader {
+/**
+   Read `authToken` from `ctx`. Then construct Authorize header and add it to `headers`.
+
+   Changes to `ctx`:
+
+   - Add `headers.Authorize`
+ */
+export default class AddAuthHeader {
   enter(ctx) {
     const { authToken } = ctx;
 

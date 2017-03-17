@@ -3,10 +3,7 @@ import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
 import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
-import {
-
-         AddAuthTokenHeader,
-} from './authenticate';
+import AddAuthHeader from './interceptors/add_auth_header';
 import RetryWithRefreshToken from './interceptors/retry_with_refresh_token';
 import RetryWithAnonToken from './interceptors/retry_with_anon_token';
 import ClearTokenAfterRevoke from './interceptors/clear_token_after_revoke';
@@ -178,7 +175,7 @@ const authenticateInterceptors = [
   new FetchAuthTokenFromApi(),
   new RetryWithAnonToken(),
   new RetryWithRefreshToken(),
-  new AddAuthTokenHeader(),
+  new AddAuthHeader(),
 ];
 
 const loginInterceptors = [
@@ -192,7 +189,7 @@ const logoutInterceptors = [
   new FetchAuthTokenFromStore(),
   new ClearTokenAfterRevoke(),
   new RetryWithRefreshToken(),
-  new AddAuthTokenHeader(),
+  new AddAuthHeader(),
   new FetchRefreshTokenForRevoke(),
 ];
 
