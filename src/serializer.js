@@ -225,7 +225,7 @@ export const writer = (customWriters = []) => {
   });
 };
 
-export const createTransitConverters = (typeHandlers) => {
+export const createTransitConverters = (typeHandlers = []) => {
   const { readers, writers } = typeHandlers.reduce((memo, handler) => {
     const r = {
       type: handler.type,
