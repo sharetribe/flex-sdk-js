@@ -1,7 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
-import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
 import AddAuthHeader from './interceptors/add_auth_header';
 import RetryWithRefreshToken from './interceptors/retry_with_refresh_token';
@@ -16,6 +15,8 @@ import AddClientIdToParams from './interceptors/add_client_id_to_params';
 import AuthInfo from './interceptors/auth_info';
 import defaultParams from './interceptors/default_params';
 import MultipartRequest from './interceptors/multipart_request';
+import TransitRequest from './interceptors/transit_request';
+import TransitResponse from './interceptors/transit_response';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
 
@@ -27,30 +28,6 @@ const defaultSdkConfig = {
   endpoints: [],
   adapter: null,
   version: 'v1',
-};
-
-const createTransitConverters = (typeHandlers) => {
-  const { readers, writers } = typeHandlers.reduce((memo, handler) => {
-    const r = {
-      type: handler.type,
-      reader: handler.reader,
-    };
-    const w = {
-      type: handler.type,
-      customType: handler.customType,
-      writer: handler.writer,
-    };
-
-    memo.readers.push(r);
-    memo.writers.push(w);
-
-    return memo;
-  }, { readers: [], writers: [] });
-
-  const reader = serializer.reader(readers);
-  const writer = serializer.writer(writers);
-
-  return { reader, writer };
 };
 
 /**
@@ -68,19 +45,14 @@ const createTransitConverters = (typeHandlers) => {
    how to transform requests and response, etc.
  */
 const apis = {
-  api: ({ baseUrl, version, adapter, typeHandlers }) => {
-    const { reader } = createTransitConverters(typeHandlers);
-
+  api: ({ baseUrl, version, adapter }) => {
     return {
       headers: {
         Accept: 'application/transit+json',
       },
       baseURL: `${baseUrl}/${version}`,
-      transformRequest: [],
-      transformResponse: [
-        // logAndReturn,
-        data => reader.read(data),
-      ],
+      transformRequest: v => v,
+      transformResponse: v => v,
       adapter,
       paramsSerializer,
     };
@@ -100,22 +72,6 @@ const apis = {
   }),
 };
 
-class TransitRequest {
-  enter({ params, headers = {}, typeHandlers, ...ctx }) {
-    const { writer } = createTransitConverters(typeHandlers);
-
-    return {
-      params: writer.write(params),
-      headers: {
-        ...headers,
-        'Content-Type': 'application/transit+json',
-      },
-      typeHandlers,
-      ...ctx,
-    };
-  }
-}
-
 /**
    List of all known endpoints
 
@@ -126,16 +82,16 @@ class TransitRequest {
    - method: HTTP method
  */
 const endpointDefinitions = [
-  { apiName: 'api', path: 'marketplace/show', internal: false, method: 'get', interceptors: [] },
-  { apiName: 'api', path: 'users/show', internal: false, method: 'get', interceptors: [] },
-  { apiName: 'api', path: 'users/me', internal: false, method: 'get', interceptors: [] },
-  { apiName: 'api', path: 'listings/show', internal: false, method: 'get', interceptors: [] },
-  { apiName: 'api', path: 'listings/query', internal: false, method: 'get', interceptors: [] },
-  { apiName: 'api', path: 'listings/search', internal: false, method: 'get', interceptors: [] },
-  { apiName: 'api', path: 'listings/create', internal: false, method: 'post', interceptors: [new TransitRequest()] },
-  { apiName: 'api', path: 'listings/update', internal: false, method: 'post', interceptors: [new TransitRequest()] },
-  { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post', interceptors: [new MultipartRequest()] },
-  { apiName: 'api', path: 'listings/add_image', internal: false, method: 'post', interceptors: [new TransitRequest()] },
+  { apiName: 'api', path: 'marketplace/show', internal: false, method: 'get', interceptors: [new TransitResponse()] },
+  { apiName: 'api', path: 'users/show', internal: false, method: 'get', interceptors: [new TransitResponse()] },
+  { apiName: 'api', path: 'users/me', internal: false, method: 'get', interceptors: [new TransitResponse()] },
+  { apiName: 'api', path: 'listings/show', internal: false, method: 'get', interceptors: [new TransitResponse()] },
+  { apiName: 'api', path: 'listings/query', internal: false, method: 'get', interceptors: [new TransitResponse()] },
+  { apiName: 'api', path: 'listings/search', internal: false, method: 'get', interceptors: [new TransitResponse()] },
+  { apiName: 'api', path: 'listings/create', internal: false, method: 'post', interceptors: [new TransitResponse(), new TransitRequest()] },
+  { apiName: 'api', path: 'listings/update', internal: false, method: 'post', interceptors: [new TransitResponse(), new TransitRequest()] },
+  { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post', interceptors: [new TransitResponse(), new MultipartRequest()] },
+  { apiName: 'api', path: 'listings/add_image', internal: false, method: 'post', interceptors: [new TransitResponse(), new TransitRequest()] },
   { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
   { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
 ];

@@ -224,3 +224,27 @@ export const writer = (customWriters = []) => {
     },
   });
 };
+
+export const createTransitConverters = (typeHandlers) => {
+  const { readers, writers } = typeHandlers.reduce((memo, handler) => {
+    const r = {
+      type: handler.type,
+      reader: handler.reader,
+    };
+    const w = {
+      type: handler.type,
+      customType: handler.customType,
+      writer: handler.writer,
+    };
+
+    memo.readers.push(r);
+    memo.writers.push(w);
+
+    return memo;
+  }, { readers: [], writers: [] });
+
+  return {
+    reader: reader(readers),
+    writer: writer(writers),
+  };
+};
