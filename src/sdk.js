@@ -5,13 +5,13 @@ import * as serializer from './serializer';
 import paramsSerializer from './params_serializer';
 import { FetchRefreshTokenForRevoke,
          ClearTokenAfterRevokeMiddleware,
-         FetchAuthTokenFromApi,
          RetryWithAnonToken,
          RetryWithRefreshToken,
          AddAuthTokenHeader,
-         SaveTokenMiddleware,
-         AddAuthTokenResponseToCtx,
 } from './authenticate';
+import AddAuthTokenResponse from './interceptors/add_auth_token_response';
+import SaveToken from './interceptors/save_token';
+import FetchAuthTokenFromApi from './interceptors/fetch_auth_token_from_api';
 import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
 import AuthInfo from './interceptors/auth_info';
 import { createDefaultTokenStore } from './token_store';
@@ -182,8 +182,8 @@ const authenticateInterceptors = [
 const loginInterceptors = [
   defaultParamsInterceptor({ grant_type: 'password', scope: 'user' }),
   new AddClientIdToParams(),
-  new SaveTokenMiddleware(),
-  new AddAuthTokenResponseToCtx(),
+  new SaveToken(),
+  new AddAuthTokenResponse(),
 ];
 
 const logoutInterceptors = [

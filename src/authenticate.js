@@ -2,6 +2,9 @@ import _ from 'lodash';
 
 import contextRunner from './context_runner';
 
+import SaveToken from './interceptors/save_token';
+import AddAuthTokenResponse from './interceptors/add_auth_token_response';
+
 /* eslint-disable class-methods-use-this */
 
 const constructAuthHeader = (authToken) => {
@@ -16,28 +19,6 @@ const constructAuthHeader = (authToken) => {
   }
   /* eslint-enable camelcase */
 };
-
-export class SaveTokenMiddleware {
-  leave(ctx) {
-    const { authToken, tokenStore } = ctx;
-
-    if (tokenStore) {
-      return Promise.resolve()
-                    .then(() => tokenStore.setToken(authToken))
-                    .then(() => ctx);
-    }
-
-    return ctx;
-  }
-}
-
-export class AddAuthTokenResponseToCtx {
-  leave(ctx) {
-    const { res: { data: authToken } } = ctx;
-
-    return { ...ctx, authToken };
-  }
-}
 
 export class AddAuthTokenHeader {
   enter(ctx) {
@@ -74,8 +55,8 @@ export class RetryWithRefreshToken {
 
     if (errorCtx.res && errorCtx.res.status === 401 && authToken.refresh_token) {
       return contextRunner([
-        new SaveTokenMiddleware(),
-        new AddAuthTokenResponseToCtx(),
+        new SaveToken(),
+        new AddAuthTokenResponse(),
         ...endpointInterceptors.auth.token,
       ])({
         params: {
@@ -116,8 +97,8 @@ export class RetryWithAnonToken {
 
     if (errorCtx.res && errorCtx.res.status === 401) {
       return contextRunner([
-        new SaveTokenMiddleware(),
-        new AddAuthTokenResponseToCtx(),
+        new SaveToken(),
+        new AddAuthTokenResponse(),
         ...endpointInterceptors.auth.token,
       ])({
         params: {
@@ -185,28 +166,5 @@ export class FetchRefreshTokenForRevoke {
     // refresh_token.
     // Clear the enterQueue
     return { ...ctx, enterQueue: [] };
-  }
-}
-
-export class FetchAuthTokenFromApi {
-  enter(ctx) {
-    const { tokenStore, authToken, endpointInterceptors, clientId } = ctx;
-
-    if (authToken) {
-      return ctx;
-    }
-
-    return contextRunner([
-      new SaveTokenMiddleware(),
-      new AddAuthTokenResponseToCtx(),
-      ...endpointInterceptors.auth.token,
-    ])({
-      params: {
-        client_id: clientId,
-        grant_type: 'client_credentials',
-        scope: 'public-read',
-      },
-      tokenStore,
-    }).then(({ authToken: newAuthToken }) => ({ ...ctx, authToken: newAuthToken }));
   }
 }
