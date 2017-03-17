@@ -14,6 +14,7 @@ import FetchAuthTokenFromApi from './interceptors/fetch_auth_token_from_api';
 import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
 import AddClientIdToParams from './interceptors/add_client_id_to_params';
 import AuthInfo from './interceptors/auth_info';
+import defaultParams from './interceptors/default_params';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
 
@@ -26,12 +27,6 @@ const defaultSdkConfig = {
   adapter: null,
   version: 'v1',
 };
-
-const defaultParamsInterceptor = (defaultParams = {}) =>
-  ({
-    enter: ({ params: ctxParams, ...ctx }) =>
-      ({ ...ctx, params: { ...defaultParams, ...ctxParams } }),
-  });
 
 const createTransitConverters = (typeHandlers) => {
   const { readers, writers } = typeHandlers.reduce((memo, handler) => {
@@ -174,7 +169,7 @@ const authenticateInterceptors = [
 ];
 
 const loginInterceptors = [
-  defaultParamsInterceptor({ grant_type: 'password', scope: 'user' }),
+  defaultParams({ grant_type: 'password', scope: 'user' }),
   new AddClientIdToParams(),
   new SaveToken(),
   new AddAuthTokenResponse(),
