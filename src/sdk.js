@@ -15,6 +15,7 @@ import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store'
 import AddClientIdToParams from './interceptors/add_client_id_to_params';
 import AuthInfo from './interceptors/auth_info';
 import defaultParams from './interceptors/default_params';
+import MultipartRequest from './interceptors/multipart_request';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
 
@@ -112,27 +113,6 @@ class TransitRequest {
       typeHandlers,
       ...ctx,
     };
-  }
-}
-
-class MultipartRequest {
-  enter({ params, ...ctx }) {
-    if (_.isPlainObject(params)) {
-      /* eslint-disable no-undef */
-      if (typeof FormData === 'undefined') {
-        throw new Error('Don\'t know how to create multipart request from Object, when the FormData is undefined');
-      }
-
-      const formDataObj = _.reduce(params, (fd, val, key) => {
-        fd.append(key, val);
-        return fd;
-      }, new FormData());
-      /* eslint-enable no-undef */
-
-      return { params: formDataObj, ...ctx };
-    }
-
-    return { params, ...ctx };
   }
 }
 
