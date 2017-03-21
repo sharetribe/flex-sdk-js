@@ -100,8 +100,7 @@ describe('serializer', () => {
 
     const data = '69c3d77a-db3f-11e6-bf26-cec0c932ce01';
 
-    expect(r.read(w.write({ id: new UUID(data) })).id)
-      .toEqual(new MyCustomUuid(data));
+    expect(r.read(w.write({ id: new UUID(data) })).id).toEqual(new MyCustomUuid(data));
   });
 
   it('allows you to add your own writers handlers for predefined types', () => {
@@ -123,8 +122,6 @@ describe('serializer', () => {
 
     const data = '69c3d77a-db3f-11e6-bf26-cec0c932ce01';
 
-    expect(r.read(w.write({ id: new MyCustomUuid(data) })).id)
-      .toEqual(new UUID(data));
+    expect(r.read(w.write({ id: new MyCustomUuid(data) })).id).toEqual(new UUID(data));
   });
 });
-

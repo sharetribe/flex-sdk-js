@@ -27,7 +27,7 @@ const createStore = ({ clientId, req, res }) => {
     return currentToken;
   };
 
-  const setToken = (tokenData) => {
+  const setToken = tokenData => {
     currentToken = tokenData;
     res.cookie(key, tokenData, { maxAge: 1000 * 60 * 60 * 24 * expiration });
   };

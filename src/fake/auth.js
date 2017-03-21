@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
-const parseFormData = data => _.fromPairs(data.split('&').map(keyValue => keyValue.split('=').map(decodeURIComponent)));
+const parseFormData = data =>
+  _.fromPairs(data.split('&').map(keyValue => keyValue.split('=').map(decodeURIComponent)));
 
 export const revoke = (config, resolve, reject, tokenStore) => {
   const formData = parseFormData(config.data);

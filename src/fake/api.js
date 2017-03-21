@@ -40,7 +40,8 @@ export const listings = {
   create: (config, resolve, reject) => {
     const body = reader.read(config.data);
 
-    const requiredFields = ['title', 'description', 'address', 'geolocation'].map(k => body.get(transit.keyword(k)));
+    const requiredFields = ['title', 'description', 'address', 'geolocation'].map(k =>
+      body.get(transit.keyword(k)));
 
     if (requiredFields.some(v => v == null)) {
       return reject({
@@ -59,7 +60,8 @@ export const listings = {
                     "^4", "missing-required-key",
                     "~:description", "missing-required-key",
                     "~:address", "missing-required-key",
-                    "~:geolocation", "missing-required-key"]]]]]]` });
+                    "~:geolocation", "missing-required-key"]]]]]]`,
+      });
     }
 
     let res;

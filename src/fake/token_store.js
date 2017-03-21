@@ -6,9 +6,7 @@ const createTokenStore = () => {
   let passwordAccessCount = 0;
   let passwordRefreshCount = 0;
 
-  const knownUsers = [
-    ['joe.dunphy@example.com', 'secret-joe'],
-  ];
+  const knownUsers = [['joe.dunphy@example.com', 'secret-joe']];
 
   // Private
 
@@ -30,11 +28,16 @@ const createTokenStore = () => {
   // Public
 
   const validToken = (accessToken, tokenType) =>
-    _.find(tokens,
-           ({ token }) => token.access_token && accessToken &&
-                        token.token_type && tokenType &&
-                        token.access_token.toLowerCase() === accessToken.toLowerCase() &&
-                        token.token_type.toLowerCase() === tokenType.toLowerCase());
+    _.find(
+      tokens,
+      ({ token }) =>
+        token.access_token &&
+        accessToken &&
+        token.token_type &&
+        tokenType &&
+        token.access_token.toLowerCase() === accessToken.toLowerCase() &&
+        token.token_type.toLowerCase() === tokenType.toLowerCase()
+    );
 
   const createAnonToken = () => {
     const token = {
@@ -73,8 +76,8 @@ const createTokenStore = () => {
     return token.token;
   };
 
-  const expireAccessToken = (accessToken) => {
-    _.map(tokens, (t) => {
+  const expireAccessToken = accessToken => {
+    _.map(tokens, t => {
       const token = t.token;
 
       if (token.access_token === accessToken) {
@@ -88,7 +91,7 @@ const createTokenStore = () => {
   const revokePasswordToken = refreshToken =>
     _.remove(tokens, t => t.token.refresh_token === refreshToken);
 
-  const freshPasswordToken = (refreshToken) => {
+  const freshPasswordToken = refreshToken => {
     const existingToken = revokePasswordToken(refreshToken);
 
     if (existingToken.length) {

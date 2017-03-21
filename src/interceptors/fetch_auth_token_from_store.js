@@ -14,14 +14,12 @@ export default class FetchAuthTokenFromStore {
       return enterCtx;
     }
 
-    return Promise.resolve()
-                  .then(tokenStore.getToken)
-                  .then((storedToken) => {
-                    if (storedToken) {
-                      return { ...enterCtx, authToken: storedToken };
-                    }
+    return Promise.resolve().then(tokenStore.getToken).then(storedToken => {
+      if (storedToken) {
+        return { ...enterCtx, authToken: storedToken };
+      }
 
-                    return enterCtx;
-                  });
+      return enterCtx;
+    });
   }
 }

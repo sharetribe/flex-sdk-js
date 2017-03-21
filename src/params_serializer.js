@@ -11,9 +11,7 @@ import { UUID, LatLng, LatLngBounds } from './types';
  * Inspired by the `encode` function in Axios:
  * https://github.com/mzabriskie/axios/blob/b8f6f5049cf3da8126a184b6b270316402b5b374/lib/helpers/buildURL.js#L5
  */
-const encode = value =>
-  encodeURIComponent(value)
-  .replace(/%2C/gi, ',');
+const encode = value => encodeURIComponent(value).replace(/%2C/gi, ',');
 
 /**
  * Take `key` and `value` and return a key-value tuple where

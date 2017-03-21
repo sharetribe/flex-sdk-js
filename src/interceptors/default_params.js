@@ -5,10 +5,8 @@
 
    - Modify `ctx.params`
  */
-const defaultParams = (params = {}) =>
-  ({
-    enter: ({ params: ctxParams, ...ctx }) =>
-      ({ ...ctx, params: { ...params, ...ctxParams } }),
-  });
+const defaultParams = (params = {}) => ({
+  enter: ({ params: ctxParams, ...ctx }) => ({ ...ctx, params: { ...params, ...ctxParams } }),
+});
 
 export default defaultParams;

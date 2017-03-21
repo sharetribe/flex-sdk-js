@@ -27,8 +27,12 @@ export default class RetryWithAnonToken {
   }
 
   error(errorCtx) {
-    const { clientId, tokenStore, endpointInterceptors,
-            anonTokenRetry: { retryQueue, attempts } } = errorCtx;
+    const {
+      clientId,
+      tokenStore,
+      endpointInterceptors,
+      anonTokenRetry: { retryQueue, attempts },
+    } = errorCtx;
 
     if (attempts > 1) {
       return errorCtx;

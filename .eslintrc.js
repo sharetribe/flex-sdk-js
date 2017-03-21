@@ -1,5 +1,8 @@
 module.exports = {
-  extends: 'airbnb-base',
+  extends: [
+    'airbnb-base',
+    'prettier',
+  ],
   parserOptions: {
     sourceType: 'module',
   },

@@ -45,26 +45,23 @@ const defaultSdkConfig = {
    how to transform requests and response, etc.
  */
 const apis = {
-  api: ({ baseUrl, version, adapter }) =>
-    ({
-      headers: {
-        Accept: 'application/transit+json',
-      },
-      baseURL: `${baseUrl}/${version}`,
-      transformRequest: v => v,
-      transformResponse: v => v,
-      adapter,
-      paramsSerializer,
-    }),
+  api: ({ baseUrl, version, adapter }) => ({
+    headers: {
+      Accept: 'application/transit+json',
+    },
+    baseURL: `${baseUrl}/${version}`,
+    transformRequest: v => v,
+    transformResponse: v => v,
+    adapter,
+    paramsSerializer,
+  }),
   auth: ({ baseUrl, version, adapter }) => ({
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       Accept: 'application/json',
     },
     baseURL: `${baseUrl}/${version}/`,
-    transformRequest: [
-      data => formData(data),
-    ],
+    transformRequest: [data => formData(data)],
     // using default transformRequest, which can handle JSON and fallback to plain
     // test if JSON parsing fails
     adapter,
@@ -81,18 +78,90 @@ const apis = {
    - method: HTTP method
  */
 const endpointDefinitions = [
-  { apiName: 'api', path: 'marketplace/show', internal: false, method: 'get', interceptors: [new TransitResponse()] },
-  { apiName: 'api', path: 'users/show', internal: false, method: 'get', interceptors: [new TransitResponse()] },
-  { apiName: 'api', path: 'users/me', internal: false, method: 'get', interceptors: [new TransitResponse()] },
-  { apiName: 'api', path: 'listings/show', internal: false, method: 'get', interceptors: [new TransitResponse()] },
-  { apiName: 'api', path: 'listings/query', internal: false, method: 'get', interceptors: [new TransitResponse()] },
-  { apiName: 'api', path: 'listings/search', internal: false, method: 'get', interceptors: [new TransitResponse()] },
-  { apiName: 'api', path: 'listings/create', internal: false, method: 'post', interceptors: [new TransitResponse(), new TransitRequest()] },
-  { apiName: 'api', path: 'listings/update', internal: false, method: 'post', interceptors: [new TransitResponse(), new TransitRequest()] },
-  { apiName: 'api', path: 'listings/upload_image', internal: false, method: 'post', interceptors: [new TransitResponse(), new MultipartRequest()] },
-  { apiName: 'api', path: 'listings/add_image', internal: false, method: 'post', interceptors: [new TransitResponse(), new TransitRequest()] },
-  { apiName: 'api', path: 'transactions/query', internal: false, method: 'get', interceptors: [new TransitResponse()] },
-  { apiName: 'api', path: 'transactions/show', internal: false, method: 'get', interceptors: [new TransitResponse()] },
+  {
+    apiName: 'api',
+    path: 'marketplace/show',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
+    path: 'users/show',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
+    path: 'users/me',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
+    path: 'listings/show',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
+    path: 'listings/query',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
+    path: 'listings/search',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
+    path: 'listings/create',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'listings/update',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'listings/upload_image',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new MultipartRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'listings/add_image',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'transactions/query',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
+    path: 'transactions/show',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
   { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
   { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
 ];
@@ -123,9 +192,8 @@ const logoutInterceptors = [
 /**
    Take endpoint definitions and return SDK function definition.
  */
-const sdkFnDefsFromEndpointDefs = epDefs => epDefs
-  .filter(({ internal = false }) => !internal)
-  .map(({ apiName, path }) => {
+const sdkFnDefsFromEndpointDefs = epDefs =>
+  epDefs.filter(({ internal = false }) => !internal).map(({ apiName, path }) => {
     const fnPath = urlPathToFnPath(path);
     const fullFnPath = [apiName, ...fnPath];
 
@@ -164,7 +232,7 @@ const additionalSdkFnDefinitions = [
 //   return data;
 // };
 
-const handleSuccessResponse = (response) => {
+const handleSuccessResponse = response => {
   const { status, statusText, data } = response;
 
   return { status, statusText, data };
@@ -204,29 +272,31 @@ const createEndpointInterceptors = ({ method, url, httpOpts }) => {
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
   return {
-    enter: (ctx) => {
+    enter: ctx => {
       const { params, queryParams, headers } = ctx;
       return doRequest({
         params,
         queryParams,
         httpOpts: {
-          method: (method || 'get'),
+          method: method || 'get',
           // Merge additional headers
           headers: { ...httpOptsHeaders, ...headers },
           ...restHttpOpts,
           url,
         },
-      }).then(res => ({ ...ctx, res })).catch((error) => {
-        const errorCtx = { ...ctx, res: error.response };
-        // eslint-disable-next-line no-param-reassign
-        error.ctx = errorCtx;
-        throw error;
-      });
+      })
+        .then(res => ({ ...ctx, res }))
+        .catch(error => {
+          const errorCtx = { ...ctx, res: error.response };
+          // eslint-disable-next-line no-param-reassign
+          error.ctx = errorCtx;
+          throw error;
+        });
     },
   };
 };
 
-const formatError = (e) => {
+const formatError = e => {
   /* eslint-disable no-param-reassign */
   e.details = {};
 
@@ -262,16 +332,16 @@ const formatError = (e) => {
    It's meant to used by the user of the SDK.
  */
 const createSdkFn = ({ ctx, endpointInterceptors, interceptors }) =>
-
   // GET requests: `params` includes query params. `queryParams` will be ignored
   // POST requests: `params` includes body params. `queryParams` includes URL query params
   (params = {}, queryParams = {}) =>
-    contextRunner(_.compact([
-      ...interceptors,
-      ...endpointInterceptors,
-    ]))({ ...ctx, params, queryParams })
-    .then(({ res }) => res)
-    .catch(formatError);
+    contextRunner(_.compact([...interceptors, ...endpointInterceptors]))({
+      ...ctx,
+      params,
+      queryParams,
+    })
+      .then(({ res }) => res)
+      .catch(formatError);
 
 // Take SDK configurations, do transformation and return.
 const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
@@ -281,7 +351,7 @@ const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
 });
 
 // Validate SDK configurations, throw an error if invalid, otherwise return.
-const validateSdkConfig = (sdkConfig) => {
+const validateSdkConfig = sdkConfig => {
   if (!sdkConfig.clientId) {
     throw new Error('clientId must be provided');
   }
@@ -290,7 +360,6 @@ const validateSdkConfig = (sdkConfig) => {
 };
 
 export default class SharetribeSdk {
-
   /**
      Instantiates a new SharetribeSdk instance.
      The constructor assumes the config options have been
@@ -298,16 +367,15 @@ export default class SharetribeSdk {
    */
   constructor(userSdkConfig) {
     // Transform and validation SDK configurations
-    const sdkConfig =
-      validateSdkConfig(
-        transformSdkConfig(
-          { ...defaultSdkConfig, ...userSdkConfig }));
+    const sdkConfig = validateSdkConfig(
+      transformSdkConfig({ ...defaultSdkConfig, ...userSdkConfig })
+    );
 
     // Instantiate API configs
     const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
 
     // Read the endpoint definitions and do some mapping
-    const endpointDefs = [...endpointDefinitions, ...sdkConfig.endpoints].map((epDef) => {
+    const endpointDefs = [...endpointDefinitions, ...sdkConfig.endpoints].map(epDef => {
       const { path, apiName, method, interceptors = [] } = epDef;
       const fnPath = urlPathToFnPath(path);
       const fullFnPath = [apiName, ...fnPath];
@@ -333,7 +401,9 @@ export default class SharetribeSdk {
     // are able to do API calls (e.g. authentication interceptors)
     const endpointInterceptors = endpointDefs.reduce(
       (acc, { fullFnPath, endpointInterceptors: interceptors }) =>
-        _.set(acc, fullFnPath, interceptors), {});
+        _.set(acc, fullFnPath, interceptors),
+      {}
+    );
 
     // Create a context object that will be passed to the interceptor context runner
     const ctx = {
@@ -349,16 +419,15 @@ export default class SharetribeSdk {
     const sdkFns = [
       ...endpointSdkFnDefinitions,
       ...additionalSdkFnDefinitions,
-      ...userDefinedSdkFnDefs].map(
-        ({ path, endpointInterceptorPath, interceptors }) =>
-          ({
-            path,
-            fn: createSdkFn({
-              ctx,
-              endpointInterceptors: _.get(endpointInterceptors, endpointInterceptorPath) || [],
-              interceptors,
-            }),
-          }));
+      ...userDefinedSdkFnDefs,
+    ].map(({ path, endpointInterceptorPath, interceptors }) => ({
+      path,
+      fn: createSdkFn({
+        ctx,
+        endpointInterceptors: _.get(endpointInterceptors, endpointInterceptorPath) || [],
+        interceptors,
+      }),
+    }));
 
     // Assign SDK functions to 'this'
     sdkFns.forEach(({ path, fn }) => _.set(this, path, fn));

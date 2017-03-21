@@ -1,4 +1,4 @@
-const constructAuthHeader = (authToken) => {
+const constructAuthHeader = authToken => {
   /* eslint-disable camelcase */
   const token_type = authToken.token_type && authToken.token_type.toLowerCase();
 

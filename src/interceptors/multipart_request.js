@@ -12,13 +12,19 @@ export default class MultipartRequest {
     if (_.isPlainObject(params)) {
       /* eslint-disable no-undef */
       if (typeof FormData === 'undefined') {
-        throw new Error('Don\'t know how to create multipart request from Object, when the FormData is undefined');
+        throw new Error(
+          "Don't know how to create multipart request from Object, when the FormData is undefined"
+        );
       }
 
-      const formDataObj = _.reduce(params, (fd, val, key) => {
-        fd.append(key, val);
-        return fd;
-      }, new FormData());
+      const formDataObj = _.reduce(
+        params,
+        (fd, val, key) => {
+          fd.append(key, val);
+          return fd;
+        },
+        new FormData()
+      );
       /* eslint-enable no-undef */
 
       return { params: formDataObj, ...ctx };
