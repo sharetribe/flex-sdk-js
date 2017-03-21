@@ -274,6 +274,45 @@ app.get('/', (req, res) => {
 });
 ```
 
+### Writing your own token store
+
+Token store is a module that stores user's session information (i.e. access and refresh tokens).
+
+There are some token stores that ship with the SDK:
+
+- [Browser cookie store](./src/browser_cookie_store.js) (default)
+- [Express cookie store](./src/express_cookie_store.js)
+- [Memory store](./src/memory_store.js) (mainly for testing and development)
+
+You can also write your own token store and inject it to the SDK instance.
+
+Any token store must implement the following methods:
+
+#### `getToken() : Object | Promise(Object)`
+
+`getToken` reads the token from the memory. Can return either a JS Object, or a Promise holding the Object as a value.
+
+If `setToken` is called, the `getToken` must return the value that was set.
+
+Example:
+
+``` js
+const store = createNewTokenStore();
+
+store.setToken({ token: "a" })
+store.getToken() // returns { token: "a" }
+store.setToken({ token: "b" })
+store.getToken() // returns { token: "b" }
+```
+
+#### `setToken(Object) : null | Promise`
+
+Stores the new token. Can return either `null` or a Promise.
+
+#### `removeToken`
+
+Removes token from the store. Can return either `null` or a Promise.
+
 ## Examples
 
 You can find all examples under the `[examples/](./examples)` directory:
