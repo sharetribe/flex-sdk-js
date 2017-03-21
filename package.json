@@ -39,7 +39,7 @@
     "eslint-config-airbnb-base": "^11.0.1",
     "eslint-config-prettier": "^1.5.0",
     "eslint-plugin-import": "^2.2.0",
-    "jest": "^18.1.0",
+    "jest": "^19.0.2",
     "prettier": "^0.22.0",
     "repl.history": "^0.1.4",
     "webpack": "2.1.0-beta.25"
