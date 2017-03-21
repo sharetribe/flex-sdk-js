@@ -45,8 +45,8 @@ const defaultSdkConfig = {
    how to transform requests and response, etc.
  */
 const apis = {
-  api: ({ baseUrl, version, adapter }) => {
-    return {
+  api: ({ baseUrl, version, adapter }) =>
+    ({
       headers: {
         Accept: 'application/transit+json',
       },
@@ -55,8 +55,7 @@ const apis = {
       transformResponse: v => v,
       adapter,
       paramsSerializer,
-    };
-  },
+    }),
   auth: ({ baseUrl, version, adapter }) => ({
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

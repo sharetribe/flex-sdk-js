@@ -4,7 +4,13 @@ import { createTransitConverters } from '../serializer';
    Transit encode the request
  */
 export default class TransitRequest {
-  enter({ params, headers = {}, typeHandlers, ...ctx }) {
+  enter(ctx) {
+    const { params, headers = {}, typeHandlers, ...restCtx } = ctx;
+
+    if (headers['Content-Type'] === 'application/transit+json') {
+      return ctx;
+    }
+
     const { writer } = createTransitConverters(typeHandlers);
 
     return {
@@ -14,7 +20,7 @@ export default class TransitRequest {
         'Content-Type': 'application/transit+json',
       },
       typeHandlers,
-      ...ctx,
+      ...restCtx,
     };
   }
 }
