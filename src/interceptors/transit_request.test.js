@@ -19,12 +19,14 @@ describe('TransitRequest', () => {
     const newCtx = transitRequest.enter(ctx);
     const { writer } = createTransitConverters();
 
-    expect(newCtx).toEqual(expect.objectContaining({
-      headers: expect.objectContaining({
-        'Content-Type': 'application/transit+json',
-      }),
-      params: writer.write(data),
-    }));
+    expect(newCtx).toEqual(
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'Content-Type': 'application/transit+json',
+        }),
+        params: writer.write(data),
+      })
+    );
   });
 
   it('is idempotent', () => {
@@ -44,11 +46,13 @@ describe('TransitRequest', () => {
     const newCtx = transitRequest.enter(transitRequest.enter(ctx));
     const { writer } = createTransitConverters();
 
-    expect(newCtx).toEqual(expect.objectContaining({
-      headers: expect.objectContaining({
-        'Content-Type': 'application/transit+json',
-      }),
-      params: writer.write(data),
-    }));
+    expect(newCtx).toEqual(
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'Content-Type': 'application/transit+json',
+        }),
+        params: writer.write(data),
+      })
+    );
   });
 });

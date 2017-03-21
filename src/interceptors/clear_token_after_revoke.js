@@ -20,9 +20,7 @@ export default class ClearTokenAfterRevoke {
     const { tokenStore } = ctx;
 
     if (tokenStore) {
-      return Promise.resolve()
-                    .then(tokenStore.removeToken)
-                    .then(() => ({ ...ctx, error: null }));
+      return Promise.resolve().then(tokenStore.removeToken).then(() => ({ ...ctx, error: null }));
     }
 
     return { ...ctx, error: null };

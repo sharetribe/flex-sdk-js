@@ -1,25 +1,29 @@
 import contextRunner from './context_runner';
 
 describe('context runner', () => {
-  const createEnterMW = name => (ctx) => {
-    const { enters = [], ...newCtx } = ctx;
-    return { ...newCtx, enters: [...enters, name] };
-  };
+  const createEnterMW = name =>
+    ctx => {
+      const { enters = [], ...newCtx } = ctx;
+      return { ...newCtx, enters: [...enters, name] };
+    };
 
-  const createLeaveMW = name => (ctx) => {
-    const { leaves = [], ...newCtx } = ctx;
-    return { ...newCtx, leaves: [...leaves, name] };
-  };
+  const createLeaveMW = name =>
+    ctx => {
+      const { leaves = [], ...newCtx } = ctx;
+      return { ...newCtx, leaves: [...leaves, name] };
+    };
 
-  const createErrorRaiseMW = name => (ctx) => {
-    const { errors = [], ...newCtx } = ctx;
-    return { ...newCtx, errors: [...errors, name] };
-  };
+  const createErrorRaiseMW = name =>
+    ctx => {
+      const { errors = [], ...newCtx } = ctx;
+      return { ...newCtx, errors: [...errors, name] };
+    };
 
-  const createErrorResolveMW = name => (ctx) => {
-    const { errors = [], ...newCtx } = ctx;
-    return { ...newCtx, errors: [...errors, name], error: null };
-  };
+  const createErrorResolveMW = name =>
+    ctx => {
+      const { errors = [], ...newCtx } = ctx;
+      return { ...newCtx, errors: [...errors, name], error: null };
+    };
 
   const enterRaiseMW = () => {
     throw new Error('middleware enter failed');
@@ -63,27 +67,35 @@ describe('context runner', () => {
     leave: leaveRaiseMW,
   });
 
-  const createEnterTimeoutMW = name => (ctx) => {
-    const { enters = [], ...newCtx } = ctx;
+  const createEnterTimeoutMW = name =>
+    ctx => {
+      const { enters = [], ...newCtx } = ctx;
 
-    return new Promise((resolve) => {
-      // eslint-disable-next-line no-undef
-      setTimeout(() => {
-        resolve({ ...newCtx, enters: [...enters, name] });
-      }, 10);
-    });
-  };
+      return new Promise(resolve => {
+        // eslint-disable-next-line no-undef
+        setTimeout(
+          () => {
+            resolve({ ...newCtx, enters: [...enters, name] });
+          },
+          10
+        );
+      });
+    };
 
-  const createLeaveTimeoutMW = name => (ctx) => {
-    const { leaves = [], ...newCtx } = ctx;
+  const createLeaveTimeoutMW = name =>
+    ctx => {
+      const { leaves = [], ...newCtx } = ctx;
 
-    return new Promise((resolve) => {
-      // eslint-disable-next-line no-undef
-      setTimeout(() => {
-        resolve({ ...newCtx, leaves: [...leaves, name] });
-      }, 10);
-    });
-  };
+      return new Promise(resolve => {
+        // eslint-disable-next-line no-undef
+        setTimeout(
+          () => {
+            resolve({ ...newCtx, leaves: [...leaves, name] });
+          },
+          10
+        );
+      });
+    };
 
   const createTestMiddlewareTimeoutEL = name => ({
     enter: createEnterTimeoutMW(name),
@@ -99,7 +111,7 @@ describe('context runner', () => {
     const mw = createTestMiddlewareEL('one');
     const runner = contextRunner([mw]);
 
-    return runner().then((ctx) => {
+    return runner().then(ctx => {
       expect(ctx.enters).toEqual(['one']);
       expect(ctx.leaves).toEqual(['one']);
     });
@@ -111,7 +123,7 @@ describe('context runner', () => {
     const mw3 = createTestMiddlewareEL('three');
     const runner = contextRunner([mw1, mw2, mw3]);
 
-    return runner().then((ctx) => {
+    return runner().then(ctx => {
       expect(ctx.enters).toEqual(['one', 'two', 'three']);
       expect(ctx.leaves).toEqual(['three', 'two', 'one']);
     });
@@ -123,7 +135,7 @@ describe('context runner', () => {
     const mw3 = createTestMiddlewareL('three');
     const runner = contextRunner([mw1, mw2, mw3]);
 
-    return runner().then((ctx) => {
+    return runner().then(ctx => {
       expect(ctx.enters).toEqual(['one', 'two']);
       expect(ctx.leaves).toEqual(['three', 'two']);
     });
@@ -135,7 +147,7 @@ describe('context runner', () => {
     const mw3 = createTestMiddlewareRaise();
     const runner = contextRunner([mw1, mw2, mw3]);
 
-    return runner().catch((error) => {
+    return runner().catch(error => {
       const ctx = error.ctx;
       expect(ctx.enters).toEqual(['one', 'two']);
       expect(ctx.leaves).toBeUndefined();
@@ -149,7 +161,7 @@ describe('context runner', () => {
     const mw3 = createTestMiddlewareRaise();
     const runner = contextRunner([mw1, mw2, mw3]);
 
-    return runner().then((ctx) => {
+    return runner().then(ctx => {
       expect(ctx.enters).toEqual(['one', 'two']);
       expect(ctx.leaves).toEqual(['one']);
       expect(ctx.errors).toEqual(['two']);
@@ -162,7 +174,7 @@ describe('context runner', () => {
     const mw3 = createTestMiddlewareEL('three');
     const runner = contextRunner([mw1, mw2, mw3]);
 
-    return runner().catch((error) => {
+    return runner().catch(error => {
       const ctx = error.ctx;
 
       expect(ctx.enters).toEqual(['one', 'two', 'three']);
@@ -177,7 +189,7 @@ describe('context runner', () => {
     const mw3 = createTestMiddlewareTimeoutEL('three');
     const runner = contextRunner([mw1, mw2, mw3]);
 
-    return runner().then((ctx) => {
+    return runner().then(ctx => {
       expect(ctx.enters).toEqual(['one', 'two', 'three']);
       expect(ctx.leaves).toEqual(['three', 'two', 'one']);
     });

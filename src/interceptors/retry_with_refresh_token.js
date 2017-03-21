@@ -28,8 +28,13 @@ export default class RetryWithRefreshToken {
   }
 
   error(errorCtx) {
-    const { authToken, clientId, tokenStore, endpointInterceptors,
-            refreshTokenRetry: { retryQueue, attempts } } = errorCtx;
+    const {
+      authToken,
+      clientId,
+      tokenStore,
+      endpointInterceptors,
+      refreshTokenRetry: { retryQueue, attempts },
+    } = errorCtx;
 
     if (attempts > 1) {
       return errorCtx;
@@ -47,10 +52,17 @@ export default class RetryWithRefreshToken {
           refresh_token: authToken.refresh_token,
         },
         tokenStore,
-      }).then(({ authToken: newAuthToken }) =>
-        ({ ...errorCtx, authToken: newAuthToken, enterQueue: retryQueue, error: null }))
-        .catch(e =>
-          ({ ...errorCtx, refreshTokenRetry: { retryQueue, attempts, res: e.response } }));
+      })
+        .then(({ authToken: newAuthToken }) => ({
+          ...errorCtx,
+          authToken: newAuthToken,
+          enterQueue: retryQueue,
+          error: null,
+        }))
+        .catch(e => ({
+          ...errorCtx,
+          refreshTokenRetry: { retryQueue, attempts, res: e.response },
+        }));
     }
 
     return errorCtx;

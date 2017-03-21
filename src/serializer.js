@@ -127,31 +127,35 @@ const defaultWriters = [
    from `customReaders`, `defaultReaders` and `typeMap`.
 */
 const constructReadHandlers = customReaders =>
-  _.fromPairs(_.map(typeMap, (typeClass, tag) => {
-    const defaultReader = _.find(defaultReaders, r => r.type === typeClass);
-    const customReader = _.find(customReaders, r => r.type === typeClass);
+  _.fromPairs(
+    _.map(typeMap, (typeClass, tag) => {
+      const defaultReader = _.find(defaultReaders, r => r.type === typeClass);
+      const customReader = _.find(customReaders, r => r.type === typeClass);
 
-    return [tag, composeReader(defaultReader, customReader)];
-  }));
+      return [tag, composeReader(defaultReader, customReader)];
+    })
+  );
 
 /**
    Take `customWriters` param and construct a list of write handlers
    from `customWriters`, `defaultWriters` and `typeMap`.
 */
 const constructWriteHandlers = customWriters =>
-  _.flatten(_.map(typeMap, (typeClass, tag) => {
-    const defaultWriter = _.find(defaultWriters, w => w.type === typeClass);
-    const customWriter = _.find(customWriters, w => w.type === typeClass);
-    const composedWriter = composeWriter(defaultWriter, customWriter);
-    const customTypeClass = customWriter ? customWriter.customType : defaultWriter.type;
+  _.flatten(
+    _.map(typeMap, (typeClass, tag) => {
+      const defaultWriter = _.find(defaultWriters, w => w.type === typeClass);
+      const customWriter = _.find(customWriters, w => w.type === typeClass);
+      const composedWriter = composeWriter(defaultWriter, customWriter);
+      const customTypeClass = customWriter ? customWriter.customType : defaultWriter.type;
 
-    const handler = transit.makeWriteHandler({
-      tag: () => tag,
-      rep: composedWriter,
-    });
+      const handler = transit.makeWriteHandler({
+        tag: () => tag,
+        rep: composedWriter,
+      });
 
-    return [customTypeClass || typeClass, handler];
-  }));
+      return [customTypeClass || typeClass, handler];
+    })
+  );
 
 /**
    Builds JS arrays from Transit lists and vectors
@@ -197,13 +201,21 @@ export const reader = (customReaders = []) => {
   });
 };
 
-const MapHandler = [Object, transit.makeWriteHandler({
-  tag: () => 'map',
-  rep: v => _.reduce(v, (map, val, key) => {
-    map.set(transit.keyword(key), val);
-    return map;
-  }, transit.map()),
-})];
+const MapHandler = [
+  Object,
+  transit.makeWriteHandler({
+    tag: () => 'map',
+    rep: v =>
+      _.reduce(
+        v,
+        (map, val, key) => {
+          map.set(transit.keyword(key), val);
+          return map;
+        },
+        transit.map()
+      ),
+  }),
+];
 
 export const writer = (customWriters = []) => {
   const ownHandlers = constructWriteHandlers(customWriters);
@@ -226,22 +238,25 @@ export const writer = (customWriters = []) => {
 };
 
 export const createTransitConverters = (typeHandlers = []) => {
-  const { readers, writers } = typeHandlers.reduce((memo, handler) => {
-    const r = {
-      type: handler.type,
-      reader: handler.reader,
-    };
-    const w = {
-      type: handler.type,
-      customType: handler.customType,
-      writer: handler.writer,
-    };
+  const { readers, writers } = typeHandlers.reduce(
+    (memo, handler) => {
+      const r = {
+        type: handler.type,
+        reader: handler.reader,
+      };
+      const w = {
+        type: handler.type,
+        customType: handler.customType,
+        writer: handler.writer,
+      };
 
-    memo.readers.push(r);
-    memo.writers.push(w);
+      memo.readers.push(r);
+      memo.writers.push(w);
 
-    return memo;
-  }, { readers: [], writers: [] });
+      return memo;
+    },
+    { readers: [], writers: [] }
+  );
 
   return {
     reader: reader(readers),

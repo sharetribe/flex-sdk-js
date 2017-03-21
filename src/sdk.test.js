@@ -11,7 +11,7 @@ import memoryStore from './memory_store';
    `response` exists.
  */
 const report = responsePromise =>
-  responsePromise.catch((error) => {
+  responsePromise.catch(error => {
     if (error.response) {
       // eslint-disable-next-line no-param-reassign
       error.message = `${error.message}. Response: ${JSON.stringify(error.response)}`;
@@ -55,18 +55,24 @@ const createSdk = (config = {}) => {
 
 describe('new SharetribeSdk', () => {
   it('validates presence of clientId', () => {
-    expect(() => new SharetribeSdk({
-      baseUrl: 'https://jsonplaceholder.typicode.com',
-    })).toThrowError('clientId must be provided');
+    expect(
+      () =>
+        new SharetribeSdk({
+          baseUrl: 'https://jsonplaceholder.typicode.com',
+        })
+    ).toThrowError('clientId must be provided');
   });
 
   it('creates new endpoints', () => {
     const sdk = new SharetribeSdk({
       clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       typeHandlers: [],
-      endpoints: [{
-        path: 'posts/showAll', apiName: 'api',
-      }],
+      endpoints: [
+        {
+          path: 'posts/showAll',
+          apiName: 'api',
+        },
+      ],
       adapter: null,
       tokenStore: memoryStore(),
     });
@@ -77,47 +83,60 @@ describe('new SharetribeSdk', () => {
   it('calls users endpoint with query params', () => {
     const { sdk } = createSdk();
 
-    return report(sdk.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
-      const resource = res.data.data;
-      const attrs = resource.attributes;
+    return report(
+      sdk.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(res => {
+        const resource = res.data.data;
+        const attrs = resource.attributes;
 
-      expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
-      expect(attrs).toEqual(expect.objectContaining({
-        email: 'user@sharetribe.com',
-        description: 'A team member',
-      }));
-    }));
+        expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
+        expect(attrs).toEqual(
+          expect.objectContaining({
+            email: 'user@sharetribe.com',
+            description: 'A team member',
+          })
+        );
+      })
+    );
   });
 
   it('calls marketplace endpoint with query params', () => {
     const { sdk } = createSdk();
 
-    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(res => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 
       expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
-      expect(attrs).toEqual(expect.objectContaining({
-        name: 'Awesome skies.',
-        description: 'Meet and greet with fanatical sky divers.',
-      }));
+      expect(attrs).toEqual(
+        expect.objectContaining({
+          name: 'Awesome skies.',
+          description: 'Meet and greet with fanatical sky divers.',
+        })
+      );
     });
   });
 
   it('calls listing search with query params', () => {
     const { sdk } = createSdk();
 
-    return sdk.listings.search({ id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'), origin: new LatLng(40.00, -70.00) }).then((res) => {
-      const data = res.data.data;
+    return sdk.listings
+      .search({
+        id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'),
+        origin: new LatLng(40.00, -70.00),
+      })
+      .then(res => {
+        const data = res.data.data;
 
-      expect(data.length).toEqual(2);
-      expect(data[0].attributes.description).toEqual('27-speed Hybrid. Fully functional.');
-      expect(data[0].attributes.geolocation instanceof LatLng).toEqual(true);
-      expect(data[0].attributes.geolocation).toEqual(new LatLng(40.64542, -74.08508));
-      expect(data[1].attributes.description).toEqual('Goes together perfectly with a latte and a bow tie.');
-      expect(data[1].attributes.geolocation instanceof LatLng).toEqual(true);
-      expect(data[1].attributes.geolocation).toEqual(new LatLng(40.64542, -74.08508));
-    });
+        expect(data.length).toEqual(2);
+        expect(data[0].attributes.description).toEqual('27-speed Hybrid. Fully functional.');
+        expect(data[0].attributes.geolocation instanceof LatLng).toEqual(true);
+        expect(data[0].attributes.geolocation).toEqual(new LatLng(40.64542, -74.08508));
+        expect(data[1].attributes.description).toEqual(
+          'Goes together perfectly with a latte and a bow tie.'
+        );
+        expect(data[1].attributes.geolocation instanceof LatLng).toEqual(true);
+        expect(data[1].attributes.geolocation).toEqual(new LatLng(40.64542, -74.08508));
+      });
   });
 
   it('allows user to pass custom read/write handlers', () => {
@@ -127,26 +146,30 @@ describe('new SharetribeSdk', () => {
       }
     }
 
-    const handlers = [{
-      type: UUID,
-      customType: MyUuid,
-      reader: v => new MyUuid(v.uuid), // reader fn type: UUID -> MyUuid
-      writer: v => new UUID(v.myUuid), // writer fn type: MyUuid -> UUID
-    }];
+    const handlers = [
+      {
+        type: UUID,
+        customType: MyUuid,
+        reader: v => new MyUuid(v.uuid), // reader fn type: UUID -> MyUuid
+        writer: v => new UUID(v.myUuid), // writer fn type: MyUuid -> UUID
+      },
+    ];
 
     const { sdk } = createSdk({
       typeHandlers: handlers,
     });
 
-    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(res => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 
       expect(resource.id).toEqual(new MyUuid('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
-      expect(attrs).toEqual(expect.objectContaining({
-        name: 'Awesome skies.',
-        description: 'Meet and greet with fanatical sky divers.',
-      }));
+      expect(attrs).toEqual(
+        expect.objectContaining({
+          name: 'Awesome skies.',
+          description: 'Meet and greet with fanatical sky divers.',
+        })
+      );
     });
   });
 
@@ -161,31 +184,35 @@ describe('new SharetribeSdk', () => {
 
     sdkTokenStore.setToken(anonToken);
 
-    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(res => {
       const resource = res.data.data;
       const attrs = resource.attributes;
 
       expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
-      expect(attrs).toEqual(expect.objectContaining({
-        name: 'Awesome skies.',
-        description: 'Meet and greet with fanatical sky divers.',
-      }));
+      expect(attrs).toEqual(
+        expect.objectContaining({
+          name: 'Awesome skies.',
+          description: 'Meet and greet with fanatical sky divers.',
+        })
+      );
     });
   });
 
   it('stores the auth token to the store', () => {
     const { sdk, sdkTokenStore } = createSdk();
 
-    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
+    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(res => {
       const resource = res.data.data;
       const attrs = resource.attributes;
       const token = sdkTokenStore.getToken();
 
       expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
-      expect(attrs).toEqual(expect.objectContaining({
-        name: 'Awesome skies.',
-        description: 'Meet and greet with fanatical sky divers.',
-      }));
+      expect(attrs).toEqual(
+        expect.objectContaining({
+          name: 'Awesome skies.',
+          description: 'Meet and greet with fanatical sky divers.',
+        })
+      );
 
       expect(token.access_token).toEqual('anonymous-access-1');
       expect(token.token_type).toEqual('bearer');
@@ -197,130 +224,153 @@ describe('new SharetribeSdk', () => {
     const { sdk, sdkTokenStore } = createSdk();
 
     // First we get the anonymous token
-    return report(sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
-      expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
+    return report(
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+        expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
 
-      // After login, the anonymous token will be overriden
-      return sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
-        expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
-      });
-    }));
+        // After login, the anonymous token will be overriden
+        return sdk
+          .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+          .then(() => {
+            expect(sdkTokenStore.getToken().access_token).toEqual(
+              'joe.dunphy@example.com-secret-joe-access-1'
+            );
+          });
+      })
+    );
   });
 
   it('refreshes login token', () => {
     const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
 
     // First, login
-    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
-      const { access_token } = sdkTokenStore.getToken();
-      expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
+    return report(
+      sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+        const { access_token } = sdkTokenStore.getToken();
+        expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
 
-      adapterTokenStore.expireAccessToken(access_token);
+        adapterTokenStore.expireAccessToken(access_token);
 
-      return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
-        expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-secret-joe-access-2');
+        return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(res => {
+          expect(sdkTokenStore.getToken().access_token).toEqual(
+            'joe.dunphy@example.com-secret-joe-access-2'
+          );
 
-        const resource = res.data.data;
-        const attrs = resource.attributes;
+          const resource = res.data.data;
+          const attrs = resource.attributes;
 
-        expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
-        expect(attrs).toEqual(expect.objectContaining({
-          name: 'Awesome skies.',
-          description: 'Meet and greet with fanatical sky divers.',
-        }));
-      });
-    }));
+          expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
+          expect(attrs).toEqual(
+            expect.objectContaining({
+              name: 'Awesome skies.',
+              description: 'Meet and greet with fanatical sky divers.',
+            })
+          );
+        });
+      })
+    );
   });
 
   it('refreshes anonymous token', () => {
     const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
 
     // First we get the anonymous token
-    return report(sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
-      const { access_token } = sdkTokenStore.getToken();
-      expect(access_token).toEqual('anonymous-access-1');
+    return report(
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+        const { access_token } = sdkTokenStore.getToken();
+        expect(access_token).toEqual('anonymous-access-1');
 
-      adapterTokenStore.expireAccessToken(access_token);
+        adapterTokenStore.expireAccessToken(access_token);
 
-      return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then((res) => {
-        expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-2');
+        return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(res => {
+          expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-2');
 
+          const resource = res.data.data;
+          const attrs = resource.attributes;
 
-        const resource = res.data.data;
-        const attrs = resource.attributes;
-
-        expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
-        expect(attrs).toEqual(expect.objectContaining({
-          name: 'Awesome skies.',
-          description: 'Meet and greet with fanatical sky divers.',
-        }));
-      });
-    }));
+          expect(resource.id).toEqual(new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
+          expect(attrs).toEqual(
+            expect.objectContaining({
+              name: 'Awesome skies.',
+              description: 'Meet and greet with fanatical sky divers.',
+            })
+          );
+        });
+      })
+    );
   });
 
   it('revokes token (a.k.a logout)', () => {
     const { sdk, sdkTokenStore } = createSdk();
 
     // First, login
-    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
-      expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
+    return report(
+      sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+        expect(sdkTokenStore.getToken().access_token).toEqual(
+          'joe.dunphy@example.com-secret-joe-access-1'
+        );
 
-      // Revoke token
-      return sdk.logout().then((res) => {
-        expect(res.data.action).toEqual('revoked');
+        // Revoke token
+        return sdk.logout().then(res => {
+          expect(res.data.action).toEqual('revoked');
 
-        expect(sdkTokenStore.getToken()).toEqual(null);
+          expect(sdkTokenStore.getToken()).toEqual(null);
 
-        return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
-          expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
+          return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+            expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
+          });
         });
-      });
-    }));
+      })
+    );
   });
 
   it('refreshes token before revoke', () => {
     const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
 
     // First, login
-    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
-      const { access_token } = sdkTokenStore.getToken();
-      expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
+    return report(
+      sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+        const { access_token } = sdkTokenStore.getToken();
+        expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
 
-      adapterTokenStore.expireAccessToken(access_token);
+        adapterTokenStore.expireAccessToken(access_token);
 
-      // Revoke token
-      return sdk.logout().then((res) => {
-        expect(res.data.action).toEqual('revoked');
+        // Revoke token
+        return sdk.logout().then(res => {
+          expect(res.data.action).toEqual('revoked');
 
-        expect(sdkTokenStore.getToken()).toEqual(null);
+          expect(sdkTokenStore.getToken()).toEqual(null);
 
-        return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
-          expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
+          return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+            expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
+          });
         });
-      });
-    }));
+      })
+    );
   });
 
   it('refreshes token after unsuccessful revoke, but if the refresh fails because of 401, return OK.', () => {
     const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
 
     // First, login
-    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
-      const { access_token, refresh_token } = sdkTokenStore.getToken();
-      expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
+    return report(
+      sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+        const { access_token, refresh_token } = sdkTokenStore.getToken();
+        expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
 
-      adapterTokenStore.expireAccessToken(access_token);
-      adapterTokenStore.revokePasswordToken(refresh_token);
+        adapterTokenStore.expireAccessToken(access_token);
+        adapterTokenStore.revokePasswordToken(refresh_token);
 
-      // Revoke token
-      return sdk.logout().then(() => {
-        expect(sdkTokenStore.getToken()).toEqual(null);
+        // Revoke token
+        return sdk.logout().then(() => {
+          expect(sdkTokenStore.getToken()).toEqual(null);
 
-        return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
-          expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
+          return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+            expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
+          });
         });
-      });
-    }));
+      })
+    );
   });
 
   it('refreshes token after unsuccessful revoke, but if the refresh fails because of network error, fail.', () => {
@@ -330,23 +380,27 @@ describe('new SharetribeSdk', () => {
     adapter.offlineAfter(2);
 
     // First, login
-    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
-      const { access_token, refresh_token } = sdkTokenStore.getToken();
-      expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
+    return report(
+      sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+        const { access_token, refresh_token } = sdkTokenStore.getToken();
+        expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
 
-      adapterTokenStore.expireAccessToken(access_token);
-      adapterTokenStore.revokePasswordToken(refresh_token);
+        adapterTokenStore.expireAccessToken(access_token);
+        adapterTokenStore.revokePasswordToken(refresh_token);
 
-      // Revoke token
-      return sdk.logout()
-                .then(() => {
-                  // Should not pass
-                  expect(true).toEqual(false);
-                }).catch(() => {
-                  expect(sdkTokenStore.getToken().access_token).toEqual(access_token);
-                  expect(sdkTokenStore.getToken().refresh_token).toEqual(refresh_token);
-                });
-    }));
+        // Revoke token
+        return sdk
+          .logout()
+          .then(() => {
+            // Should not pass
+            expect(true).toEqual(false);
+          })
+          .catch(() => {
+            expect(sdkTokenStore.getToken().access_token).toEqual(access_token);
+            expect(sdkTokenStore.getToken().refresh_token).toEqual(refresh_token);
+          });
+      })
+    );
   });
 
   it('encodes new listing post body to Transit', () => {
@@ -361,42 +415,54 @@ describe('new SharetribeSdk', () => {
 
     const transitEncoded = '["^ ","~:title","A new hope","~:description","Our Nth listing!","~:address","Bulevardi 14, Helsinki, Finland","~:geolocation",["~#geo",[10.152,15.375]]]';
 
-    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
-                     .then(() => sdk.listings.create(testData))
-                     .then(() => {
-                       const req = _.last(adapter.requests);
-                       expect(req.data).toEqual(transitEncoded);
-                       expect(req.headers).toEqual(expect.objectContaining({
-                         'Content-Type': 'application/transit+json',
-                       }));
-                     }));
+    return report(
+      sdk
+        .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+        .then(() => sdk.listings.create(testData))
+        .then(() => {
+          const req = _.last(adapter.requests);
+          expect(req.data).toEqual(transitEncoded);
+          expect(req.headers).toEqual(
+            expect.objectContaining({
+              'Content-Type': 'application/transit+json',
+            })
+          );
+        })
+    );
   });
 
   describe('authInfo', () => {
     it('returns authentication information', () => {
       const { sdk } = createSdk();
 
-      return report(sdk.authInfo()
-                       .then((authInfo) => {
-                         // No auth info yet.
-                         expect(authInfo.grantType).toBeUndefined();
-                       })
-                       .then(() => sdk.marketplace.show().then(sdk.authInfo).then((authInfo) => {
-                         // Anonymous token
-                         expect(authInfo.grantType).toEqual('client_credentials');
-                       }))
-                       .then(() => sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(sdk.authInfo).then((authInfo) => {
-                         // Login token
-                         expect(authInfo.grantType).toEqual('refresh_token');
-                       }))
-                       .then(() => sdk.logout().then(sdk.authInfo).then((authInfo) => {
-                         // Logout
-                         expect(authInfo.grantType).toBeUndefined();
-                       }))
-                       .then(() => sdk.logout().then(sdk.authInfo).then((authInfo) => {
-                         // Logging out already logged out user does nothing
-                         expect(authInfo.grantType).toBeUndefined();
-                       })));
+      return report(
+        sdk
+          .authInfo()
+          .then(authInfo => {
+            // No auth info yet.
+            expect(authInfo.grantType).toBeUndefined();
+          })
+          .then(() => sdk.marketplace.show().then(sdk.authInfo).then(authInfo => {
+              // Anonymous token
+              expect(authInfo.grantType).toEqual('client_credentials');
+            }))
+          .then(() =>
+            sdk
+              .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+              .then(sdk.authInfo)
+              .then(authInfo => {
+                // Login token
+                expect(authInfo.grantType).toEqual('refresh_token');
+              }))
+          .then(() => sdk.logout().then(sdk.authInfo).then(authInfo => {
+              // Logout
+              expect(authInfo.grantType).toBeUndefined();
+            }))
+          .then(() => sdk.logout().then(sdk.authInfo).then(authInfo => {
+              // Logging out already logged out user does nothing
+              expect(authInfo.grantType).toBeUndefined();
+            }))
+      );
     });
   });
 
@@ -410,93 +476,109 @@ describe('new SharetribeSdk', () => {
       geolocation: new LatLng(40.00, 73.00),
     };
 
-    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
-                     .then(() => sdk.listings.create(params))
-                     .then((res) => {
-                       const data = res.data.data;
-                       const attrs = data.attributes;
+    return report(
+      sdk
+        .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+        .then(() => sdk.listings.create(params))
+        .then(res => {
+          const data = res.data.data;
+          const attrs = data.attributes;
 
-                       expect(data).toEqual(expect.objectContaining({
-                         id: expect.any(UUID),
-                         type: 'listing',
-                       }));
-                       expect(attrs).toBeUndefined();
-                     })
+          expect(data).toEqual(
+            expect.objectContaining({
+              id: expect.any(UUID),
+              type: 'listing',
+            })
+          );
+          expect(attrs).toBeUndefined();
+        })
+        .then(() => sdk.listings.create(params, { expand: true }))
+        .then(res => {
+          const data = res.data.data;
+          const attrs = data.attributes;
 
-                     .then(() => sdk.listings.create(params, { expand: true }))
-                     .then((res) => {
-                       const data = res.data.data;
-                       const attrs = data.attributes;
-
-                       expect(data).toEqual(expect.objectContaining({
-                         id: expect.any(UUID),
-                         type: 'listing',
-                       }));
-                       expect(attrs).toBeDefined();
-                     }));
+          expect(data).toEqual(
+            expect.objectContaining({
+              id: expect.any(UUID),
+              type: 'listing',
+            })
+          );
+          expect(attrs).toBeDefined();
+        })
+    );
   });
 
   it('returns error in expected error format, data as plain text', () => {
     const { sdk } = createSdk();
 
-    return report(sdk.login({ username: 'wrong username', password: 'wrong password' })
-                     .then(() => {
-                       // Fail
-                       expect(true).toEqual(false);
-                     })
-                     .catch((e) => {
-                       expect(e).toBeInstanceOf(Error);
-                       expect(e).toEqual(expect.objectContaining({
-                         status: 401,
-                         statusText: 'Unauthorized',
-                         data: 'Unauthorized',
-                         details: expect.objectContaining({
-                           ctx: expect.any(Object),
-                         }),
-                       }));
-                       return Promise.resolve();
-                     }));
+    return report(
+      sdk
+        .login({ username: 'wrong username', password: 'wrong password' })
+        .then(() => {
+          // Fail
+          expect(true).toEqual(false);
+        })
+        .catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 401,
+              statusText: 'Unauthorized',
+              data: 'Unauthorized',
+              details: expect.objectContaining({
+                ctx: expect.any(Object),
+              }),
+            })
+          );
+          return Promise.resolve();
+        })
+    );
   });
 
   it('returns error in expected error format, data as an object', () => {
     const { sdk } = createSdk();
 
-    return report(sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
-                     .then(() => sdk.listings.create())
-                     .then(() => {
-                       // Fail
-                       expect(true).toEqual(false);
-                     })
-                     .catch((e) => {
-                       expect(e).toBeInstanceOf(Error);
-                       expect(e).toEqual(expect.objectContaining({
-                         status: 400,
-                         statusText: 'Bad Request',
-                         data: expect.objectContaining({
-                           errors: [
-                             expect.objectContaining({
-                               id: expect.any(UUID),
-                               status: 400,
-                               code: 'bad-request',
-                               title: 'Bad request',
-                               details: {
-                                 error: {
-                                   'body-params': {
-                                     title: 'missing-required-key',
-                                     description: 'missing-required-key',
-                                     address: 'missing-required-key',
-                                     geolocation: 'missing-required-key',
-                                   },
-                                 },
-                               },
-                             }),
-                           ],
-                         }),
-                         details: expect.objectContaining({
-                           ctx: expect.any(Object),
-                         }),
-                       }));
-                       return Promise.resolve();
-                     }));
+    return report(
+      sdk
+        .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+        .then(() => sdk.listings.create())
+        .then(() => {
+          // Fail
+          expect(true).toEqual(false);
+        })
+        .catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 400,
+              statusText: 'Bad Request',
+              data: expect.objectContaining({
+                errors: [
+                  expect.objectContaining({
+                    id: expect.any(UUID),
+                    status: 400,
+                    code: 'bad-request',
+                    title: 'Bad request',
+                    details: {
+                      error: {
+                        'body-params': {
+                          title: 'missing-required-key',
+                          description: 'missing-required-key',
+                          address: 'missing-required-key',
+                          geolocation: 'missing-required-key',
+                        },
+                      },
+                    },
+                  }),
+                ],
+              }),
+              details: expect.objectContaining({
+                ctx: expect.any(Object),
+              }),
+            })
+          );
+          return Promise.resolve();
+        })
+    );
   });
 });

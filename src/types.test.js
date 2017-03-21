@@ -1,11 +1,4 @@
-import {
-  UUID,
-  LatLng,
-  LatLngBounds,
-  Money,
-  replacer,
-  reviver,
-} from './types';
+import { UUID, LatLng, LatLngBounds, Money, replacer, reviver } from './types';
 
 describe('JSON parse/stringify', () => {
   const testData = {
@@ -19,33 +12,33 @@ describe('JSON parse/stringify', () => {
   /* eslint-disable quotes */
   /* eslint-disable comma-dangle */
   const expectedJsonRep = {
-    "uuid": {
-      "uuid": "27786d1c-f16b-411b-b1fc-176969a91338",
-      "_sdkType": "UUID"
+    uuid: {
+      uuid: '27786d1c-f16b-411b-b1fc-176969a91338',
+      _sdkType: 'UUID',
     },
-    "latlng": {
-      "lat": 12.34,
-      "lng": 45.56,
-      "_sdkType": "LatLng"
+    latlng: {
+      lat: 12.34,
+      lng: 45.56,
+      _sdkType: 'LatLng',
     },
-    "latlngbounds": {
-      "ne": {
-        "lat": 12.34,
-        "lng": 23.45,
-        "_sdkType": "LatLng"
+    latlngbounds: {
+      ne: {
+        lat: 12.34,
+        lng: 23.45,
+        _sdkType: 'LatLng',
       },
-      "sw": {
-        "lat": 34.56,
-        "lng": 45.67,
-        "_sdkType": "LatLng"
+      sw: {
+        lat: 34.56,
+        lng: 45.67,
+        _sdkType: 'LatLng',
       },
-      "_sdkType": "LatLngBounds"
+      _sdkType: 'LatLngBounds',
     },
-    "money": {
-      "amount": 5000,
-      "currency": "USD",
-      "_sdkType": "Money"
-    }
+    money: {
+      amount: 5000,
+      currency: 'USD',
+      _sdkType: 'Money',
+    },
   };
   /* eslint-enable quote-props */
   /* eslint-enable quotes */

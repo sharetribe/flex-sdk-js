@@ -5,6 +5,7 @@
  */
 
 /* eslint-disable import/prefer-default-export */
+/* eslint-disable no-undef */
 
-// eslint-disable-next-line no-undef
-export const hasBrowserCookies = () => typeof document === 'object' && typeof document.cookie === 'string';
+export const hasBrowserCookies = () =>
+  typeof document === 'object' && typeof document.cookie === 'string';
