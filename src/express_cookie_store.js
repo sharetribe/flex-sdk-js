@@ -19,7 +19,7 @@ const createStore = ({ clientId, req, res }) => {
     }
 
     return null;
-  }
+  };
 
   const getToken = () => {
     currentToken = currentToken || readCookie();
@@ -29,7 +29,7 @@ const createStore = ({ clientId, req, res }) => {
 
   const setToken = (tokenData) => {
     currentToken = tokenData;
-    res.cookie(key, JSON.stringify(tokenData), { maxAge: 1000 * 60 * 60 * 24 * expiration });
+    res.cookie(key, tokenData, { maxAge: 1000 * 60 * 60 * 24 * expiration });
   };
 
   const removeToken = () => {
