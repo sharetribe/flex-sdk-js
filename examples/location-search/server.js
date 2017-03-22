@@ -4,6 +4,7 @@
 
 require('babel-register');
 
+const Agent = require('agentkeepalive');
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -18,11 +19,19 @@ const clientId = '08ec69f6-d37e-414d-83eb-324e94afddf0';
 
 const htmlTemplate = fs.readFileSync('./index.html', 'utf8');
 
+// Keep-Alive HTTP Agent
+const agent = new Agent();
+
 // Setup static asset path for browser to fetch the build package
 app.use('/public', express.static(path.join(__dirname, './public')));
 app.use('/build', express.static(path.join(__dirname, '../../build')));
 
 app.use(cookieParser());
+
+// Log Keep-Alive agent status
+// setInterval(() => {
+//   console.log('agent status: %j', agent.getCurrentStatus());
+// }, 2000);
 
 // Add one root route and do the server rendering
 app.get('/', (req, res) => {
@@ -35,6 +44,8 @@ app.get('/', (req, res) => {
       req,
       res,
     }),
+    httpAgent: agent,
+    httpsAgent: agent,
   });
 
   const params = {
