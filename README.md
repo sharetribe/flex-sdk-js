@@ -225,6 +225,24 @@ var sdk = require('sharetribe-sdk').createInstance({
     }
   ],
 
+  // Custom HTTP and HTTPS Agents. Allows you to pass agents
+  // with connection keep-alive enabled for better performance.
+  // Node.js only.
+  //
+  // To enable keep-alive with proper timeouts, have a look at
+  // agentkeepalive package:
+  // https://github.com/node-modules/agentkeepalive
+  //
+  // Example usage:
+  //
+  // ```
+  // const Agent = require('agentkeepalive');
+  // const keepaliveAgent = new Agent();
+  // ```
+  //
+  httpAgent: keepaliveAgent,
+  httpsAgent: keepaliveAgent,
+
   // List of additional endpoints
   endpoints: [
     {

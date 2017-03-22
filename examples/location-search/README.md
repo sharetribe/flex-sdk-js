@@ -7,6 +7,7 @@ This example demostrates number of SDK features:
 - Loading initial data on server-side
 - Using SDK to do location search based on origin and bounding box
 - Sharing the same session with server and browser (using cookies)
+- Configure SDK in Node.js server to use Keep-Alive connection for better performance
 
 ## Prerequisite
 
