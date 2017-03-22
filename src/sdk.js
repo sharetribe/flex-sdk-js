@@ -28,6 +28,8 @@ const defaultSdkConfig = {
   endpoints: [],
   adapter: null,
   version: 'v1',
+  httpAgent: null,
+  httpsAgent: null,
 };
 
 /**
@@ -45,7 +47,7 @@ const defaultSdkConfig = {
    how to transform requests and response, etc.
  */
 const apis = {
-  api: ({ baseUrl, version, adapter }) => ({
+  api: ({ baseUrl, version, adapter, httpAgent, httpsAgent }) => ({
     headers: {
       Accept: 'application/transit+json',
     },
@@ -54,8 +56,10 @@ const apis = {
     transformResponse: v => v,
     adapter,
     paramsSerializer,
+    httpAgent,
+    httpsAgent,
   }),
-  auth: ({ baseUrl, version, adapter }) => ({
+  auth: ({ baseUrl, version, adapter, httpAgent, httpsAgent }) => ({
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       Accept: 'application/json',
@@ -65,6 +69,8 @@ const apis = {
     // using default transformRequest, which can handle JSON and fallback to plain
     // test if JSON parsing fails
     adapter,
+    httpAgent,
+    httpsAgent,
   }),
 };
 
