@@ -15,6 +15,7 @@
       <button id="upload" type="button" class="btn btn-primary">Upload</button>
     </form>
 
+    <div id="progress" class="container"></div>
     <div id="output" class="container"></div>
 
     <script src="./build/sharetribe-sdk-web.js"></script>
@@ -25,14 +26,21 @@
          baseUrl: 'http://localhost:8088/',
        });
 
-       sdk.login({username: 'joe.dunphy@example.com', password: 'secret-joe'});
-
        var output = document.getElementById('output');
+       var progress = document.getElementById('progress');
+
+       var onUploadProgress = function(progressEvent) {
+         var percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
+         console.log(percentCompleted + '% completed');
+         progress.innerHTML = percentCompleted + '% completed';
+       };
+
+       sdk.login({username: 'joe.dunphy@example.com', password: 'secret-joe'});
 
        document.getElementById('upload').onclick = function () {
          const file = document.getElementById('file').files[0];
 
-         sdk.listings.uploadImage({ image: file })
+         sdk.listings.uploadImage({ image: file }, {}, { onUploadProgress: onUploadProgress })
               .then(function (res) {
                 output.className = 'container';
                 output.innerHTML = JSON.stringify(res.data, null, 2);

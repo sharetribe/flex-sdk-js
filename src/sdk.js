@@ -193,11 +193,12 @@ const logoutInterceptors = [
    Take endpoint definitions and return SDK function definition.
  */
 const sdkFnDefsFromEndpointDefs = epDefs =>
-  epDefs.filter(({ internal = false }) => !internal).map(({ apiName, path }) => {
+  epDefs.filter(({ internal = false }) => !internal).map(({ apiName, path, method }) => {
     const fnPath = urlPathToFnPath(path);
     const fullFnPath = [apiName, ...fnPath];
 
     return {
+      method,
       path: fnPath,
       endpointInterceptorPath: fullFnPath,
       interceptors: [...authenticateInterceptors],
@@ -273,11 +274,12 @@ const createEndpointInterceptors = ({ method, url, httpOpts }) => {
 
   return {
     enter: ctx => {
-      const { params, queryParams, headers } = ctx;
+      const { params, queryParams, headers, perRequestOpts } = ctx;
       return doRequest({
         params,
         queryParams,
         httpOpts: {
+          ...perRequestOpts,
           method: method || 'get',
           // Merge additional headers
           headers: { ...httpOptsHeaders, ...headers },
@@ -323,6 +325,29 @@ const formatError = e => {
   /* eslint-enable no-param-reassign */
 };
 
+const allowedPerRequestOpts = opts => _.pick(opts, ['onUploadProgress']);
+
+const createSdkFnContextRunner = (
+  { params, queryParams, perRequestOpts, ctx, interceptors, endpointInterceptors }
+) =>
+  contextRunner(_.compact([...interceptors, ...endpointInterceptors]))({
+    ...ctx,
+    params,
+    queryParams,
+    perRequestOpts,
+  })
+    .then(({ res }) => res)
+    .catch(formatError);
+const createSdkPostFn = sdkFnParams =>
+  (params = {}, queryParams = {}, perRequestOpts = {}) =>
+    createSdkFnContextRunner({
+      params,
+      queryParams,
+      perRequestOpts: allowedPerRequestOpts(perRequestOpts),
+      ...sdkFnParams,
+    });
+const createSdkGetFn = sdkFnParams =>
+  (params = {}) => createSdkFnContextRunner({ params, ...sdkFnParams });
 /**
    Creates a new SDK function.
 
@@ -331,17 +356,13 @@ const formatError = e => {
 
    It's meant to used by the user of the SDK.
  */
-const createSdkFn = ({ ctx, endpointInterceptors, interceptors }) =>
-  // GET requests: `params` includes query params. `queryParams` will be ignored
-  // POST requests: `params` includes body params. `queryParams` includes URL query params
-  (params = {}, queryParams = {}) =>
-    contextRunner(_.compact([...interceptors, ...endpointInterceptors]))({
-      ...ctx,
-      params,
-      queryParams,
-    })
-      .then(({ res }) => res)
-      .catch(formatError);
+const createSdkFn = ({ method, ...sdkFnParams }) => {
+  if (method && method.toLowerCase() === 'post') {
+    return createSdkPostFn(sdkFnParams);
+  }
+
+  return createSdkGetFn(sdkFnParams);
+};
 
 // Take SDK configurations, do transformation and return.
 const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
@@ -420,9 +441,10 @@ export default class SharetribeSdk {
       ...endpointSdkFnDefinitions,
       ...additionalSdkFnDefinitions,
       ...userDefinedSdkFnDefs,
-    ].map(({ path, endpointInterceptorPath, interceptors }) => ({
+    ].map(({ path, method, endpointInterceptorPath, interceptors }) => ({
       path,
       fn: createSdkFn({
+        method,
         ctx,
         endpointInterceptors: _.get(endpointInterceptors, endpointInterceptorPath) || [],
         interceptors,
