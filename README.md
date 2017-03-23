@@ -101,7 +101,7 @@ sdk.listings.search({
 });
 ```
 
-## Methods and parameters [DRAFT]
+## Methods, parameters and options [DRAFT]
 
 The SDK provides direct mapping of Marketplace API endpoints to SDK methods. Marketplace API endpoints are the endpoints with URL starting with prefix `/api`.
 
@@ -110,14 +110,40 @@ For example:
 * `GET /api/marketplace/show => sdk.marketplace.show(queryParams: {})`
 * `GET /api/listings/query   => sdk.listings.query(queryParams: {})`
 * `GET /api/users/me         => sdk.users.me(queryParams: {})`
-* `POST /api/listings/create => sdk.listings.show(bodyParams: {}, queryParams: {})`
+* `POST /api/listings/create => sdk.listings.show(bodyParams: {}, queryParams: {}, opts: {})`
 
 Please note the different number of parameters (arity):
 
 * `GET` endpoint SDK method arity is 1. The first parameter is the `queryParams`
-* `POST` endpoint SDK method arity is 2. The first parameter is the `bodyParams`, second is the `queryParams`
+* `POST` endpoint SDK method arity is 3. The first parameter is the `bodyParams`, second is the `queryParams` and the third one is `opts`.
 
 To see what are the expected parameters for each endpoint, please see the [API documentation]() (TODO Add link to API documentation).
+
+### Options
+
+The third parameter for `POST` method is `opts`. Here's a list of possible `opts` configurations:
+
+```js
+{
+  // `onUploadProgress` allows handling of progress events for uploads. Browser only.
+  onUploadProgress: function (progressEvent) {
+    // Do whatever you want with the native progress event
+  },
+}
+```
+
+Example usage:
+
+```js
+const logProgress = (progressEvent) => {
+  const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+  console.log(percentCompleted + '% completed');
+}
+
+sdk.listings.uploadImage({ image: file }, {}, { onUploadProgress: logProgress })
+```
+
+### Authentication methods
 
 The `/auth` endpoints don't have direct SDK mapping. Instead, you should use these two SDK methods:
 
