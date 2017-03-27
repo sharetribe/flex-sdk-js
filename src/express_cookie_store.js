@@ -29,7 +29,13 @@ const createStore = ({ clientId, req, res }) => {
 
   const setToken = tokenData => {
     currentToken = tokenData;
-    res.cookie(key, tokenData, { maxAge: 1000 * 60 * 60 * 24 * expiration });
+
+    // Manually stringify tokenData.
+    // Express supports passing object to `res.cookie` which will be then automatically
+    // JSON stringified. However, we CAN NOT use it, because it seems to output invalid JSON
+    // with a "j" tag in front of the content (`"j:{ ...json here... }`). Because we want
+    // to read that cookie also in browser, we don't want to produce invalid JSON.
+    res.cookie(key, JSON.stringify(tokenData), { maxAge: 1000 * 60 * 60 * 24 * expiration });
   };
 
   const removeToken = () => {
