@@ -107,6 +107,20 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'users/create_stripe_account',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'users/update_stripe_account',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
     path: 'listings/show',
     internal: false,
     method: 'get',
