@@ -177,6 +177,20 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'transactions/initiate',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'transactions/transition',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
     path: 'transactions/query',
     internal: false,
     method: 'get',
