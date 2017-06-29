@@ -204,6 +204,13 @@ export const reader = (customReaders = []) => {
       // can coerse strings to keywords, so it's ok to send strings
       // to the API when keywords is expected.
       ':': rep => rep,
+
+      // Convert set to an array
+      // The conversion loses the information that the
+      // array was originally a set. However, the API
+      // can coerse arrays to sets, so it's ok to send arrays
+      // to the API when set is expected.
+      'set': rep => rep,
     },
     arrayBuilder,
     mapBuilder,
