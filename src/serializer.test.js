@@ -1,6 +1,6 @@
 import transit from 'transit-js';
 import { reader, writer } from './serializer';
-import { UUID, LatLng, Money } from './types';
+import { UUID, LatLng, Money, BigDecimal } from './types';
 
 describe('serializer', () => {
   it('reads and writes transit', () => {
@@ -54,10 +54,9 @@ describe('serializer', () => {
       id: new UUID('69c3d77a-db3f-11e6-bf26-cec0c932ce01'),
     };
 
-    const r = reader();
-    const w = writer();
-
-    expect(r.read(w.write(testData))).toEqual(testData);
+    const roundTrip = reader().read(writer().write(testData));
+    expect(roundTrip).toEqual(testData);
+    expect(roundTrip.id).toBeInstanceOf(UUID);
   });
 
   it('handles LatLngs', () => {
@@ -65,10 +64,9 @@ describe('serializer', () => {
       location: new LatLng(12.34, 56.78),
     };
 
-    const r = reader();
-    const w = writer();
-
-    expect(r.read(w.write(testData))).toEqual(testData);
+    const roundTrip = reader().read(writer().write(testData));
+    expect(roundTrip).toEqual(testData);
+    expect(roundTrip.location).toBeInstanceOf(LatLng);
   });
 
   it('handles Money', () => {
@@ -76,11 +74,21 @@ describe('serializer', () => {
       price: new Money(5000, 'EUR'),
     };
 
-    const r = reader();
-    const w = writer();
-
-    expect(r.read(w.write(testData))).toEqual(testData);
+    const roundTrip = reader().read(writer().write(testData));
+    expect(roundTrip).toEqual(testData);
+    expect(roundTrip.price).toBeInstanceOf(Money);
   });
+
+  it('handles BigDecimals', () => {
+    const testData = {
+      percentage: new BigDecimal("1.00000000000000000000000000001"),
+    }
+
+    const roundTrip = reader().read(writer().write(testData));
+    expect(roundTrip).toEqual(testData);
+
+    expect(roundTrip.percentage).toBeInstanceOf(BigDecimal);
+  })
 
   it('allows you to add your own reader handlers for predefined types', () => {
     class MyCustomUuid {

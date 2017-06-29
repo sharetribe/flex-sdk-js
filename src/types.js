@@ -48,6 +48,18 @@ export class Money {
   }
 }
 
+/**
+  Type to represent arbitrary precision decimal value.
+
+  It's recommended to use a library such as decimal.js to make decimal
+  calculations.
+*/
+export class BigDecimal {
+  constructor(value) {
+    this.value = value;
+  }
+}
+
 //
 // Map containing the type name for serialization and the type class
 //
@@ -56,6 +68,7 @@ const types = {
   LatLng,
   LatLngBounds,
   Money,
+  BigDecimal,
 };
 
 //
@@ -88,6 +101,8 @@ export const reviver = (key = null, value) => {
       return new UUID(value.uuid);
     case 'Money':
       return new Money(value.amount, value.currency);
+    case 'BigDecimal':
+      return new BigDecimal(value.value);
     default:
       return value;
   }
