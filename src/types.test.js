@@ -6,7 +6,7 @@ describe('JSON parse/stringify', () => {
     latlng: new LatLng(12.34, 45.56),
     latlngbounds: new LatLngBounds(new LatLng(12.34, 23.45), new LatLng(34.56, 45.67)),
     money: new Money(5000, 'USD'),
-    bigdecimal: new BigDecimal("1.00000000000000000000000000001"),
+    bigdecimal: new BigDecimal('1.00000000000000000000000000001'),
   };
 
   /* eslint-disable quote-props */
@@ -41,9 +41,9 @@ describe('JSON parse/stringify', () => {
       _sdkType: 'Money',
     },
     bigdecimal: {
-      value: "1.00000000000000000000000000001",
+      value: '1.00000000000000000000000000001',
       _sdkType: 'BigDecimal',
-    }
+    },
   };
   /* eslint-enable quote-props */
   /* eslint-enable quotes */

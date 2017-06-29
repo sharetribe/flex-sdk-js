@@ -105,8 +105,8 @@ const defaultReaders = [
   },
   {
     type: BigDecimal,
-    reader: (rep) => new BigDecimal(rep),
-  }
+    reader: rep => new BigDecimal(rep),
+  },
 ];
 
 /**
@@ -127,8 +127,8 @@ const defaultWriters = [
   },
   {
     type: BigDecimal,
-    writer: v => v.value
-  }
+    writer: v => v.value,
+  },
 ];
 
 /**
@@ -210,7 +210,7 @@ export const reader = (customReaders = []) => {
       // array was originally a set. However, the API
       // can coerse arrays to sets, so it's ok to send arrays
       // to the API when set is expected.
-      'set': rep => rep,
+      set: rep => rep,
     },
     arrayBuilder,
     mapBuilder,

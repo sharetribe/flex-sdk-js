@@ -50,12 +50,12 @@ describe('serializer', () => {
   });
 
   it('decodes a set to an array', () => {
-    const testData = transit.set(["b", "a", "b", "b"]);
+    const testData = transit.set(['b', 'a', 'b', 'b']);
 
     const decoded = reader().read(transit.writer().write(testData));
 
     expect(decoded.length).toEqual(2);
-    expect(decoded).toEqual(expect.arrayContaining(["a", "b"]));
+    expect(decoded).toEqual(expect.arrayContaining(['a', 'b']));
   });
 
   it('handles UUIDs', () => {
@@ -90,14 +90,14 @@ describe('serializer', () => {
 
   it('handles BigDecimals', () => {
     const testData = {
-      percentage: new BigDecimal("1.00000000000000000000000000001"),
-    }
+      percentage: new BigDecimal('1.00000000000000000000000000001'),
+    };
 
     const roundTrip = reader().read(writer().write(testData));
     expect(roundTrip).toEqual(testData);
 
     expect(roundTrip.percentage).toBeInstanceOf(BigDecimal);
-  })
+  });
 
   it('allows you to add your own reader handlers for predefined types', () => {
     class MyCustomUuid {
