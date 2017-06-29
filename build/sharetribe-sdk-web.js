@@ -1220,7 +1220,7 @@ module.exports = keys;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.reviver = exports.replacer = exports.Money = exports.LatLngBounds = exports.LatLng = exports.UUID = undefined;
+exports.reviver = exports.replacer = exports.BigDecimal = exports.Money = exports.LatLngBounds = exports.LatLng = exports.UUID = undefined;
 
 var _findKey2 = __webpack_require__(218);
 
@@ -1282,6 +1282,20 @@ var Money = exports.Money = function Money(amount, currency) {
   this.currency = currency;
 };
 
+/**
+  Type to represent arbitrary precision decimal value.
+
+  It's recommended to use a library such as decimal.js to make decimal
+  calculations.
+*/
+
+
+var BigDecimal = exports.BigDecimal = function BigDecimal(value) {
+  _classCallCheck(this, BigDecimal);
+
+  this.value = value;
+};
+
 //
 // Map containing the type name for serialization and the type class
 //
@@ -1291,7 +1305,8 @@ var types = {
   UUID: UUID,
   LatLng: LatLng,
   LatLngBounds: LatLngBounds,
-  Money: Money
+  Money: Money,
+  BigDecimal: BigDecimal
 };
 
 //
@@ -1332,6 +1347,8 @@ var reviver = exports.reviver = function reviver() {
       return new UUID(value.uuid);
     case 'Money':
       return new Money(value.amount, value.currency);
+    case 'BigDecimal':
+      return new BigDecimal(value.value);
     default:
       return value;
   }
@@ -2355,7 +2372,8 @@ var composeWriter = function composeWriter(defaultWriter, customWriter) {
 var typeMap = {
   u: _types.UUID,
   geo: _types.LatLng,
-  mn: _types.Money
+  mn: _types.Money,
+  f: _types.BigDecimal
 };
 
 /**
@@ -2384,6 +2402,11 @@ var defaultReaders = [{
 
     return new _types.Money(amount, currency);
   }
+}, {
+  type: _types.BigDecimal,
+  reader: function reader(rep) {
+    return new _types.BigDecimal(rep);
+  }
 }];
 
 /**
@@ -2403,6 +2426,11 @@ var defaultWriters = [{
   type: _types.Money,
   writer: function writer(v) {
     return [v.amount, v.currency];
+  }
+}, {
+  type: _types.BigDecimal,
+  writer: function writer(v) {
+    return v.value;
   }
 }];
 
@@ -2492,6 +2520,15 @@ var reader = exports.reader = function reader() {
       // can coerse strings to keywords, so it's ok to send strings
       // to the API when keywords is expected.
       ':': function _(rep) {
+        return rep;
+      },
+
+      // Convert set to an array
+      // The conversion loses the information that the
+      // array was originally a set. However, the API
+      // can coerse arrays to sets, so it's ok to send arrays
+      // to the API when set is expected.
+      set: function set(rep) {
         return rep;
       }
     }),

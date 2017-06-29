@@ -1,6 +1,6 @@
 import transit from 'transit-js';
 import _ from 'lodash';
-import { UUID, LatLng, Money } from './types';
+import { UUID, LatLng, Money, BigDecimal } from './types';
 
 /**
    Composes two readers (default and custom) so that:
@@ -84,6 +84,7 @@ const typeMap = {
   u: UUID,
   geo: LatLng,
   mn: Money,
+  f: BigDecimal,
 };
 
 /**
@@ -102,6 +103,10 @@ const defaultReaders = [
     type: Money,
     reader: ([amount, currency]) => new Money(amount, currency),
   },
+  {
+    type: BigDecimal,
+    reader: rep => new BigDecimal(rep),
+  },
 ];
 
 /**
@@ -119,6 +124,10 @@ const defaultWriters = [
   {
     type: Money,
     writer: v => [v.amount, v.currency],
+  },
+  {
+    type: BigDecimal,
+    writer: v => v.value,
   },
 ];
 
@@ -195,6 +204,13 @@ export const reader = (customReaders = []) => {
       // can coerse strings to keywords, so it's ok to send strings
       // to the API when keywords is expected.
       ':': rep => rep,
+
+      // Convert set to an array
+      // The conversion loses the information that the
+      // array was originally a set. However, the API
+      // can coerse arrays to sets, so it's ok to send arrays
+      // to the API when set is expected.
+      set: rep => rep,
     },
     arrayBuilder,
     mapBuilder,

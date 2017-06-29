@@ -1,6 +1,6 @@
 import transit from 'transit-js';
 import { reader, writer } from './serializer';
-import { UUID, LatLng, Money } from './types';
+import { UUID, LatLng, Money, BigDecimal } from './types';
 
 describe('serializer', () => {
   it('reads and writes transit', () => {
@@ -49,15 +49,23 @@ describe('serializer', () => {
     expect(transit.equals(transitReader.read(w.write(testData)), expectedData)).toEqual(true);
   });
 
+  it('decodes a set to an array', () => {
+    const testData = transit.set(['b', 'a', 'b', 'b']);
+
+    const decoded = reader().read(transit.writer().write(testData));
+
+    expect(decoded.length).toEqual(2);
+    expect(decoded).toEqual(expect.arrayContaining(['a', 'b']));
+  });
+
   it('handles UUIDs', () => {
     const testData = {
       id: new UUID('69c3d77a-db3f-11e6-bf26-cec0c932ce01'),
     };
 
-    const r = reader();
-    const w = writer();
-
-    expect(r.read(w.write(testData))).toEqual(testData);
+    const roundTrip = reader().read(writer().write(testData));
+    expect(roundTrip).toEqual(testData);
+    expect(roundTrip.id).toBeInstanceOf(UUID);
   });
 
   it('handles LatLngs', () => {
@@ -65,10 +73,9 @@ describe('serializer', () => {
       location: new LatLng(12.34, 56.78),
     };
 
-    const r = reader();
-    const w = writer();
-
-    expect(r.read(w.write(testData))).toEqual(testData);
+    const roundTrip = reader().read(writer().write(testData));
+    expect(roundTrip).toEqual(testData);
+    expect(roundTrip.location).toBeInstanceOf(LatLng);
   });
 
   it('handles Money', () => {
@@ -76,10 +83,20 @@ describe('serializer', () => {
       price: new Money(5000, 'EUR'),
     };
 
-    const r = reader();
-    const w = writer();
+    const roundTrip = reader().read(writer().write(testData));
+    expect(roundTrip).toEqual(testData);
+    expect(roundTrip.price).toBeInstanceOf(Money);
+  });
 
-    expect(r.read(w.write(testData))).toEqual(testData);
+  it('handles BigDecimals', () => {
+    const testData = {
+      percentage: new BigDecimal('1.00000000000000000000000000001'),
+    };
+
+    const roundTrip = reader().read(writer().write(testData));
+    expect(roundTrip).toEqual(testData);
+
+    expect(roundTrip.percentage).toBeInstanceOf(BigDecimal);
   });
 
   it('allows you to add your own reader handlers for predefined types', () => {
