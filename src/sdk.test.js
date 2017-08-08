@@ -431,6 +431,36 @@ describe('new SharetribeSdk', () => {
     );
   });
 
+  it('does not double encode in case we need to retry with fresh token', () => {
+    const { sdk, sdkTokenStore, adapterTokenStore, adapter } = createSdk();
+
+    const testData = {
+      title: 'A new hope',
+      description: 'Our Nth listing!',
+      address: 'Bulevardi 14, Helsinki, Finland',
+      geolocation: new LatLng(10.152, 15.375),
+    };
+
+    const transitEncoded = '["^ ","~:title","A new hope","~:description","Our Nth listing!","~:address","Bulevardi 14, Helsinki, Finland","~:geolocation",["~#geo",[10.152,15.375]]]';
+
+    return report(
+      sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+        const { access_token } = sdkTokenStore.getToken();
+        adapterTokenStore.expireAccessToken(access_token);
+
+        return sdk.listings.create(testData).then(() => {
+          const req = _.last(adapter.requests);
+          expect(req.data).toEqual(transitEncoded);
+          expect(req.headers).toEqual(
+            expect.objectContaining({
+              'Content-Type': 'application/transit+json',
+            })
+          );
+        });
+      })
+    );
+  });
+
   describe('authInfo', () => {
     it('returns authentication information', () => {
       const { sdk } = createSdk();
