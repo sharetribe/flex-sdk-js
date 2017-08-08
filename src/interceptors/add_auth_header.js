@@ -20,13 +20,13 @@ const constructAuthHeader = authToken => {
  */
 export default class AddAuthHeader {
   enter(ctx) {
-    const { authToken } = ctx;
+    const { authToken, headers = {} } = ctx;
 
     if (!authToken) {
       return ctx;
     }
 
     const authHeaders = { Authorization: constructAuthHeader(authToken) };
-    return { ...ctx, headers: authHeaders };
+    return { ...ctx, headers: { ...headers, ...authHeaders } };
   }
 }
