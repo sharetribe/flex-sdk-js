@@ -121,6 +121,13 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'current_user/send_verification_email',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
     path: 'current_user/create_stripe_account',
     internal: false,
     method: 'post',
@@ -136,6 +143,20 @@ const endpointDefinitions = [
   {
     apiName: 'api',
     path: 'current_user/delete_stripe_account',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'password_reset/request',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'password_reset/reset',
     internal: false,
     method: 'post',
     interceptors: [new TransitResponse(), new TransitRequest()],
