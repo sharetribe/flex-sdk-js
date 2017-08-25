@@ -52,7 +52,12 @@
     "transit-js": "^0.8.846"
   },
   "babel": {
-    "plugins": ["lodash"],
-    "presets": ["es2015", "stage-3"]
+    "plugins": [
+      "lodash"
+    ],
+    "presets": [
+      "es2015",
+      "stage-3"
+    ]
   }
 }
