@@ -3202,6 +3202,18 @@ var endpointDefinitions = [{
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
 }, {
   apiName: 'api',
+  path: 'listings/open',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
+  path: 'listings/close',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
   path: 'listings/add_image',
   internal: false,
   method: 'post',
