@@ -205,6 +205,20 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'listings/open',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'listings/close',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
     path: 'listings/add_image',
     internal: false,
     method: 'post',
