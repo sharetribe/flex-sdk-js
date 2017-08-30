@@ -240,7 +240,21 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'transactions/initiate_speculative',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
     path: 'transactions/transition',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'transactions/transition_speculative',
     internal: false,
     method: 'post',
     interceptors: [new TransitResponse(), new TransitRequest()],
