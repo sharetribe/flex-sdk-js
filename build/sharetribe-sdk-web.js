@@ -5913,7 +5913,19 @@ var endpointDefinitions = [{
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
 }, {
   apiName: 'api',
+  path: 'transactions/initiate_speculative',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
   path: 'transactions/transition',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
+  path: 'transactions/transition_speculative',
   internal: false,
   method: 'post',
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
