@@ -233,6 +233,13 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'images/upload_profile_image',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new MultipartRequest()],
+  },
+  {
+    apiName: 'api',
     path: 'transactions/initiate',
     internal: false,
     method: 'post',
