@@ -5809,6 +5809,12 @@ var endpointDefinitions = [{
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
 }, {
   apiName: 'api',
+  path: 'current_user/update_profile',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
   path: 'current_user/verify_email',
   internal: false,
   method: 'post',
