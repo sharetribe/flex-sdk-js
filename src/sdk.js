@@ -114,6 +114,13 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'current_user/update_profile',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
     path: 'current_user/verify_email',
     internal: false,
     method: 'post',
@@ -227,6 +234,13 @@ const endpointDefinitions = [
   {
     apiName: 'api',
     path: 'images/upload_listing_image',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new MultipartRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'images/upload_profile_image',
     internal: false,
     method: 'post',
     interceptors: [new TransitResponse(), new MultipartRequest()],
