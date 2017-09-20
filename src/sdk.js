@@ -121,6 +121,13 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'current_user/change_email',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
     path: 'current_user/verify_email',
     internal: false,
     method: 'post',
