@@ -1497,6 +1497,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _jsCookie = __webpack_require__(85);
 
 var _jsCookie2 = _interopRequireDefault(_jsCookie);
@@ -1507,7 +1509,10 @@ var generateKey = function generateKey(clientId, namespace) {
   return namespace + '-' + clientId + '-token';
 };
 
-var createStore = function createStore(clientId) {
+var createStore = function createStore(_ref) {
+  var clientId = _ref.clientId,
+      secure = _ref.secure;
+
   var expiration = 30; // 30 days
   var namespace = 'st';
   var key = generateKey(clientId, namespace);
@@ -1516,7 +1521,8 @@ var createStore = function createStore(clientId) {
     return _jsCookie2.default.getJSON(key);
   };
   var setToken = function setToken(tokenData) {
-    _jsCookie2.default.set(key, tokenData, { expires: expiration });
+    var secureFlag = secure ? { secure: true } : {};
+    _jsCookie2.default.set(key, tokenData, _extends({ expires: expiration }, secureFlag));
   };
   var removeToken = function removeToken() {
     _jsCookie2.default.remove(key);
@@ -2838,6 +2844,9 @@ module.exports = function(module) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var generateKey = function generateKey(clientId, namespace) {
   return namespace + '-' + clientId + '-token';
 };
@@ -2845,7 +2854,8 @@ var generateKey = function generateKey(clientId, namespace) {
 var createStore = function createStore(_ref) {
   var clientId = _ref.clientId,
       req = _ref.req,
-      res = _ref.res;
+      res = _ref.res,
+      secure = _ref.secure;
 
   var expiration = 30; // 30 days
   var namespace = 'st';
@@ -2875,13 +2885,14 @@ var createStore = function createStore(_ref) {
 
   var setToken = function setToken(tokenData) {
     currentToken = tokenData;
+    var secureFlag = secure ? { secure: true } : {};
 
     // Manually stringify tokenData.
     // Express supports passing object to `res.cookie` which will be then automatically
     // JSON stringified. However, we CAN NOT use it, because it seems to output invalid JSON
     // with a "j" tag in front of the content (`"j:{ ...json here... }`). Because we want
     // to read that cookie also in browser, we don't want to produce invalid JSON.
-    res.cookie(key, JSON.stringify(tokenData), { maxAge: 1000 * 60 * 60 * 24 * expiration });
+    res.cookie(key, JSON.stringify(tokenData), _extends({ maxAge: 1000 * 60 * 60 * 24 * expiration }, secureFlag));
   };
 
   var removeToken = function removeToken() {
@@ -3519,7 +3530,7 @@ var transformSdkConfig = function transformSdkConfig(_ref10) {
 
   return _extends({}, sdkConfig, {
     baseUrl: (0, _utils.trimEndSlash)(baseUrl),
-    tokenStore: tokenStore || (0, _token_store.createDefaultTokenStore)(tokenStore, sdkConfig.clientId)
+    tokenStore: tokenStore || (0, _token_store.createDefaultTokenStore)(tokenStore, sdkConfig.clientId, !!sdkConfig.secure)
   });
 };
 
@@ -4635,9 +4646,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /* eslint-disable import/prefer-default-export */
 
-var createDefaultTokenStore = exports.createDefaultTokenStore = function createDefaultTokenStore(tokenStore, clientId) {
+var createDefaultTokenStore = exports.createDefaultTokenStore = function createDefaultTokenStore(tokenStore, clientId, secure) {
   if ((0, _detect.hasBrowserCookies)()) {
-    return (0, _browser_cookie_store2.default)(clientId);
+    return (0, _browser_cookie_store2.default)({ clientId: clientId, secure: secure });
   }
 
   // Token store was not given and we can't use browser cookie store.
