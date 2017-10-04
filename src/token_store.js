@@ -4,9 +4,9 @@ import memoryStore from './memory_store';
 
 /* eslint-disable import/prefer-default-export */
 
-export const createDefaultTokenStore = (tokenStore, clientId) => {
+export const createDefaultTokenStore = (tokenStore, clientId, secure) => {
   if (hasBrowserCookies()) {
-    return browserCookieStore(clientId);
+    return browserCookieStore({ clientId, secure });
   }
 
   // Token store was not given and we can't use browser cookie store.
