@@ -507,7 +507,7 @@ const createSdkFn = ({ method, ...sdkFnParams }) => {
 const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
   ...sdkConfig,
   baseUrl: trimEndSlash(baseUrl),
-  tokenStore: tokenStore || createDefaultTokenStore(tokenStore, sdkConfig.clientId),
+  tokenStore: tokenStore || createDefaultTokenStore(tokenStore, sdkConfig.clientId, !!sdkConfig.secure),
 });
 
 // Validate SDK configurations, throw an error if invalid, otherwise return.
