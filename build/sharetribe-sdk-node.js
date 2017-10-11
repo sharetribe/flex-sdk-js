@@ -1812,20 +1812,6 @@ var constructWriteHandlers = function constructWriteHandlers(customWriters) {
 };
 
 /**
-   Builds JS arrays from Transit lists and vectors
- */
-var arrayBuilder = {
-  init: function init() {
-    return [];
-  },
-  add: function add(ret, val) {
-    ret.push(val);
-    return ret;
-  },
-  finalize: _identity3.default
-};
-
-/**
    Builds JS objects from Transit maps
  */
 var mapBuilder = {
@@ -1864,9 +1850,13 @@ var reader = exports.reader = function reader() {
       // to the API when set is expected.
       set: function set(rep) {
         return rep;
+      },
+
+      // Convert list to an array
+      list: function list(rep) {
+        return rep;
       }
     }),
-    arrayBuilder: arrayBuilder,
     mapBuilder: mapBuilder
   });
 };
@@ -2892,7 +2882,9 @@ var createStore = function createStore(_ref) {
     // JSON stringified. However, we CAN NOT use it, because it seems to output invalid JSON
     // with a "j" tag in front of the content (`"j:{ ...json here... }`). Because we want
     // to read that cookie also in browser, we don't want to produce invalid JSON.
-    res.cookie(key, JSON.stringify(tokenData), _extends({ maxAge: 1000 * 60 * 60 * 24 * expiration }, secureFlag));
+    res.cookie(key, JSON.stringify(tokenData), _extends({
+      maxAge: 1000 * 60 * 60 * 24 * expiration
+    }, secureFlag));
   };
 
   var removeToken = function removeToken() {

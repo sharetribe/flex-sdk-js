@@ -36,7 +36,10 @@ const createStore = ({ clientId, req, res, secure }) => {
     // JSON stringified. However, we CAN NOT use it, because it seems to output invalid JSON
     // with a "j" tag in front of the content (`"j:{ ...json here... }`). Because we want
     // to read that cookie also in browser, we don't want to produce invalid JSON.
-    res.cookie(key, JSON.stringify(tokenData), { maxAge: 1000 * 60 * 60 * 24 * expiration, ...secureFlag });
+    res.cookie(key, JSON.stringify(tokenData), {
+      maxAge: 1000 * 60 * 60 * 24 * expiration,
+      ...secureFlag,
+    });
   };
 
   const removeToken = () => {
