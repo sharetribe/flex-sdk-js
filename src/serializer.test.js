@@ -58,6 +58,14 @@ describe('serializer', () => {
     expect(decoded).toEqual(expect.arrayContaining(['a', 'b']));
   });
 
+  it('decodes a list to an array', () => {
+    const testData = transit.list(['a', 'b']);
+
+    const decoded = reader().read(transit.writer().write(testData));
+
+    expect(decoded).toEqual(expect.arrayContaining(['a', 'b']));
+  });
+
   it('handles UUIDs', () => {
     const testData = {
       id: new UUID('69c3d77a-db3f-11e6-bf26-cec0c932ce01'),
