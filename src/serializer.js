@@ -199,6 +199,9 @@ export const reader = (customReaders = []) => {
       // can coerse arrays to sets, so it's ok to send arrays
       // to the API when set is expected.
       set: rep => rep,
+
+      // Convert list to an array
+      list: rep => rep,
     },
     mapBuilder,
   });
