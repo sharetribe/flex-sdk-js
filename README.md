@@ -458,7 +458,11 @@ Run linter:
 $ npm run lint
 ```
 
-Use [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) conventions.
+Format code (run Prettier):
+
+```
+$ npm run format
+```
 
 # REPL
 
