@@ -167,18 +167,6 @@ const constructWriteHandlers = customWriters =>
   );
 
 /**
-   Builds JS arrays from Transit lists and vectors
- */
-const arrayBuilder = {
-  init: () => [],
-  add: (ret, val) => {
-    ret.push(val);
-    return ret;
-  },
-  finalize: _.identity,
-};
-
-/**
    Builds JS objects from Transit maps
  */
 const mapBuilder = {
@@ -212,7 +200,6 @@ export const reader = (customReaders = []) => {
       // to the API when set is expected.
       set: rep => rep,
     },
-    arrayBuilder,
     mapBuilder,
   });
 };
