@@ -72,17 +72,31 @@ const types = {
 };
 
 //
+// Clean Error details when stringifying Error.
+//
+const cleanErrorValue = value => {
+  // Omit Error ctx and config from Error's details part.
+  // Those can contain circular structures on Node.js side and cause errors when stringifying
+  if (value instanceof Error) {
+    const details = value.details || {};
+    return { ...value, details: _.omit(details, ['ctx', 'config']) };
+  }
+  return value;
+};
+
+//
 // JSON replacer
 //
 export const replacer = (key = null, value) => {
-  const type = _.findKey(types, typeClass => value instanceof typeClass);
+  const cleanedValue = cleanErrorValue(value);
+  const type = _.findKey(types, typeClass => cleanedValue instanceof typeClass);
 
   if (type) {
     // eslint-disable-next-line no-underscore-dangle
-    return { ...value, _sdkType: type };
+    return { ...cleanedValue, _sdkType: type };
   }
 
-  return value;
+  return cleanedValue;
 };
 
 //
