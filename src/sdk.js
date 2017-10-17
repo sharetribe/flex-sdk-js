@@ -467,8 +467,6 @@ const createEndpointInterceptors = ({ method, url, httpOpts }) => {
 
 const formatError = e => {
   /* eslint-disable no-param-reassign */
-  e.details = {};
-
   if (e.response) {
     const { status, statusText, data } = e.response;
     Object.assign(e, { status, statusText, data });
@@ -476,15 +474,22 @@ const formatError = e => {
   }
 
   if (e.ctx) {
-    // Move context `ctx` under `details`, i.e. to the non-public part.
-    e.details.ctx = e.ctx;
+    // Remove context `ctx` from the error response.
+    //
+    // `ctx` is SDK internal and should be exposed as a part of the
+    // SDK public API. It can be added in the response for debugging
+    // purposes, if needed.
     delete e.ctx;
   }
 
   if (e.config) {
     // Axios attachs the config object that was used to the error.
-    // Move it under `details`, i.e. to the non-public part.
-    e.details.config = e.config;
+    //
+    // Remove context `config` from the error response.
+    //
+    // `ctx` is SDK internal and should be exposed as a part of the
+    // SDK public API. It can be added in the response for debugging
+    // purposes, if needed.
     delete e.config;
   }
 

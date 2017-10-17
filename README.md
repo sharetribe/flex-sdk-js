@@ -190,23 +190,12 @@ A error response will have the following format:
         }
       }
     ]
-  },
-  details: { // Not part of the public API
-    ctx: {
-      // The internal context object used by SDK
-    },
-    config: {
-      // The internal configurations object used by SDK
-    }
   }
 }
 ```
 
-Please note that the `details` (both of them) are not part of the public API. This means that:
-
-- You can use `details` for debugging and error tracking
-- You SHOULD NOT write code that depends on the content of `details`.
-- The content of `details` is not well specified and may change
+Please note that additional fields (e.g. additional information for
+debugging) may be added to the error response in the future.
 
 ## Config options
 

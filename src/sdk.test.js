@@ -555,9 +555,6 @@ describe('new SharetribeSdk', () => {
               status: 401,
               statusText: 'Unauthorized',
               data: 'Unauthorized',
-              details: expect.objectContaining({
-                ctx: expect.any(Object),
-              }),
             })
           );
           return Promise.resolve();
@@ -601,9 +598,6 @@ describe('new SharetribeSdk', () => {
                     },
                   }),
                 ],
-              }),
-              details: expect.objectContaining({
-                ctx: expect.any(Object),
               }),
             })
           );
