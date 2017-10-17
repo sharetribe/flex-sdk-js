@@ -398,6 +398,14 @@ expect(roundtrip.constructor.name).toEqual('UUID');
 
 **Please note:** [Your own types](#using-your-own-types) are NOT serialized by the `reviver` and `replacer` functions.
 
+**Please note:** When the API call fails, the error response is
+wrapped in Error object. Stringifying Error object may result in
+unexpected results, e.g. in some browsers `JSON.stringify(new
+Error("error"))` returns an empty object. Because of this, it's
+recommended that you do not stringify the whole SDK responses as is,
+but instead pick the `status`, `statusText` and `data` fields from the
+response, and store and stringify those.
+
 ### Using your own types
 
 If you want to use your own types instead of the types that the SDK provides, the SDK implements a mechanism for you to pass custom conversion methods which let's you convert SDK types to your own types.
