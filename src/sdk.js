@@ -301,6 +301,20 @@ const endpointDefinitions = [
     method: 'get',
     interceptors: [new TransitResponse()],
   },
+  {
+    apiName: 'api',
+    path: 'messages/query',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
+    path: 'messages/send',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
   { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
   { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
 ];
