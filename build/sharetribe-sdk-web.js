@@ -5984,6 +5984,18 @@ var endpointDefinitions = [{
   internal: false,
   method: 'post',
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
+  path: 'reviews/query',
+  internal: false,
+  method: 'get',
+  interceptors: [new _transit_response2.default()]
+}, {
+  apiName: 'api',
+  path: 'reviews/show',
+  internal: false,
+  method: 'get',
+  interceptors: [new _transit_response2.default()]
 }, { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] }, { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] }];
 
 var authenticateInterceptors = [new _fetch_auth_token_from_store2.default(), new _fetch_auth_token_from_api2.default(), new _retry_with_anon_token2.default(), new _retry_with_refresh_token2.default(), new _add_auth_header2.default()];
