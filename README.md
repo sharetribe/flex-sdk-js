@@ -190,23 +190,12 @@ A error response will have the following format:
         }
       }
     ]
-  },
-  details: { // Not part of the public API
-    ctx: {
-      // The internal context object used by SDK
-    },
-    config: {
-      // The internal configurations object used by SDK
-    }
   }
 }
 ```
 
-Please note that the `details` (both of them) are not part of the public API. This means that:
-
-- You can use `details` for debugging and error tracking
-- You SHOULD NOT write code that depends on the content of `details`.
-- The content of `details` is not well specified and may change
+Please note that additional fields (e.g. additional information for
+debugging) may be added to the error response in the future.
 
 ## Config options
 
@@ -408,6 +397,14 @@ expect(roundtrip.constructor.name).toEqual('UUID');
 ```
 
 **Please note:** [Your own types](#using-your-own-types) are NOT serialized by the `reviver` and `replacer` functions.
+
+**Please note:** When the API call fails, the error response is
+wrapped in Error object. Stringifying Error object may result in
+unexpected results, e.g. in some browsers `JSON.stringify(new
+Error("error"))` returns an empty object. Because of this, it's
+recommended that you do not stringify the whole SDK responses as is,
+but instead pick the `status`, `statusText` and `data` fields from the
+response, and store and stringify those.
 
 ### Using your own types
 
