@@ -191,6 +191,13 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'own_listings/show',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
     path: 'listings/query',
     internal: false,
     method: 'get',
@@ -198,7 +205,7 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
-    path: 'listings/query_own',
+    path: 'own_listings/query',
     internal: false,
     method: 'get',
     interceptors: [new TransitResponse()],
@@ -212,35 +219,35 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
-    path: 'listings/create',
+    path: 'own_listings/create',
     internal: false,
     method: 'post',
     interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
     apiName: 'api',
-    path: 'listings/update',
+    path: 'own_listings/update',
     internal: false,
     method: 'post',
     interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
     apiName: 'api',
-    path: 'listings/open',
+    path: 'own_listings/open',
     internal: false,
     method: 'post',
     interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
     apiName: 'api',
-    path: 'listings/close',
+    path: 'own_listings/close',
     internal: false,
     method: 'post',
     interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
     apiName: 'api',
-    path: 'listings/add_image',
+    path: 'own_listings/add_image',
     internal: false,
     method: 'post',
     interceptors: [new TransitResponse(), new TransitRequest()],
@@ -331,6 +338,63 @@ const endpointDefinitions = [
   },
   { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
   { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
+
+
+  /* ******************************************************************************** */
+
+  /*   Deprecated endpoints                                                           */
+
+  /* ******************************************************************************** */
+
+  {
+    /* `listings/query_own` endpoint is deprecated. Use `own_listings/query` instead. */
+    apiName: 'api',
+    path: 'listings/query_own',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    /* `listings/create` endpoint is deprecated. Use `own_listings/create` instead. */
+    apiName: 'api',
+    path: 'listings/create',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    /* `listings/update` endpoint is deprecated. Use `own_listings/update` instead. */
+    apiName: 'api',
+    path: 'listings/update',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    /* `listings/open` endpoint is deprecated. Use `own_listings/open` instead. */
+    apiName: 'api',
+    path: 'listings/open',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    /* `listings/close` endpoint is deprecated. Use `own_listings/close` instead. */
+    apiName: 'api',
+    path: 'listings/close',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    /* `listings/add_image` endpoint is deprecated. Use `own_listings/add_image` instead. */
+    apiName: 'api',
+    path: 'listings/add_image',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+
 ];
 
 const authenticateInterceptors = [
