@@ -3193,13 +3193,19 @@ var endpointDefinitions = [{
   interceptors: [new _transit_response2.default()]
 }, {
   apiName: 'api',
+  path: 'own_listings/show',
+  internal: false,
+  method: 'get',
+  interceptors: [new _transit_response2.default()]
+}, {
+  apiName: 'api',
   path: 'listings/query',
   internal: false,
   method: 'get',
   interceptors: [new _transit_response2.default()]
 }, {
   apiName: 'api',
-  path: 'listings/query_own',
+  path: 'own_listings/query',
   internal: false,
   method: 'get',
   interceptors: [new _transit_response2.default()]
@@ -3211,31 +3217,31 @@ var endpointDefinitions = [{
   interceptors: [new _transit_response2.default()]
 }, {
   apiName: 'api',
-  path: 'listings/create',
+  path: 'own_listings/create',
   internal: false,
   method: 'post',
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
 }, {
   apiName: 'api',
-  path: 'listings/update',
+  path: 'own_listings/update',
   internal: false,
   method: 'post',
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
 }, {
   apiName: 'api',
-  path: 'listings/open',
+  path: 'own_listings/open',
   internal: false,
   method: 'post',
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
 }, {
   apiName: 'api',
-  path: 'listings/close',
+  path: 'own_listings/close',
   internal: false,
   method: 'post',
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
 }, {
   apiName: 'api',
-  path: 'listings/add_image',
+  path: 'own_listings/add_image',
   internal: false,
   method: 'post',
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
@@ -3311,7 +3317,57 @@ var endpointDefinitions = [{
   internal: false,
   method: 'get',
   interceptors: [new _transit_response2.default()]
-}, { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] }, { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] }];
+}, { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] }, { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
+
+/* ******************************************************************************** */
+
+/*   Deprecated endpoints                                                           */
+
+/* ******************************************************************************** */
+
+{
+  /* `listings/query_own` endpoint is deprecated. Use `own_listings/query` instead. */
+  apiName: 'api',
+  path: 'listings/query_own',
+  internal: false,
+  method: 'get',
+  interceptors: [new _transit_response2.default()]
+}, {
+  /* `listings/create` endpoint is deprecated. Use `own_listings/create` instead. */
+  apiName: 'api',
+  path: 'listings/create',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  /* `listings/update` endpoint is deprecated. Use `own_listings/update` instead. */
+  apiName: 'api',
+  path: 'listings/update',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  /* `listings/open` endpoint is deprecated. Use `own_listings/open` instead. */
+  apiName: 'api',
+  path: 'listings/open',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  /* `listings/close` endpoint is deprecated. Use `own_listings/close` instead. */
+  apiName: 'api',
+  path: 'listings/close',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  /* `listings/add_image` endpoint is deprecated. Use `own_listings/add_image` instead. */
+  apiName: 'api',
+  path: 'listings/add_image',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}];
 
 var authenticateInterceptors = [new _fetch_auth_token_from_store2.default(), new _fetch_auth_token_from_api2.default(), new _retry_with_anon_token2.default(), new _retry_with_refresh_token2.default(), new _add_auth_header2.default()];
 
