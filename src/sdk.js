@@ -191,6 +191,13 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'own_listings/show',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
     path: 'listings/query',
     internal: false,
     method: 'get',
