@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "test": "jest",
     "repl": "babel-node repl.js",
-    "format": "prettier --write --print-width 100 --single-quote --trailing-comma es5 'src/**/*.js'"
+    "format": "prettier --write --print-width 100 --single-quote --trailing-comma es5 'src/**/*.js' 'examples/**/*.js'"
   },
   "repository": {
     "type": "git",

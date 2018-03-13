@@ -348,11 +348,8 @@ Removes token from the store. Can return either `null` or a Promise.
 
 ## Examples
 
-You can find all examples under the `[examples/](./examples)` directory:
+You can find all examples under the [examples/](./examples) directory.
 
-- [Fetch listings form local server (localhost:8080)](./examples/local-server)
-- [Location search from local server (localhost:8080)](./examples/location-search)
-- [Image upload from browser to local server (localhost:8080)](./examples/image-upload)
 
 # Installation
 
