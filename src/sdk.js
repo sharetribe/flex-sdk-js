@@ -339,7 +339,6 @@ const endpointDefinitions = [
   { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
   { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
 
-
   /* ******************************************************************************** */
 
   /*   Deprecated endpoints                                                           */
@@ -394,7 +393,6 @@ const endpointDefinitions = [
     method: 'post',
     interceptors: [new TransitResponse(), new TransitRequest()],
   },
-
 ];
 
 const authenticateInterceptors = [
