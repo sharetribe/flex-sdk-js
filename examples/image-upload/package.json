@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "npm run build && npm run start-server",
-    "build": "cd ../../ && npm run build",
+    "start": "yarn run build && yarn run start-server",
+    "build": "cd ../../ && yarn run build",
     "start-server": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

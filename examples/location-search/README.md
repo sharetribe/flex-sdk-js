@@ -16,6 +16,6 @@ You need to have a Sharetribe Custom API running in http://location:8088.
 ## Install and run
 
 ``` bash
-npm install
-npm start
+yarn install
+yarn start
 ```

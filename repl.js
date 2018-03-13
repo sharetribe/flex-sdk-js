@@ -44,7 +44,7 @@ console.log('  ');
 console.log('  To start the REPL, type:');
 console.log('  ');
 console.log('  ```'.block);
-console.log('  > npm run repl'.block);
+console.log('  > yarn run repl'.block);
 console.log('  ```'.block);
 console.log('  ');
 console.log('  ## Globals'.h2);

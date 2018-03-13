@@ -357,7 +357,7 @@ You can find all examples under the `[examples/](./examples)` directory:
 # Installation
 
 ```
-npm install sharetribe-sdk --save
+yarn install sharetribe-sdk --save
 ```
 
 # Documentation [DRAFT]
@@ -434,31 +434,31 @@ const sdk = sharetribe({}, [], [], handlers);
 Install dependencies:
 
 ```
-$ npm install
+$ yarn install
 ```
 
 Build the package:
 
 ```
-$ npm run build
+$ yarn run build
 ```
 
 Run tests:
 
 ```
-$ npm test
+$ yarn test
 ```
 
 Run linter:
 
 ```
-$ npm run lint
+$ yarn run lint
 ```
 
 Format code (run Prettier):
 
 ```
-$ npm run format
+$ yarn run format
 ```
 
 # REPL
@@ -468,7 +468,7 @@ With the REPL you can test and try out the SDK with real results from the API.
 To start the REPL, type:
 
 ```
-> npm run repl
+> yarn run repl
 ```
 
 ## Globals

@@ -7,7 +7,7 @@ This example demos the universal use of the SDK. The demo fetches the current lo
 Install dependencies:
 
 ```
-npm install
+yarn install
 ```
 
 Start the server:
