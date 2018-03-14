@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Getting started example</title>
+    <style>
+      body {
+      font-family: Helvetica,Arial,sans-serif;
+      margin: 50px;
+      }
+      .section {
+        margin-bottom: 50px;
+      }
+      label {
+        display: inline-block;
+        width: 100px;
+      }
+      input[type=text] {
+        width: 300px;
+      }
+      img {
+        margin-right: 20px;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="main"></div>
+
+    <template class="form">
+      <h1>Getting started example</h1>
+
+      <p>Please type your <strong>Client ID</strong> and <strong>Base URL</strong> and click <strong>Submit</strong></p>
+
+      <form>
+        <p>
+          <label for="client-id">Client ID</label>
+          <input type="text" id="client-id" name="client_id">
+        </p>
+        <p>
+          <label for="base-url">Base URL</label>
+          <input type="text" id="base-url" name="base_url">
+        </p>
+        <p>
+          <input type="submit">
+        </p>
+      </form>
+    </template>
+
+    <template class="status">
+      <div class="section">
+        <h2>Response status</h3>
+
+        <p>Status: <span class="status-status"></span></p>
+      </div>
+    </template>
+
+    <template class="meta">
+      <div class="section">
+        <h2>Response meta</h3>
+
+        <p>Total items: <span class="meta-total-items"></span></p>
+        <p>Page: <span class="meta-page"></span></p>
+        <p>Images per page: <span class="meta-per-page"></span></p>
+      </div>
+    </template>
+
+    <template class="listings">
+      <div class="section">
+        <h2>Response data</h2>
+        <div class="listings-listings"></div>
+      </div>
+    </template>
+
+    <template class="listing">
+      <div>
+        <h3 class="listing-title"></h3>
+
+        <p>ID: <span class="listing-id"></span></p>
+        <p>Geolocation: <span class="listing-geolocation"></span></p>
+        <p>Created at: <span class="listing-created-at"></span></p>
+        <p>State: <span class="listing-state"></span></p>
+
+        <div class="listing-images"></div>
+
+      </div>
+    </template>
+
+    <script src="../../build/sharetribe-sdk-web.js"></script>
+    <script src="./index.js"></script>
+  </body>
+
+</html>
