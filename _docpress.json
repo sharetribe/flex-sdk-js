@@ -1,0 +1,276 @@
+{
+  "toc": {
+    "sections": [
+      {
+        "title": "Sharetribe Flex SDK for JavaScript",
+        "source": "README.md",
+        "url": "index.html",
+        "slug": "index",
+        "headings": [
+          {
+            "title": "Table of Contents",
+            "depth": 2,
+            "id": "table-of-contents"
+          },
+          {
+            "title": "What is it",
+            "depth": 2,
+            "id": "what-is-it"
+          },
+          {
+            "title": "Installation",
+            "depth": 2,
+            "id": "installation"
+          },
+          {
+            "title": "Usage",
+            "depth": 2,
+            "id": "usage"
+          },
+          {
+            "title": "Examples",
+            "depth": 2,
+            "id": "examples"
+          },
+          {
+            "title": "Documentation",
+            "depth": 2,
+            "id": "documentation"
+          },
+          {
+            "title": "License",
+            "depth": 2,
+            "id": "license"
+          }
+        ]
+      },
+      {
+        "title": "Features",
+        "source": "docs/features.md",
+        "url": "features.html",
+        "slug": "features"
+      },
+      {
+        "title": "Getting started",
+        "sections": [
+          {
+            "title": "Authentication",
+            "source": "docs/authentication.md",
+            "url": "authentication.html",
+            "slug": "authentication",
+            "headings": [
+              {
+                "title": "Example",
+                "depth": 2,
+                "id": "example"
+              }
+            ]
+          },
+          {
+            "title": "Calling the API",
+            "source": "docs/calling-the-api.md",
+            "url": "calling-the-api.html",
+            "slug": "calling-the-api",
+            "headings": [
+              {
+                "title": "API Endpoints",
+                "depth": 2,
+                "id": "api-endpoints"
+              },
+              {
+                "title": "Parameters",
+                "depth": 2,
+                "id": "parameters",
+                "headings": [
+                  {
+                    "title": "Query method parameters",
+                    "depth": 3,
+                    "id": "query-method-parameters"
+                  },
+                  {
+                    "title": "Command method parameters",
+                    "depth": 3,
+                    "id": "command-method-parameters"
+                  },
+                  {
+                    "title": "Command method options",
+                    "depth": 3,
+                    "id": "command-method-options"
+                  }
+                ]
+              },
+              {
+                "title": "Response",
+                "depth": 2,
+                "id": "response",
+                "headings": [
+                  {
+                    "title": "Success response",
+                    "depth": 3,
+                    "id": "success-response"
+                  },
+                  {
+                    "title": "Error response",
+                    "depth": 3,
+                    "id": "error-response"
+                  }
+                ]
+              },
+              {
+                "title": "API documentation",
+                "depth": 2,
+                "id": "api-documentation"
+              }
+            ]
+          },
+          {
+            "title": "Types (TBD)"
+          }
+        ]
+      },
+      {
+        "title": "Advanced",
+        "sections": [
+          {
+            "title": "REPL (TBD)"
+          },
+          {
+            "title": "Sharing authentication with client and server (TBD)"
+          }
+        ]
+      },
+      {
+        "title": "Developing SDK (TBD)"
+      }
+    ]
+  },
+  "index": {
+    "index.html": {
+      "source": "README.md",
+      "title": "Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Sharetribe Flex SDK for JavaScript",
+      "slug": "index",
+      "headings": [
+        {
+          "title": "Table of Contents",
+          "depth": 2,
+          "id": "table-of-contents"
+        },
+        {
+          "title": "What is it",
+          "depth": 2,
+          "id": "what-is-it"
+        },
+        {
+          "title": "Installation",
+          "depth": 2,
+          "id": "installation"
+        },
+        {
+          "title": "Usage",
+          "depth": 2,
+          "id": "usage"
+        },
+        {
+          "title": "Examples",
+          "depth": 2,
+          "id": "examples"
+        },
+        {
+          "title": "Documentation",
+          "depth": 2,
+          "id": "documentation"
+        },
+        {
+          "title": "License",
+          "depth": 2,
+          "id": "license"
+        }
+      ]
+    },
+    "features.html": {
+      "source": "docs/features.md",
+      "title": "Features - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Features",
+      "slug": "features"
+    },
+    "authentication.html": {
+      "source": "docs/authentication.md",
+      "title": "Authentication - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Authentication",
+      "slug": "authentication",
+      "headings": [
+        {
+          "title": "Example",
+          "depth": 2,
+          "id": "example"
+        }
+      ]
+    },
+    "calling-the-api.html": {
+      "source": "docs/calling-the-api.md",
+      "title": "Calling the API - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Calling the API",
+      "slug": "calling-the-api",
+      "headings": [
+        {
+          "title": "API Endpoints",
+          "depth": 2,
+          "id": "api-endpoints"
+        },
+        {
+          "title": "Parameters",
+          "depth": 2,
+          "id": "parameters",
+          "headings": [
+            {
+              "title": "Query method parameters",
+              "depth": 3,
+              "id": "query-method-parameters"
+            },
+            {
+              "title": "Command method parameters",
+              "depth": 3,
+              "id": "command-method-parameters"
+            },
+            {
+              "title": "Command method options",
+              "depth": 3,
+              "id": "command-method-options"
+            }
+          ]
+        },
+        {
+          "title": "Response",
+          "depth": 2,
+          "id": "response",
+          "headings": [
+            {
+              "title": "Success response",
+              "depth": 3,
+              "id": "success-response"
+            },
+            {
+              "title": "Error response",
+              "depth": 3,
+              "id": "error-response"
+            }
+          ]
+        },
+        {
+          "title": "API documentation",
+          "depth": 2,
+          "id": "api-documentation"
+        }
+      ]
+    }
+  },
+  "sources": {
+    "README.md": "index.html",
+    "docs/features.md": "features.html",
+    "docs/authentication.md": "authentication.html",
+    "docs/calling-the-api.md": "calling-the-api.html",
+    "docs/docpress.json": "docpress.json",
+    "docs/styles.css": "styles.css"
+  }
+}

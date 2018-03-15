@@ -1,1 +1,127 @@
-Testing
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/style.css?t=615badd5">
+    <link rel="stylesheet" href="styles.css?t=684dc3f4">
+    <script src="assets/script.js?t=42463e55"></script>
+    <title>Sharetribe Flex SDK for JavaScript</title>
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body class="-menu-visible">
+    <div class="doc-layout">
+      <div class="toggle menu-toggle js-menu-toggle"></div>
+      <div class="menu toc-menu">
+        <li class="menu-item -level-0 -parent">
+          <ul class="submenu">
+            <li class="menu-item -level-1"><a class="link title -active link-index" href="index.html">Sharetribe Flex SDK for JavaScript</a>
+              <ul class="headings heading-list">
+                <li class="heading-item -depth-2"><a class="hlink link-table-of-contents" href="#table-of-contents">Table of Contents</a>
+                </li>
+                <li class="heading-item -depth-2"><a class="hlink link-what-is-it" href="#what-is-it">What is it</a>
+                </li>
+                <li class="heading-item -depth-2"><a class="hlink link-installation" href="#installation">Installation</a>
+                </li>
+                <li class="heading-item -depth-2"><a class="hlink link-usage" href="#usage">Usage</a>
+                </li>
+                <li class="heading-item -depth-2"><a class="hlink link-examples" href="#examples">Examples</a>
+                </li>
+                <li class="heading-item -depth-2"><a class="hlink link-documentation" href="#documentation">Documentation</a>
+                </li>
+                <li class="heading-item -depth-2"><a class="hlink link-license" href="#license">License</a>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item -level-1"><a class="link title  link-features" href="features.html">Features</a>
+            </li>
+            <li class="menu-item -level-1 -parent"><span class="title">Getting started</span>
+              <ul class="submenu">
+                <li class="menu-item -level-2"><a class="link title  link-authentication" href="authentication.html">Authentication</a>
+                </li>
+                <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the API</a>
+                </li>
+                <li class="menu-item -level-2"><span class="title">Types (TBD)</span>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item -level-1 -parent"><span class="title">Advanced</span>
+              <ul class="submenu">
+                <li class="menu-item -level-2"><span class="title">REPL (TBD)</span>
+                </li>
+                <li class="menu-item -level-2"><span class="title">Sharing authentication with client and server (TBD)</span>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item -level-1"><span class="title">Developing SDK (TBD)</span>
+            </li>
+          </ul>
+        </li>
+      </div>
+      <div class="body page-index">
+        <div class="header-nav">
+          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/sharetribe-sdk-js" data-title="sharetribe/sharetribe-sdk-js">
+              <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
+          </div>
+        </div>
+        <div class="markdown-body"><h1 id="sharetribe-flex-sdk-for-javascript">Sharetribe Flex SDK for JavaScript</h1>
+<p>A library that makes it easy to correctly interact with the Sharetribe Flex Marketplace API.</p>
+<p><a href="https://circleci.com/gh/sharetribe/sharetribe-sdk-js"><img src="https://circleci.com/gh/sharetribe/sharetribe-sdk-js.svg?style=svg&amp;circle-token=f2209b7cd8300d10f73d359072d7f03f81bff8f4" alt="CircleCI"></a></p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#what-is-it">What is it</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#documentation">Documentation</a></li>
+<li><a href="#license">License</a></li>
+</ul>
+<h2 id="what-is-it">What is it</h2>
+<p>The SDK provides the <strong>easiest</strong> way to interact with the Sharetribe
+Flex Marketplace API.</p>
+<p>It handles handles <strong>groundwork</strong> such as authentication, renewing
+authentication tokens and (de)serializing data to and from
+JavaScript data structures.</p>
+<p>This lets you to <strong>concentrate on building your application</strong> instead of
+setting up the necessary boilerplate to communicate with the API.</p>
+<h2 id="installation">Installation</h2>
+<p>Yarn:</p>
+<pre><code class="lang-sh">yarn add https://github.com/sharetribe/sharetribe-sdk-js.git
+</code></pre>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-js"><span class="pl-k">const</span> sharetribeSdk = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-sdk&apos;</span>);
+
+<span class="pl-c">// Create new SDK instance</span>
+<span class="pl-k">const</span> sdk = sharetribeSdk.createInstance({
+  <span class="hljs-attr">clientId</span>: <span class="pl-s">&apos;&lt;Your Client ID here&gt;&apos;</span>
+  baseUrl: <span class="pl-s">&apos;&lt;Base URL here&gt;&apos;</span>,
+});
+
+<span class="pl-c">// Query first 5 listings</span>
+sdk.listings
+  .query({ <span class="hljs-attr">per_page</span>: <span class="hljs-number">5</span> })
+  .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
+    <span class="pl-c">// Print listing titles</span>
+    res.data.data.forEach(<span class="hljs-function"><span class="hljs-params">listing</span> =&gt;</span> {
+      <span class="pl-c1">console</span>.log(<span class="pl-s">`Listing: <span class="hljs-subst">${listing.attributes.title}</span>`</span>)
+    });
+  })
+  .catch(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
+    <span class="pl-c">// An error occurred</span>
+    <span class="pl-c1">console</span>.log(<span class="pl-s">`Request failed with status: <span class="hljs-subst">${res.status}</span> <span class="hljs-subst">${res.statusText}</span>`</span>);
+  });
+</code></pre>
+<h2 id="examples">Examples</h2>
+<p>You can find all examples under the <a href="https://github.com/sharetribe/sharetribe-sdk-js/tree/master/examples/">examples/</a> directory.</p>
+<h2 id="documentation">Documentation</h2>
+<p>Documentation can be found under the <a href="https://github.com/sharetribe/sharetribe-sdk-js/tree/master/docs">docs/</a> directory.</p>
+<h2 id="license">License</h2>
+<p>Distributed under <a href="https://github.com/sharetribe/sharetribe-sdk-js/tree/master/LICENSE">The Apache License, Version 2.0</a></p>
+
+        </div>
+        <div class="footer-nav">
+          <div class="right"><a href="features.html"><span class="label">Next: </span><span class="title">Features</span></a></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
