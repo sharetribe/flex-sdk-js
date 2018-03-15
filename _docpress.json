@@ -271,6 +271,7 @@
     "docs/authentication.md": "authentication.html",
     "docs/calling-the-api.md": "calling-the-api.html",
     "docs/docpress.json": "docpress.json",
+    "docs/scripts.js": "scripts.js",
     "docs/styles.css": "styles.css"
   }
 }

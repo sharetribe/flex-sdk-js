@@ -1,6 +1,9 @@
 {
-    "github": "sharetribe/sharetribe-sdk-js",
+  "github": "sharetribe/sharetribe-sdk-js",
+  "scripts": [
+    "scripts.js"
+  ],
   "css": [
-    "docs/styles.css"
+    "styles.css"
   ]
 }
