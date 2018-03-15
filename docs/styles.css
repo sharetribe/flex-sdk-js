@@ -50,11 +50,46 @@
 }
 
 body {
-  -webkit-font-smoothing: antialiased; /* http://szafranek.net/blog/2009/02/22/font-smoothing-explained/ */
-  -moz-osx-font-smoothing: grayscale; /* http://szafranek.net/blog/2009/02/22/font-smoothing-explained/ */
-  text-rendering: optimizeSpeed;
+    -webkit-font-smoothing: antialiased; /* http://szafranek.net/blog/2009/02/22/font-smoothing-explained/ */
+    -moz-osx-font-smoothing: grayscale; /* http://szafranek.net/blog/2009/02/22/font-smoothing-explained/ */
+    text-rendering: optimizeSpeed;
 }
 
 .markdown-body {
     font-family: sofiapro, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+h1, h2, h3, h4, h5 {
+    /* Position relative is needed for the hover anchor element */
+    position: relative;
+}
+
+h1:hover .heading-anchor,
+h2:hover .heading-anchor,
+h3:hover .heading-anchor,
+h4:hover .heading-anchor,
+h5:hover .heading-anchor {
+    display: block;
+}
+
+.heading-anchor {
+    display: none;
+    position: absolute;
+    left: -20px; /* -16px - right padding */
+    padding-right: 4px;
+    cursor: pointer;
+}
+
+.heading-anchor svg {
+    /* Make SVG inline block, so that we can finetune the bottom margin */
+    display: inline-block;
+}
+
+h1 .heading-anchor svg {
+    /* Fine tuning for nicer vertical alignment with the big h1 font size */
+    margin-bottom: 0.1em;
+}
+
+.heading-anchor:hover {
+    display: block;
 }
