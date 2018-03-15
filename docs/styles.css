@@ -1,0 +1,60 @@
+/**
+ * The fonts included are copyrighted by the vendor listed below.
+ *
+ * Vendor:      Mostardesign
+ * License URL: https://www.fontspring.com/licenses/mostardesign/webfont
+ *
+ */
+
+@font-face {
+    font-family: 'sofiapro';
+    src: url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-extralight-webfont.woff2') format('woff2');
+         url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-extralight-webfont.woff') format('woff');
+    font-weight: 200;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'sofiapro';
+    src: url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-light-webfont.woff2') format('woff2');
+         url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-light-webfont.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'sofiapro';
+    src: url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-regular-webfont.woff2') format('woff2');
+         url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-regular-webfont.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'sofiapro';
+    src: url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-medium-webfont.woff2') format('woff2'),
+         url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-medium-webfont.woff') format('woff');
+    font-weight: 500; /* Medium */
+    font-style: normal;
+}
+@font-face {
+    font-family: 'sofiapro';
+    src: url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-semibold-webfont.woff2') format('woff2'),
+         url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-semibold-webfont.woff') format('woff');
+    font-weight: 600; /* SemiBold */
+    font-style: normal;
+}
+@font-face {
+    font-family: 'sofiapro';
+    src: url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-bold-webfont.woff2') format('woff2'),
+         url('https://assets-sharetribecom.sharetribe.com/webfonts/sofiapro/sofiapro-bold-webfont.woff') format('woff');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+body {
+  -webkit-font-smoothing: antialiased; /* http://szafranek.net/blog/2009/02/22/font-smoothing-explained/ */
+  -moz-osx-font-smoothing: grayscale; /* http://szafranek.net/blog/2009/02/22/font-smoothing-explained/ */
+  text-rendering: optimizeSpeed;
+}
+
+.markdown-body {
+    font-family: sofiapro, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
