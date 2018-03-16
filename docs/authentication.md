@@ -36,3 +36,5 @@ sdk
     console.log(`Request failed with status: ${res.status} ${res.statusText}`);
   });
 ```
+
+**Trobleshooting:** In case you're testing locally from `file:///`, the session information may not be saved after successful login. In this case, you should configure the SDK to use [memory-based token store](./token-store.md#memory-store).
