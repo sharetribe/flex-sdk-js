@@ -28,7 +28,7 @@ The query (GET) methods take only one parameter:
 
 * `queryParams`: Object of query parameters
 
-Example:
+**Example:**
 
 ```js
 sdk.listings.query({per_page: 5})
@@ -47,7 +47,7 @@ The command (POST) methods take three parameters:
 * `queryParams`: Object of query parameters
 * `opts`: Additional per request options
 
-Example:
+**Example:**
 
 ```js
 sdk.own_listings.create({title: 'New listings', price: new Money(5000, 'USD')}, {expand: true});
@@ -60,7 +60,7 @@ All parameters are optional. If the endpoint doesn't require any body
 parameters, query parameters or options, you can call the SDK method
 without any parameters.
 
-If you wonder what the `Money` is, have a look at [Types]. TODO Add link
+If you wonder what the `Money` is, have a look at [Types](./types.md).
 
 ### Command method options
 
@@ -70,7 +70,7 @@ Here's a list of available `opts`:
 
 * `onUploadProcess`: Takes a callback function that is called with [ProgressEvent](https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent).
 
-Example:
+**Example:**
 
 ```js
 const logProgress = (progressEvent) => {
@@ -85,7 +85,7 @@ sdk.listings.uploadImage({ image: file }, {}, { onUploadProgress: logProgress })
 
 Calling a SDK method will always return a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). The value of the Promise differs whether the request was successful or error. In case of successful request the Promise will be fulfilled where as in case of error the Promise will be rejected.
 
-Example:
+**Example:**
 
 ```js
 const promise = sdk.listings.query();
@@ -119,7 +119,7 @@ The API returns the data always in the following format:
 }
 ```
 
-Here's an example response from query that returns multiple listings:
+**Example:** Response from query that returns multiple listings.
 
 ```
 {
@@ -203,6 +203,8 @@ An error response will have the following format:
   }
 }
 ```
+
+The error value is always an `instanceof` [Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error).
 
 **Please note** that the content of the `details` is not part of the public API. This means that:
 

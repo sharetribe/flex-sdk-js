@@ -5,8 +5,10 @@
 * Getting started
   * [Authentication](./authentication.md)
   * [Calling the API](./calling-the-api.md)
-  * Types (TBD)
+  * [Types](./types.md)
 * Advanced
+  * [Your own types](./your-own-types.md)
+  * [Serializing types to JSON](./serializing-types-to-json.md)
   * REPL (TBD)
   * Sharing authentication with client and server (TBD)
 * Developing SDK (TBD)

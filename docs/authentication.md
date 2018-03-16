@@ -10,7 +10,7 @@ Authenticates the user. The SDK is now able to access information that is not av
 
 Logs out the user.
 
-## Example
+**Example:**
 
 Here's a full example how to log user in and out
 
