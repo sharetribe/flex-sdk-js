@@ -65,7 +65,7 @@ You can find all examples under the [examples/](https://github.com/sharetribe/sh
 
 ## Documentation
 
-Documentation can be found under the [docs/](https://github.com/sharetribe/sharetribe-sdk-js/tree/master/docs) directory.
+[Documentation can be found here](https://sharetribe.github.io/sharetribe-sdk-js/).
 
 ## License
 
