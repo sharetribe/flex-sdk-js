@@ -22,19 +22,19 @@
             <li class="menu-item -level-1 -parent"><span class="title">Getting started</span>
               <ul class="submenu">
                 <li class="menu-item -level-2"><a class="link title -active link-authentication" href="authentication.html">Authentication</a>
-                  <ul class="headings heading-list">
-                    <li class="heading-item -depth-2"><a class="hlink link-example" href="#example">Example</a>
-                    </li>
-                  </ul>
                 </li>
                 <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the API</a>
                 </li>
-                <li class="menu-item -level-2"><span class="title">Types (TBD)</span>
+                <li class="menu-item -level-2"><a class="link title  link-types" href="types.html">Types</a>
                 </li>
               </ul>
             </li>
             <li class="menu-item -level-1 -parent"><span class="title">Advanced</span>
               <ul class="submenu">
+                <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
+                </li>
+                <li class="menu-item -level-2"><a class="link title  link-serializing-types-to-json" href="serializing-types-to-json.html">Serializing types to JSON</a>
+                </li>
                 <li class="menu-item -level-2"><span class="title">REPL (TBD)</span>
                 </li>
                 <li class="menu-item -level-2"><span class="title">Sharing authentication with client and server (TBD)</span>
@@ -58,7 +58,7 @@
 <p>Authenticates the user. The SDK is now able to access information that is not available for anonymous users.</p>
 <h4 id="logout()"><code>logout()</code></h4>
 <p>Logs out the user.</p>
-<h2 id="example">Example</h2>
+<p><strong>Example:</strong></p>
 <p>Here&apos;s a full example how to log user in and out</p>
 <pre><code class="lang-js">sdk
   .login({ <span class="hljs-attr">username</span>: <span class="pl-s">&quot;test-user@example.com&quot;</span>, <span class="hljs-attr">password</span>: <span class="pl-s">&quot;test-secret&quot;</span> })

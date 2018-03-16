@@ -57,14 +57,7 @@
             "title": "Authentication",
             "source": "docs/authentication.md",
             "url": "authentication.html",
-            "slug": "authentication",
-            "headings": [
-              {
-                "title": "Example",
-                "depth": 2,
-                "id": "example"
-              }
-            ]
+            "slug": "authentication"
           },
           {
             "title": "Calling the API",
@@ -124,13 +117,28 @@
             ]
           },
           {
-            "title": "Types (TBD)"
+            "title": "Types",
+            "source": "docs/types.md",
+            "url": "types.html",
+            "slug": "types"
           }
         ]
       },
       {
         "title": "Advanced",
         "sections": [
+          {
+            "title": "Your own types",
+            "source": "docs/your-own-types.md",
+            "url": "your-own-types.html",
+            "slug": "your-own-types"
+          },
+          {
+            "title": "Serializing types to JSON",
+            "source": "docs/serializing-types-to-json.md",
+            "url": "serializing-types-to-json.html",
+            "slug": "serializing-types-to-json"
+          },
           {
             "title": "REPL (TBD)"
           },
@@ -198,14 +206,7 @@
       "source": "docs/authentication.md",
       "title": "Authentication - Sharetribe Flex SDK for JavaScript",
       "pageTitle": "Authentication",
-      "slug": "authentication",
-      "headings": [
-        {
-          "title": "Example",
-          "depth": 2,
-          "id": "example"
-        }
-      ]
+      "slug": "authentication"
     },
     "calling-the-api.html": {
       "source": "docs/calling-the-api.md",
@@ -263,6 +264,24 @@
           "id": "api-documentation"
         }
       ]
+    },
+    "types.html": {
+      "source": "docs/types.md",
+      "title": "Types - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Types",
+      "slug": "types"
+    },
+    "your-own-types.html": {
+      "source": "docs/your-own-types.md",
+      "title": "Your own types - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Your own types",
+      "slug": "your-own-types"
+    },
+    "serializing-types-to-json.html": {
+      "source": "docs/serializing-types-to-json.md",
+      "title": "Serializing types to JSON - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Serializing types to JSON",
+      "slug": "serializing-types-to-json"
     }
   },
   "sources": {
@@ -270,6 +289,9 @@
     "docs/features.md": "features.html",
     "docs/authentication.md": "authentication.html",
     "docs/calling-the-api.md": "calling-the-api.html",
+    "docs/types.md": "types.html",
+    "docs/your-own-types.md": "your-own-types.html",
+    "docs/serializing-types-to-json.md": "serializing-types-to-json.html",
     "docs/docpress.json": "docpress.json",
     "docs/scripts.js": "scripts.js",
     "docs/styles.css": "styles.css"

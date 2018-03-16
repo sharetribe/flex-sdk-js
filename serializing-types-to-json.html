@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/style.css?t=615badd5">
+    <link rel="stylesheet" href="styles.css?t=6eea839d">
+    <script src="assets/script.js?t=42463e55"></script>
+    <script src="scripts.js?t=673e675e"></script>
+    <title>Serializing types to JSON - Sharetribe Flex SDK for JavaScript</title>
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body class="-menu-visible">
+    <div class="doc-layout">
+      <div class="toggle menu-toggle js-menu-toggle"></div>
+      <div class="menu toc-menu">
+        <li class="menu-item -level-0 -parent">
+          <ul class="submenu">
+            <li class="menu-item -level-1"><a class="link title  link-index" href="index.html">Sharetribe Flex SDK for JavaScript</a>
+            </li>
+            <li class="menu-item -level-1"><a class="link title  link-features" href="features.html">Features</a>
+            </li>
+            <li class="menu-item -level-1 -parent"><span class="title">Getting started</span>
+              <ul class="submenu">
+                <li class="menu-item -level-2"><a class="link title  link-authentication" href="authentication.html">Authentication</a>
+                </li>
+                <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the API</a>
+                </li>
+                <li class="menu-item -level-2"><a class="link title  link-types" href="types.html">Types</a>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item -level-1 -parent"><span class="title">Advanced</span>
+              <ul class="submenu">
+                <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
+                </li>
+                <li class="menu-item -level-2"><a class="link title -active link-serializing-types-to-json" href="serializing-types-to-json.html">Serializing types to JSON</a>
+                </li>
+                <li class="menu-item -level-2"><span class="title">REPL (TBD)</span>
+                </li>
+                <li class="menu-item -level-2"><span class="title">Sharing authentication with client and server (TBD)</span>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item -level-1"><span class="title">Developing SDK (TBD)</span>
+            </li>
+          </ul>
+        </li>
+      </div>
+      <div class="body page-serializing-types-to-json">
+        <div class="header-nav">
+          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/sharetribe-sdk-js" data-title="sharetribe/sharetribe-sdk-js">
+              <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
+          </div>
+        </div>
+        <div class="markdown-body"><h1 id="serializing-types-to-and-from-json">Serializing types to and from JSON</h1>
+<p>The SDK provides two helper functions to serialize and deserialize the
+data to and from JSON while retaining the type information.</p>
+<ul>
+<li><code>types.reviver</code>: Function to be passed to <code>JSON.parse</code></li>
+<li><code>types.replacer</code>: Function to be passed to <code>JSON.stringify</code></li>
+</ul>
+<p>Serializing the data to JSON may be necessary if you are saving the
+data to
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage">LocalStorage</a>
+or if you have a server that fetches the data and you want to pass the
+preloaded state e.g. to your <a href="https://redux.js.org/recipes/server-rendering#inject-initial-component-html-and-state">Redux
+store</a>.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-js"><span class="pl-k">const</span> { reviver, replacer } = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-sdk&apos;</span>).types;
+
+<span class="pl-k">const</span> testData = {
+  <span class="hljs-attr">id</span>: <span class="pl-k">new</span> UUID(<span class="pl-s">&apos;f989541d-7e96-4c8a-b550-dff1eef25815&apos;</span>)
+};
+
+<span class="pl-k">const</span> roundtrip = <span class="pl-c1">JSON</span>.parse(<span class="pl-c1">JSON</span>.stringify(testData, replacer), reviver);
+
+expect(roundtrip.constructor.name).toEqual(<span class="pl-s">&apos;UUID&apos;</span>);
+</code></pre>
+<p><strong>Please note:</strong> <a href="#your-own-types">Your own types</a> are not serialized.</p>
+<p><strong>Please note:</strong> When the API call fails, <a href="calling-the-api.html#error-response">the error
+response</a> is wrapped in Error
+object. Stringifying Error object may result in unexpected results,
+e.g. in some browsers <code>JSON.stringify(new Error(&quot;error&quot;))</code> returns an
+empty object. Because of this, it&apos;s recommended that you do not
+stringify the whole SDK responses as is, but instead pick the
+<code>status</code>, <code>statusText</code> and <code>data</code> fields from the response, and store
+and stringify those.</p>
+
+        </div>
+        <div class="footer-nav">
+          <div class="left"><a href="your-own-types.html"><span class="title">Your own types</span></a></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -49,12 +49,16 @@
                     </li>
                   </ul>
                 </li>
-                <li class="menu-item -level-2"><span class="title">Types (TBD)</span>
+                <li class="menu-item -level-2"><a class="link title  link-types" href="types.html">Types</a>
                 </li>
               </ul>
             </li>
             <li class="menu-item -level-1 -parent"><span class="title">Advanced</span>
               <ul class="submenu">
+                <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
+                </li>
+                <li class="menu-item -level-2"><a class="link title  link-serializing-types-to-json" href="serializing-types-to-json.html">Serializing types to JSON</a>
+                </li>
                 <li class="menu-item -level-2"><span class="title">REPL (TBD)</span>
                 </li>
                 <li class="menu-item -level-2"><span class="title">Sharing authentication with client and server (TBD)</span>
@@ -91,7 +95,7 @@ side. In case of invalid parameters, the request fill fail.</p>
 <ul>
 <li><code>queryParams</code>: Object of query parameters</li>
 </ul>
-<p>Example:</p>
+<p><strong>Example:</strong></p>
 <pre><code class="lang-js">sdk.listings.query({<span class="hljs-attr">per_page</span>: <span class="hljs-number">5</span>})
 
 <span class="pl-c">// Calls GET /api/listings/query?per_page=5</span>
@@ -105,7 +109,7 @@ query parameters, you can call the SDK method without any parameters.</p>
 <li><code>queryParams</code>: Object of query parameters</li>
 <li><code>opts</code>: Additional per request options</li>
 </ul>
-<p>Example:</p>
+<p><strong>Example:</strong></p>
 <pre><code class="lang-js">sdk.own_listings.create({<span class="hljs-attr">title</span>: <span class="pl-s">&apos;New listings&apos;</span>, <span class="hljs-attr">price</span>: <span class="pl-k">new</span> Money(<span class="hljs-number">5000</span>, <span class="pl-s">&apos;USD&apos;</span>)}, {<span class="hljs-attr">expand</span>: <span class="pl-c1">true</span>});
 
 <span class="pl-c">// Calls POST /api/own_listings/create?expand=true</span>
@@ -114,14 +118,14 @@ query parameters, you can call the SDK method without any parameters.</p>
 <p>All parameters are optional. If the endpoint doesn&apos;t require any body
 parameters, query parameters or options, you can call the SDK method
 without any parameters.</p>
-<p>If you wonder what the <code>Money</code> is, have a look at [Types]. TODO Add link</p>
+<p>If you wonder what the <code>Money</code> is, have a look at <a href="types.html">Types</a>.</p>
 <h3 id="command-method-options">Command method options</h3>
 <p>The third parameter for command methods is <code>opts</code>.</p>
 <p>Here&apos;s a list of available <code>opts</code>:</p>
 <ul>
 <li><code>onUploadProcess</code>: Takes a callback function that is called with <a href="https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent">ProgressEvent</a>.</li>
 </ul>
-<p>Example:</p>
+<p><strong>Example:</strong></p>
 <pre><code class="lang-js"><span class="pl-k">const</span> logProgress = <span class="hljs-function">(<span class="hljs-params">progressEvent</span>) =&gt;</span> {
   <span class="pl-k">const</span> percentCompleted = <span class="pl-c1">Math</span>.round((progressEvent.loaded * <span class="hljs-number">100</span>) / progressEvent.total);
   <span class="pl-c1">console</span>.log(percentCompleted + <span class="pl-s">&apos;% completed&apos;</span>);
@@ -131,7 +135,7 @@ sdk.listings.uploadImage({ <span class="hljs-attr">image</span>: file }, {}, { <
 </code></pre>
 <h2 id="response">Response</h2>
 <p>Calling a SDK method will always return a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>. The value of the Promise differs whether the request was successful or error. In case of successful request the Promise will be fulfilled where as in case of error the Promise will be rejected.</p>
-<p>Example:</p>
+<p><strong>Example:</strong></p>
 <pre><code class="lang-js"><span class="pl-k">const</span> promise = sdk.listings.query();
 
 <span class="pl-c">// Handle success response</span>
@@ -155,7 +159,7 @@ promise.catch(<span class="hljs-function"><span class="hljs-params">response</sp
   included: [] // Array of included responses
 }
 </code></pre>
-<p>Here&apos;s an example response from query that returns multiple listings:</p>
+<p><strong>Example:</strong> Response from query that returns multiple listings.</p>
 <pre><code>{
   status: 200,
   statusText: &apos;OK&apos;,
@@ -233,6 +237,7 @@ promise.catch(<span class="hljs-function"><span class="hljs-params">response</sp
   }
 }
 </code></pre>
+<p>The error value is always an <code>instanceof</code> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>.</p>
 <p><strong>Please note</strong> that the content of the <code>details</code> is not part of the public API. This means that:</p>
 <ul>
 <li>You can use <code>details</code> for debugging and error tracking.</li>
@@ -245,6 +250,7 @@ promise.catch(<span class="hljs-function"><span class="hljs-params">response</sp
         </div>
         <div class="footer-nav">
           <div class="left"><a href="authentication.html"><span class="title">Authentication</span></a></div>
+          <div class="right"><a href="types.html"><span class="label">Next: </span><span class="title">Types</span></a></div>
         </div>
       </div>
     </div>
