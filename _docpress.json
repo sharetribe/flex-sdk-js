@@ -128,6 +128,19 @@
         "title": "Advanced",
         "sections": [
           {
+            "title": "Configurations",
+            "source": "docs/configurations.md",
+            "url": "configurations.html",
+            "slug": "configurations",
+            "headings": [
+              {
+                "title": "Configurations",
+                "depth": 2,
+                "id": "configurations"
+              }
+            ]
+          },
+          {
             "title": "Your own types",
             "source": "docs/your-own-types.md",
             "url": "your-own-types.html",
@@ -140,10 +153,36 @@
             "slug": "serializing-types-to-json"
           },
           {
-            "title": "REPL (TBD)"
+            "title": "Token store",
+            "source": "docs/token-store.md",
+            "url": "token-store.html",
+            "slug": "token-store",
+            "headings": [
+              {
+                "title": "Browser cookie store",
+                "depth": 3,
+                "id": "browser-cookie-store"
+              },
+              {
+                "title": "Express cookie store",
+                "depth": 3,
+                "id": "express-cookie-store"
+              },
+              {
+                "title": "Memory store",
+                "depth": 2,
+                "id": "memory-store"
+              }
+            ]
+          },
+          {
+            "title": "Writing your own token store (TBD)"
           },
           {
             "title": "Sharing authentication with client and server (TBD)"
+          },
+          {
+            "title": "REPL (TBD)"
           }
         ]
       },
@@ -271,6 +310,19 @@
       "pageTitle": "Types",
       "slug": "types"
     },
+    "configurations.html": {
+      "source": "docs/configurations.md",
+      "title": "Configurations - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Configurations",
+      "slug": "configurations",
+      "headings": [
+        {
+          "title": "Configurations",
+          "depth": 2,
+          "id": "configurations"
+        }
+      ]
+    },
     "your-own-types.html": {
       "source": "docs/your-own-types.md",
       "title": "Your own types - Sharetribe Flex SDK for JavaScript",
@@ -282,6 +334,29 @@
       "title": "Serializing types to JSON - Sharetribe Flex SDK for JavaScript",
       "pageTitle": "Serializing types to JSON",
       "slug": "serializing-types-to-json"
+    },
+    "token-store.html": {
+      "source": "docs/token-store.md",
+      "title": "Token store - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Token store",
+      "slug": "token-store",
+      "headings": [
+        {
+          "title": "Browser cookie store",
+          "depth": 3,
+          "id": "browser-cookie-store"
+        },
+        {
+          "title": "Express cookie store",
+          "depth": 3,
+          "id": "express-cookie-store"
+        },
+        {
+          "title": "Memory store",
+          "depth": 2,
+          "id": "memory-store"
+        }
+      ]
     }
   },
   "sources": {
@@ -290,8 +365,10 @@
     "docs/authentication.md": "authentication.html",
     "docs/calling-the-api.md": "calling-the-api.html",
     "docs/types.md": "types.html",
+    "docs/configurations.md": "configurations.html",
     "docs/your-own-types.md": "your-own-types.html",
     "docs/serializing-types-to-json.md": "serializing-types-to-json.html",
+    "docs/token-store.md": "token-store.html",
     "docs/docpress.json": "docpress.json",
     "docs/scripts.js": "scripts.js",
     "docs/styles.css": "styles.css"

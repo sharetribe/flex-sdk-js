@@ -31,13 +31,19 @@
             </li>
             <li class="menu-item -level-1 -parent"><span class="title">Advanced</span>
               <ul class="submenu">
+                <li class="menu-item -level-2"><a class="link title  link-configurations" href="configurations.html">Configurations</a>
+                </li>
                 <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
                 </li>
                 <li class="menu-item -level-2"><a class="link title  link-serializing-types-to-json" href="serializing-types-to-json.html">Serializing types to JSON</a>
                 </li>
-                <li class="menu-item -level-2"><span class="title">REPL (TBD)</span>
+                <li class="menu-item -level-2"><a class="link title  link-token-store" href="token-store.html">Token store</a>
+                </li>
+                <li class="menu-item -level-2"><span class="title">Writing your own token store (TBD)</span>
                 </li>
                 <li class="menu-item -level-2"><span class="title">Sharing authentication with client and server (TBD)</span>
+                </li>
+                <li class="menu-item -level-2"><span class="title">REPL (TBD)</span>
                 </li>
               </ul>
             </li>
@@ -81,6 +87,7 @@
     <span class="pl-c1">console</span>.log(<span class="pl-s">`Request failed with status: <span class="hljs-subst">${res.status}</span> <span class="hljs-subst">${res.statusText}</span>`</span>);
   });
 </code></pre>
+<p><strong>Trobleshooting:</strong> In case you&apos;re testing locally from <code>file:///</code>, the session information may not be saved after successful login. In this case, you should configure the SDK to use <a href="token-store.html#memory-store">memory-based token store</a>.</p>
 
         </div>
         <div class="footer-nav">

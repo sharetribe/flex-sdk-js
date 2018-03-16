@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/style.css?t=615badd5">
+    <link rel="stylesheet" href="styles.css?t=6eea839d">
+    <script src="assets/script.js?t=42463e55"></script>
+    <script src="scripts.js?t=673e675e"></script>
+    <title>Configurations - Sharetribe Flex SDK for JavaScript</title>
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body class="-menu-visible">
+    <div class="doc-layout">
+      <div class="toggle menu-toggle js-menu-toggle"></div>
+      <div class="menu toc-menu">
+        <li class="menu-item -level-0 -parent">
+          <ul class="submenu">
+            <li class="menu-item -level-1"><a class="link title  link-index" href="index.html">Sharetribe Flex SDK for JavaScript</a>
+            </li>
+            <li class="menu-item -level-1"><a class="link title  link-features" href="features.html">Features</a>
+            </li>
+            <li class="menu-item -level-1 -parent"><span class="title">Getting started</span>
+              <ul class="submenu">
+                <li class="menu-item -level-2"><a class="link title  link-authentication" href="authentication.html">Authentication</a>
+                </li>
+                <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the API</a>
+                </li>
+                <li class="menu-item -level-2"><a class="link title  link-types" href="types.html">Types</a>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item -level-1 -parent"><span class="title">Advanced</span>
+              <ul class="submenu">
+                <li class="menu-item -level-2"><a class="link title -active link-configurations" href="configurations.html">Configurations</a>
+                  <ul class="headings heading-list">
+                    <li class="heading-item -depth-2"><a class="hlink link-configurations" href="#configurations">Configurations</a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
+                </li>
+                <li class="menu-item -level-2"><a class="link title  link-serializing-types-to-json" href="serializing-types-to-json.html">Serializing types to JSON</a>
+                </li>
+                <li class="menu-item -level-2"><a class="link title  link-token-store" href="token-store.html">Token store</a>
+                </li>
+                <li class="menu-item -level-2"><span class="title">Writing your own token store (TBD)</span>
+                </li>
+                <li class="menu-item -level-2"><span class="title">Sharing authentication with client and server (TBD)</span>
+                </li>
+                <li class="menu-item -level-2"><span class="title">REPL (TBD)</span>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item -level-1"><span class="title">Developing SDK (TBD)</span>
+            </li>
+          </ul>
+        </li>
+      </div>
+      <div class="body page-configurations">
+        <div class="header-nav">
+          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/sharetribe-sdk-js" data-title="sharetribe/sharetribe-sdk-js">
+              <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
+          </div>
+        </div>
+        <div class="markdown-body"><h2 id="configurations">Configurations</h2>
+<p>There are a few config options that can given to the <code>createInstance</code>:</p>
+<pre><code class="lang-js"><span class="pl-k">const</span> sharetribeSdk = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-sdk&apos;</span>);
+
+<span class="pl-k">var</span> sdk = sharetribeSdk.createInstance({
+
+  <span class="pl-c">// The API ClientID (mandatory)</span>
+  clientId: <span class="pl-s">&quot;08ec69f6-d37e-414d-83eb-324e94afddf0&quot;</span>,
+
+  <span class="pl-c">// The API base URL (mandatory)</span>
+  baseUrl: <span class="pl-s">&quot;https://api.sharetribe.com/v1/&quot;</span>,
+
+  <span class="pl-c">// Token store</span>
+  <span class="pl-c">//</span>
+  <span class="pl-c">// Token store instance to use. Token store is where the SDK saves the session information.</span>
+  <span class="pl-c">//</span>
+  <span class="pl-c">// Built-in token stores:</span>
+  <span class="pl-c">//</span>
+  <span class="pl-c">// - sharetribeSdk.tokenStore.browserCookieStore</span>
+  <span class="pl-c">// - sharetribeSdk.tokenStore.expressCookieStore</span>
+  <span class="pl-c">// - sharetribeSdk.tokenStore.memoryStore</span>
+  <span class="pl-c">//</span>
+  <span class="pl-c">// Default: sharetribeSdk.tokenStore.browserCookieStore()</span>
+  <span class="pl-c">//</span>
+  tokenStore: sharetribeSdk.tokenStore.browserCookieStore(),
+
+  <span class="pl-c">// List of type handlers</span>
+  typeHandlers: [
+    {
+      <span class="hljs-attr">type</span>: UUID,
+      <span class="hljs-attr">customType</span>: MyUuidType,
+
+      <span class="pl-c">// Writer fn type signature must be:</span>
+      <span class="pl-c">// type -&gt; customType</span>
+      <span class="pl-c">//</span>
+      <span class="pl-c">// E.g.</span>
+      <span class="pl-c">// UUID -&gt; MyUuidType</span>
+      writer: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> UUID(v.myUuid),
+
+      <span class="pl-c">// Reader fn type signature must be:</span>
+      <span class="pl-c">// customType -&gt; type</span>
+      <span class="pl-c">//</span>
+      <span class="pl-c">// E.g.</span>
+      <span class="pl-c">// MyUuidType -&gt; UUID</span>
+      reader: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> MyUuidType(v.uuid),
+    }
+  ]
+});
+</code></pre>
+
+        </div>
+        <div class="footer-nav">
+          <div class="left"><a href="types.html"><span class="title">Types</span></a></div>
+          <div class="right"><a href="your-own-types.html"><span class="label">Next: </span><span class="title">Your own types</span></a></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
