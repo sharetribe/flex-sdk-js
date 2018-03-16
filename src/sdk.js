@@ -23,7 +23,7 @@ import contextRunner from './context_runner';
 /* eslint-disable class-methods-use-this */
 
 const defaultSdkConfig = {
-  baseUrl: 'https://api.sharetribe.com',
+  baseUrl: '',
   typeHandlers: [],
   endpoints: [],
   adapter: null,
