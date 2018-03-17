@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=42463e55"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-sdk-web.js?t=a92f43dc"></script>
+    <script src="sharetribe-sdk-web.js?t=3fb4304b"></script>
     <title>Token store - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
   </head>
@@ -78,6 +78,25 @@
 <p>Reads and stores the session information to HTTP cookie. This token store
 is used by default, if SDK is used in environment where cookie are
 available (i.e. browser).</p>
+<p>The constructor takes the following options:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Descriotion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clientId</code></td>
+<td>The clientId</td>
+</tr>
+<tr>
+<td><code>secure</code></td>
+<td>Boolean. When <code>true</code>, the cookie will be transferred only with HTTPS requests</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Please note:</strong> Some browsers, like Google Chrome, do not set cookies
 when using <code>file:///</code> protocol. In this case, you can use <a href="#memory-store">Memory
 store</a>.</p>
@@ -85,6 +104,33 @@ store</a>.</p>
 <p>This token store is meant to be used with
 <a href="https://expressjs.com/">Express.js</a> server. Read and stores the
 session information to HTTP cookie.</p>
+<p>The constructor takes the following options:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Descriotion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clientId</code></td>
+<td>The clientId</td>
+</tr>
+<tr>
+<td><code>req</code></td>
+<td>Express.js request</td>
+</tr>
+<tr>
+<td><code>res</code></td>
+<td>Express.js response</td>
+</tr>
+<tr>
+<td><code>secure</code></td>
+<td>Boolean. When <code>true</code>, the cookie will be transferred only with HTTPS requests</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Example:</strong> Create new SDK instance with Express cookie store:</p>
 <pre><code class="lang-js"><span class="pl-k">const</span> express = <span class="pl-c1">require</span>(<span class="pl-s">&apos;express&apos;</span>);
 <span class="pl-k">const</span> cookieParser = <span class="pl-c1">require</span>(<span class="pl-s">&apos;cookie-parser&apos;</span>);
@@ -104,6 +150,7 @@ app.get(<span class="pl-s">&apos;/&apos;</span>, (req, res) =&gt; {
       <span class="hljs-attr">clientId</span>: <span class="pl-s">&quot;&lt;your Client ID&gt;&quot;</span>,
       req,
       res,
+      <span class="hljs-attr">secure</span>: <span class="pl-c1">true</span> <span class="pl-c">// Set true, if you are using HTTPS</span>
     }),
   });
 
@@ -128,6 +175,7 @@ app.get(<span class="pl-s">&apos;/&apos;</span>, (req, res) =&gt; {
       <span class="hljs-attr">clientId</span>: <span class="pl-s">&quot;&lt;your Client ID&gt;&quot;</span>,
       req,
       res,
+      <span class="hljs-attr">secure</span>: <span class="pl-c1">true</span> <span class="pl-c">// Set true, if you are using HTTPS</span>
     }),
   });
 

@@ -5709,7 +5709,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 /* eslint-disable class-methods-use-this */
 
 var defaultSdkConfig = {
-  baseUrl: '',
+  clientId: null,
+  baseUrl: null,
   typeHandlers: [],
   endpoints: [],
   adapter: null,
@@ -6305,6 +6306,10 @@ var validateSdkConfig = function validateSdkConfig(sdkConfig) {
     throw new Error('clientId must be provided');
   }
 
+  if (!sdkConfig.baseUrl) {
+    throw new Error('baseUrl must be provided');
+  }
+
   return sdkConfig;
 };
 
@@ -6328,7 +6333,7 @@ function SharetribeSdk(userSdkConfig) {
   });
 
   // Read the endpoint definitions and do some mapping
-  var endpointDefs = [].concat(endpointDefinitions, _toConsumableArray(sdkConfig.endpoints)).map(function (epDef) {
+  var endpointDefs = [].concat(endpointDefinitions).map(function (epDef) {
     var path = epDef.path,
         apiName = epDef.apiName,
         method = epDef.method,
@@ -6367,10 +6372,8 @@ function SharetribeSdk(userSdkConfig) {
     typeHandlers: sdkConfig.typeHandlers
   };
 
-  var userDefinedSdkFnDefs = sdkFnDefsFromEndpointDefs(sdkConfig.endpoints);
-
   // Create SDK functions
-  var sdkFns = [].concat(_toConsumableArray(endpointSdkFnDefinitions), additionalSdkFnDefinitions, _toConsumableArray(userDefinedSdkFnDefs)).map(function (_ref12) {
+  var sdkFns = [].concat(_toConsumableArray(endpointSdkFnDefinitions), additionalSdkFnDefinitions).map(function (_ref12) {
     var path = _ref12.path,
         method = _ref12.method,
         endpointInterceptorPath = _ref12.endpointInterceptorPath,

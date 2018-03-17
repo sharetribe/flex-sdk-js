@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=42463e55"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-sdk-web.js?t=a92f43dc"></script>
+    <script src="sharetribe-sdk-web.js?t=3fb4304b"></script>
     <title>Configurations - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
   </head>
@@ -111,14 +111,18 @@
     }
   ],
 
-
   <span class="pl-c">// Node.js only.</span>
   <span class="pl-c">// HTTP and HTTPS agents to be used when performing</span>
   <span class="pl-c">// http and https request. This allows defining non-default</span>
   <span class="pl-c">// options for agent, such as `{ keepAlive: true }`.</span>
   <span class="pl-c">//</span>
   httpAgent: httpAgent,
-  <span class="hljs-attr">httpsAgent</span>: httpsAgent
+  <span class="hljs-attr">httpsAgent</span>: httpsAgent,
+
+  <span class="pl-c">// If true and default browser token store is used,</span>
+  <span class="pl-c">// the cookie is never transferred without HTTPS connection</span>
+  secure: <span class="pl-c1">true</span>
+
 });
 </code></pre>
 
