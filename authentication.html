@@ -5,7 +5,8 @@
     <link rel="stylesheet" href="assets/style.css?t=615badd5">
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=42463e55"></script>
-    <script src="scripts.js?t=673e675e"></script>
+    <script src="scripts.js?t=bafb4b9e"></script>
+    <script src="sharetribe-sdk-web.js?t=a92f43dc"></script>
     <title>Authentication - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
   </head>
@@ -19,9 +20,21 @@
             </li>
             <li class="menu-item -level-1"><a class="link title  link-features" href="features.html">Features</a>
             </li>
+            <li class="menu-item -level-1"><a class="link title  link-try-it-in-browser" href="try-it-in-browser.html">Try it in browser!</a>
+            </li>
+            <li class="menu-item -level-1"><a class="link title  link-try-it-in-command-line" href="try-it-in-command-line.html">Try it in command-line!</a>
+            </li>
             <li class="menu-item -level-1 -parent"><span class="title">Getting started</span>
               <ul class="submenu">
                 <li class="menu-item -level-2"><a class="link title -active link-authentication" href="authentication.html">Authentication</a>
+                  <ul class="headings heading-list">
+                    <li class="heading-item -depth-2"><a class="hlink link-login" href="#login">Login</a>
+                    </li>
+                    <li class="heading-item -depth-2"><a class="hlink link-logout" href="#logout">Logout</a>
+                    </li>
+                    <li class="heading-item -depth-2"><a class="hlink link-determine-if-user-is-logged-in" href="#determine-if-user-is-logged-in">Determine if user is logged in</a>
+                    </li>
+                  </ul>
                 </li>
                 <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the API</a>
                 </li>
@@ -39,15 +52,15 @@
                 </li>
                 <li class="menu-item -level-2"><a class="link title  link-token-store" href="token-store.html">Token store</a>
                 </li>
-                <li class="menu-item -level-2"><span class="title">Writing your own token store (TBD)</span>
+                <li class="menu-item -level-2"><a class="link title  link-sharing-session-between-client-and-server" href="sharing-session-between-client-and-server.html">Sharing session between client and server</a>
                 </li>
-                <li class="menu-item -level-2"><span class="title">Sharing authentication with client and server (TBD)</span>
+                <li class="menu-item -level-2"><a class="link title  link-keep-alive" href="keep-alive.html">Keep-Alive</a>
                 </li>
-                <li class="menu-item -level-2"><span class="title">REPL (TBD)</span>
+                <li class="menu-item -level-2"><a class="link title  link-writing-your-own-token-store" href="writing-your-own-token-store.html">Writing your own token store</a>
                 </li>
               </ul>
             </li>
-            <li class="menu-item -level-1"><span class="title">Developing SDK (TBD)</span>
+            <li class="menu-item -level-1"><a class="link title  link-developing-sdk" href="developing-sdk.html">Developing SDK</a>
             </li>
           </ul>
         </li>
@@ -59,39 +72,80 @@
           </div>
         </div>
         <div class="markdown-body"><h1 id="authentication">Authentication</h1>
-<p>The SDK provides two methods for log in and log out:</p>
-<h4 id="login(-username:-string-password:-string-)"><code>login({ username: string, password: string })</code></h4>
-<p>Authenticates the user. The SDK is now able to access information that is not available for anonymous users.</p>
-<h4 id="logout()"><code>logout()</code></h4>
+<p>The SDK provides methods to log the user in and out.</p>
+<h2 id="login">Login</h2>
+<p><strong><code>sdk.login({ username: string, password: string })</code></strong></p>
+<p>Authenticates the user. The SDK is now able to access information that
+is not available for anonymous users.</p>
+<h2 id="logout">Logout</h2>
+<p><strong><code>sdk.logout()</code></strong></p>
 <p>Logs out the user.</p>
 <p><strong>Example:</strong></p>
 <p>Here&apos;s a full example how to log user in and out</p>
 <pre><code class="lang-js">sdk
-  .login({ <span class="hljs-attr">username</span>: <span class="pl-s">&quot;test-user@example.com&quot;</span>, <span class="hljs-attr">password</span>: <span class="pl-s">&quot;test-secret&quot;</span> })
+  .login({ <span class="hljs-attr">username</span>: <span class="pl-s">&apos;test-user@example.com&apos;</span>, <span class="hljs-attr">password</span>: <span class="pl-s">&apos;test-secret&apos;</span> })
   .then(<span class="hljs-function"><span class="hljs-params">loginRes</span> =&gt;</span> {
-    <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;Logged in successfully&quot;</span>);
+    <span class="pl-c1">console</span>.log(<span class="pl-s">&apos;Logged in successfully&apos;</span>);
 
     <span class="pl-k">return</span> sdk.currentUser.show();
   })
   .then(<span class="hljs-function"><span class="hljs-params">userRes</span> =&gt;</span> {
     <span class="pl-k">const</span> profile = userRes.data.data.attributes.profile;
-    <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;Current user: ${profile.firstName} ${profile.lastName}&quot;</span>);
+    <span class="pl-c1">console</span>.log(<span class="pl-s">&apos;Current user: ${profile.firstName} ${profile.lastName}&apos;</span>);
 
     <span class="pl-k">return</span> sdk.logout();
   })
   .then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;Logged out. Bye!&quot;</span>);
+    <span class="pl-c1">console</span>.log(<span class="pl-s">&apos;Logged out. Bye!&apos;</span>);
   })
   .catch(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
     <span class="pl-c">// An error occurred</span>
     <span class="pl-c1">console</span>.log(<span class="pl-s">`Request failed with status: <span class="hljs-subst">${res.status}</span> <span class="hljs-subst">${res.statusText}</span>`</span>);
   });
 </code></pre>
-<p><strong>Trobleshooting:</strong> In case you&apos;re testing locally from <code>file:///</code>, the session information may not be saved after successful login. In this case, you should configure the SDK to use <a href="token-store.html#memory-store">memory-based token store</a>.</p>
+<p><strong>Trobleshooting:</strong> In case you&apos;re testing locally from <code>file:///</code>,
+the session information may not be saved after successful login. In
+this case, you should configure the SDK to use <a href="token-store.html#memory-store">memory-based token
+store</a>.</p>
+<h2 id="determine-if-user-is-logged-in">Determine if user is logged in</h2>
+<p>SDK provides a helper method to define whether the user is logged in
+or not:</p>
+<p><strong><code>authInfo()</code></strong></p>
+<p>Returns a Promise which value is either <code>null</code> or an object with field
+<code>grantType</code>. The <code>grantType</code> value is either <code>&apos;client_credentials&apos;</code>,
+<code>&apos;refresh_token&apos;</code>. The different values have the following meaning:</p>
+<ul>
+<li><code>null</code>: user hasn&apos;t yet authenticated itself to API (i.e. hasn&apos;t
+done any requests to the API).</li>
+<li>Grant type <code>&apos;client_credentials&apos;</code>: user has &quot;anonymous&quot; access to the API</li>
+<li>Grant type <code>&apos;refresh_token&apos;</code>: user has logged in.</li>
+</ul>
+<p>In the application code, it&apos;s enough to check that the value of
+<code>grantType</code> equals to <code>&apos;refresh_token&apos;</code> to determine if the user has
+logged in.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-js">sdk.authInfo().then(<span class="hljs-function"><span class="hljs-params">authInfo</span> =&gt;</span> {
+  <span class="pl-k">if</span> (authInfo &amp;&amp; authInfo.grantType === <span class="pl-s">&apos;refresh_token&apos;</span>) {
+    <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;User is logged in.&quot;</span>);
+  } <span class="pl-k">else</span> {
+    <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;User is not logged in.&quot;</span>)
+  }
+};
+</code></pre>
+<p><strong>Please note:</strong> Even thought the <code>authInfo</code> method returns a Promise,
+the method does not do any API calls. The authentication information
+is saved to the <a href="token-store.html">token store</a> currently in
+use. Because of this the <code>authInfo</code> method be called freely as many
+times as needed without a fear of firing multiple API calls.</p>
+<p><strong>Please note:</strong> The token store does not store any other information
+about the user in addition to the the authentication information. If
+you for example need to know the name of the logged in user, you need
+to call <code>sdk.current_user.show()</code>, which calls the corresponding API
+endpoint to fetch information about the currently logged in user.</p>
 
         </div>
         <div class="footer-nav">
-          <div class="left"><a href="features.html"><span class="title">Features</span></a></div>
+          <div class="left"><a href="try-it-in-command-line.html"><span class="title">Try it in command-line!</span></a></div>
           <div class="right"><a href="calling-the-api.html"><span class="label">Next: </span><span class="title">Calling the API</span></a></div>
         </div>
       </div>

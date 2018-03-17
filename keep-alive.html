@@ -7,7 +7,7 @@
     <script src="assets/script.js?t=42463e55"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
     <script src="sharetribe-sdk-web.js?t=a92f43dc"></script>
-    <title>Your own types - Sharetribe Flex SDK for JavaScript</title>
+    <title>Keep-Alive - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
   </head>
   <body class="-menu-visible">
@@ -38,7 +38,7 @@
               <ul class="submenu">
                 <li class="menu-item -level-2"><a class="link title  link-configurations" href="configurations.html">Configurations</a>
                 </li>
-                <li class="menu-item -level-2"><a class="link title -active link-your-own-types" href="your-own-types.html">Your own types</a>
+                <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
                 </li>
                 <li class="menu-item -level-2"><a class="link title  link-serializing-types-to-json" href="serializing-types-to-json.html">Serializing types to JSON</a>
                 </li>
@@ -46,7 +46,7 @@
                 </li>
                 <li class="menu-item -level-2"><a class="link title  link-sharing-session-between-client-and-server" href="sharing-session-between-client-and-server.html">Sharing session between client and server</a>
                 </li>
-                <li class="menu-item -level-2"><a class="link title  link-keep-alive" href="keep-alive.html">Keep-Alive</a>
+                <li class="menu-item -level-2"><a class="link title -active link-keep-alive" href="keep-alive.html">Keep-Alive</a>
                 </li>
                 <li class="menu-item -level-2"><a class="link title  link-writing-your-own-token-store" href="writing-your-own-token-store.html">Writing your own token store</a>
                 </li>
@@ -57,75 +57,51 @@
           </ul>
         </li>
       </div>
-      <div class="body page-your-own-types">
+      <div class="body page-keep-alive">
         <div class="header-nav">
           <div class="right"><a class="iconlink" href="https://github.com/sharetribe/sharetribe-sdk-js" data-title="sharetribe/sharetribe-sdk-js">
               <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
           </div>
         </div>
-        <div class="markdown-body"><h1 id="your-own-types">Your own types</h1>
-<p>In case you are using your own types or types from external library,
-the SDK provides a way to convert the SDK types to and from your own types.</p>
-<p>The conversion is handled by &quot;type handlers&quot;. You need to pass
-<code>typeHandlers</code> when you create a new SDK instance.</p>
-<p>A type handler is an object containing the following properties:</p>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>type</code></td>
-<td>The SDK type.</td>
-</tr>
-<tr>
-<td><code>customType</code></td>
-<td>The custom type to convert to/from.</td>
-</tr>
-<tr>
-<td><code>reader</code></td>
-<td>Conversion function. Gets an instance of <code>type</code> as an argument, should return instance of <code>customType</code>.</td>
-</tr>
-<tr>
-<td><code>writer</code></td>
-<td>Conversion function. Gets an instance of <code>customType</code> as an argument, should return instance of <code>type</code>.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Example:</strong> Convert
-<a href="https://developers.google.com/maps/documentation/javascript/reference/3/#LatLng"><code>google.maps.LatLng</code></a>
-to/from <code>LatLng</code> and <a href="https://github.com/MikeMcl/decimal.js/">Decimal.js</a> <code>Decimal</code> to/from <code>BigDecimal</code></p>
-<pre><code class="lang-js"><span class="pl-k">const</span> { BigDecimal, LatLng } = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-sdk&apos;</span>).types;
+        <div class="markdown-body"><h1 id="keep-alive">Keep-Alive</h1>
+<p><em>Node.js only</em></p>
+<p>By default, Node.js <code>http.Agent</code> and <code>https.Agent</code> create a new connection for each request. After the request is completed, the connection is closed. By keeping the connection open and reusing it for consecutive requests, the request time can be reduced. This is escpecially true for HTTPS connections, where the SSL handshake requires adds extra overhead for each request.</p>
+<p>The SDK can be configured to use custom <code>httpAgent</code> and <code>httpsAgent</code>, where the <code>keepAlive</code> is set to <code>true</code>.</p>
+<p>Using persistent Keep-Alive connections is recommended, because of the reductions to the request times.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-js"><span class="pl-k">const</span> express = <span class="pl-c1">require</span>(<span class="pl-s">&apos;express&apos;</span>);
+<span class="pl-k">const</span> http = <span class="pl-c1">require</span>(<span class="pl-s">&apos;http&apos;</span>);
+<span class="pl-k">const</span> https = <span class="pl-c1">require</span>(<span class="pl-s">&apos;https&apos;</span>);
 
-<span class="pl-k">const</span> sdk = createInstance({
-  <span class="hljs-attr">clientId</span>: config.sdk.clientId,
-  <span class="hljs-attr">baseUrl</span>: config.sdk.baseUrl,
-  <span class="hljs-attr">typeHandlers</span>: [
-    {
-      <span class="hljs-attr">type</span>: BigDecimal,
-      <span class="hljs-attr">customType</span>: Decimal,
-      <span class="hljs-attr">writer</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> BigDecimal(v.toString()),
-      <span class="hljs-attr">reader</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> Decimal(v.value),
-    },
-      <span class="hljs-attr">type</span>: LatLng,
-      <span class="hljs-attr">customType</span>: google.maps.LatLng,
-      <span class="hljs-attr">writer</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> LatLng(v.lat(), v.lng()),
-      <span class="hljs-attr">reader</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> google.maps.LatLng(v.lat, v.lng)
-    }
-  ]
+<span class="pl-k">const</span> app = express();
+
+<span class="pl-c">// Instantiate HTTP(S) Agents with keepAlive set to true.</span>
+<span class="pl-c">// This will reduce the request time for consecutive requests by</span>
+<span class="pl-c">// reusing the existing TCP connection, thus eliminating the time used</span>
+<span class="pl-c">// for setting up new TCP connections.</span>
+<span class="pl-k">const</span> httpAgent = <span class="pl-k">new</span> http.Agent({ <span class="hljs-attr">keepAlive</span>: <span class="pl-c1">true</span> });
+<span class="pl-k">const</span> httpsAgent = <span class="pl-k">new</span> https.Agent({ <span class="hljs-attr">keepAlive</span>: <span class="pl-c1">true</span> });
+
+app.get(<span class="pl-s">&apos;/&apos;</span>, (req, res) =&gt; {
+  <span class="pl-c">// Initialize the SDK instance</span>
+  <span class="pl-k">const</span> sdk = sharetribeSdk.createInstance({
+    <span class="hljs-attr">clientId</span>: <span class="pl-s">&quot;&lt;your Client ID&gt;&quot;</span>,
+    <span class="hljs-attr">baseUrl</span>: <span class="pl-s">&quot;&lt;your Base URL&gt;&quot;</span>,
+    <span class="hljs-attr">httpAgent</span>: httpAgent,
+    <span class="hljs-attr">httpsAgent</span>: httpsAgent
+  });
+
+  <span class="pl-c">// Call the SDK to preload listings</span>
+  sdk.listings.search({ ... }).then(<span class="hljs-function">(<span class="hljs-params">listingsResult</span>) =&gt;</span> {
+    <span class="pl-c">// do rendering etc.</span>
+  });
 });
 </code></pre>
-<p><strong>Caveat:</strong> Only body paramters are converted by type handlers. An
-error <em>Don&apos;t know how to serialize query parameter</em> will be thrown
-if query parameters contain your own types.</p>
 
         </div>
         <div class="footer-nav">
-          <div class="left"><a href="configurations.html"><span class="title">Configurations</span></a></div>
-          <div class="right"><a href="serializing-types-to-json.html"><span class="label">Next: </span><span class="title">Serializing types to JSON</span></a></div>
+          <div class="left"><a href="sharing-session-between-client-and-server.html"><span class="title">Sharing session between client and server</span></a></div>
+          <div class="right"><a href="writing-your-own-token-store.html"><span class="label">Next: </span><span class="title">Writing your own token store</span></a></div>
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@
     <script src="assets/script.js?t=42463e55"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
     <script src="sharetribe-sdk-web.js?t=a92f43dc"></script>
-    <title>Configurations - Sharetribe Flex SDK for JavaScript</title>
+    <title>Try it in browser! - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
   </head>
   <body class="-menu-visible">
@@ -20,7 +20,7 @@
             </li>
             <li class="menu-item -level-1"><a class="link title  link-features" href="features.html">Features</a>
             </li>
-            <li class="menu-item -level-1"><a class="link title  link-try-it-in-browser" href="try-it-in-browser.html">Try it in browser!</a>
+            <li class="menu-item -level-1"><a class="link title -active link-try-it-in-browser" href="try-it-in-browser.html">Try it in browser!</a>
             </li>
             <li class="menu-item -level-1"><a class="link title  link-try-it-in-command-line" href="try-it-in-command-line.html">Try it in command-line!</a>
             </li>
@@ -36,7 +36,7 @@
             </li>
             <li class="menu-item -level-1 -parent"><span class="title">Advanced</span>
               <ul class="submenu">
-                <li class="menu-item -level-2"><a class="link title -active link-configurations" href="configurations.html">Configurations</a>
+                <li class="menu-item -level-2"><a class="link title  link-configurations" href="configurations.html">Configurations</a>
                 </li>
                 <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
                 </li>
@@ -57,75 +57,38 @@
           </ul>
         </li>
       </div>
-      <div class="body page-configurations">
+      <div class="body page-try-it-in-browser">
         <div class="header-nav">
           <div class="right"><a class="iconlink" href="https://github.com/sharetribe/sharetribe-sdk-js" data-title="sharetribe/sharetribe-sdk-js">
               <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
           </div>
         </div>
-        <div class="markdown-body"><h1 id="configurations">Configurations</h1>
-<p>There are a few config options that can given to the <code>createInstance</code>:</p>
-<pre><code class="lang-js"><span class="pl-k">const</span> sharetribeSdk = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-sdk&apos;</span>);
-
-<span class="pl-k">var</span> sdk = sharetribeSdk.createInstance({
-
-  <span class="pl-c">// The API ClientID (mandatory)</span>
-  clientId: <span class="pl-s">&quot;08ec69f6-d37e-414d-83eb-324e94afddf0&quot;</span>,
-
-  <span class="pl-c">// The API base URL (mandatory)</span>
-  baseUrl: <span class="pl-s">&quot;https://api.sharetribe.com/v1/&quot;</span>,
-
-  <span class="pl-c">// Token store</span>
-  <span class="pl-c">//</span>
-  <span class="pl-c">// Token store instance to use. Token store is where the SDK saves the session information.</span>
-  <span class="pl-c">//</span>
-  <span class="pl-c">// Built-in token stores:</span>
-  <span class="pl-c">//</span>
-  <span class="pl-c">// - sharetribeSdk.tokenStore.browserCookieStore</span>
-  <span class="pl-c">// - sharetribeSdk.tokenStore.expressCookieStore</span>
-  <span class="pl-c">// - sharetribeSdk.tokenStore.memoryStore</span>
-  <span class="pl-c">//</span>
-  <span class="pl-c">// Default: sharetribeSdk.tokenStore.browserCookieStore()</span>
-  <span class="pl-c">//</span>
-  tokenStore: sharetribeSdk.tokenStore.browserCookieStore(),
-
-  <span class="pl-c">// List of type handlers</span>
-  typeHandlers: [
-    {
-      <span class="hljs-attr">type</span>: UUID,
-      <span class="hljs-attr">customType</span>: MyUuidType,
-
-      <span class="pl-c">// Writer fn type signature must be:</span>
-      <span class="pl-c">// type -&gt; customType</span>
-      <span class="pl-c">//</span>
-      <span class="pl-c">// E.g.</span>
-      <span class="pl-c">// UUID -&gt; MyUuidType</span>
-      writer: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> UUID(v.myUuid),
-
-      <span class="pl-c">// Reader fn type signature must be:</span>
-      <span class="pl-c">// customType -&gt; type</span>
-      <span class="pl-c">//</span>
-      <span class="pl-c">// E.g.</span>
-      <span class="pl-c">// MyUuidType -&gt; UUID</span>
-      reader: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> MyUuidType(v.uuid),
-    }
-  ],
-
-
-  <span class="pl-c">// Node.js only.</span>
-  <span class="pl-c">// HTTP and HTTPS agents to be used when performing</span>
-  <span class="pl-c">// http and https request. This allows defining non-default</span>
-  <span class="pl-c">// options for agent, such as `{ keepAlive: true }`.</span>
-  <span class="pl-c">//</span>
-  httpAgent: httpAgent,
-  <span class="hljs-attr">httpsAgent</span>: httpsAgent
-});
+        <div class="markdown-body"><h1 id="try-it-in-browser!">Try it in browser!</h1>
+<p>The SDK is loaded in this page!</p>
+<p>To try the SDK in the browser, just open the Console in your browsers Developer Tools. The SDK is loaded in a global names <code>sharetribeSdk</code>.</p>
+<p>You can try for example copy-pasting the following commands to the Console:</p>
+<p>Set your clientId:</p>
+<pre><code class="lang-js"><span class="pl-k">const</span> clientId = <span class="pl-s">&quot;&lt;your clientId here&gt;&quot;</span>;
+</code></pre>
+<p>Set your baseUrl:</p>
+<pre><code class="lang-js"><span class="pl-k">const</span> baseUrl = <span class="pl-s">&quot;&lt;your baseUrl here&gt;&quot;</span>;
+</code></pre>
+<p>Create new SDK instance:</p>
+<pre><code class="lang-js"><span class="pl-k">const</span> sdk = sharetribeSdk.createInstance({clientId, baseUrl});
+</code></pre>
+<p>Fetch 10 listings:</p>
+<pre><code class="lang-js">sdk.listings.query({<span class="hljs-attr">per_page</span>: <span class="hljs-number">10</span>}).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+  <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;Fetched &quot;</span> + response.data.data.length + <span class="pl-s">&quot; listings.&quot;</span>);
+  response.data.data.forEach(<span class="hljs-function"><span class="hljs-params">listing</span> =&gt;</span> {
+    <span class="pl-c1">console</span>.log(listing.attributes.title);
+  })
+})
 </code></pre>
 
         </div>
         <div class="footer-nav">
-          <div class="left"><a href="types.html"><span class="title">Types</span></a></div>
-          <div class="right"><a href="your-own-types.html"><span class="label">Next: </span><span class="title">Your own types</span></a></div>
+          <div class="left"><a href="features.html"><span class="title">Features</span></a></div>
+          <div class="right"><a href="try-it-in-command-line.html"><span class="label">Next: </span><span class="title">Try it in command-line!</span></a></div>
         </div>
       </div>
     </div>

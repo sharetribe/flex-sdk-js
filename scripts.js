@@ -13,16 +13,24 @@
 
   function renderAnchors() {
     ["h1", "h2", "h3", "h4", "h5"].forEach(function(tagName) {
-      console.log("Rendering anchors for", tagName);
       Array.from(document.getElementsByTagName(tagName)).forEach(function(headerElem) {
         headerElem.prepend(anchorLink(headerElem.id));
       });
     });
   }
 
+  function printWelcomeMessage() {
+    console.log("");
+    console.log("✨ Try the SDK in browser! ✨");
+    console.log("");
+    console.log("The SDK is loaded in window.sharetribeSdk global variable.");
+    console.log("");
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     // Render anchors when page is loaded
     renderAnchors();
+    printWelcomeMessage();
   }, false);
 
   document.addEventListener('pjax:success', function() {

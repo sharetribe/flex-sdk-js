@@ -7,7 +7,7 @@
     <script src="assets/script.js?t=42463e55"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
     <script src="sharetribe-sdk-web.js?t=a92f43dc"></script>
-    <title>Configurations - Sharetribe Flex SDK for JavaScript</title>
+    <title>Writing your own token store - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
   </head>
   <body class="-menu-visible">
@@ -36,7 +36,7 @@
             </li>
             <li class="menu-item -level-1 -parent"><span class="title">Advanced</span>
               <ul class="submenu">
-                <li class="menu-item -level-2"><a class="link title -active link-configurations" href="configurations.html">Configurations</a>
+                <li class="menu-item -level-2"><a class="link title  link-configurations" href="configurations.html">Configurations</a>
                 </li>
                 <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
                 </li>
@@ -48,7 +48,13 @@
                 </li>
                 <li class="menu-item -level-2"><a class="link title  link-keep-alive" href="keep-alive.html">Keep-Alive</a>
                 </li>
-                <li class="menu-item -level-2"><a class="link title  link-writing-your-own-token-store" href="writing-your-own-token-store.html">Writing your own token store</a>
+                <li class="menu-item -level-2"><a class="link title -active link-writing-your-own-token-store" href="writing-your-own-token-store.html">Writing your own token store</a>
+                  <ul class="headings heading-list">
+                    <li class="heading-item -depth-2"><a class="hlink link-interface" href="#interface">Interface</a>
+                    </li>
+                    <li class="heading-item -depth-2"><a class="hlink link-examples" href="#examples">Examples</a>
+                    </li>
+                  </ul>
                 </li>
               </ul>
             </li>
@@ -57,75 +63,35 @@
           </ul>
         </li>
       </div>
-      <div class="body page-configurations">
+      <div class="body page-writing-your-own-token-store">
         <div class="header-nav">
           <div class="right"><a class="iconlink" href="https://github.com/sharetribe/sharetribe-sdk-js" data-title="sharetribe/sharetribe-sdk-js">
               <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
           </div>
         </div>
-        <div class="markdown-body"><h1 id="configurations">Configurations</h1>
-<p>There are a few config options that can given to the <code>createInstance</code>:</p>
-<pre><code class="lang-js"><span class="pl-k">const</span> sharetribeSdk = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-sdk&apos;</span>);
-
-<span class="pl-k">var</span> sdk = sharetribeSdk.createInstance({
-
-  <span class="pl-c">// The API ClientID (mandatory)</span>
-  clientId: <span class="pl-s">&quot;08ec69f6-d37e-414d-83eb-324e94afddf0&quot;</span>,
-
-  <span class="pl-c">// The API base URL (mandatory)</span>
-  baseUrl: <span class="pl-s">&quot;https://api.sharetribe.com/v1/&quot;</span>,
-
-  <span class="pl-c">// Token store</span>
-  <span class="pl-c">//</span>
-  <span class="pl-c">// Token store instance to use. Token store is where the SDK saves the session information.</span>
-  <span class="pl-c">//</span>
-  <span class="pl-c">// Built-in token stores:</span>
-  <span class="pl-c">//</span>
-  <span class="pl-c">// - sharetribeSdk.tokenStore.browserCookieStore</span>
-  <span class="pl-c">// - sharetribeSdk.tokenStore.expressCookieStore</span>
-  <span class="pl-c">// - sharetribeSdk.tokenStore.memoryStore</span>
-  <span class="pl-c">//</span>
-  <span class="pl-c">// Default: sharetribeSdk.tokenStore.browserCookieStore()</span>
-  <span class="pl-c">//</span>
-  tokenStore: sharetribeSdk.tokenStore.browserCookieStore(),
-
-  <span class="pl-c">// List of type handlers</span>
-  typeHandlers: [
-    {
-      <span class="hljs-attr">type</span>: UUID,
-      <span class="hljs-attr">customType</span>: MyUuidType,
-
-      <span class="pl-c">// Writer fn type signature must be:</span>
-      <span class="pl-c">// type -&gt; customType</span>
-      <span class="pl-c">//</span>
-      <span class="pl-c">// E.g.</span>
-      <span class="pl-c">// UUID -&gt; MyUuidType</span>
-      writer: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> UUID(v.myUuid),
-
-      <span class="pl-c">// Reader fn type signature must be:</span>
-      <span class="pl-c">// customType -&gt; type</span>
-      <span class="pl-c">//</span>
-      <span class="pl-c">// E.g.</span>
-      <span class="pl-c">// MyUuidType -&gt; UUID</span>
-      reader: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> MyUuidType(v.uuid),
-    }
-  ],
-
-
-  <span class="pl-c">// Node.js only.</span>
-  <span class="pl-c">// HTTP and HTTPS agents to be used when performing</span>
-  <span class="pl-c">// http and https request. This allows defining non-default</span>
-  <span class="pl-c">// options for agent, such as `{ keepAlive: true }`.</span>
-  <span class="pl-c">//</span>
-  httpAgent: httpAgent,
-  <span class="hljs-attr">httpsAgent</span>: httpsAgent
-});
-</code></pre>
+        <div class="markdown-body"><h1 id="writing-your-own-token-store">Writing your own token store</h1>
+<p>The SDK ships with three built-in token store implementations: Browser
+cookie store, Express cookie store and memory store. However, in some
+cases you may need to write your own cookie store, for example if you
+want to save the cookie in some other location, like
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage">LocalStorage</a>.</p>
+<h2 id="interface">Interface</h2>
+<p>The Token store interface has three methods. Any token store
+implementation must implement all of them:</p>
+<h4 id="settoken(object)-:-null-or-promise(null)"><code>setToken(Object) : null | Promise(null)</code></h4>
+<p>Stores the new token. Returns either <code>null</code> or a <code>Promise</code>.</p>
+<h4 id="gettoken()-:-object-or-promise(object)"><code>getToken() : Object | Promise(Object)</code></h4>
+<p>Reads the token from the store. Returns either a token or a Promise
+holding the token as a value.</p>
+<h4 id="removetoken-:-null-or-promise(null)"><code>removeToken</code> : null | Promise(null)</h4>
+<p>Removes the stored token. Returns either <code>null</code> or a Promise.</p>
+<h2 id="examples">Examples</h2>
+<p>See the built-in token store implementations.</p>
 
         </div>
         <div class="footer-nav">
-          <div class="left"><a href="types.html"><span class="title">Types</span></a></div>
-          <div class="right"><a href="your-own-types.html"><span class="label">Next: </span><span class="title">Your own types</span></a></div>
+          <div class="left"><a href="keep-alive.html"><span class="title">Keep-Alive</span></a></div>
+          <div class="right"><a href="developing-sdk.html"><span class="label">Next: </span><span class="title">Developing SDK</span></a></div>
         </div>
       </div>
     </div>

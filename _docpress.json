@@ -51,13 +51,42 @@
         "slug": "features"
       },
       {
+        "title": "Try it in browser!",
+        "source": "docs/try-it-in-browser.md",
+        "url": "try-it-in-browser.html",
+        "slug": "try-it-in-browser"
+      },
+      {
+        "title": "Try it in command-line!",
+        "source": "docs/try-it-in-command-line.md",
+        "url": "try-it-in-command-line.html",
+        "slug": "try-it-in-command-line"
+      },
+      {
         "title": "Getting started",
         "sections": [
           {
             "title": "Authentication",
             "source": "docs/authentication.md",
             "url": "authentication.html",
-            "slug": "authentication"
+            "slug": "authentication",
+            "headings": [
+              {
+                "title": "Login",
+                "depth": 2,
+                "id": "login"
+              },
+              {
+                "title": "Logout",
+                "depth": 2,
+                "id": "logout"
+              },
+              {
+                "title": "Determine if user is logged in",
+                "depth": 2,
+                "id": "determine-if-user-is-logged-in"
+              }
+            ]
           },
           {
             "title": "Calling the API",
@@ -131,14 +160,7 @@
             "title": "Configurations",
             "source": "docs/configurations.md",
             "url": "configurations.html",
-            "slug": "configurations",
-            "headings": [
-              {
-                "title": "Configurations",
-                "depth": 2,
-                "id": "configurations"
-              }
-            ]
+            "slug": "configurations"
           },
           {
             "title": "Your own types",
@@ -176,18 +198,42 @@
             ]
           },
           {
-            "title": "Writing your own token store (TBD)"
+            "title": "Sharing session between client and server",
+            "source": "docs/sharing-session-between-client-and-server.md",
+            "url": "sharing-session-between-client-and-server.html",
+            "slug": "sharing-session-between-client-and-server"
           },
           {
-            "title": "Sharing authentication with client and server (TBD)"
+            "title": "Keep-Alive",
+            "source": "docs/keep-alive.md",
+            "url": "keep-alive.html",
+            "slug": "keep-alive"
           },
           {
-            "title": "REPL (TBD)"
+            "title": "Writing your own token store",
+            "source": "docs/writing-your-own-token-store.md",
+            "url": "writing-your-own-token-store.html",
+            "slug": "writing-your-own-token-store",
+            "headings": [
+              {
+                "title": "Interface",
+                "depth": 2,
+                "id": "interface"
+              },
+              {
+                "title": "Examples",
+                "depth": 2,
+                "id": "examples"
+              }
+            ]
           }
         ]
       },
       {
-        "title": "Developing SDK (TBD)"
+        "title": "Developing SDK",
+        "source": "docs/developing-sdk.md",
+        "url": "developing-sdk.html",
+        "slug": "developing-sdk"
       }
     ]
   },
@@ -241,11 +287,40 @@
       "pageTitle": "Features",
       "slug": "features"
     },
+    "try-it-in-browser.html": {
+      "source": "docs/try-it-in-browser.md",
+      "title": "Try it in browser! - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Try it in browser!",
+      "slug": "try-it-in-browser"
+    },
+    "try-it-in-command-line.html": {
+      "source": "docs/try-it-in-command-line.md",
+      "title": "Try it in command-line! - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Try it in command-line!",
+      "slug": "try-it-in-command-line"
+    },
     "authentication.html": {
       "source": "docs/authentication.md",
       "title": "Authentication - Sharetribe Flex SDK for JavaScript",
       "pageTitle": "Authentication",
-      "slug": "authentication"
+      "slug": "authentication",
+      "headings": [
+        {
+          "title": "Login",
+          "depth": 2,
+          "id": "login"
+        },
+        {
+          "title": "Logout",
+          "depth": 2,
+          "id": "logout"
+        },
+        {
+          "title": "Determine if user is logged in",
+          "depth": 2,
+          "id": "determine-if-user-is-logged-in"
+        }
+      ]
     },
     "calling-the-api.html": {
       "source": "docs/calling-the-api.md",
@@ -314,14 +389,7 @@
       "source": "docs/configurations.md",
       "title": "Configurations - Sharetribe Flex SDK for JavaScript",
       "pageTitle": "Configurations",
-      "slug": "configurations",
-      "headings": [
-        {
-          "title": "Configurations",
-          "depth": 2,
-          "id": "configurations"
-        }
-      ]
+      "slug": "configurations"
     },
     "your-own-types.html": {
       "source": "docs/your-own-types.md",
@@ -357,11 +425,49 @@
           "id": "memory-store"
         }
       ]
+    },
+    "sharing-session-between-client-and-server.html": {
+      "source": "docs/sharing-session-between-client-and-server.md",
+      "title": "Sharing session between client and server - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Sharing session between client and server",
+      "slug": "sharing-session-between-client-and-server"
+    },
+    "keep-alive.html": {
+      "source": "docs/keep-alive.md",
+      "title": "Keep-Alive - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Keep-Alive",
+      "slug": "keep-alive"
+    },
+    "writing-your-own-token-store.html": {
+      "source": "docs/writing-your-own-token-store.md",
+      "title": "Writing your own token store - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Writing your own token store",
+      "slug": "writing-your-own-token-store",
+      "headings": [
+        {
+          "title": "Interface",
+          "depth": 2,
+          "id": "interface"
+        },
+        {
+          "title": "Examples",
+          "depth": 2,
+          "id": "examples"
+        }
+      ]
+    },
+    "developing-sdk.html": {
+      "source": "docs/developing-sdk.md",
+      "title": "Developing SDK - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Developing SDK",
+      "slug": "developing-sdk"
     }
   },
   "sources": {
     "README.md": "index.html",
     "docs/features.md": "features.html",
+    "docs/try-it-in-browser.md": "try-it-in-browser.html",
+    "docs/try-it-in-command-line.md": "try-it-in-command-line.html",
     "docs/authentication.md": "authentication.html",
     "docs/calling-the-api.md": "calling-the-api.html",
     "docs/types.md": "types.html",
@@ -369,8 +475,13 @@
     "docs/your-own-types.md": "your-own-types.html",
     "docs/serializing-types-to-json.md": "serializing-types-to-json.html",
     "docs/token-store.md": "token-store.html",
+    "docs/sharing-session-between-client-and-server.md": "sharing-session-between-client-and-server.html",
+    "docs/keep-alive.md": "keep-alive.html",
+    "docs/writing-your-own-token-store.md": "writing-your-own-token-store.html",
+    "docs/developing-sdk.md": "developing-sdk.html",
     "docs/docpress.json": "docpress.json",
     "docs/scripts.js": "scripts.js",
+    "docs/sharetribe-sdk-web.js": "sharetribe-sdk-web.js",
     "docs/styles.css": "styles.css"
   }
 }

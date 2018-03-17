@@ -1,7 +1,8 @@
 {
   "github": "sharetribe/sharetribe-sdk-js",
   "scripts": [
-    "scripts.js"
+    "scripts.js",
+    "sharetribe-sdk-web.js"
   ],
   "css": [
     "styles.css"
