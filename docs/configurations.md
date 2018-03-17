@@ -47,6 +47,15 @@ var sdk = sharetribeSdk.createInstance({
       // MyUuidType -> UUID
       reader: v => new MyUuidType(v.uuid),
     }
-  ]
+  ],
+
+
+  // Node.js only.
+  // HTTP and HTTPS agents to be used when performing
+  // http and https request. This allows defining non-default
+  // options for agent, such as `{ keepAlive: true }`.
+  //
+  httpAgent: httpAgent,
+  httpsAgent: httpsAgent
 });
 ```

@@ -11,6 +11,7 @@
   * [Your own types](./your-own-types.md)
   * [Serializing types to JSON](./serializing-types-to-json.md)
   * [Token store](./token-store.md)
+  * [Keep-Alive](./keep-alive.md)
   * Writing your own token store (TBD)
   * Sharing authentication with client and server (TBD)
   * REPL (TBD)
