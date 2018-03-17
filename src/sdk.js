@@ -636,7 +636,7 @@ export default class SharetribeSdk {
     const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
 
     // Read the endpoint definitions and do some mapping
-    const endpointDefs = [...endpointDefinitions, ...sdkConfig.endpoints].map(epDef => {
+    const endpointDefs = [...endpointDefinitions].map(epDef => {
       const { path, apiName, method, interceptors = [] } = epDef;
       const fnPath = urlPathToFnPath(path);
       const fullFnPath = [apiName, ...fnPath];
@@ -674,13 +674,10 @@ export default class SharetribeSdk {
       typeHandlers: sdkConfig.typeHandlers,
     };
 
-    const userDefinedSdkFnDefs = sdkFnDefsFromEndpointDefs(sdkConfig.endpoints);
-
     // Create SDK functions
     const sdkFns = [
       ...endpointSdkFnDefinitions,
       ...additionalSdkFnDefinitions,
-      ...userDefinedSdkFnDefs,
     ].map(({ path, method, endpointInterceptorPath, interceptors }) => ({
       path,
       fn: createSdkFn({
