@@ -8,12 +8,6 @@ const colors = require('colors');
 const repl = require('repl');
 const sharetribeSdk = require('./src/index');
 
-const sdk = sharetribeSdk.createInstance({
-  clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-  baseUrl: 'http://localhost:8088/',
-  tokenStore: sharetribeSdk.tokenStore.memoryStore(),
-});
-
 // Start REPL
 const replInstance = repl.start('> ');
 
@@ -22,9 +16,7 @@ require('repl.history')(replInstance, './.repl_history');
 
 // Assign SDK as global
 const ctx = replInstance.context;
-ctx.sdk = sdk;
 ctx.sharetribeSdk = sharetribeSdk;
-Object.assign(ctx, sharetribeSdk.types);
 
 // Welcome message
 
@@ -52,26 +44,30 @@ console.log('  ');
 console.log('  The following globals are available:');
 console.log('  ');
 console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
-console.log(`  - ${'`sdk`'.inline}: SDK instance configured to connect to http://localhost:8088`);
-console.log(`  - ${'`UUID`'.inline}, ${'`LatLng`'.inline}, e.g. all available types`);
 console.log('  ');
 console.log('  ## Example usage'.h2);
 console.log('  ');
-console.log('  Fetch and log all listings in a marketplace:');
+console.log('  Create new SDK instance:');
 console.log('  ');
 console.log('  ```'.block);
-console.log('  > res = sdk.marketplace.show()'.block);
-console.log('  > res.then((response) => console.log(response.data))'.block);
-console.log('  > { data:'.block);
-console.log('     { id: UUID { uuid: \'16c6a4b8-88ee-429b-835a-6725206cd08c\' },'.block);
-console.log('       type: \'marketplace\','.block);
-console.log('       links: { self: \'/v1/api/marketplace/show\' },'.block);
-console.log('       attributes:'.block);
-console.log('        { name: \'Bikesoil\','.block);
-console.log('          description: \'Peer to peer bike rentals in Essex.\' },'.block);
-console.log('       relationships: {} },'.block);
-console.log('    meta: {},'.block);
-console.log('    included: [] }'.block);
+console.log('  const clientId = "<your clientId here>";'.block);
+console.log('  const baseUrl = "<your baseUrl here>";'.block);
+console.log('  const sdk = sharetribeSdk.createInstance({'.block);
+console.log('    clientId,'.block);
+console.log('    baseUrl,'.block);
+console.log('    tokenStore: sharetribeSdk.tokenStore.memoryStore()'.block);
+console.log('  });'.block);
+console.log('  ```'.block);
+console.log('  ');
+console.log('  Fetch 10 listings:');
+console.log('  ');
+console.log('  ```'.block);
+console.log('  sdk.listings.query({per_page: 10}).then(response => {'.block);
+console.log('    console.log("Fetched " + response.data.data.length + " listings.");'.block);
+console.log('    response.data.data.forEach(listing => {'.block);
+console.log('      console.log(listing.attributes.title);'.block);
+console.log('    });'.block);
+console.log('  });'.block);
 console.log('  ```'.block);
 console.log('  ');
 console.log(`  Type ${'`.exit`'.inline} when you want to exit the REPL`);
