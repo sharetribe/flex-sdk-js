@@ -1,4 +1,4 @@
-## Configurations
+# Configurations
 
 There are a few config options that can given to the `createInstance`:
 
