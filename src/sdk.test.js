@@ -32,7 +32,6 @@ const createSdk = (config = {}) => {
   const defaults = {
     baseUrl: 'fake-adapter://fake-api/',
     clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-    endpoints: [],
   };
 
   const sdkTokenStore = memoryStore();
@@ -70,24 +69,6 @@ describe('new SharetribeSdk', () => {
           clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
         })
     ).toThrowError('baseUrl must be provided');
-  });
-
-  it('creates new endpoints', () => {
-    const sdk = new SharetribeSdk({
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-      baseUrl: 'fake-adapter://fake-api/',
-      typeHandlers: [],
-      endpoints: [
-        {
-          path: 'posts/showAll',
-          apiName: 'api',
-        },
-      ],
-      adapter: null,
-      tokenStore: memoryStore(),
-    });
-
-    expect(sdk.posts.showAll).toBeInstanceOf(Function);
   });
 
   it('calls users endpoint with query params', () => {
