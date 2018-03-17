@@ -5709,7 +5709,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 /* eslint-disable class-methods-use-this */
 
 var defaultSdkConfig = {
-  baseUrl: 'https://api.sharetribe.com',
+  baseUrl: '',
   typeHandlers: [],
   endpoints: [],
   adapter: null,
