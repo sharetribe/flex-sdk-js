@@ -23,7 +23,8 @@ import contextRunner from './context_runner';
 /* eslint-disable class-methods-use-this */
 
 const defaultSdkConfig = {
-  baseUrl: '',
+  clientId: null,
+  baseUrl: null,
   typeHandlers: [],
   endpoints: [],
   adapter: null,
@@ -610,6 +611,10 @@ const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
 const validateSdkConfig = sdkConfig => {
   if (!sdkConfig.clientId) {
     throw new Error('clientId must be provided');
+  }
+
+  if (!sdkConfig.baseUrl) {
+    throw new Error('baseUrl must be provided');
   }
 
   return sdkConfig;
