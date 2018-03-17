@@ -65,20 +65,20 @@ const requireAuth = (config, reject, tokenStore) => {
 
 const router = (config, resolve, reject, tokenStore) => {
   switch (config.url) {
-    case '/v1/api/users/show':
+    case 'fake-adapter://fake-api/v1/api/users/show':
       return requireAuth(config, reject, tokenStore).then(() => api.users.show(config, resolve));
-    case '/v1/api/marketplace/show':
+    case 'fake-adapter://fake-api/v1/api/marketplace/show':
       return requireAuth(config, reject, tokenStore).then(() =>
         api.marketplace.show(config, resolve));
-    case '/v1/api/listings/search':
+    case 'fake-adapter://fake-api/v1/api/listings/search':
       return requireAuth(config, reject, tokenStore).then(() =>
         api.listings.search(config, resolve));
-    case '/v1/api/listings/create':
+    case 'fake-adapter://fake-api/v1/api/listings/create':
       return requireAuth(config, reject, tokenStore).then(() =>
         api.listings.create(config, resolve, reject));
-    case '/v1/auth/token':
+    case 'fake-adapter://fake-api/v1/auth/token':
       return auth.token(config, resolve, reject, tokenStore);
-    case '/v1/auth/revoke':
+    case 'fake-adapter://fake-api/v1/auth/revoke':
       return requireAuth(config, reject, tokenStore).then(() =>
         auth.revoke(config, resolve, reject, tokenStore));
     default:

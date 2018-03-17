@@ -23,7 +23,8 @@ import contextRunner from './context_runner';
 /* eslint-disable class-methods-use-this */
 
 const defaultSdkConfig = {
-  baseUrl: '',
+  clientId: null,
+  baseUrl: null,
   typeHandlers: [],
   endpoints: [],
   adapter: null,
@@ -612,6 +613,10 @@ const validateSdkConfig = sdkConfig => {
     throw new Error('clientId must be provided');
   }
 
+  if (!sdkConfig.baseUrl) {
+    throw new Error('baseUrl must be provided');
+  }
+
   return sdkConfig;
 };
 
@@ -631,7 +636,7 @@ export default class SharetribeSdk {
     const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
 
     // Read the endpoint definitions and do some mapping
-    const endpointDefs = [...endpointDefinitions, ...sdkConfig.endpoints].map(epDef => {
+    const endpointDefs = [...endpointDefinitions].map(epDef => {
       const { path, apiName, method, interceptors = [] } = epDef;
       const fnPath = urlPathToFnPath(path);
       const fullFnPath = [apiName, ...fnPath];
@@ -669,13 +674,10 @@ export default class SharetribeSdk {
       typeHandlers: sdkConfig.typeHandlers,
     };
 
-    const userDefinedSdkFnDefs = sdkFnDefsFromEndpointDefs(sdkConfig.endpoints);
-
     // Create SDK functions
     const sdkFns = [
       ...endpointSdkFnDefinitions,
       ...additionalSdkFnDefinitions,
-      ...userDefinedSdkFnDefs,
     ].map(({ path, method, endpointInterceptorPath, interceptors }) => ({
       path,
       fn: createSdkFn({
