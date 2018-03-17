@@ -49,13 +49,17 @@ var sdk = sharetribeSdk.createInstance({
     }
   ],
 
-
   // Node.js only.
   // HTTP and HTTPS agents to be used when performing
   // http and https request. This allows defining non-default
   // options for agent, such as `{ keepAlive: true }`.
   //
   httpAgent: httpAgent,
-  httpsAgent: httpsAgent
+  httpsAgent: httpsAgent,
+
+  // If true and default browser token store is used,
+  // the cookie is never transferred without HTTPS connection
+  secure: true
+
 });
 ```
