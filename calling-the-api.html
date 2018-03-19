@@ -91,18 +91,18 @@
 <h2 id="api-endpoints">API Endpoints</h2>
 <p>The SDK provides direct mapping from API endpoints to SDK methods.</p>
 <p>For example:</p>
-<p><code>GET /api/marketplace/show</code> maps to SDK method <code>sdk.marketplace.show</code></p>
-<p><code>GET /api/listings/query</code> maps to SDK method <code>sdk.listings.query</code></p>
-<p><code>POST /api/own_listings/create</code> maps to SDK method <code>sdk.listings.create</code></p>
+<p><code>GET /api/marketplace/show</code> maps to <code>sdk.marketplace.show(...)</code></p>
+<p><code>GET /api/listings/query</code> maps to <code>sdk.listings.query(...)</code></p>
+<p><code>POST /api/own_listings/create</code> maps to <code>sdk.ownListings.create(...)</code></p>
 <h2 id="parameters">Parameters</h2>
-<p>When calling the SDK methods, you can pass a set of parameters to the
-method. Please note that the query and command endpoints take a
-different number of parameters.</p>
-<p>In addition, <strong>please note</strong> that the SDK does not validate the
-parameters. The parameter validation is only done in the client
-side. In case of invalid parameters, the request fill fail.</p>
+<p>You can pass a set of parameters to the SDK method you call. The
+<em>query</em> endpoints take one parameter, where as the <em>command</em> endpoints
+take three parameters.</p>
+<p><strong>Please note:</strong> The SDK does not validate the parameters. The
+parameter validation is only done in the client side. In case of
+invalid parameters, the request fill fail.</p>
 <h3 id="query-method-parameters">Query method parameters</h3>
-<p>The query (GET) methods take only one parameter:</p>
+<p>The <em>query</em> (GET) methods take only one parameter:</p>
 <ul>
 <li><code>queryParams</code>: Object of query parameters</li>
 </ul>
@@ -114,14 +114,14 @@ side. In case of invalid parameters, the request fill fail.</p>
 <p>The <code>queryParams</code> is optional. If the endpoint doesn&apos;t require any
 query parameters, you can call the SDK method without any parameters.</p>
 <h3 id="command-method-parameters">Command method parameters</h3>
-<p>The command (POST) methods take three parameters:</p>
+<p>The <em>command</em> (POST) methods take three parameters:</p>
 <ul>
 <li><code>bodyParams</code>: Object of body parameters</li>
 <li><code>queryParams</code>: Object of query parameters</li>
-<li><code>opts</code>: Additional per request options</li>
+<li><code>opts</code>: Additional options</li>
 </ul>
 <p><strong>Example:</strong></p>
-<pre><code class="lang-js">sdk.own_listings.create({<span class="hljs-attr">title</span>: <span class="pl-s">&apos;New listings&apos;</span>, <span class="hljs-attr">price</span>: <span class="pl-k">new</span> Money(<span class="hljs-number">5000</span>, <span class="pl-s">&apos;USD&apos;</span>)}, {<span class="hljs-attr">expand</span>: <span class="pl-c1">true</span>});
+<pre><code class="lang-js">sdk.ownListings.create({<span class="hljs-attr">title</span>: <span class="pl-s">&apos;New listings&apos;</span>, <span class="hljs-attr">price</span>: <span class="pl-k">new</span> Money(<span class="hljs-number">5000</span>, <span class="pl-s">&apos;USD&apos;</span>)}, {<span class="hljs-attr">expand</span>: <span class="pl-c1">true</span>});
 
 <span class="pl-c">// Calls POST /api/own_listings/create?expand=true</span>
 <span class="pl-c">// with title and price serialized in the request body</span>
@@ -129,9 +129,9 @@ query parameters, you can call the SDK method without any parameters.</p>
 <p>All parameters are optional. If the endpoint doesn&apos;t require any body
 parameters, query parameters or options, you can call the SDK method
 without any parameters.</p>
-<p>If you wonder what the <code>Money</code> is, have a look at <a href="types.html">Types</a>.</p>
+<p>If you wonder what the <code>new Money(...)</code> is, have a look at <a href="types.html">Types</a>.</p>
 <h3 id="command-method-options">Command method options</h3>
-<p>The third parameter for command methods is <code>opts</code>.</p>
+<p>The third parameter for <em>command</em> methods is <code>opts</code>.</p>
 <p>Here&apos;s a list of available <code>opts</code>:</p>
 <ul>
 <li><code>onUploadProcess</code>: Takes a callback function that is called with <a href="https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent">ProgressEvent</a>.</li>
@@ -145,7 +145,7 @@ without any parameters.</p>
 sdk.listings.uploadImage({ <span class="hljs-attr">image</span>: file }, {}, { <span class="hljs-attr">onUploadProgress</span>: logProgress })
 </code></pre>
 <h2 id="response">Response</h2>
-<p>Calling a SDK method will always return a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>. The value of the Promise differs whether the request was successful or error. In case of successful request the Promise will be fulfilled where as in case of error the Promise will be rejected.</p>
+<p>Calling any SDK method will always return a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>. The value of the Promise differs whether the request was successful or error. In case of successful request the Promise will be <em>fulfilled</em> where as in case of error the Promise will be <em>rejected</em>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="lang-js"><span class="pl-k">const</span> promise = sdk.listings.query();
 
@@ -160,7 +160,7 @@ promise.catch(<span class="hljs-function"><span class="hljs-params">response</sp
 <pre><code>{
   status: 200,
   statusText: &apos;OK&apos;,
-  data: // The data returned by the API
+  data: // The data returned by the API. Object.
 }
 </code></pre>
 <p>The API returns the data always in the following format:</p>
@@ -256,7 +256,7 @@ promise.catch(<span class="hljs-function"><span class="hljs-params">response</sp
 <li>The content of <code>details</code> is not well specified and will change in the future.</li>
 </ul>
 <h2 id="api-documentation">API documentation</h2>
-<p>Please see the [API documentation (TODO Add link)], for more information about the available endpoint and the parameters that the endpoints expect and the response format.</p>
+<p>Please see the [API documentation (TODO Add link)], for more information about the available endpoints, parameters and the response format.</p>
 
         </div>
         <div class="footer-nav">

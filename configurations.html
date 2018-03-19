@@ -64,7 +64,8 @@
           </div>
         </div>
         <div class="markdown-body"><h1 id="configurations">Configurations</h1>
-<p>There are a few config options that can given to the <code>createInstance</code>:</p>
+<p>There are a few configuration options that can given to the
+<code>createInstance</code> method:</p>
 <pre><code class="lang-js"><span class="pl-k">const</span> sharetribeSdk = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-sdk&apos;</span>);
 
 <span class="pl-k">var</span> sdk = sharetribeSdk.createInstance({
@@ -73,7 +74,7 @@
   clientId: <span class="pl-s">&quot;08ec69f6-d37e-414d-83eb-324e94afddf0&quot;</span>,
 
   <span class="pl-c">// The API base URL (mandatory)</span>
-  baseUrl: <span class="pl-s">&quot;https://api.sharetribe.com/v1/&quot;</span>,
+  baseUrl: <span class="pl-s">&quot;https://the-api-base-url.example.sharetribe.com/&quot;</span>,
 
   <span class="pl-c">// Token store</span>
   <span class="pl-c">//</span>
@@ -89,7 +90,7 @@
   <span class="pl-c">//</span>
   tokenStore: sharetribeSdk.tokenStore.browserCookieStore(),
 
-  <span class="pl-c">// List of type handlers</span>
+  <span class="pl-c">// List of custom type handlers</span>
   typeHandlers: [
     {
       <span class="hljs-attr">type</span>: UUID,
@@ -120,7 +121,8 @@
   <span class="hljs-attr">httpsAgent</span>: httpsAgent,
 
   <span class="pl-c">// If true and default browser token store is used,</span>
-  <span class="pl-c">// the cookie is never transferred without HTTPS connection</span>
+  <span class="pl-c">// the cookie is never transferred without HTTPS connection.</span>
+  <span class="pl-c">// Default: false</span>
   secure: <span class="pl-c1">true</span>
 
 });

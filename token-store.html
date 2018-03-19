@@ -150,7 +150,7 @@ app.get(<span class="pl-s">&apos;/&apos;</span>, (req, res) =&gt; {
       <span class="hljs-attr">clientId</span>: <span class="pl-s">&quot;&lt;your Client ID&gt;&quot;</span>,
       req,
       res,
-      <span class="hljs-attr">secure</span>: <span class="pl-c1">true</span> <span class="pl-c">// Set true, if you are using HTTPS</span>
+      <span class="hljs-attr">secure</span>: <span class="pl-c1">true</span> <span class="pl-c">// Set to true, if you are using HTTPS</span>
     }),
   });
 
@@ -194,7 +194,7 @@ app.get(<span class="pl-s">&apos;/something_else&apos;</span>, (req, res) =&gt; 
 
 </code></pre>
 <h2 id="memory-store">Memory store</h2>
-<p>Memory store stores the session information to memory. The session information is lost when the page is refreshed.</p>
+<p>Memory store stores the session information to application memory. The session information is lost when the page is refreshed.</p>
 <p>This store is mainly used for testing and development.</p>
 <p>In case you are testing locally from <code>file:///</code>, you may need to use memory store, because some browsers (e.g. Google Chrome) do not save cookies when using <code>file:///</code> making the default <a href="#browser-cookie-store">Browser cookie store</a> unusable.</p>
 

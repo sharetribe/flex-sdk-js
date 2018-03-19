@@ -65,9 +65,15 @@
         </div>
         <div class="markdown-body"><h1 id="keep-alive">Keep-Alive</h1>
 <p><em>Node.js only</em></p>
-<p>By default, Node.js <code>http.Agent</code> and <code>https.Agent</code> create a new connection for each request. After the request is completed, the connection is closed. By keeping the connection open and reusing it for consecutive requests, the request time can be reduced. This is escpecially true for HTTPS connections, where the SSL handshake requires adds extra overhead for each request.</p>
-<p>The SDK can be configured to use custom <code>httpAgent</code> and <code>httpsAgent</code>, where the <code>keepAlive</code> is set to <code>true</code>.</p>
-<p>Using persistent Keep-Alive connections is recommended, because of the reductions to the request times.</p>
+<p>By default, Node.js <code>http.Agent</code> and <code>https.Agent</code> create a new
+connection for each request. After the request is completed, the
+connection is closed. By keeping the connection open and reusing it
+for subsequent requests, the request time can be reduced. This is
+escpecially true for HTTPS connections, where the SSL handshake adds
+extra overhead for each request.</p>
+<p>The SDK can be configured to use custom <code>httpAgent</code> and <code>httpsAgent</code>,
+where the <code>keepAlive</code> can be set to <code>true</code>.</p>
+<p>Using persistent Keep-Alive connections is <strong>recommended</strong>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="lang-js"><span class="pl-k">const</span> express = <span class="pl-c1">require</span>(<span class="pl-s">&apos;express&apos;</span>);
 <span class="pl-k">const</span> http = <span class="pl-c1">require</span>(<span class="pl-s">&apos;http&apos;</span>);

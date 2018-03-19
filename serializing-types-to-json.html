@@ -74,10 +74,10 @@ data to and from JSON while retaining the type information.</p>
 data to
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage">LocalStorage</a>
 or if you have a server that fetches the data and you want to pass the
-preloaded state e.g. to your <a href="https://redux.js.org/recipes/server-rendering#inject-initial-component-html-and-state">Redux
+preloaded state to your <a href="https://redux.js.org/recipes/server-rendering#inject-initial-component-html-and-state">Redux
 store</a>.</p>
 <p><strong>Example:</strong></p>
-<pre><code class="lang-js"><span class="pl-k">const</span> { reviver, replacer } = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-sdk&apos;</span>).types;
+<pre><code class="lang-js"><span class="pl-k">const</span> { reviver, replacer, UUID } = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-sdk&apos;</span>).types;
 
 <span class="pl-k">const</span> testData = {
   <span class="hljs-attr">id</span>: <span class="pl-k">new</span> UUID(<span class="pl-s">&apos;f989541d-7e96-4c8a-b550-dff1eef25815&apos;</span>)
@@ -85,11 +85,12 @@ store</a>.</p>
 
 <span class="pl-k">const</span> roundtrip = <span class="pl-c1">JSON</span>.parse(<span class="pl-c1">JSON</span>.stringify(testData, replacer), reviver);
 
-expect(roundtrip.constructor.name).toEqual(<span class="pl-s">&apos;UUID&apos;</span>);
+assert(roundtrip.id.constructor.name === <span class="pl-s">&apos;UUID&apos;</span>);
 </code></pre>
 <p><strong>Please note:</strong> <a href="#your-own-types">Your own types</a> are not serialized.</p>
 <p><strong>Please note:</strong> When the API call fails, <a href="calling-the-api.html#error-response">the error
-response</a> is wrapped in Error
+response</a> is wrapped in
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>
 object. Stringifying Error object may result in unexpected results,
 e.g. in some browsers <code>JSON.stringify(new Error(&quot;error&quot;))</code> returns an
 empty object. Because of this, it&apos;s recommended that you do not

@@ -65,7 +65,8 @@
         </div>
         <div class="markdown-body"><h1 id="your-own-types">Your own types</h1>
 <p>In case you are using your own types or types from external library,
-the SDK provides a way to convert the SDK types to and from your own types.</p>
+the SDK provides a way to convert the SDK types to and from your own
+types.</p>
 <p>The conversion is handled by &quot;type handlers&quot;. You need to pass
 <code>typeHandlers</code> when you create a new SDK instance.</p>
 <p>A type handler is an object containing the following properties:</p>
@@ -97,7 +98,9 @@ the SDK provides a way to convert the SDK types to and from your own types.</p>
 </table>
 <p><strong>Example:</strong> Convert
 <a href="https://developers.google.com/maps/documentation/javascript/reference/3/#LatLng"><code>google.maps.LatLng</code></a>
-to/from <code>LatLng</code> and <a href="https://github.com/MikeMcl/decimal.js/">Decimal.js</a> <code>Decimal</code> to/from <code>BigDecimal</code></p>
+to/from <code>LatLng</code> and
+<a href="https://github.com/MikeMcl/decimal.js/">Decimal.js</a> <code>Decimal</code> to/from
+<code>BigDecimal</code></p>
 <pre><code class="lang-js"><span class="pl-k">const</span> { BigDecimal, LatLng } = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-sdk&apos;</span>).types;
 
 <span class="pl-k">const</span> sdk = createInstance({
@@ -118,9 +121,9 @@ to/from <code>LatLng</code> and <a href="https://github.com/MikeMcl/decimal.js/"
   ]
 });
 </code></pre>
-<p><strong>Caveat:</strong> Only body paramters are converted by type handlers. An
-error <em>Don&apos;t know how to serialize query parameter</em> will be thrown
-if query parameters contain your own types.</p>
+<p><strong>Caveat:</strong> Only body parameters are converted. An error <em>Don&apos;t know
+how to serialize query parameter</em> will be thrown if query parameters
+contain your own types.</p>
 
         </div>
         <div class="footer-nav">

@@ -72,18 +72,18 @@
         <div class="markdown-body"><h1 id="writing-your-own-token-store">Writing your own token store</h1>
 <p>The SDK ships with three built-in token store implementations: Browser
 cookie store, Express cookie store and memory store. However, in some
-cases you may need to write your own cookie store, for example if you
-want to save the cookie in some other location, like
+cases you may need to write your own cookie store, for example, if you
+want to save the cookie in some other location, such as
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage">LocalStorage</a>.</p>
 <h2 id="interface">Interface</h2>
 <p>The Token store interface has three methods. Any token store
 implementation must implement all of them:</p>
-<h4 id="settoken(object)-:-null-or-promise(null)"><code>setToken(Object) : null | Promise(null)</code></h4>
+<p><strong><code>setToken(Object) : null | Promise(null)</code></strong></p>
 <p>Stores the new token. Returns either <code>null</code> or a <code>Promise</code>.</p>
-<h4 id="gettoken()-:-object-or-promise(object)"><code>getToken() : Object | Promise(Object)</code></h4>
+<p><strong><code>getToken() : Object | Promise(Object)</code></strong></p>
 <p>Reads the token from the store. Returns either a token or a Promise
 holding the token as a value.</p>
-<h4 id="removetoken-:-null-or-promise(null)"><code>removeToken</code> : null | Promise(null)</h4>
+<p><strong><code>removeToken : null | Promise(null)</code></strong></p>
 <p>Removes the stored token. Returns either <code>null</code> or a Promise.</p>
 <h2 id="examples">Examples</h2>
 <p>See the built-in token store implementations.</p>

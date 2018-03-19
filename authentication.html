@@ -34,6 +34,8 @@
                     </li>
                     <li class="heading-item -depth-2"><a class="hlink link-determine-if-user-is-logged-in" href="#determine-if-user-is-logged-in">Determine if user is logged in</a>
                     </li>
+                    <li class="heading-item -depth-2"><a class="hlink link-example" href="#example">Example</a>
+                    </li>
                   </ul>
                 </li>
                 <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the API</a>
@@ -72,76 +74,89 @@
           </div>
         </div>
         <div class="markdown-body"><h1 id="authentication">Authentication</h1>
-<p>The SDK provides methods to log the user in and out.</p>
+<p>The SDK provides methods to log the user in and out and determine if
+the user is already logged in or not.</p>
 <h2 id="login">Login</h2>
-<p><strong><code>sdk.login({ username: string, password: string })</code></strong></p>
-<p>Authenticates the user. The SDK is now able to access information that
-is not available for anonymous users.</p>
+<p><strong><code>sdk.login({ username: string, password: string }) : Promise</code></strong></p>
+<p>Logs in the user and returns a Promise.</p>
+<p>The session information will be saved to the SDK instance when the
+Promise is resolved. Subsequest requests will be made as the logged in
+user.</p>
 <h2 id="logout">Logout</h2>
-<p><strong><code>sdk.logout()</code></strong></p>
-<p>Logs out the user.</p>
-<p><strong>Example:</strong></p>
-<p>Here&apos;s a full example how to log user in and out</p>
-<pre><code class="lang-js">sdk
-  .login({ <span class="hljs-attr">username</span>: <span class="pl-s">&apos;test-user@example.com&apos;</span>, <span class="hljs-attr">password</span>: <span class="pl-s">&apos;test-secret&apos;</span> })
-  .then(<span class="hljs-function"><span class="hljs-params">loginRes</span> =&gt;</span> {
-    <span class="pl-c1">console</span>.log(<span class="pl-s">&apos;Logged in successfully&apos;</span>);
-
-    <span class="pl-k">return</span> sdk.currentUser.show();
-  })
-  .then(<span class="hljs-function"><span class="hljs-params">userRes</span> =&gt;</span> {
-    <span class="pl-k">const</span> profile = userRes.data.data.attributes.profile;
-    <span class="pl-c1">console</span>.log(<span class="pl-s">&apos;Current user: ${profile.firstName} ${profile.lastName}&apos;</span>);
-
-    <span class="pl-k">return</span> sdk.logout();
-  })
-  .then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="pl-c1">console</span>.log(<span class="pl-s">&apos;Logged out. Bye!&apos;</span>);
-  })
-  .catch(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
-    <span class="pl-c">// An error occurred</span>
-    <span class="pl-c1">console</span>.log(<span class="pl-s">`Request failed with status: <span class="hljs-subst">${res.status}</span> <span class="hljs-subst">${res.statusText}</span>`</span>);
-  });
-</code></pre>
+<p><strong><code>sdk.logout() : Promise</code></strong></p>
+<p>Logs out the user and returns a Promise.</p>
 <p><strong>Trobleshooting:</strong> In case you&apos;re testing locally from <code>file:///</code>,
 the session information may not be saved after successful login. In
 this case, you should configure the SDK to use <a href="token-store.html#memory-store">memory-based token
 store</a>.</p>
 <h2 id="determine-if-user-is-logged-in">Determine if user is logged in</h2>
-<p>SDK provides a helper method to define whether the user is logged in
-or not:</p>
-<p><strong><code>authInfo()</code></strong></p>
-<p>Returns a Promise which value is either <code>null</code> or an object with field
-<code>grantType</code>. The <code>grantType</code> value is either <code>&apos;client_credentials&apos;</code>,
-<code>&apos;refresh_token&apos;</code>. The different values have the following meaning:</p>
+<p><strong><code>sdk.authInfo() : Promise(Object)</code></strong></p>
+<p>Returns a Promise with an Object as a value. The object may contain a
+<code>grantType</code> field with either <code>&apos;client_credentials&apos;</code>,
+<code>&apos;refresh_token&apos;</code> as a value. The different values have the following
+meanings:</p>
 <ul>
-<li><code>null</code>: user hasn&apos;t yet authenticated itself to API (i.e. hasn&apos;t
+<li>No grant type: user hasn&apos;t yet authenticated itself (i.e. hasn&apos;t
 done any requests to the API).</li>
-<li>Grant type <code>&apos;client_credentials&apos;</code>: user has &quot;anonymous&quot; access to the API</li>
+<li>Grant type <code>&apos;client_credentials&apos;</code>: user has authenticated as an
+anonymous user (i.e. has not logged in)</li>
 <li>Grant type <code>&apos;refresh_token&apos;</code>: user has logged in.</li>
 </ul>
-<p>In the application code, it&apos;s enough to check that the value of
-<code>grantType</code> equals to <code>&apos;refresh_token&apos;</code> to determine if the user has
-logged in.</p>
+<p>To determine if the user is logged in, check if <code>grantType</code> equals
+<code>&apos;refresh_token&apos;</code>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="lang-js">sdk.authInfo().then(<span class="hljs-function"><span class="hljs-params">authInfo</span> =&gt;</span> {
   <span class="pl-k">if</span> (authInfo &amp;&amp; authInfo.grantType === <span class="pl-s">&apos;refresh_token&apos;</span>) {
     <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;User is logged in.&quot;</span>);
   } <span class="pl-k">else</span> {
-    <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;User is not logged in.&quot;</span>)
+    <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;User is NOT logged in.&quot;</span>)
   }
 };
 </code></pre>
 <p><strong>Please note:</strong> Even thought the <code>authInfo</code> method returns a Promise,
-the method does not do any API calls. The authentication information
-is saved to the <a href="token-store.html">token store</a> currently in
-use. Because of this the <code>authInfo</code> method be called freely as many
-times as needed without a fear of firing multiple API calls.</p>
-<p><strong>Please note:</strong> The token store does not store any other information
-about the user in addition to the the authentication information. If
-you for example need to know the name of the logged in user, you need
-to call <code>sdk.current_user.show()</code>, which calls the corresponding API
-endpoint to fetch information about the currently logged in user.</p>
+the method does not call the API. The authentication information is
+saved locally in the <a href="token-store.html">token store</a>.</p>
+<p><strong>Please note:</strong> The token store does not store any other user
+information in addition to the authentication token. If you need, for
+example, to know the name of the logged in user, you need to call
+<code>sdk.current_user.show()</code>, which calls the corresponding API endpoint.</p>
+<h2 id="example">Example</h2>
+<p>Here&apos;s a full example how to log user in and out and determine the
+current authentication status.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-js"><span class="pl-k">const</span> isLoggedIn = <span class="hljs-function"><span class="hljs-params">authInfo</span> =&gt;</span> authInfo &amp;&amp; authInfo.grantType === <span class="pl-s">&apos;refresh_token&apos;</span>;
+
+sdk.authInfo().then(<span class="hljs-function"><span class="hljs-params">authInfo</span> =&gt;</span> {
+    <span class="pl-c1">console</span>.log(<span class="pl-s">`Logged in: <span class="hljs-subst">${isLoggedIn(authInfo)}</span>`</span>)
+    <span class="pl-c">// prints: &quot;Logged in: false&quot;</span>
+
+    <span class="pl-k">return</span> sdk.login({ <span class="hljs-attr">username</span>: <span class="pl-s">&apos;test-user@example.com&apos;</span>, <span class="hljs-attr">password</span>: <span class="pl-s">&apos;test-secret&apos;</span> });
+  }).then(<span class="hljs-function"><span class="hljs-params">loginRes</span> =&gt;</span> {
+    <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;Login successful!&quot;</span>);
+
+    <span class="pl-k">return</span> sdk.authInfo();
+  }).then(<span class="hljs-function"><span class="hljs-params">authInfo</span> =&gt;</span> {
+    <span class="pl-c1">console</span>.log(<span class="pl-s">`Logged in: <span class="hljs-subst">${isLoggedIn(authInfo)}</span>`</span>);
+    <span class="pl-c">// prints: &quot;Logged in: true&quot;</span>
+
+    <span class="pl-k">return</span> sdk.currentUser.show();
+  }).then(<span class="hljs-function"><span class="hljs-params">userRes</span> =&gt;</span> {
+    <span class="pl-k">const</span> profile = userRes.data.data.attributes.profile;
+    <span class="pl-c1">console</span>.log(<span class="pl-s">`Current user: <span class="hljs-subst">${profile.firstName}</span> <span class="hljs-subst">${profile.lastName}</span>`</span>);
+
+    <span class="pl-k">return</span> sdk.logout();
+  }).then(<span class="hljs-function"><span class="hljs-params">logoutRes</span> =&gt;</span> {
+    <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;Logged out!&quot;</span>);
+
+    <span class="pl-k">return</span> sdk.authInfo();
+  }).then(<span class="hljs-function"><span class="hljs-params">authInfo</span> =&gt;</span> {
+    <span class="pl-c1">console</span>.log(<span class="pl-s">`Logged in: <span class="hljs-subst">${isLoggedIn(authInfo)}</span>`</span>)
+    <span class="pl-c">// prints: &quot;Logged in: false&quot;</span>
+  }).catch(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
+    <span class="pl-c">// An error occurred</span>
+    <span class="pl-c1">console</span>.log(<span class="pl-s">`Request failed with status: <span class="hljs-subst">${res.status}</span> <span class="hljs-subst">${res.statusText}</span>`</span>);
+  });
+</code></pre>
 
         </div>
         <div class="footer-nav">

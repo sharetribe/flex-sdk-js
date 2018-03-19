@@ -64,9 +64,21 @@
           </div>
         </div>
         <div class="markdown-body"><h1 id="sharing-session-between-client-and-server">Sharing session between client and server</h1>
-<p>For server side rendering, the server needs to be able to prefetch the page data using the same user session than the client is using. For example, if the user logs in as &quot;joe&quot;, the client needs to pass the session information to the server, so that the server is also able to make requests as &quot;joe&quot;. In other words, the client and server need share the same session information.</p>
-<p>The sharing of the session can be achieved by cookies. When the client SDK is configured to use the <a href="token-store.html#browser-cookie-store">Browser cookie store</a> (default) and the server SDK is configured to use the <a href="token-store.html#express-cookie-store">Express cookie store</a>, the session information is automatically stored between server and client.</p>
-<p>Have a look at the <a href="token-store.html">Token store</a> examples on how to configure the cookie stores.</p>
+<p>For server side rendering, the server needs to be able to prefetch the
+page data using the same user session than the client is using. For
+example, if the user logs in as &quot;joe&quot;, the client needs to pass the
+session information to the server, so that the server is able to make
+requests as &quot;joe&quot;. In other words, the client and server need share
+the same session information.</p>
+<p>The sharing of the session can be achieved by cookies. When the client
+SDK is configured to use the <a href="token-store.html#browser-cookie-store">Browser cookie
+store</a> (default) and the server
+SDK is configured to use the <a href="token-store.html#express-cookie-store">Express cookie
+store</a>, both client and server
+are reading and writing the session to the same cookie. Thus, the
+session information will be shared between server and client.</p>
+<p>Have a look at the <a href="token-store.html">Token store</a> examples on how to
+configure the cookie stores.</p>
 
         </div>
         <div class="footer-nav">

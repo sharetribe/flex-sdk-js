@@ -13,7 +13,7 @@
             "id": "table-of-contents"
           },
           {
-            "title": "What is it",
+            "title": "What is it?",
             "depth": 2,
             "id": "what-is-it"
           },
@@ -85,6 +85,11 @@
                 "title": "Determine if user is logged in",
                 "depth": 2,
                 "id": "determine-if-user-is-logged-in"
+              },
+              {
+                "title": "Example",
+                "depth": 2,
+                "id": "example"
               }
             ]
           },
@@ -250,7 +255,7 @@
           "id": "table-of-contents"
         },
         {
-          "title": "What is it",
+          "title": "What is it?",
           "depth": 2,
           "id": "what-is-it"
         },
@@ -319,6 +324,11 @@
           "title": "Determine if user is logged in",
           "depth": 2,
           "id": "determine-if-user-is-logged-in"
+        },
+        {
+          "title": "Example",
+          "depth": 2,
+          "id": "example"
         }
       ]
     },
