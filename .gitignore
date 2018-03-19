@@ -17,3 +17,6 @@ npm-debug.log
 
 # Docpress output
 _docpress
+
+# Yarn
+yarn-error.log
