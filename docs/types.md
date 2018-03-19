@@ -3,7 +3,7 @@
 The SDK provides a set of types that complement the data types
 JavaScript supports out-of-the box. When calling the API endpoints,
 the SDK returns data using these types. It also expects these types
-are given as parameters for the queries and commands.
+given as parameters for the *queries* and *commands*.
 
 Here's a list of the provided types:
 

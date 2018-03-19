@@ -1,46 +1,23 @@
 # Authentication
 
-The SDK provides methods to log the user in and out.
+The SDK provides methods to log the user in and out and determine if
+the user is already logged in or not.
 
 ## Login
 
-**`sdk.login({ username: string, password: string })`**
+**`sdk.login({ username: string, password: string }) : Promise`**
 
-Authenticates the user. The SDK is now able to access information that
-is not available for anonymous users.
+Logs in the user and returns a Promise.
+
+The session information will be saved to the SDK instance when the
+Promise is resolved. Subsequest requests will be made as the logged in
+user.
 
 ## Logout
 
-**`sdk.logout()`**
+**`sdk.logout() : Promise`**
 
-Logs out the user.
-
-**Example:**
-
-Here's a full example how to log user in and out
-
-```js
-sdk
-  .login({ username: 'test-user@example.com', password: 'test-secret' })
-  .then(loginRes => {
-    console.log('Logged in successfully');
-
-    return sdk.currentUser.show();
-  })
-  .then(userRes => {
-    const profile = userRes.data.data.attributes.profile;
-    console.log('Current user: ${profile.firstName} ${profile.lastName}');
-
-    return sdk.logout();
-  })
-  .then(() => {
-    console.log('Logged out. Bye!');
-  })
-  .catch(res => {
-    // An error occurred
-    console.log(`Request failed with status: ${res.status} ${res.statusText}`);
-  });
-```
+Logs out the user and returns a Promise.
 
 **Trobleshooting:** In case you're testing locally from `file:///`,
 the session information may not be saved after successful login. In
@@ -49,23 +26,21 @@ store](./token-store.md#memory-store).
 
 ## Determine if user is logged in
 
-SDK provides a helper method to define whether the user is logged in
-or not:
+**`sdk.authInfo() : Promise(Object)`**
 
-**`authInfo()`**
+Returns a Promise with an Object as a value. The object may contain a
+`grantType` field with either `'client_credentials'`,
+`'refresh_token'` as a value. The different values have the following
+meanings:
 
-Returns a Promise which value is either `null` or an object with field
-`grantType`. The `grantType` value is either `'client_credentials'`,
-`'refresh_token'`. The different values have the following meaning:
-
-* `null`: user hasn't yet authenticated itself to API (i.e. hasn't
+* No grant type: user hasn't yet authenticated itself (i.e. hasn't
   done any requests to the API).
-* Grant type `'client_credentials'`: user has "anonymous" access to the API
+* Grant type `'client_credentials'`: user has authenticated as an
+  anonymous user (i.e. has not logged in)
 * Grant type `'refresh_token'`: user has logged in.
 
-In the application code, it's enough to check that the value of
-`grantType` equals to `'refresh_token'` to determine if the user has
-logged in.
+To determine if the user is logged in, check if `grantType` equals
+`'refresh_token'`.
 
 **Example:**
 
@@ -74,19 +49,59 @@ sdk.authInfo().then(authInfo => {
   if (authInfo && authInfo.grantType === 'refresh_token') {
     console.log("User is logged in.");
   } else {
-    console.log("User is not logged in.")
+    console.log("User is NOT logged in.")
   }
 };
 ```
 
 **Please note:** Even thought the `authInfo` method returns a Promise,
-the method does not do any API calls. The authentication information
-is saved to the [token store](./token-store.md) currently in
-use. Because of this the `authInfo` method be called freely as many
-times as needed without a fear of firing multiple API calls.
+the method does not call the API. The authentication information is
+saved locally in the [token store](./token-store.md).
 
-**Please note:** The token store does not store any other information
-about the user in addition to the the authentication information. If
-you for example need to know the name of the logged in user, you need
-to call `sdk.current_user.show()`, which calls the corresponding API
-endpoint to fetch information about the currently logged in user.
+**Please note:** The token store does not store any other user
+information in addition to the authentication token. If you need, for
+example, to know the name of the logged in user, you need to call
+`sdk.current_user.show()`, which calls the corresponding API endpoint.
+
+## Example
+
+
+Here's a full example how to log user in and out and determine the
+current authentication status.
+
+**Example:**
+
+```js
+const isLoggedIn = authInfo => authInfo && authInfo.grantType === 'refresh_token';
+
+sdk.authInfo().then(authInfo => {
+    console.log(`Logged in: ${isLoggedIn(authInfo)}`)
+    // prints: "Logged in: false"
+
+    return sdk.login({ username: 'test-user@example.com', password: 'test-secret' });
+  }).then(loginRes => {
+    console.log("Login successful!");
+
+    return sdk.authInfo();
+  }).then(authInfo => {
+    console.log(`Logged in: ${isLoggedIn(authInfo)}`);
+    // prints: "Logged in: true"
+
+    return sdk.currentUser.show();
+  }).then(userRes => {
+    const profile = userRes.data.data.attributes.profile;
+    console.log(`Current user: ${profile.firstName} ${profile.lastName}`);
+
+    return sdk.logout();
+  }).then(logoutRes => {
+    console.log("Logged out!");
+
+    return sdk.authInfo();
+  }).then(authInfo => {
+    console.log(`Logged in: ${isLoggedIn(authInfo)}`)
+    // prints: "Logged in: false"
+  }).catch(res => {
+    // An error occurred
+    console.log(`Request failed with status: ${res.status} ${res.statusText}`);
+  });
+```

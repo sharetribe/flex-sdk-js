@@ -1,7 +1,8 @@
 # Your own types
 
 In case you are using your own types or types from external library,
-the SDK provides a way to convert the SDK types to and from your own types.
+the SDK provides a way to convert the SDK types to and from your own
+types.
 
 The conversion is handled by "type handlers". You need to pass
 `typeHandlers` when you create a new SDK instance.
@@ -17,7 +18,9 @@ A type handler is an object containing the following properties:
 
 **Example:** Convert
 [`google.maps.LatLng`](https://developers.google.com/maps/documentation/javascript/reference/3/#LatLng)
-to/from `LatLng` and [Decimal.js](https://github.com/MikeMcl/decimal.js/) `Decimal` to/from `BigDecimal`
+to/from `LatLng` and
+[Decimal.js](https://github.com/MikeMcl/decimal.js/) `Decimal` to/from
+`BigDecimal`
 
 ```js
 const { BigDecimal, LatLng } = require('sharetribe-sdk').types;
@@ -41,6 +44,6 @@ const sdk = createInstance({
 });
 ```
 
-**Caveat:** Only body paramters are converted by type handlers. An
-error *Don't know how to serialize query parameter* will be thrown
-if query parameters contain your own types.
+**Caveat:** Only body parameters are converted. An error *Don't know
+how to serialize query parameter* will be thrown if query parameters
+contain your own types.

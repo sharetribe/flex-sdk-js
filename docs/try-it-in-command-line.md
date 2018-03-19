@@ -1,16 +1,15 @@
 # Try it in command-line!
 
 The SDK ships with a command-line REPL that can be used to try out the
-SDK with real results from the API
+SDK.
 
-
-To start the REPL, go to the SDK repository directory and type:
+To start the REPL, go to the directory where you cloned the SDK Git repository and type:
 
 ```
 $ yarn run repl
 ```
 
-You can try for example copy-pasting the following commands to the REPL:
+Then copy-paste the following commands to the REPL:
 
 Set your clientId:
 

@@ -10,13 +10,13 @@ Serializing the data to JSON may be necessary if you are saving the
 data to
 [LocalStorage](https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage)
 or if you have a server that fetches the data and you want to pass the
-preloaded state e.g. to your [Redux
+preloaded state to your [Redux
 store](https://redux.js.org/recipes/server-rendering#inject-initial-component-html-and-state).
 
 **Example:**
 
 ```js
-const { reviver, replacer } = require('sharetribe-sdk').types;
+const { reviver, replacer, UUID } = require('sharetribe-sdk').types;
 
 const testData = {
   id: new UUID('f989541d-7e96-4c8a-b550-dff1eef25815')
@@ -24,13 +24,14 @@ const testData = {
 
 const roundtrip = JSON.parse(JSON.stringify(testData, replacer), reviver);
 
-expect(roundtrip.constructor.name).toEqual('UUID');
+assert(roundtrip.id.constructor.name === 'UUID');
 ```
 
 **Please note:** [Your own types](#your-own-types) are not serialized.
 
 **Please note:** When the API call fails, [the error
-response](./calling-the-api.md#error-response) is wrapped in Error
+response](./calling-the-api.md#error-response) is wrapped in
+[Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
 object. Stringifying Error object may result in unexpected results,
 e.g. in some browsers `JSON.stringify(new Error("error"))` returns an
 empty object. Because of this, it's recommended that you do not

@@ -2,11 +2,17 @@
 
 *Node.js only*
 
-By default, Node.js `http.Agent` and `https.Agent` create a new connection for each request. After the request is completed, the connection is closed. By keeping the connection open and reusing it for consecutive requests, the request time can be reduced. This is escpecially true for HTTPS connections, where the SSL handshake requires adds extra overhead for each request.
+By default, Node.js `http.Agent` and `https.Agent` create a new
+connection for each request. After the request is completed, the
+connection is closed. By keeping the connection open and reusing it
+for subsequent requests, the request time can be reduced. This is
+escpecially true for HTTPS connections, where the SSL handshake adds
+extra overhead for each request.
 
-The SDK can be configured to use custom `httpAgent` and `httpsAgent`, where the `keepAlive` is set to `true`.
+The SDK can be configured to use custom `httpAgent` and `httpsAgent`,
+where the `keepAlive` can be set to `true`.
 
-Using persistent Keep-Alive connections is recommended, because of the reductions to the request times.
+Using persistent Keep-Alive connections is **recommended**.
 
 **Example:**
 

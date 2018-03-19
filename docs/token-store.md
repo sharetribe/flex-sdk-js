@@ -57,7 +57,7 @@ app.get('/', (req, res) => {
       clientId: "<your Client ID>",
       req,
       res,
-      secure: true // Set true, if you are using HTTPS
+      secure: true // Set to true, if you are using HTTPS
     }),
   });
 
@@ -107,7 +107,7 @@ app.get('/something_else', (req, res) => {
 
 ## Memory store
 
-Memory store stores the session information to memory. The session information is lost when the page is refreshed.
+Memory store stores the session information to application memory. The session information is lost when the page is refreshed.
 
 This store is mainly used for testing and development.
 

@@ -1,10 +1,12 @@
 # Try it in browser!
 
-The SDK is loaded in this page!
+The SDK is loaded in **this page!**
 
-To try the SDK in the browser, just open the Console in your browsers Developer Tools. The SDK is loaded in a global names `sharetribeSdk`.
+To try the SDK, just open the Console in your browser's Developer
+Tools and call `sharetribeSdk.createInstance(...)` to create a new SDK
+instance.
 
-You can try for example copy-pasting the following commands to the Console:
+Then copy-paste the following commands to the Console:
 
 Set your clientId:
 

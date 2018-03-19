@@ -1,29 +1,30 @@
 # Sharetribe Flex SDK for JavaScript
 
-A library that makes it easy to correctly interact with the Sharetribe Flex Marketplace API.
+Use Sharetribe Flex Marketplace API with ease.
 
 [![CircleCI](https://circleci.com/gh/sharetribe/sharetribe-sdk-js.svg?style=svg&circle-token=f2209b7cd8300d10f73d359072d7f03f81bff8f4)](https://circleci.com/gh/sharetribe/sharetribe-sdk-js)
 
 ## Table of Contents
 
-* [What is it](#what-is-it)
+* [What is it?](#what-is-it)
 * [Installation](#installation)
 * [Usage](#usage)
 * [Examples](#examples)
 * [Documentation](#documentation)
 * [License](#license)
 
-## What is it
+## What is it?
 
-The SDK provides the **easiest** way to interact with the Sharetribe
-Flex Marketplace API.
+The SDK is the **easiest** way to interact with Sharetribe Flex
+Marketplace API.
 
-It handles handles **groundwork** such as authentication, renewing
-authentication tokens and (de)serializing data to and from
+It handles **groundwork** such as authentication, renewing
+authentication tokens and serializing and deserializing data to and from
 JavaScript data structures.
 
-This lets you to **concentrate on building your application** instead of
-setting up the necessary boilerplate to communicate with the API.
+This lets you to **concentrate on building your marketplace
+front-end** instead of setting up the necessary boilerplate to
+communicate with the API.
 
 ## Installation
 
@@ -61,7 +62,7 @@ sdk.listings
 
 ## Examples
 
-You can find all examples under the [examples/](https://github.com/sharetribe/sharetribe-sdk-js/tree/master/examples/) directory.
+See [examples/](https://github.com/sharetribe/sharetribe-sdk-js/tree/master/examples/) directory in Github repository.
 
 ## Documentation
 

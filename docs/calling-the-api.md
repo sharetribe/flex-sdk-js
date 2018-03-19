@@ -6,25 +6,25 @@ The SDK provides direct mapping from API endpoints to SDK methods.
 
 For example:
 
-`GET /api/marketplace/show` maps to SDK method `sdk.marketplace.show`
+`GET /api/marketplace/show` maps to `sdk.marketplace.show(...)`
 
-`GET /api/listings/query` maps to SDK method `sdk.listings.query`
+`GET /api/listings/query` maps to `sdk.listings.query(...)`
 
-`POST /api/own_listings/create` maps to SDK method `sdk.listings.create`
+`POST /api/own_listings/create` maps to `sdk.ownListings.create(...)`
 
 ## Parameters
 
-When calling the SDK methods, you can pass a set of parameters to the
-method. Please note that the query and command endpoints take a
-different number of parameters.
+You can pass a set of parameters to the SDK method you call. The
+*query* endpoints take one parameter, where as the *command* endpoints
+take three parameters.
 
-In addition, **please note** that the SDK does not validate the
-parameters. The parameter validation is only done in the client
-side. In case of invalid parameters, the request fill fail.
+**Please note:** The SDK does not validate the parameters. The
+parameter validation is only done in the client side. In case of
+invalid parameters, the request fill fail.
 
 ### Query method parameters
 
-The query (GET) methods take only one parameter:
+The *query* (GET) methods take only one parameter:
 
 * `queryParams`: Object of query parameters
 
@@ -41,16 +41,16 @@ query parameters, you can call the SDK method without any parameters.
 
 ### Command method parameters
 
-The command (POST) methods take three parameters:
+The *command* (POST) methods take three parameters:
 
 * `bodyParams`: Object of body parameters
 * `queryParams`: Object of query parameters
-* `opts`: Additional per request options
+* `opts`: Additional options
 
 **Example:**
 
 ```js
-sdk.own_listings.create({title: 'New listings', price: new Money(5000, 'USD')}, {expand: true});
+sdk.ownListings.create({title: 'New listings', price: new Money(5000, 'USD')}, {expand: true});
 
 // Calls POST /api/own_listings/create?expand=true
 // with title and price serialized in the request body
@@ -60,11 +60,11 @@ All parameters are optional. If the endpoint doesn't require any body
 parameters, query parameters or options, you can call the SDK method
 without any parameters.
 
-If you wonder what the `Money` is, have a look at [Types](./types.md).
+If you wonder what the `new Money(...)` is, have a look at [Types](./types.md).
 
 ### Command method options
 
-The third parameter for command methods is `opts`.
+The third parameter for *command* methods is `opts`.
 
 Here's a list of available `opts`:
 
@@ -83,7 +83,7 @@ sdk.listings.uploadImage({ image: file }, {}, { onUploadProgress: logProgress })
 
 ## Response
 
-Calling a SDK method will always return a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). The value of the Promise differs whether the request was successful or error. In case of successful request the Promise will be fulfilled where as in case of error the Promise will be rejected.
+Calling any SDK method will always return a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). The value of the Promise differs whether the request was successful or error. In case of successful request the Promise will be *fulfilled* where as in case of error the Promise will be *rejected*.
 
 **Example:**
 
@@ -105,7 +105,7 @@ A successful response will have the following format:
 {
   status: 200,
   statusText: 'OK',
-  data: // The data returned by the API
+  data: // The data returned by the API. Object.
 }
 ```
 
@@ -214,4 +214,4 @@ The error value is always an `instanceof` [Error](https://developer.mozilla.org/
 
 ## API documentation
 
-Please see the [API documentation (TODO Add link)], for more information about the available endpoint and the parameters that the endpoints expect and the response format.
+Please see the [API documentation (TODO Add link)], for more information about the available endpoints, parameters and the response format.

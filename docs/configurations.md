@@ -1,6 +1,7 @@
 # Configurations
 
-There are a few config options that can given to the `createInstance`:
+There are a few configuration options that can given to the
+`createInstance` method:
 
 ``` js
 const sharetribeSdk = require('sharetribe-sdk');
@@ -11,7 +12,7 @@ var sdk = sharetribeSdk.createInstance({
   clientId: "08ec69f6-d37e-414d-83eb-324e94afddf0",
 
   // The API base URL (mandatory)
-  baseUrl: "https://api.sharetribe.com/v1/",
+  baseUrl: "https://the-api-base-url.example.sharetribe.com/",
 
   // Token store
   //
@@ -27,7 +28,7 @@ var sdk = sharetribeSdk.createInstance({
   //
   tokenStore: sharetribeSdk.tokenStore.browserCookieStore(),
 
-  // List of type handlers
+  // List of custom type handlers
   typeHandlers: [
     {
       type: UUID,
@@ -58,7 +59,8 @@ var sdk = sharetribeSdk.createInstance({
   httpsAgent: httpsAgent,
 
   // If true and default browser token store is used,
-  // the cookie is never transferred without HTTPS connection
+  // the cookie is never transferred without HTTPS connection.
+  // Default: false
   secure: true
 
 });

@@ -1,6 +1,6 @@
 # Developing SDK
 
-Here are the essentical command-line commands you need when developing the SDK:
+Here are the commands you need when developing the SDK:
 
 #### Install dependencies:
 
