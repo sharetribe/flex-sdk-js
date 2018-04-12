@@ -1878,10 +1878,14 @@ var MapHandler = [Object, _transitJs2.default.makeWriteHandler({
 
 var writer = exports.writer = function writer() {
   var customWriters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   var ownHandlers = constructWriteHandlers(customWriters);
+  var verbose = opts.verbose;
 
-  return _transitJs2.default.writer('json', {
+  var transitType = verbose ? 'json-verbose' : 'json';
+
+  return _transitJs2.default.writer(transitType, {
     handlers: _transitJs2.default.map([].concat(_toConsumableArray(ownHandlers), MapHandler)),
 
     // This is only needed for the REPL
@@ -1900,6 +1904,7 @@ var writer = exports.writer = function writer() {
 
 var createTransitConverters = exports.createTransitConverters = function createTransitConverters() {
   var typeHandlers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var opts = arguments[1];
 
   var _typeHandlers$reduce = typeHandlers.reduce(function (memo, handler) {
     var r = {
@@ -1922,7 +1927,7 @@ var createTransitConverters = exports.createTransitConverters = function createT
 
   return {
     reader: reader(readers),
-    writer: writer(writers)
+    writer: writer(writers, opts)
   };
 };
 
@@ -3031,7 +3036,8 @@ var defaultSdkConfig = {
   adapter: null,
   version: 'v1',
   httpAgent: null,
-  httpsAgent: null
+  httpsAgent: null,
+  transitVerbose: false
 };
 
 /**
@@ -3048,17 +3054,30 @@ var defaultSdkConfig = {
    what are the headers that should be always sent and
    how to transform requests and response, etc.
  */
+
+var createHeaders = function createHeaders(transitVerbose) {
+  if (transitVerbose) {
+    return {
+      'X-Transit-Verbose': 'true',
+      Accept: 'application/transit+json'
+    };
+  }
+
+  return {
+    Accept: 'application/transit+json'
+  };
+};
+
 var apis = {
   api: function api(_ref) {
     var baseUrl = _ref.baseUrl,
         version = _ref.version,
         adapter = _ref.adapter,
         httpAgent = _ref.httpAgent,
-        httpsAgent = _ref.httpsAgent;
+        httpsAgent = _ref.httpsAgent,
+        transitVerbose = _ref.transitVerbose;
     return {
-      headers: {
-        Accept: 'application/transit+json'
-      },
+      headers: createHeaders(transitVerbose),
       baseURL: baseUrl + '/' + version,
       transformRequest: function transformRequest(v) {
         return v;
@@ -3684,7 +3703,8 @@ function SharetribeSdk(userSdkConfig) {
     tokenStore: sdkConfig.tokenStore,
     endpointInterceptors: endpointInterceptors,
     clientId: sdkConfig.clientId,
-    typeHandlers: sdkConfig.typeHandlers
+    typeHandlers: sdkConfig.typeHandlers,
+    transitVerbose: sdkConfig.transitVerbose
   };
 
   // Create SDK functions
@@ -4543,13 +4563,14 @@ var TransitRequest = function () {
           _ctx$headers = ctx.headers,
           headers = _ctx$headers === undefined ? {} : _ctx$headers,
           typeHandlers = ctx.typeHandlers,
-          restCtx = _objectWithoutProperties(ctx, ['params', 'headers', 'typeHandlers']);
+          transitVerbose = ctx.transitVerbose,
+          restCtx = _objectWithoutProperties(ctx, ['params', 'headers', 'typeHandlers', 'transitVerbose']);
 
       if (headers['Content-Type'] === 'application/transit+json') {
         return ctx;
       }
 
-      var _createTransitConvert = (0, _serializer.createTransitConverters)(typeHandlers),
+      var _createTransitConvert = (0, _serializer.createTransitConverters)(typeHandlers, { verbose: transitVerbose }),
           writer = _createTransitConvert.writer;
 
       return _extends({
@@ -4557,7 +4578,8 @@ var TransitRequest = function () {
         headers: _extends({}, headers, {
           'Content-Type': 'application/transit+json'
         }),
-        typeHandlers: typeHandlers
+        typeHandlers: typeHandlers,
+        transitVerbose: transitVerbose
       }, restCtx);
     }
   }]);
