@@ -223,10 +223,12 @@ const MapHandler = [
   }),
 ];
 
-export const writer = (customWriters = []) => {
+export const writer = (customWriters = [], opts = {}) => {
   const ownHandlers = constructWriteHandlers(customWriters);
+  const { verbose } = opts;
+  const transitType = verbose ? 'json-verbose' : 'json';
 
-  return transit.writer('json', {
+  return transit.writer(transitType, {
     handlers: transit.map([...ownHandlers, ...MapHandler]),
 
     // This is only needed for the REPL
@@ -243,7 +245,7 @@ export const writer = (customWriters = []) => {
   });
 };
 
-export const createTransitConverters = (typeHandlers = []) => {
+export const createTransitConverters = (typeHandlers = [], opts) => {
   const { readers, writers } = typeHandlers.reduce(
     (memo, handler) => {
       const r = {
@@ -266,6 +268,6 @@ export const createTransitConverters = (typeHandlers = []) => {
 
   return {
     reader: reader(readers),
-    writer: writer(writers),
+    writer: writer(writers, opts),
   };
 };
