@@ -422,6 +422,50 @@ describe('new SharetribeSdk', () => {
     );
   });
 
+  it('encodes new listing post body to Transit JSON Verbose', () => {
+    const { sdk, adapter } = createSdk({ transitVerbose: true });
+
+    const testData = {
+      title: 'A new hope',
+      description: 'Our Nth listing!',
+      address: 'Bulevardi 14, Helsinki, Finland',
+      geolocation: new LatLng(10.152, 15.375),
+    };
+
+    const transitEncoded = '{"~:title":"A new hope","~:description":"Our Nth listing!","~:address":"Bulevardi 14, Helsinki, Finland","~:geolocation":{"~#geo":[10.152,15.375]}}';
+
+    return report(
+      sdk
+        .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+        .then(() => sdk.listings.create(testData))
+        .then(() => {
+          const req = _.last(adapter.requests);
+          expect(req.data).toEqual(transitEncoded);
+          expect(req.headers).toEqual(
+            expect.objectContaining({
+              'Content-Type': 'application/transit+json',
+            })
+          );
+        })
+    );
+  });
+
+  it('requests the server to send back Transit JSON Verbose', () => {
+    const { sdk, adapter } = createSdk({ transitVerbose: true });
+
+    return report(
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(() => {
+        const req = _.last(adapter.requests);
+        expect(req.headers).toEqual(
+          expect.objectContaining({
+            'X-Transit-Verbose': 'true',
+            Accept: 'application/transit+json',
+          })
+        );
+      })
+    );
+  });
+
   it('does not double encode in case we need to retry with fresh token', () => {
     const { sdk, sdkTokenStore, adapterTokenStore, adapter } = createSdk();
 

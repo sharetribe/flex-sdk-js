@@ -31,6 +31,7 @@ const defaultSdkConfig = {
   version: 'v1',
   httpAgent: null,
   httpsAgent: null,
+  transitVerbose: false,
 };
 
 /**
@@ -47,11 +48,23 @@ const defaultSdkConfig = {
    what are the headers that should be always sent and
    how to transform requests and response, etc.
  */
-const apis = {
-  api: ({ baseUrl, version, adapter, httpAgent, httpsAgent }) => ({
-    headers: {
+
+const createHeaders = transitVerbose => {
+  if (transitVerbose) {
+    return {
+      'X-Transit-Verbose': 'true',
       Accept: 'application/transit+json',
-    },
+    };
+  }
+
+  return {
+    Accept: 'application/transit+json',
+  };
+};
+
+const apis = {
+  api: ({ baseUrl, version, adapter, httpAgent, httpsAgent, transitVerbose }) => ({
+    headers: createHeaders(transitVerbose),
     baseURL: `${baseUrl}/${version}`,
     transformRequest: v => v,
     transformResponse: v => v,
@@ -672,13 +685,16 @@ export default class SharetribeSdk {
       endpointInterceptors,
       clientId: sdkConfig.clientId,
       typeHandlers: sdkConfig.typeHandlers,
+      transitVerbose: sdkConfig.transitVerbose,
     };
 
     // Create SDK functions
-    const sdkFns = [
-      ...endpointSdkFnDefinitions,
-      ...additionalSdkFnDefinitions,
-    ].map(({ path, method, endpointInterceptorPath, interceptors }) => ({
+    const sdkFns = [...endpointSdkFnDefinitions, ...additionalSdkFnDefinitions].map(({
+      path,
+      method,
+      endpointInterceptorPath,
+      interceptors,
+    }) => ({
       path,
       fn: createSdkFn({
         method,
