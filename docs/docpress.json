@@ -6,5 +6,9 @@
   ],
   "css": [
     "styles.css"
-  ]
+  ],
+  "googleAnalytics": {
+    "id": "UA-10178914-13",
+    "domain": "sharetribe.github.io"
+  }
 }
