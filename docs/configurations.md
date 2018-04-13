@@ -61,7 +61,13 @@ var sdk = sharetribeSdk.createInstance({
   // If true and default browser token store is used,
   // the cookie is never transferred without HTTPS connection.
   // Default: false
-  secure: true
+  secure: false,
+
+  // SDK uses Transit format to communicate with the API.
+  // If this configuration is `true` a verbose Transit mode is enabled.
+  // Useful for development.
+  // Default: false
+  transitVerbose: false
 
 });
 ```
