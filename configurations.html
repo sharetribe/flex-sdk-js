@@ -9,6 +9,11 @@
     <script src="sharetribe-sdk-web.js?t=888adafb"></script>
     <title>Configurations - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
+    <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
+        (function(d,o,c,p,r,e,s){d['GoogleAnalyticsObject']=r;d[r]=d[r]||function(){(d[r].q=d[r].q||[]).push(arguments)},d[r].l=1*new Date();e=o.createElement(c),s=o.getElementsByTagName(c)[0];e.async=1;e.src=p;s.parentNode.insertBefore(e,s)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create',"UA-10178914-13",'auto')
+      }
+    </script>
   </head>
   <body class="-menu-visible">
     <div class="doc-layout">
@@ -123,7 +128,13 @@
   <span class="pl-c">// If true and default browser token store is used,</span>
   <span class="pl-c">// the cookie is never transferred without HTTPS connection.</span>
   <span class="pl-c">// Default: false</span>
-  secure: <span class="pl-c1">true</span>
+  secure: <span class="pl-c1">false</span>,
+
+  <span class="pl-c">// SDK uses Transit format to communicate with the API.</span>
+  <span class="pl-c">// If this configuration is `true` a verbose Transit mode is enabled.</span>
+  <span class="pl-c">// Useful for development.</span>
+  <span class="pl-c">// Default: false</span>
+  transitVerbose: <span class="pl-c1">false</span>
 
 });
 </code></pre>
