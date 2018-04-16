@@ -214,4 +214,4 @@ The error value is always an `instanceof` [Error](https://developer.mozilla.org/
 
 ## API documentation
 
-Please see the [API documentation (TODO Add link)], for more information about the available endpoints, parameters and the response format.
+Please see the [API documentation](https://flex-api-docs-preview.sharetribe.com/), for more information about the available endpoints, parameters and the response format.
