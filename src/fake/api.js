@@ -37,55 +37,6 @@ export const users = {
 };
 
 export const listings = {
-  create: (config, resolve, reject) => {
-    const body = reader.read(config.data);
-
-    const requiredFields = ['title', 'description', 'address', 'geolocation'].map(k =>
-      body.get(transit.keyword(k)));
-
-    if (requiredFields.some(v => v == null)) {
-      return reject({
-        status: 400,
-        statusText: 'Bad Request',
-        data: `["^ ",
-          "~:errors", [
-            ["^ ",
-              "~:id", "~u57b3f476-19a0-4e07-9a44-923d9dbbe361",
-              "~:status", 400,
-              "~:code", "bad-request",
-              "~:title", "Bad request",
-              "~:details", ["^ ",
-                "~:error", ["^ ",
-                  "~:body-params", ["^ ",
-                    "^4", "missing-required-key",
-                    "~:description", "missing-required-key",
-                    "~:address", "missing-required-key",
-                    "~:geolocation", "missing-required-key"]]]]]]`,
-      });
-    }
-
-    let res;
-
-    if (config.params.expand === true) {
-      res = `["^ ",
-        "~:data", ["^ ",
-          "~:id", "~u58c660f5-a39a-49a5-9270-8a917b7d6c9e",
-          "~:type", "~:listing",
-          "~:attributes", ["^ ",
-            "~:title", "Pelago bike",
-            "~:description", "City bike for city hipster!",
-            "~:price", ["~#mn", [12000, "USD"]],
-            "~:address", "Bulevardi 14, 00200 Helsinki, Finland",
-            "~:geolocation", ["~#geo", [40.0, 73.0]]]]]`;
-    } else {
-      res = `["^ ",
-        "~:data", ["^ ",
-          "~:id", "~u58c6610d-1ffd-4fa5-b386-4f9b6e46e732",
-          "~:type", "~:listing"]]`;
-    }
-
-    return resolve({ data: res });
-  },
   search: (config, resolve) => {
     const res = `["^ ",
                    "~:data", [
@@ -127,6 +78,58 @@ export const listings = {
                              "^>", "/v1/api/marketplace/show"]]]]],
                    "~:meta", ["^ "],
                    "~:included", []]`;
+
+    return resolve({ data: res });
+  },
+};
+
+export const ownListings = {
+  create: (config, resolve, reject) => {
+    const body = reader.read(config.data);
+
+    const requiredFields = ['title', 'description', 'address', 'geolocation'].map(k =>
+      body.get(transit.keyword(k)));
+
+    if (requiredFields.some(v => v == null)) {
+      return reject({
+        status: 400,
+        statusText: 'Bad Request',
+        data: `["^ ",
+          "~:errors", [
+            ["^ ",
+              "~:id", "~u57b3f476-19a0-4e07-9a44-923d9dbbe361",
+              "~:status", 400,
+              "~:code", "bad-request",
+              "~:title", "Bad request",
+              "~:details", ["^ ",
+                "~:error", ["^ ",
+                  "~:body-params", ["^ ",
+                    "^4", "missing-required-key",
+                    "~:description", "missing-required-key",
+                    "~:address", "missing-required-key",
+                    "~:geolocation", "missing-required-key"]]]]]]`,
+      });
+    }
+
+    let res;
+
+    if (config.params.expand === true) {
+      res = `["^ ",
+        "~:data", ["^ ",
+          "~:id", "~u58c660f5-a39a-49a5-9270-8a917b7d6c9e",
+          "~:type", "~:ownListing",
+          "~:attributes", ["^ ",
+            "~:title", "Pelago bike",
+            "~:description", "City bike for city hipster!",
+            "~:price", ["~#mn", [12000, "USD"]],
+            "~:address", "Bulevardi 14, 00200 Helsinki, Finland",
+            "~:geolocation", ["~#geo", [40.0, 73.0]]]]]`;
+    } else {
+      res = `["^ ",
+        "~:data", ["^ ",
+          "~:id", "~u58c6610d-1ffd-4fa5-b386-4f9b6e46e732",
+          "~:type", "~:ownListing"]]`;
+    }
 
     return resolve({ data: res });
   },

@@ -73,9 +73,9 @@ const router = (config, resolve, reject, tokenStore) => {
     case 'fake-adapter://fake-api/v1/api/listings/search':
       return requireAuth(config, reject, tokenStore).then(() =>
         api.listings.search(config, resolve));
-    case 'fake-adapter://fake-api/v1/api/listings/create':
+    case 'fake-adapter://fake-api/v1/api/own_listings/create':
       return requireAuth(config, reject, tokenStore).then(() =>
-        api.listings.create(config, resolve, reject));
+        api.ownListings.create(config, resolve, reject));
     case 'fake-adapter://fake-api/v1/auth/token':
       return auth.token(config, resolve, reject, tokenStore);
     case 'fake-adapter://fake-api/v1/auth/revoke':

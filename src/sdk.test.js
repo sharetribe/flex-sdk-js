@@ -409,7 +409,7 @@ describe('new SharetribeSdk', () => {
     return report(
       sdk
         .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
-        .then(() => sdk.listings.create(testData))
+        .then(() => sdk.ownListings.create(testData))
         .then(() => {
           const req = _.last(adapter.requests);
           expect(req.data).toEqual(transitEncoded);
@@ -437,7 +437,7 @@ describe('new SharetribeSdk', () => {
     return report(
       sdk
         .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
-        .then(() => sdk.listings.create(testData))
+        .then(() => sdk.ownListings.create(testData))
         .then(() => {
           const req = _.last(adapter.requests);
           expect(req.data).toEqual(transitEncoded);
@@ -483,7 +483,7 @@ describe('new SharetribeSdk', () => {
         const { access_token } = sdkTokenStore.getToken();
         adapterTokenStore.expireAccessToken(access_token);
 
-        return sdk.listings.create(testData).then(() => {
+        return sdk.ownListings.create(testData).then(() => {
           const req = _.last(adapter.requests);
           expect(req.data).toEqual(transitEncoded);
           expect(req.headers).toEqual(
@@ -544,7 +544,7 @@ describe('new SharetribeSdk', () => {
     return report(
       sdk
         .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
-        .then(() => sdk.listings.create(params))
+        .then(() => sdk.ownListings.create(params))
         .then(res => {
           const data = res.data.data;
           const attrs = data.attributes;
@@ -552,12 +552,12 @@ describe('new SharetribeSdk', () => {
           expect(data).toEqual(
             expect.objectContaining({
               id: expect.any(UUID),
-              type: 'listing',
+              type: 'ownListing',
             })
           );
           expect(attrs).toBeUndefined();
         })
-        .then(() => sdk.listings.create(params, { expand: true }))
+        .then(() => sdk.ownListings.create(params, { expand: true }))
         .then(res => {
           const data = res.data.data;
           const attrs = data.attributes;
@@ -565,7 +565,7 @@ describe('new SharetribeSdk', () => {
           expect(data).toEqual(
             expect.objectContaining({
               id: expect.any(UUID),
-              type: 'listing',
+              type: 'ownListing',
             })
           );
           expect(attrs).toBeDefined();
@@ -603,7 +603,7 @@ describe('new SharetribeSdk', () => {
     return report(
       sdk
         .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
-        .then(() => sdk.listings.create())
+        .then(() => sdk.ownListings.create())
         .then(() => {
           // Fail
           expect(true).toEqual(false);
