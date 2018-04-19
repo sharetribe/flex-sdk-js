@@ -31,9 +31,9 @@ The *query* (GET) methods take only one parameter:
 **Example:**
 
 ```js
-sdk.listings.query({per_page: 5})
+sdk.listings.query({perPage: 5})
 
-// Calls GET /api/listings/query?per_page=5
+// Calls GET /api/listings/query?perPage=5
 ```
 
 The `queryParams` is optional. If the endpoint doesn't require any
