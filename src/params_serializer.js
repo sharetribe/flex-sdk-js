@@ -21,7 +21,7 @@ const encode = value => encodeURIComponent(value).replace(/%2C/gi, ',');
  * maybe in types.js file(?).
  */
 const serialize = (key, value) => {
-  let v = value;
+  let v;
 
   if (value instanceof UUID) {
     v = value.uuid;
@@ -31,14 +31,33 @@ const serialize = (key, value) => {
     v = `${value.ne.lat},${value.ne.lng},${value.sw.lat},${value.sw.lng}`;
   } else if (Array.isArray(value)) {
     v = value;
-  } else if (typeof value === 'object') {
+  } else if (value == null) {
+    v = value;
+  } else if (typeof value !== 'object') {
+    v = value;
+  } else {
     throw new Error(`Don't know how to serialize query parameter '${key}': ${value}`);
+  }
+
+  // Ignore null and undefined values
+  if (v == null) {
+    return null;
   }
 
   return [key, encode(v)];
 };
 
 const paramsSerializer = params =>
-  _.map(params, (value, key) => serialize(key, value).join('=')).join('&');
+  _.compact(
+    _.map(params, (value, key) => {
+      const serialized = serialize(key, value);
+
+      if (serialized) {
+        return serialized.join('=');
+      }
+
+      return null;
+    })
+  ).join('&');
 
 export default paramsSerializer;

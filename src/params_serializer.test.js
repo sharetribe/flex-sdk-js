@@ -43,4 +43,10 @@ describe('params serializer', () => {
       "Don't know how to serialize query parameter 'foo': [object Object]"
     );
   });
+
+  it('ignores null and undefined values', () => {
+    expect(
+      ps({ a: null, b: undefined, c: 'value', d: false, e: 0, f: '', g: [], h: [1, 2, 3] })
+    ).toEqual('c=value&d=false&e=0&f=&g=&h=1,2,3');
+  });
 });
