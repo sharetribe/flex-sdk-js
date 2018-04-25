@@ -3378,50 +3378,7 @@ var endpointDefinitions = [{
 /*   Deprecated endpoints                                                           */
 
 /* ******************************************************************************** */
-
 {
-  /* `listings/query_own` endpoint is deprecated. Use `own_listings/query` instead. */
-  apiName: 'api',
-  path: 'listings/query_own',
-  internal: false,
-  method: 'get',
-  interceptors: [new _transit_response2.default()]
-}, {
-  /* `listings/create` endpoint is deprecated. Use `own_listings/create` instead. */
-  apiName: 'api',
-  path: 'listings/create',
-  internal: false,
-  method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
-}, {
-  /* `listings/update` endpoint is deprecated. Use `own_listings/update` instead. */
-  apiName: 'api',
-  path: 'listings/update',
-  internal: false,
-  method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
-}, {
-  /* `listings/open` endpoint is deprecated. Use `own_listings/open` instead. */
-  apiName: 'api',
-  path: 'listings/open',
-  internal: false,
-  method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
-}, {
-  /* `listings/close` endpoint is deprecated. Use `own_listings/close` instead. */
-  apiName: 'api',
-  path: 'listings/close',
-  internal: false,
-  method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
-}, {
-  /* `listings/add_image` endpoint is deprecated. Use `own_listings/add_image` instead. */
-  apiName: 'api',
-  path: 'listings/add_image',
-  internal: false,
-  method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
-}, {
   /* `images/upload_listing_image` endpoint is deprecated. Use `images/upload` instead. */
   apiName: 'api',
   path: 'images/upload_listing_image',
