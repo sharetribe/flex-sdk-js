@@ -351,55 +351,6 @@ const endpointDefinitions = [
   /*   Deprecated endpoints                                                           */
 
   /* ******************************************************************************** */
-
-  {
-    /* `listings/query_own` endpoint is deprecated. Use `own_listings/query` instead. */
-    apiName: 'api',
-    path: 'listings/query_own',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    /* `listings/create` endpoint is deprecated. Use `own_listings/create` instead. */
-    apiName: 'api',
-    path: 'listings/create',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    /* `listings/update` endpoint is deprecated. Use `own_listings/update` instead. */
-    apiName: 'api',
-    path: 'listings/update',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    /* `listings/open` endpoint is deprecated. Use `own_listings/open` instead. */
-    apiName: 'api',
-    path: 'listings/open',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    /* `listings/close` endpoint is deprecated. Use `own_listings/close` instead. */
-    apiName: 'api',
-    path: 'listings/close',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    /* `listings/add_image` endpoint is deprecated. Use `own_listings/add_image` instead. */
-    apiName: 'api',
-    path: 'listings/add_image',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
   {
     /* `images/upload_listing_image` endpoint is deprecated. Use `images/upload` instead. */
     apiName: 'api',
