@@ -5992,13 +5992,7 @@ var endpointDefinitions = [{
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
 }, {
   apiName: 'api',
-  path: 'images/upload_listing_image',
-  internal: false,
-  method: 'post',
-  interceptors: [new _transit_response2.default(), new _multipart_request2.default()]
-}, {
-  apiName: 'api',
-  path: 'images/upload_profile_image',
+  path: 'images/upload',
   internal: false,
   method: 'post',
   interceptors: [new _transit_response2.default(), new _multipart_request2.default()]
@@ -6112,6 +6106,20 @@ var endpointDefinitions = [{
   internal: false,
   method: 'post',
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  /* `images/upload_listing_image` endpoint is deprecated. Use `images/upload` instead. */
+  apiName: 'api',
+  path: 'images/upload_listing_image',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _multipart_request2.default()]
+}, {
+  /* `images/upload_profile_image` endpoint is deprecated. Use `images/upload` instead. */
+  apiName: 'api',
+  path: 'images/upload_profile_image',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _multipart_request2.default()]
 }];
 
 var authenticateInterceptors = [new _fetch_auth_token_from_store2.default(), new _fetch_auth_token_from_api2.default(), new _retry_with_anon_token2.default(), new _retry_with_refresh_token2.default(), new _add_auth_header2.default()];
