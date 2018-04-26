@@ -317,6 +317,13 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'process_transitions/query',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
     path: 'messages/query',
     internal: false,
     method: 'get',
