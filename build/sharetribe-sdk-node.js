@@ -3349,6 +3349,12 @@ var endpointDefinitions = [{
   interceptors: [new _transit_response2.default()]
 }, {
   apiName: 'api',
+  path: 'process_transitions/query',
+  internal: false,
+  method: 'get',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
   path: 'messages/query',
   internal: false,
   method: 'get',
