@@ -358,22 +358,6 @@ const endpointDefinitions = [
   /*   Deprecated endpoints                                                           */
 
   /* ******************************************************************************** */
-  {
-    /* `images/upload_listing_image` endpoint is deprecated. Use `images/upload` instead. */
-    apiName: 'api',
-    path: 'images/upload_listing_image',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new MultipartRequest()],
-  },
-  {
-    /* `images/upload_profile_image` endpoint is deprecated. Use `images/upload` instead. */
-    apiName: 'api',
-    path: 'images/upload_profile_image',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new MultipartRequest()],
-  },
 ];
 
 const authenticateInterceptors = [
