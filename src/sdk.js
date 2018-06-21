@@ -320,7 +320,7 @@ const endpointDefinitions = [
     path: 'process_transitions/query',
     internal: false,
     method: 'get',
-    interceptors: [new TransitResponse(), new TransitRequest()],
+    interceptors: [new TransitResponse()],
   },
   {
     apiName: 'api',
