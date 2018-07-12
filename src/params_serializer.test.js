@@ -27,6 +27,12 @@ describe('params serializer', () => {
     expect(ps({ alphabets: ['a', 'b', 'c'] })).toEqual('alphabets=a,b,c');
   });
 
+  it('serializes Date', () => {
+    expect(ps({ start: new Date('2018-07-01T00:00:00.000Z') })).toEqual(
+      'start=2018-07-01T00%3A00%3A00.000Z'
+    );
+  });
+
   it('throws for Objects that it can not encode', () => {
     class Point {
       construct(x, y) {

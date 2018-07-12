@@ -31,6 +31,8 @@ const serialize = (key, value) => {
     v = `${value.ne.lat},${value.ne.lng},${value.sw.lat},${value.sw.lng}`;
   } else if (Array.isArray(value)) {
     v = value;
+  } else if (value instanceof Date) {
+    v = value.toISOString();
   } else if (value == null) {
     v = value;
   } else if (typeof value !== 'object') {
