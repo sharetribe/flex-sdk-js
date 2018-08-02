@@ -19,15 +19,17 @@ const tryExecuteMw = (ctx, mw, stage) => {
   /* eslint-enable no-console */
   /* eslint-enable no-undef */
 
-  return resolve(ctx).then(mw[stage] || resolve).catch(error => {
-    const errorCtx = error.ctx || ctx;
-    return Promise.resolve({
-      ...errorCtx,
-      error,
-      errorMiddleware: mw.constructor.name,
-      errorStage: stage,
+  return resolve(ctx)
+    .then(mw[stage] || resolve)
+    .catch(error => {
+      const errorCtx = error.ctx || ctx;
+      return Promise.resolve({
+        ...errorCtx,
+        error,
+        errorMiddleware: mw.constructor.name,
+        errorStage: stage,
+      });
     });
-  });
 };
 
 const nextMw = ctx => {

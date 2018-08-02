@@ -113,7 +113,7 @@ describe('new SharetribeSdk', () => {
     return sdk.listings
       .search({
         id: new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'),
-        origin: new LatLng(40.00, -70.00),
+        origin: new LatLng(40.0, -70.0),
       })
       .then(res => {
         const data = res.data.data;
@@ -404,7 +404,8 @@ describe('new SharetribeSdk', () => {
       geolocation: new LatLng(10.152, 15.375),
     };
 
-    const transitEncoded = '["^ ","~:title","A new hope","~:description","Our Nth listing!","~:address","Bulevardi 14, Helsinki, Finland","~:geolocation",["~#geo",[10.152,15.375]]]';
+    const transitEncoded =
+      '["^ ","~:title","A new hope","~:description","Our Nth listing!","~:address","Bulevardi 14, Helsinki, Finland","~:geolocation",["~#geo",[10.152,15.375]]]';
 
     return report(
       sdk
@@ -432,7 +433,8 @@ describe('new SharetribeSdk', () => {
       geolocation: new LatLng(10.152, 15.375),
     };
 
-    const transitEncoded = '{"~:title":"A new hope","~:description":"Our Nth listing!","~:address":"Bulevardi 14, Helsinki, Finland","~:geolocation":{"~#geo":[10.152,15.375]}}';
+    const transitEncoded =
+      '{"~:title":"A new hope","~:description":"Our Nth listing!","~:address":"Bulevardi 14, Helsinki, Finland","~:geolocation":{"~#geo":[10.152,15.375]}}';
 
     return report(
       sdk
@@ -476,7 +478,8 @@ describe('new SharetribeSdk', () => {
       geolocation: new LatLng(10.152, 15.375),
     };
 
-    const transitEncoded = '["^ ","~:title","A new hope","~:description","Our Nth listing!","~:address","Bulevardi 14, Helsinki, Finland","~:geolocation",["~#geo",[10.152,15.375]]]';
+    const transitEncoded =
+      '["^ ","~:title","A new hope","~:description","Our Nth listing!","~:address","Bulevardi 14, Helsinki, Finland","~:geolocation",["~#geo",[10.152,15.375]]]';
 
     return report(
       sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
@@ -507,10 +510,15 @@ describe('new SharetribeSdk', () => {
             // No auth info yet.
             expect(authInfo.grantType).toBeUndefined();
           })
-          .then(() => sdk.marketplace.show().then(sdk.authInfo).then(authInfo => {
-              // Anonymous token
-              expect(authInfo.grantType).toEqual('client_credentials');
-            }))
+          .then(() =>
+            sdk.marketplace
+              .show()
+              .then(sdk.authInfo)
+              .then(authInfo => {
+                // Anonymous token
+                expect(authInfo.grantType).toEqual('client_credentials');
+              })
+          )
           .then(() =>
             sdk
               .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
@@ -518,15 +526,26 @@ describe('new SharetribeSdk', () => {
               .then(authInfo => {
                 // Login token
                 expect(authInfo.grantType).toEqual('refresh_token');
-              }))
-          .then(() => sdk.logout().then(sdk.authInfo).then(authInfo => {
-              // Logout
-              expect(authInfo.grantType).toBeUndefined();
-            }))
-          .then(() => sdk.logout().then(sdk.authInfo).then(authInfo => {
-              // Logging out already logged out user does nothing
-              expect(authInfo.grantType).toBeUndefined();
-            }))
+              })
+          )
+          .then(() =>
+            sdk
+              .logout()
+              .then(sdk.authInfo)
+              .then(authInfo => {
+                // Logout
+                expect(authInfo.grantType).toBeUndefined();
+              })
+          )
+          .then(() =>
+            sdk
+              .logout()
+              .then(sdk.authInfo)
+              .then(authInfo => {
+                // Logging out already logged out user does nothing
+                expect(authInfo.grantType).toBeUndefined();
+              })
+          )
       );
     });
   });
@@ -538,7 +557,7 @@ describe('new SharetribeSdk', () => {
       title: 'Pelago bike',
       description: 'City bike for city hipster!',
       address: 'Bulevardi 14, 00200 Helsinki, Finland',
-      geolocation: new LatLng(40.00, 73.00),
+      geolocation: new LatLng(40.0, 73.0),
     };
 
     return report(

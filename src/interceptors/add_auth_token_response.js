@@ -7,7 +7,9 @@
 */
 export default class AddAuthTokenResponse {
   leave(ctx) {
-    const { res: { data: authToken } } = ctx;
+    const {
+      res: { data: authToken },
+    } = ctx;
 
     return { ...ctx, authToken };
   }

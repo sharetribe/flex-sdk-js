@@ -533,9 +533,14 @@ const formatError = e => {
 
 const allowedPerRequestOpts = opts => _.pick(opts, ['onUploadProgress']);
 
-const createSdkFnContextRunner = (
-  { params, queryParams, perRequestOpts, ctx, interceptors, endpointInterceptors }
-) =>
+const createSdkFnContextRunner = ({
+  params,
+  queryParams,
+  perRequestOpts,
+  ctx,
+  interceptors,
+  endpointInterceptors,
+}) =>
   contextRunner(_.compact([...interceptors, ...endpointInterceptors]))({
     ...ctx,
     params,
@@ -544,16 +549,15 @@ const createSdkFnContextRunner = (
   })
     .then(({ res }) => res)
     .catch(formatError);
-const createSdkPostFn = sdkFnParams =>
-  (params = {}, queryParams = {}, perRequestOpts = {}) =>
-    createSdkFnContextRunner({
-      params,
-      queryParams,
-      perRequestOpts: allowedPerRequestOpts(perRequestOpts),
-      ...sdkFnParams,
-    });
-const createSdkGetFn = sdkFnParams =>
-  (params = {}) => createSdkFnContextRunner({ params, ...sdkFnParams });
+const createSdkPostFn = sdkFnParams => (params = {}, queryParams = {}, perRequestOpts = {}) =>
+  createSdkFnContextRunner({
+    params,
+    queryParams,
+    perRequestOpts: allowedPerRequestOpts(perRequestOpts),
+    ...sdkFnParams,
+  });
+const createSdkGetFn = sdkFnParams => (params = {}) =>
+  createSdkFnContextRunner({ params, ...sdkFnParams });
 /**
    Creates a new SDK function.
 
@@ -574,8 +578,8 @@ const createSdkFn = ({ method, ...sdkFnParams }) => {
 const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
   ...sdkConfig,
   baseUrl: trimEndSlash(baseUrl),
-  tokenStore: tokenStore ||
-    createDefaultTokenStore(tokenStore, sdkConfig.clientId, !!sdkConfig.secure),
+  tokenStore:
+    tokenStore || createDefaultTokenStore(tokenStore, sdkConfig.clientId, !!sdkConfig.secure),
 });
 
 // Validate SDK configurations, throw an error if invalid, otherwise return.
@@ -647,20 +651,17 @@ export default class SharetribeSdk {
     };
 
     // Create SDK functions
-    const sdkFns = [...endpointSdkFnDefinitions, ...additionalSdkFnDefinitions].map(({
-      path,
-      method,
-      endpointInterceptorPath,
-      interceptors,
-    }) => ({
-      path,
-      fn: createSdkFn({
-        method,
-        ctx,
-        endpointInterceptors: _.get(endpointInterceptors, endpointInterceptorPath) || [],
-        interceptors,
-      }),
-    }));
+    const sdkFns = [...endpointSdkFnDefinitions, ...additionalSdkFnDefinitions].map(
+      ({ path, method, endpointInterceptorPath, interceptors }) => ({
+        path,
+        fn: createSdkFn({
+          method,
+          ctx,
+          endpointInterceptors: _.get(endpointInterceptors, endpointInterceptorPath) || [],
+          interceptors,
+        }),
+      })
+    );
 
     // Assign SDK functions to 'this'
     sdkFns.forEach(({ path, fn }) => _.set(this, path, fn));

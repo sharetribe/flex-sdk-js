@@ -1,29 +1,25 @@
 import contextRunner from './context_runner';
 
 describe('context runner', () => {
-  const createEnterMW = name =>
-    ctx => {
-      const { enters = [], ...newCtx } = ctx;
-      return { ...newCtx, enters: [...enters, name] };
-    };
+  const createEnterMW = name => ctx => {
+    const { enters = [], ...newCtx } = ctx;
+    return { ...newCtx, enters: [...enters, name] };
+  };
 
-  const createLeaveMW = name =>
-    ctx => {
-      const { leaves = [], ...newCtx } = ctx;
-      return { ...newCtx, leaves: [...leaves, name] };
-    };
+  const createLeaveMW = name => ctx => {
+    const { leaves = [], ...newCtx } = ctx;
+    return { ...newCtx, leaves: [...leaves, name] };
+  };
 
-  const createErrorRaiseMW = name =>
-    ctx => {
-      const { errors = [], ...newCtx } = ctx;
-      return { ...newCtx, errors: [...errors, name] };
-    };
+  const createErrorRaiseMW = name => ctx => {
+    const { errors = [], ...newCtx } = ctx;
+    return { ...newCtx, errors: [...errors, name] };
+  };
 
-  const createErrorResolveMW = name =>
-    ctx => {
-      const { errors = [], ...newCtx } = ctx;
-      return { ...newCtx, errors: [...errors, name], error: null };
-    };
+  const createErrorResolveMW = name => ctx => {
+    const { errors = [], ...newCtx } = ctx;
+    return { ...newCtx, errors: [...errors, name], error: null };
+  };
 
   const enterRaiseMW = () => {
     throw new Error('middleware enter failed');
@@ -67,35 +63,27 @@ describe('context runner', () => {
     leave: leaveRaiseMW,
   });
 
-  const createEnterTimeoutMW = name =>
-    ctx => {
-      const { enters = [], ...newCtx } = ctx;
+  const createEnterTimeoutMW = name => ctx => {
+    const { enters = [], ...newCtx } = ctx;
 
-      return new Promise(resolve => {
-        // eslint-disable-next-line no-undef
-        setTimeout(
-          () => {
-            resolve({ ...newCtx, enters: [...enters, name] });
-          },
-          10
-        );
-      });
-    };
+    return new Promise(resolve => {
+      // eslint-disable-next-line no-undef
+      setTimeout(() => {
+        resolve({ ...newCtx, enters: [...enters, name] });
+      }, 10);
+    });
+  };
 
-  const createLeaveTimeoutMW = name =>
-    ctx => {
-      const { leaves = [], ...newCtx } = ctx;
+  const createLeaveTimeoutMW = name => ctx => {
+    const { leaves = [], ...newCtx } = ctx;
 
-      return new Promise(resolve => {
-        // eslint-disable-next-line no-undef
-        setTimeout(
-          () => {
-            resolve({ ...newCtx, leaves: [...leaves, name] });
-          },
-          10
-        );
-      });
-    };
+    return new Promise(resolve => {
+      // eslint-disable-next-line no-undef
+      setTimeout(() => {
+        resolve({ ...newCtx, leaves: [...leaves, name] });
+      }, 10);
+    });
+  };
 
   const createTestMiddlewareTimeoutEL = name => ({
     enter: createEnterTimeoutMW(name),

@@ -10,7 +10,9 @@ export default class SaveToken {
     const { authToken, tokenStore } = ctx;
 
     if (tokenStore) {
-      return Promise.resolve().then(() => tokenStore.setToken(authToken)).then(() => ctx);
+      return Promise.resolve()
+        .then(() => tokenStore.setToken(authToken))
+        .then(() => ctx);
     }
 
     return ctx;
