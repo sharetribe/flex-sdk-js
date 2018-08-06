@@ -1,4 +1,5 @@
-// eslint-disable-next-line no-unused-vars
+/* eslint-env node */
+const path = require('path');
 const webpack = require('webpack');
 
 // Shared configs
@@ -15,13 +16,11 @@ const module = {
 };
 
 const output = target => ({
-  path: './build',
+  path: path.resolve(__dirname, 'build'),
   filename: `sharetribe-sdk-${target}.js`,
   library: 'sharetribeSdk',
   libraryTarget: 'umd',
 });
-
-const plugins = [];
 
 // Node configs
 const nodeConfig = {
@@ -29,10 +28,9 @@ const nodeConfig = {
   output: output('node'),
   target: 'node',
   module,
-  externals: {
-    axios: true,
-  },
-  plugins,
+  externals: [
+    'axios',
+  ],
 };
 
 // Web configs
@@ -42,7 +40,7 @@ const webConfig = {
   target: 'web',
   module,
   plugins: [
-    ...plugins,
+    new webpack.optimize.UglifyJsPlugin(),
   ],
 };
 
