@@ -56,3 +56,13 @@ $ cp -r ../_docpress/* ./
 $ rm -r ../_docpress
 $ // git add, commit, push
 ```
+
+#### Release a new version to NPM
+
+1. Update version in `package.json`
+1. Update [CHANGELOG.md](../CHANGELOG.md)
+   - Move everything in Unreleased to the corresponding version section
+1. Login as `sharetribe` with `npm login`
+   - check credentials from password manager
+1. Publish with `npm publish`
+1. Add a Git tag to the published commit
