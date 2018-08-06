@@ -68,6 +68,10 @@ See [examples/](https://github.com/sharetribe/sharetribe-sdk-js/tree/master/exam
 
 [Documentation can be found here](https://sharetribe.github.io/sharetribe-sdk-js/).
 
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md).
+
 ## License
 
 Distributed under [The Apache License, Version 2.0](https://github.com/sharetribe/sharetribe-sdk-js/tree/master/LICENSE)
