@@ -62,5 +62,8 @@
       "es2015",
       "stage-3"
     ]
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
