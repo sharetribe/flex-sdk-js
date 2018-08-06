@@ -136,7 +136,7 @@ describe('context runner', () => {
     const runner = contextRunner([mw1, mw2, mw3]);
 
     return runner().catch(error => {
-      const ctx = error.ctx;
+      const { ctx } = error;
       expect(ctx.enters).toEqual(['one', 'two']);
       expect(ctx.leaves).toBeUndefined();
       expect(ctx.errors).toEqual(['two', 'one']);
@@ -163,7 +163,7 @@ describe('context runner', () => {
     const runner = contextRunner([mw1, mw2, mw3]);
 
     return runner().catch(error => {
-      const ctx = error.ctx;
+      const { ctx } = error;
 
       expect(ctx.enters).toEqual(['one', 'two', 'three']);
       expect(ctx.leaves).toEqual(['three']);

@@ -70,7 +70,7 @@ describe('serializer', () => {
 
     const decoded = reader().read(transit.writer().write(testData));
 
-    expect(decoded.length).toEqual(2);
+    expect(decoded).toHaveLength(2);
     expect(decoded).toEqual(expect.arrayContaining(['a', 'b']));
   });
 

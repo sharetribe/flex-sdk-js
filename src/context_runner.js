@@ -57,7 +57,9 @@ const executeCtx = ctx => {
 
   if (mw) {
     return tryExecuteMw(newCtx, mw, type).then(executeCtx);
-  } else if (newCtx.error) {
+  }
+
+  if (newCtx.error) {
     const { error, ...errorCtx } = newCtx;
     error.ctx = errorCtx;
     return Promise.reject(error);

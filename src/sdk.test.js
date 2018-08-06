@@ -1,3 +1,4 @@
+/* eslint camelcase: "off" */
 import _ from 'lodash';
 import { UUID, LatLng } from './types';
 import createAdapter from './fake/adapter';
@@ -116,9 +117,9 @@ describe('new SharetribeSdk', () => {
         origin: new LatLng(40.0, -70.0),
       })
       .then(res => {
-        const data = res.data.data;
+        const { data } = res.data;
 
-        expect(data.length).toEqual(2);
+        expect(data).toHaveLength(2);
         expect(data[0].attributes.description).toEqual('27-speed Hybrid. Fully functional.');
         expect(data[0].attributes.geolocation instanceof LatLng).toEqual(true);
         expect(data[0].attributes.geolocation).toEqual(new LatLng(40.64542, -74.08508));
@@ -565,7 +566,7 @@ describe('new SharetribeSdk', () => {
         .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
         .then(() => sdk.ownListings.create(params))
         .then(res => {
-          const data = res.data.data;
+          const { data } = res.data;
           const attrs = data.attributes;
 
           expect(data).toEqual(
@@ -578,7 +579,7 @@ describe('new SharetribeSdk', () => {
         })
         .then(() => sdk.ownListings.create(params, { expand: true }))
         .then(res => {
-          const data = res.data.data;
+          const { data } = res.data;
           const attrs = data.attributes;
 
           expect(data).toEqual(

@@ -236,7 +236,8 @@ export const writer = (customWriters = [], opts = {}) => {
     handlerForForeign: (x, handlers) => {
       if (Array.isArray(x)) {
         return handlers.get('array');
-      } else if (typeof x === 'object') {
+      }
+      if (typeof x === 'object') {
         return handlers.get('map');
       }
 

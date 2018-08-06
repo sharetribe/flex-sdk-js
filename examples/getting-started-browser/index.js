@@ -57,7 +57,7 @@
   const renderMeta = response => {
     const metaTemplate = document.querySelector('.meta');
     const elem = metaTemplate.content.cloneNode(true);
-    const meta = response.data.meta;
+    const { meta } = response.data;
 
     elem.querySelector('.meta-total-items').textContent = meta.totalItems;
     elem.querySelector('.meta-page').textContent = `${meta.page} / ${meta.totalPages}`;
