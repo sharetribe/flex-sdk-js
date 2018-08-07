@@ -8,6 +8,12 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.0.0] - 2018-08-07
+
+This is the first version that is published in NPM.
+
+See: https://www.npmjs.com/package/sharetribe-flex-sdk
+
 ### Changed
 
 - Updated dependencies
