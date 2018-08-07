@@ -41,7 +41,7 @@ The constructor takes the following options:
 ``` js
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const sharetribeSdk = require('sharetribe-sdk');
+const sharetribeSdk = require('sharetribe-flex-sdk');
 
 const app = express();
 

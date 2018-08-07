@@ -9,22 +9,21 @@ import * as api from './api';
    The test responses are copy-pasted from real API responses.
  */
 
-const adapterHelper = adapterDef =>
-  config =>
-    new Promise((resolve, reject) => {
-      const rejectWithError = errorOrResponse => {
-        if (errorOrResponse instanceof Error) {
-          return reject(errorOrResponse);
-        }
+const adapterHelper = adapterDef => config =>
+  new Promise((resolve, reject) => {
+    const rejectWithError = errorOrResponse => {
+      if (errorOrResponse instanceof Error) {
+        return reject(errorOrResponse);
+      }
 
-        const error = new Error(`Request failed with status code ${errorOrResponse.status}`);
-        error.response = errorOrResponse;
+      const error = new Error(`Request failed with status code ${errorOrResponse.status}`);
+      error.response = errorOrResponse;
 
-        return reject(error);
-      };
+      return reject(error);
+    };
 
-      adapterDef.call(null, config, resolve, rejectWithError);
-    });
+    adapterDef.call(null, config, resolve, rejectWithError);
+  });
 
 const parseAuthorizationHeader = value => {
   if (!_.isString(value)) {
@@ -69,18 +68,22 @@ const router = (config, resolve, reject, tokenStore) => {
       return requireAuth(config, reject, tokenStore).then(() => api.users.show(config, resolve));
     case 'fake-adapter://fake-api/v1/api/marketplace/show':
       return requireAuth(config, reject, tokenStore).then(() =>
-        api.marketplace.show(config, resolve));
+        api.marketplace.show(config, resolve)
+      );
     case 'fake-adapter://fake-api/v1/api/listings/search':
       return requireAuth(config, reject, tokenStore).then(() =>
-        api.listings.search(config, resolve));
+        api.listings.search(config, resolve)
+      );
     case 'fake-adapter://fake-api/v1/api/own_listings/create':
       return requireAuth(config, reject, tokenStore).then(() =>
-        api.ownListings.create(config, resolve, reject));
+        api.ownListings.create(config, resolve, reject)
+      );
     case 'fake-adapter://fake-api/v1/auth/token':
       return auth.token(config, resolve, reject, tokenStore);
     case 'fake-adapter://fake-api/v1/auth/revoke':
       return requireAuth(config, reject, tokenStore).then(() =>
-        auth.revoke(config, resolve, reject, tokenStore));
+        auth.revoke(config, resolve, reject, tokenStore)
+      );
     default:
       throw new Error(`Not implemented to Fake adapter: ${config.url}`);
   }

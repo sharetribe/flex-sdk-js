@@ -78,7 +78,7 @@ const createTokenStore = () => {
 
   const expireAccessToken = accessToken => {
     _.map(tokens, t => {
-      const token = t.token;
+      const { token } = t;
 
       if (token.access_token === accessToken) {
         token.access_token = null;

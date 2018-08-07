@@ -1,9 +1,9 @@
 {
-  "name": "sharetribe-sdk",
-  "version": "0.0.1",
-  "description": "Sharetribe SDK for JavaScript",
-  "main": "build/sharetribe-sdk-node.js",
-  "browser": "build/sharetribe-sdk-web.js",
+  "name": "sharetribe-flex-sdk",
+  "version": "1.0",
+  "description": "Sharetribe Flex SDK for JavaScript",
+  "main": "build/sharetribe-flex-sdk-node.js",
+  "browser": "build/sharetribe-flex-sdk-web.js",
   "scripts": {
     "build": "webpack",
     "lint": "eslint .",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sharetribe/sharetribe-sdk-js.git"
+    "url": "https://github.com/sharetribe/flex-sdk-js.git"
   },
   "keywords": [
     "sharetribe",
@@ -25,33 +25,33 @@
   "author": "Sharetribe",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/sharetribe/sharetribe-sdk-js/issues"
+    "url": "https://github.com/sharetribe/flex-sdk-js/issues"
   },
-  "homepage": "https://github.com/sharetribe/sharetribe-sdk-js",
+  "homepage": "https://github.com/sharetribe/flex-sdk-js",
   "devDependencies": {
     "babel-cli": "^6.22.2",
-    "babel-core": "^6.21.0",
-    "babel-jest": "^18.0.0",
-    "babel-loader": "^6.2.10",
-    "babel-plugin-lodash": "^3.2.11",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^23.4.2",
+    "babel-loader": "^7.1.5",
+    "babel-plugin-lodash": "^3.3.4",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-stage-3": "^6.17.0",
-    "colors": "^1.1.2",
+    "colors": "^1.3.1",
     "docpress": "^0.7.1",
-    "eslint": "^3.16.1",
-    "eslint-config-airbnb-base": "^11.0.1",
-    "eslint-config-prettier": "^1.5.0",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jest": "^19.0.1",
-    "jest": "^19.0.2",
-    "prettier": "^0.22.0",
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jest": "^21.18.0",
+    "jest": "^23.4.2",
+    "prettier": "^1.14.0",
     "repl.history": "^0.1.4",
-    "webpack": "2.1.0-beta.25"
+    "webpack": "^3.12.0"
   },
   "dependencies": {
-    "axios": "^0.15.3",
+    "axios": "^0.18.0",
     "js-cookie": "^2.1.3",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.10",
     "transit-js": "^0.8.846"
   },
   "babel": {
@@ -62,5 +62,8 @@
       "es2015",
       "stage-3"
     ]
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

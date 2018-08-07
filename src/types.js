@@ -74,7 +74,7 @@ const types = {
 //
 // JSON replacer
 //
-export const replacer = (key = null, value) => {
+export const replacer = (key, value) => {
   const type = _.findKey(types, typeClass => value instanceof typeClass);
 
   if (type) {
@@ -88,7 +88,7 @@ export const replacer = (key = null, value) => {
 //
 // JSON reviver
 //
-export const reviver = (key = null, value) => {
+export const reviver = (key, value) => {
   // eslint-disable-next-line no-underscore-dangle
   const type = value && value._sdkType;
 

@@ -88,7 +88,8 @@ export const ownListings = {
     const body = reader.read(config.data);
 
     const requiredFields = ['title', 'description', 'address', 'geolocation'].map(k =>
-      body.get(transit.keyword(k)));
+      body.get(transit.keyword(k))
+    );
 
     if (requiredFields.some(v => v == null)) {
       return reject({

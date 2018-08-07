@@ -2,7 +2,7 @@
 
 Use Sharetribe Flex Marketplace API with ease.
 
-[![CircleCI](https://circleci.com/gh/sharetribe/sharetribe-sdk-js.svg?style=svg&circle-token=f2209b7cd8300d10f73d359072d7f03f81bff8f4)](https://circleci.com/gh/sharetribe/sharetribe-sdk-js)
+[![CircleCI](https://circleci.com/gh/sharetribe/flex-sdk-js.svg?style=svg&circle-token=f2209b7cd8300d10f73d359072d7f03f81bff8f4)](https://circleci.com/gh/sharetribe/flex-sdk-js)
 
 ## Table of Contents
 
@@ -31,13 +31,13 @@ communicate with the API.
 Yarn:
 
 ```sh
-yarn add https://github.com/sharetribe/sharetribe-sdk-js.git
+yarn add sharetribe-flex-sdk
 ```
 
 ## Usage
 
 ```js
-const sharetribeSdk = require('sharetribe-sdk');
+const sharetribeSdk = require('sharetribe-flex-sdk');
 
 // Create new SDK instance
 const sdk = sharetribeSdk.createInstance({
@@ -62,12 +62,16 @@ sdk.listings
 
 ## Examples
 
-See [examples/](https://github.com/sharetribe/sharetribe-sdk-js/tree/master/examples/) directory in Github repository.
+See [examples/](https://github.com/sharetribe/flex-sdk-js/tree/master/examples/) directory in Github repository.
 
 ## Documentation
 
-[Documentation can be found here](https://sharetribe.github.io/sharetribe-sdk-js/).
+[Documentation can be found here](https://sharetribe.github.io/flex-sdk-js/).
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md).
 
 ## License
 
-Distributed under [The Apache License, Version 2.0](https://github.com/sharetribe/sharetribe-sdk-js/tree/master/LICENSE)
+Distributed under [The Apache License, Version 2.0](https://github.com/sharetribe/flex-sdk-js/tree/master/LICENSE)

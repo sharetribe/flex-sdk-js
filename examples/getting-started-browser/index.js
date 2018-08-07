@@ -8,10 +8,13 @@
 
   const parseParams = qs => {
     if (qs && qs.length) {
-      return qs.substr(1).split('&').reduce((params, kv) => {
-        const [k, v] = kv.split('=');
-        return Object.assign({}, params, { [k]: decodeURIComponent(v) });
-      }, {});
+      return qs
+        .substr(1)
+        .split('&')
+        .reduce((params, kv) => {
+          const [k, v] = kv.split('=');
+          return Object.assign({}, params, { [k]: decodeURIComponent(v) });
+        }, {});
     }
 
     return {};
@@ -54,7 +57,7 @@
   const renderMeta = response => {
     const metaTemplate = document.querySelector('.meta');
     const elem = metaTemplate.content.cloneNode(true);
-    const meta = response.data.meta;
+    const { meta } = response.data;
 
     elem.querySelector('.meta-total-items').textContent = meta.totalItems;
     elem.querySelector('.meta-page').textContent = `${meta.page} / ${meta.totalPages}`;
@@ -75,13 +78,13 @@
     response.data.data.forEach(listing => {
       const elem = listingTemplate.content.cloneNode(true);
 
-      elem.querySelector(
-        '.listing-title'
-      ).textContent = `${listing.attributes.title}, ${formatMoney(listing.attributes.price)}`;
+      elem.querySelector('.listing-title').textContent = `${
+        listing.attributes.title
+      }, ${formatMoney(listing.attributes.price)}`;
       elem.querySelector('.listing-id').textContent = listing.id.uuid;
-      elem.querySelector(
-        '.listing-geolocation'
-      ).textContent = `${listing.attributes.geolocation.lat},${listing.attributes.geolocation.lng}`;
+      elem.querySelector('.listing-geolocation').textContent = `${
+        listing.attributes.geolocation.lat
+      },${listing.attributes.geolocation.lng}`;
       elem.querySelector('.listing-created-at').textContent = listing.attributes.createdAt;
       elem.querySelector('.listing-state').textContent = listing.attributes.state;
 

@@ -1,8 +1,8 @@
 {
-  "github": "sharetribe/sharetribe-sdk-js",
+  "github": "sharetribe/flex-sdk-js",
   "scripts": [
     "scripts.js",
-    "sharetribe-sdk-web.js"
+    "sharetribe-flex-sdk-web.js"
   ],
   "css": [
     "styles.css"

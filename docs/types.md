@@ -18,7 +18,7 @@ Here's a list of the provided types:
 **Example:**
 
 ```js
-const { Money } = require('sharetribe-sdk').types;
+const { Money } = require('sharetribe-flex-sdk').types;
 
 const price = new Money(5000, 'USD');
 
