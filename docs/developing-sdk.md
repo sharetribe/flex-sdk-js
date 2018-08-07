@@ -64,5 +64,5 @@ $ // git add, commit, push
    - check credentials from password manager
 1. Publish with `npm publish`
 1. Add an annotated Git tag to the published commit
-1. Update [CHANGELOG.md](../CHANGELOG.md)
+1. Update CHANGELOG.md
    - Move everything in Unreleased to the corresponding version section
