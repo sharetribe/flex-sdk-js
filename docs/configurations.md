@@ -4,7 +4,7 @@ There are a few configuration options that can given to the
 `createInstance` method:
 
 ``` js
-const sharetribeSdk = require('sharetribe-sdk');
+const sharetribeSdk = require('sharetribe-flex-sdk');
 
 var sdk = sharetribeSdk.createInstance({
 

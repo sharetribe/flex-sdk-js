@@ -23,7 +23,7 @@ to/from `LatLng` and
 `BigDecimal`
 
 ```js
-const { BigDecimal, LatLng } = require('sharetribe-sdk').types;
+const { BigDecimal, LatLng } = require('sharetribe-flex-sdk').types;
 
 const sdk = createInstance({
   clientId: config.sdk.clientId,

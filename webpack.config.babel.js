@@ -17,7 +17,7 @@ const module = {
 
 const output = target => ({
   path: path.resolve(__dirname, 'build'),
-  filename: `sharetribe-sdk-${target}.js`,
+  filename: `sharetribe-flex-sdk-${target}.js`,
   library: 'sharetribeSdk',
   libraryTarget: 'umd',
 });

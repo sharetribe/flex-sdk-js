@@ -1,9 +1,9 @@
 {
-  "name": "sharetribe-sdk",
+  "name": "sharetribe-flex-sdk",
   "version": "1.0",
   "description": "Sharetribe Flex SDK for JavaScript",
-  "main": "build/sharetribe-sdk-node.js",
-  "browser": "build/sharetribe-sdk-web.js",
+  "main": "build/sharetribe-flex-sdk-node.js",
+  "browser": "build/sharetribe-flex-sdk-web.js",
   "scripts": {
     "build": "webpack",
     "lint": "eslint .",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sharetribe/sharetribe-sdk-js.git"
+    "url": "https://github.com/sharetribe/flex-sdk-js.git"
   },
   "keywords": [
     "sharetribe",
@@ -25,9 +25,9 @@
   "author": "Sharetribe",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/sharetribe/sharetribe-sdk-js/issues"
+    "url": "https://github.com/sharetribe/flex-sdk-js/issues"
   },
-  "homepage": "https://github.com/sharetribe/sharetribe-sdk-js",
+  "homepage": "https://github.com/sharetribe/flex-sdk-js",
   "devDependencies": {
     "babel-cli": "^6.22.2",
     "babel-core": "^6.26.3",

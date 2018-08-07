@@ -20,6 +20,7 @@ Using persistent Keep-Alive connections is **recommended**.
 const express = require('express');
 const http = require('http');
 const https = require('https');
+const sharetribeSdk = require('sharetribe-flex-sdk');
 
 const app = express();
 

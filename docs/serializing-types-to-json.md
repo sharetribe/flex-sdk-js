@@ -16,7 +16,7 @@ store](https://redux.js.org/recipes/server-rendering#inject-initial-component-ht
 **Example:**
 
 ```js
-const { reviver, replacer, UUID } = require('sharetribe-sdk').types;
+const { reviver, replacer, UUID } = require('sharetribe-flex-sdk').types;
 
 const testData = {
   id: new UUID('f989541d-7e96-4c8a-b550-dff1eef25815')
