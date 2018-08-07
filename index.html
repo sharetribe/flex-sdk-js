@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=42463e55"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-sdk-web.js?t=888adafb"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=59362f30"></script>
     <title>Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
     <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
@@ -34,6 +34,8 @@
                 <li class="heading-item -depth-2"><a class="hlink link-examples" href="#examples">Examples</a>
                 </li>
                 <li class="heading-item -depth-2"><a class="hlink link-documentation" href="#documentation">Documentation</a>
+                </li>
+                <li class="heading-item -depth-2"><a class="hlink link-changelog" href="#changelog">Changelog</a>
                 </li>
                 <li class="heading-item -depth-2"><a class="hlink link-license" href="#license">License</a>
                 </li>
@@ -80,13 +82,13 @@
       </div>
       <div class="body page-index">
         <div class="header-nav">
-          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/sharetribe-sdk-js" data-title="sharetribe/sharetribe-sdk-js">
+          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/flex-sdk-js" data-title="sharetribe/flex-sdk-js">
               <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
           </div>
         </div>
         <div class="markdown-body"><h1 id="sharetribe-flex-sdk-for-javascript">Sharetribe Flex SDK for JavaScript</h1>
 <p>Use Sharetribe Flex Marketplace API with ease.</p>
-<p><a href="https://circleci.com/gh/sharetribe/sharetribe-sdk-js"><img src="https://circleci.com/gh/sharetribe/sharetribe-sdk-js.svg?style=svg&amp;circle-token=f2209b7cd8300d10f73d359072d7f03f81bff8f4" alt="CircleCI"></a></p>
+<p><a href="https://circleci.com/gh/sharetribe/flex-sdk-js"><img src="https://circleci.com/gh/sharetribe/flex-sdk-js.svg?style=svg&amp;circle-token=f2209b7cd8300d10f73d359072d7f03f81bff8f4" alt="CircleCI"></a></p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#what-is-it">What is it?</a></li>
@@ -107,10 +109,10 @@ front-end</strong> instead of setting up the necessary boilerplate to
 communicate with the API.</p>
 <h2 id="installation">Installation</h2>
 <p>Yarn:</p>
-<pre><code class="lang-sh">yarn add https://github.com/sharetribe/sharetribe-sdk-js.git
+<pre><code class="lang-sh">yarn add sharetribe-flex-sdk
 </code></pre>
 <h2 id="usage">Usage</h2>
-<pre><code class="lang-js"><span class="pl-k">const</span> sharetribeSdk = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-sdk&apos;</span>);
+<pre><code class="lang-js"><span class="pl-k">const</span> sharetribeSdk = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-flex-sdk&apos;</span>);
 
 <span class="pl-c">// Create new SDK instance</span>
 <span class="pl-k">const</span> sdk = sharetribeSdk.createInstance({
@@ -133,11 +135,13 @@ sdk.listings
   });
 </code></pre>
 <h2 id="examples">Examples</h2>
-<p>See <a href="https://github.com/sharetribe/sharetribe-sdk-js/tree/master/examples/">examples/</a> directory in Github repository.</p>
+<p>See <a href="https://github.com/sharetribe/flex-sdk-js/tree/master/examples/">examples/</a> directory in Github repository.</p>
 <h2 id="documentation">Documentation</h2>
-<p><a href="https://sharetribe.github.io/sharetribe-sdk-js/">Documentation can be found here</a>.</p>
+<p><a href="https://sharetribe.github.io/flex-sdk-js/">Documentation can be found here</a>.</p>
+<h2 id="changelog">Changelog</h2>
+<p>See <a href="https://github.com/sharetribe/flex-sdk-js/tree/master/CHANGELOG.md">CHANGELOG.md</a>.</p>
 <h2 id="license">License</h2>
-<p>Distributed under <a href="https://github.com/sharetribe/sharetribe-sdk-js/tree/master/LICENSE">The Apache License, Version 2.0</a></p>
+<p>Distributed under <a href="https://github.com/sharetribe/flex-sdk-js/tree/master/LICENSE">The Apache License, Version 2.0</a></p>
 
         </div>
         <div class="footer-nav">

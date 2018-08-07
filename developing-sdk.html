@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=42463e55"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-sdk-web.js?t=888adafb"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=59362f30"></script>
     <title>Developing SDK - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
     <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
@@ -64,7 +64,7 @@
       </div>
       <div class="body page-developing-sdk">
         <div class="header-nav">
-          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/sharetribe-sdk-js" data-title="sharetribe/sharetribe-sdk-js">
+          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/flex-sdk-js" data-title="sharetribe/flex-sdk-js">
               <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
           </div>
         </div>
@@ -93,7 +93,7 @@
 </code></pre>
 <h4 id="update-the-github-pages">Update the Github Pages</h4>
 <pre><code class="lang-sh">$ yarn run build
-$ cp build/sharetribe-sdk-web.js docs/sharetribe-sdk-web.js
+$ cp build/sharetribe-flex-sdk-web.js docs/sharetribe-flex-sdk-web.js
 $ yarn run build-docs
 $ mv _docpress ../
 $ git checkout gh-pages
@@ -101,6 +101,22 @@ $ cp -r ../_docpress/* ./
 $ rm -r ../_docpress
 $ // git add, commit, push
 </code></pre>
+<h4 id="release-a-new-version-to-npm">Release a new version to NPM</h4>
+<ol>
+<li>Update version in <code>package.json</code></li>
+<li>Login as <code>sharetribe</code> with <code>npm login</code>
+<ul>
+<li>check credentials from password manager</li>
+</ul>
+</li>
+<li>Publish with <code>npm publish</code></li>
+<li>Add an annotated Git tag to the published commit</li>
+<li>Update <a href="http://CHANGELOG.md">CHANGELOG.md</a>
+<ul>
+<li>Move everything in Unreleased to the corresponding version section</li>
+</ul>
+</li>
+</ol>
 
         </div>
         <div class="footer-nav">

@@ -38,6 +38,11 @@
             "id": "documentation"
           },
           {
+            "title": "Changelog",
+            "depth": 2,
+            "id": "changelog"
+          },
+          {
             "title": "License",
             "depth": 2,
             "id": "license"
@@ -280,6 +285,11 @@
           "id": "documentation"
         },
         {
+          "title": "Changelog",
+          "depth": 2,
+          "id": "changelog"
+        },
+        {
           "title": "License",
           "depth": 2,
           "id": "license"
@@ -491,7 +501,7 @@
     "docs/developing-sdk.md": "developing-sdk.html",
     "docs/docpress.json": "docpress.json",
     "docs/scripts.js": "scripts.js",
-    "docs/sharetribe-sdk-web.js": "sharetribe-sdk-web.js",
+    "docs/sharetribe-flex-sdk-web.js": "sharetribe-flex-sdk-web.js",
     "docs/styles.css": "styles.css"
   }
 }

@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=42463e55"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-sdk-web.js?t=888adafb"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=59362f30"></script>
     <title>Calling the API - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
     <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
@@ -88,7 +88,7 @@
       </div>
       <div class="body page-calling-the-api">
         <div class="header-nav">
-          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/sharetribe-sdk-js" data-title="sharetribe/sharetribe-sdk-js">
+          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/flex-sdk-js" data-title="sharetribe/flex-sdk-js">
               <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
           </div>
         </div>
@@ -112,9 +112,9 @@ invalid parameters, the request fill fail.</p>
 <li><code>queryParams</code>: Object of query parameters</li>
 </ul>
 <p><strong>Example:</strong></p>
-<pre><code class="lang-js">sdk.listings.query({<span class="hljs-attr">per_page</span>: <span class="hljs-number">5</span>})
+<pre><code class="lang-js">sdk.listings.query({<span class="hljs-attr">perPage</span>: <span class="hljs-number">5</span>})
 
-<span class="pl-c">// Calls GET /api/listings/query?per_page=5</span>
+<span class="pl-c">// Calls GET /api/listings/query?perPage=5</span>
 </code></pre>
 <p>The <code>queryParams</code> is optional. If the endpoint doesn&apos;t require any
 query parameters, you can call the SDK method without any parameters.</p>
