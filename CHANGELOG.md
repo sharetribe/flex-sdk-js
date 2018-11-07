@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.1.0] - 2018-11-07
+### Added
+- New endpoints [#88](https://github.com/sharetribe/flex-sdk-js/pull/88):
+  * `sdk.ownListings.createDraft(/* ... */)`
+  * `sdk.ownListings.publishDraft(/* ... */)`
+  * `sdk.ownListings.discardDraft(/* ... */)`
+
 ## [v1.0.0] - 2018-08-07
 
 This is the first version that is published in NPM.

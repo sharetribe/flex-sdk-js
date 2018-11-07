@@ -3256,6 +3256,24 @@ var endpointDefinitions = [{
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
 }, {
   apiName: 'api',
+  path: 'own_listings/create_draft',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
+  path: 'own_listings/publish_draft',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
+  path: 'own_listings/discard_draft',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
   path: 'own_listings/update',
   internal: false,
   method: 'post',

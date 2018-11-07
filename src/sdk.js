@@ -240,6 +240,27 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'own_listings/create_draft',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'own_listings/publish_draft',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'own_listings/discard_draft',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
     path: 'own_listings/update',
     internal: false,
     method: 'post',
