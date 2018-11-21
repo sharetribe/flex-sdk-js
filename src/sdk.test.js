@@ -55,22 +55,10 @@ const createSdk = (config = {}) => {
 
 describe('new SharetribeSdk', () => {
   it('validates presence of clientId', () => {
-    expect(
-      () =>
-        new SharetribeSdk({
-          baseUrl: 'https://jsonplaceholder.typicode.com',
-        })
-    ).toThrowError('clientId must be provided');
+    expect(() => new SharetribeSdk()).toThrowError('clientId must be provided');
   });
 
-  it('validates presence of baseUrl', () => {
-    expect(
-      () =>
-        new SharetribeSdk({
-          clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-        })
-    ).toThrowError('baseUrl must be provided');
-  });
+  // TODO Test the default baseUrl
 
   it('calls users endpoint with query params', () => {
     const { sdk } = createSdk();

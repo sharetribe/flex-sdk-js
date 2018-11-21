@@ -24,7 +24,7 @@ import contextRunner from './context_runner';
 
 const defaultSdkConfig = {
   clientId: null,
-  baseUrl: null,
+  baseUrl: 'https://flex-api.sharetribe.com',
   typeHandlers: [],
   endpoints: [],
   adapter: null,
