@@ -289,6 +289,27 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'availability_exceptions/create',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'availability_exceptions/delete',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'availability_exceptions/query',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
     path: 'images/upload',
     internal: false,
     method: 'post',
@@ -339,6 +360,13 @@ const endpointDefinitions = [
   {
     apiName: 'api',
     path: 'process_transitions/query',
+    internal: false,
+    method: 'get',
+    interceptors: [new TransitResponse()],
+  },
+  {
+    apiName: 'api',
+    path: 'bookings/query',
     internal: false,
     method: 'get',
     interceptors: [new TransitResponse()],
