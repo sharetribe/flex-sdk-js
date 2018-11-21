@@ -10,7 +10,7 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Default value for baseURL
+- Make `baseUrl` optional. Defaults to `https://flex-api.sharetribe.com`.
 
 ## [v1.1.0] - 2018-11-07
 
