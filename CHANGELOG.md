@@ -7,6 +7,13 @@ Changelog](http://keepachangelog.com/en/1.0.0/) and this project
 adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
+### Added
+
+- New endpoints [#89](https://github.com/sharetribe/flex-sdk-js/pull/89)
+  * `sdk.availabilityExceptions.create(/* ... */)`
+  * `sdk.availabilityExceptions.delete(/* ... */)`
+  * `sdk.availabilityExceptions.query(/* ... */)`
+  * `sdk.bookings.query(/* ... */)`
 
 ### Changed
 
