@@ -58,7 +58,31 @@ describe('new SharetribeSdk', () => {
     expect(() => new SharetribeSdk()).toThrowError('clientId must be provided');
   });
 
-  // TODO Test the default baseUrl
+  it('validates presence of baseUrl', () => {
+    expect(
+      () =>
+        new SharetribeSdk({
+          clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+          baseUrl: null,
+        })
+    ).toThrowError('baseUrl must be provided');
+  });
+
+  it('uses default baseUrl, if none is set', () => {
+    const adapter = createAdapter((config, resolve) => {
+      // Fake adapter that echoes the URL
+      resolve({ data: { url: config.url } });
+    });
+
+    const sdk = new SharetribeSdk({
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      adapter: adapter.adapterFn,
+    });
+
+    return sdk.login().then(res => {
+      expect(res.data.url).toMatch(/^https:\/\/flex-api.sharetribe.com/);
+    });
+  });
 
   it('calls users endpoint with query params', () => {
     const { sdk } = createSdk();
