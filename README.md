@@ -42,7 +42,6 @@ const sharetribeSdk = require('sharetribe-flex-sdk');
 // Create new SDK instance
 const sdk = sharetribeSdk.createInstance({
   clientId: '<Your Client ID here>'
-  baseUrl: '<Base URL here>',
 });
 
 // Query first 5 listings
