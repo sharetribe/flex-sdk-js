@@ -17,6 +17,7 @@ npm-debug.log
 
 # Docpress output
 _docpress
+docs/sharetribe-flex-sdk-web.js
 
 # Yarn
 yarn-error.log
