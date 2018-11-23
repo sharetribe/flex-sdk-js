@@ -3040,7 +3040,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var defaultSdkConfig = {
   clientId: null,
-  baseUrl: null,
+  baseUrl: 'https://flex-api.sharetribe.com',
   typeHandlers: [],
   endpoints: [],
   adapter: null,
