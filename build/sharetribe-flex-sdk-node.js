@@ -3298,6 +3298,24 @@ var endpointDefinitions = [{
   interceptors: [new _transit_response2.default(), new _transit_request2.default()]
 }, {
   apiName: 'api',
+  path: 'availability_exceptions/create',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
+  path: 'availability_exceptions/delete',
+  internal: false,
+  method: 'post',
+  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+}, {
+  apiName: 'api',
+  path: 'availability_exceptions/query',
+  internal: false,
+  method: 'get',
+  interceptors: [new _transit_response2.default()]
+}, {
+  apiName: 'api',
   path: 'images/upload',
   internal: false,
   method: 'post',
@@ -3341,6 +3359,12 @@ var endpointDefinitions = [{
 }, {
   apiName: 'api',
   path: 'process_transitions/query',
+  internal: false,
+  method: 'get',
+  interceptors: [new _transit_response2.default()]
+}, {
+  apiName: 'api',
+  path: 'bookings/query',
   internal: false,
   method: 'get',
   interceptors: [new _transit_response2.default()]
