@@ -7,6 +7,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/) and this project
 adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
+
+## [v1.2.0] - 2018-11-27
 ### Added
 
 - New endpoints [#89](https://github.com/sharetribe/flex-sdk-js/pull/89)
@@ -17,13 +19,13 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Make `baseUrl` optional. Defaults to `https://flex-api.sharetribe.com`.
+- Make `baseUrl` optional, defaults to `https://flex-api.sharetribe.com` [#90](https://github.com/sharetribe/flex-sdk-js/pull/90)
 
 ## [v1.1.0] - 2018-11-07
 
 ### Added
 
-- New endpoints [#88](https://github.com/sharetribe/flex-sdk-js/pull/88):
+- New endpoints [#88](https://github.com/sharetribe/flex-sdk-js/pull/88)
   * `sdk.ownListings.createDraft(/* ... */)`
   * `sdk.ownListings.publishDraft(/* ... */)`
   * `sdk.ownListings.discardDraft(/* ... */)`
@@ -41,4 +43,5 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
+[v1.2.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.0.0...v1.1.0
