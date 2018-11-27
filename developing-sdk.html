@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=42463e55"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-flex-sdk-web.js?t=ed91a8c6"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=91098600"></script>
     <title>Developing SDK - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
     <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
@@ -104,6 +104,11 @@ $ // git add, commit, push
 <h4 id="release-a-new-version-to-npm">Release a new version to NPM</h4>
 <ol>
 <li>Update version in <code>package.json</code></li>
+<li>Update <a href="http://CHANGELOG.md">CHANGELOG.md</a>
+<ul>
+<li>Move everything in Unreleased to the corresponding version section</li>
+</ul>
+</li>
 <li>Login as <code>sharetribe</code> with <code>npm login</code>
 <ul>
 <li>check credentials from password manager</li>
@@ -111,11 +116,6 @@ $ // git add, commit, push
 </li>
 <li>Publish with <code>npm publish</code></li>
 <li>Add an annotated Git tag to the published commit</li>
-<li>Update <a href="http://CHANGELOG.md">CHANGELOG.md</a>
-<ul>
-<li>Move everything in Unreleased to the corresponding version section</li>
-</ul>
-</li>
 </ol>
 
         </div>
