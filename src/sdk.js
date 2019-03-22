@@ -443,17 +443,19 @@ const logoutInterceptors = [
    Take endpoint definitions and return SDK function definition.
  */
 const sdkFnDefsFromEndpointDefs = epDefs =>
-  epDefs.filter(({ internal = false }) => !internal).map(({ apiName, path, method }) => {
-    const fnPath = urlPathToFnPath(path);
-    const fullFnPath = [apiName, ...fnPath];
+  epDefs
+    .filter(({ internal = false }) => !internal)
+    .map(({ apiName, path, method }) => {
+      const fnPath = urlPathToFnPath(path);
+      const fullFnPath = [apiName, ...fnPath];
 
-    return {
-      method,
-      path: fnPath,
-      endpointInterceptorPath: fullFnPath,
-      interceptors: [...authenticateInterceptors],
-    };
-  });
+      return {
+        method,
+        path: fnPath,
+        endpointInterceptorPath: fullFnPath,
+        interceptors: [...authenticateInterceptors],
+      };
+    });
 
 /**
    List of SDK methods that will be part of the SDKs public interface.
