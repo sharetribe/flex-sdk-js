@@ -11,6 +11,10 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Missing step (copy sharetribe-flex-sdk-web.js from /build/ to /docs/)
+- New endpoints [#92](https://github.com/sharetribe/flex-sdk-js/pull/92)
+  * `sdk.stripeAccount.create(/* ... */)`
+  * `sdk.stripeAccount.update(/* ... */)`
+  * `sdk.stripePersons.create(/* ... */)`
 
 ### Changed
 
