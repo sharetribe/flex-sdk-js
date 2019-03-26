@@ -32,6 +32,14 @@ $ yarn run lint
 $ yarn run format
 ```
 
+#### Move the built files to `/docs` folder
+
+Docpress only looks for files in the project root and `/docs` folder.
+
+```sh
+$ cp build/sharetribe-flex-sdk-web.js docs/sharetribe-flex-sdk-web.js
+```
+
 #### Serve the docpress docs
 
 ```sh
