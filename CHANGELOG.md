@@ -8,6 +8,14 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Added
+
+- Missing step (copy sharetribe-flex-sdk-web.js from /build/ to /docs/)
+
+### Changed
+
+- Updated dependencies
+
 ## [v1.2.0] - 2018-11-27
 ### Added
 
