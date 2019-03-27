@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.3.0] - 2019-02-27
+
 ### Added
 
 - Missing step (copy sharetribe-flex-sdk-web.js from /build/ to /docs/)
@@ -55,5 +57,6 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
+[v1.3.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.2.0...v1.3.0
 [v1.2.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.0.0...v1.1.0
