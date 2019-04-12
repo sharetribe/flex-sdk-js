@@ -209,12 +209,19 @@ export const reader = (customReaders = []) => {
   });
 };
 
-const MapHandler = [
+const MapHandler = (customWriters = []) => [
   Object,
   transit.makeWriteHandler({
     tag: v => {
       if (v._sdkType) {
         return _.findKey(typeMap, typeClass => v._sdkType === typeClass._sdkType);
+      }
+
+      const customWriter = _.find(customWriters, w => w.isCustomType && w.isCustomType(v));
+
+      if (customWriter) {
+        const sdkType = customWriter.type._sdkType;
+        return _.findKey(typeMap, typeClass => sdkType === typeClass._sdkType);
       }
       return 'map';
     },
@@ -222,6 +229,14 @@ const MapHandler = [
       if (v._sdkType) {
         const defaultWriter = _.find(defaultWriters, w => w.type._sdkType === v._sdkType);
         return defaultWriter.writer(v);
+      }
+
+      const customWriter = _.find(customWriters, w => w.isCustomType && w.isCustomType(v));
+      if (customWriter) {
+        const typeClass = customWriter.type;
+        const defaultWriter = _.find(defaultWriters, w => w.type === typeClass);
+        const composedWriter = composeWriter(defaultWriter, customWriter);
+        return composedWriter(v);
       }
 
       return _.reduce(
@@ -242,7 +257,7 @@ export const writer = (customWriters = [], opts = {}) => {
   const transitType = verbose ? 'json-verbose' : 'json';
 
   return transit.writer(transitType, {
-    handlers: transit.map([...ownHandlers, ...MapHandler]),
+    handlers: transit.map([...ownHandlers, ...MapHandler(customWriters)]),
 
     // This is only needed for the REPL
     // TODO This could be stripped out for production build

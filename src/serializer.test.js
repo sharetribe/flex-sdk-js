@@ -173,4 +173,25 @@ describe('serializer', () => {
 
     expect(r.read(w.write({ id: new MyCustomUuid(data) })).id).toEqual(new UUID(data));
   });
+
+  it('allows you to add your own writer handlers for predefined types using plain objects', () => {
+    const myUuid = uuid => ({
+      myType: 'My plain object UUID type',
+      myUuidValue: uuid,
+    });
+
+    const r = reader();
+
+    const w = writer([
+      {
+        type: UUID,
+        isCustomType: v => v.myType === 'My plain object UUID type',
+        writer: v => new UUID(v.myUuidValue),
+      },
+    ]);
+
+    const data = '69c3d77a-db3f-11e6-bf26-cec0c932ce01';
+
+    expect(r.read(w.write({ id: myUuid(data) })).id).toEqual(new UUID(data));
+  });
 });
