@@ -1,3 +1,5 @@
+/* eslint no-underscore-dangle: ["error", { "allow": ["_sdkType"] }] */
+
 import transit from 'transit-js';
 import _ from 'lodash';
 import { UUID, LatLng, Money, BigDecimal } from './types';
@@ -210,16 +212,27 @@ export const reader = (customReaders = []) => {
 const MapHandler = [
   Object,
   transit.makeWriteHandler({
-    tag: () => 'map',
-    rep: v =>
-      _.reduce(
+    tag: v => {
+      if (v._sdkType) {
+        return _.findKey(typeMap, typeClass => v._sdkType === typeClass._sdkType);
+      }
+      return 'map';
+    },
+    rep: v => {
+      if (v._sdkType) {
+        const defaultWriter = _.find(defaultWriters, w => w.type._sdkType === v._sdkType);
+        return defaultWriter.writer(v);
+      }
+
+      return _.reduce(
         v,
         (map, val, key) => {
           map.set(transit.keyword(key), val);
           return map;
         },
         transit.map()
-      ),
+      );
+    },
   }),
 ];
 

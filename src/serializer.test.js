@@ -123,6 +123,14 @@ describe('serializer', () => {
     expect(roundTrip.percentage).toBeInstanceOf(BigDecimal);
   });
 
+  it('handles types that are plain objects', () => {
+    const uuid = '69c3d77a-db3f-11e6-bf26-cec0c932ce01';
+
+    const roundTrip = reader().read(writer().write({ uuid, _sdkType: 'UUID' }));
+    expect(roundTrip).toEqual(new UUID(uuid));
+    expect(roundTrip).toBeInstanceOf(UUID);
+  });
+
   it('allows you to add your own reader handlers for predefined types', () => {
     class MyCustomUuid {
       constructor(str) {
