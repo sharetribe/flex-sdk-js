@@ -1,4 +1,4 @@
-import _ from 'lodash';
+/* eslint no-underscore-dangle: ["error", { "allow": ["_sdkType"] }] */
 
 /**
    UUID type
@@ -7,23 +7,29 @@ import _ from 'lodash';
  */
 export class UUID {
   constructor(uuid) {
+    this._sdkType = this.constructor._sdkType;
     this.uuid = uuid;
   }
 }
+UUID._sdkType = 'UUID';
 
 export class LatLng {
   constructor(lat, lng) {
+    this._sdkType = this.constructor._sdkType;
     this.lat = lat;
     this.lng = lng;
   }
 }
+LatLng._sdkType = 'LatLng';
 
 export class LatLngBounds {
   constructor(ne, sw) {
+    this._sdkType = this.constructor._sdkType;
     this.ne = ne;
     this.sw = sw;
   }
 }
+LatLngBounds._sdkType = 'LatLngBounds';
 
 /**
    Money type to represent money
@@ -43,10 +49,12 @@ export class LatLngBounds {
 */
 export class Money {
   constructor(amount, currency) {
+    this._sdkType = this.constructor._sdkType;
     this.amount = amount;
     this.currency = currency;
   }
 }
+Money._sdkType = 'Money';
 
 /**
   Type to represent arbitrary precision decimal value.
@@ -56,34 +64,23 @@ export class Money {
 */
 export class BigDecimal {
   constructor(value) {
+    this._sdkType = this.constructor._sdkType;
     this.value = value;
   }
 }
-
-//
-// Map containing the type name for serialization and the type class
-//
-const types = {
-  UUID,
-  LatLng,
-  LatLngBounds,
-  Money,
-  BigDecimal,
-};
+BigDecimal._sdkType = 'BigDecimal';
 
 //
 // JSON replacer
 //
-export const replacer = (key, value) => {
-  const type = _.findKey(types, typeClass => value instanceof typeClass);
-
-  if (type) {
-    // eslint-disable-next-line no-underscore-dangle
-    return { ...value, _sdkType: type };
-  }
-
-  return value;
-};
+// Deprecated
+//
+// The _sdkType field is added to the type object itself,
+// so the use of replacer is not needed. The function exists purely
+// for backwards compatibility. We don't want to remove it in case
+// applications are using it.
+//
+export const replacer = (key, value) => value;
 
 //
 // JSON reviver

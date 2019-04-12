@@ -49,14 +49,26 @@ describe('JSON parse/stringify', () => {
   /* eslint-enable quotes */
   /* eslint-enable comma-dangle */
 
-  it('stringifies types', () => {
+  it('deprecated, serializes types with replacer', () => {
     const jsonRep = JSON.parse(JSON.stringify(testData, replacer));
 
     expect(jsonRep).toEqual(expectedJsonRep);
   });
 
-  it('parses types', () => {
+  it('serializes types', () => {
+    const jsonRep = JSON.parse(JSON.stringify(testData));
+
+    expect(jsonRep).toEqual(expectedJsonRep);
+  });
+
+  it('deprecated. deserializes types after serializing them with replacer', () => {
     const parsed = JSON.parse(JSON.stringify(testData, replacer), reviver);
+
+    expect(parsed).toEqual(testData);
+  });
+
+  it('deserializes types', () => {
+    const parsed = JSON.parse(JSON.stringify(testData), reviver);
 
     expect(parsed).toEqual(testData);
   });
