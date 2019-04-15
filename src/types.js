@@ -70,22 +70,7 @@ export class BigDecimal {
 }
 BigDecimal._sdkType = 'BigDecimal';
 
-//
-// JSON replacer
-//
-// Deprecated
-//
-// The _sdkType field is added to the type object itself,
-// so the use of replacer is not needed. The function exists purely
-// for backwards compatibility. We don't want to remove it in case
-// applications are using it.
-//
-export const replacer = (key, value) => value;
-
-//
-// JSON reviver
-//
-export const reviver = (key, value) => {
+export const toClassInstance = value => {
   // eslint-disable-next-line no-underscore-dangle
   const type = value && value._sdkType;
 
@@ -104,3 +89,20 @@ export const reviver = (key, value) => {
       return value;
   }
 };
+
+//
+// JSON replacer
+//
+// Deprecated
+//
+// The _sdkType field is added to the type object itself,
+// so the use of replacer is not needed. The function exists purely
+// for backwards compatibility. We don't want to remove it in case
+// applications are using it.
+//
+export const replacer = (key, value) => value;
+
+//
+// JSON reviver
+//
+export const reviver = (key, value) => toClassInstance(value);
