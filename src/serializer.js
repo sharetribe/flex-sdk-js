@@ -156,15 +156,33 @@ const constructWriteHandlers = customWriters =>
     _.map(typeMap, (typeClass, tag) => {
       const defaultWriter = _.find(defaultWriters, w => w.type === typeClass);
       const customWriter = _.find(customWriters, w => w.type === typeClass);
-      const composedWriter = composeWriter(defaultWriter, customWriter);
-      const customTypeClass = customWriter ? customWriter.customType : defaultWriter.type;
+
+      if (customWriter && !customWriter.isCustomType) {
+        const composedWriter = composeWriter(defaultWriter, customWriter);
+        const customTypeClass = customWriter.customType;
+
+        const handler = transit.makeWriteHandler({
+          tag: () => tag,
+          rep: composedWriter,
+        });
+
+        if (customTypeClass) {
+          return [customTypeClass, handler];
+        }
+
+        // Please note! This allows overriding of the detaul handler,
+        // if the customType is not specified.
+        // This is an undocumented and accidental behaviour.
+        // This behaviour may be changed in the future.
+        return [typeClass, handler];
+      }
 
       const handler = transit.makeWriteHandler({
         tag: () => tag,
-        rep: composedWriter,
+        rep: defaultWriter.writer,
       });
 
-      return [customTypeClass || typeClass, handler];
+      return [typeClass, handler];
     })
   );
 
