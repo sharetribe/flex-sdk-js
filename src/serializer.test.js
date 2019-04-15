@@ -198,6 +198,35 @@ describe('serializer', () => {
     expect(r.read(w.write({ id: new UUID(data) })).id).toEqual(new UUID(data));
   });
 
+  it('allows you to add your own writer handlers for any type of data', () => {
+    const myArrayMoney = ['_my_money', 100, 'USD'];
+    const myFnUuid = uuid => {
+      const fn = () => uuid;
+      fn.isMyFnUuid = true;
+      return fn;
+    };
+
+    const r = reader();
+
+    const w = writer([
+      {
+        type: UUID,
+        isCustomType: v => v.isMyFnUuid,
+        writer: v => new UUID(v()),
+      },
+      {
+        type: Money,
+        isCustomType: v => v[0] === '_my_money',
+        writer: v => new Money(v[1], v[2]),
+      },
+    ]);
+
+    const data = '69c3d77a-db3f-11e6-bf26-cec0c932ce01';
+
+    expect(r.read(w.write({ id: myFnUuid(data) })).id).toEqual(new UUID(data));
+    expect(r.read(w.write({ money: myArrayMoney })).money).toEqual(new Money(100, 'USD'));
+  });
+
   it('allows you to override a default writer without specifying a custom type', () => {
     // Please note! This is an undocumented and accidental behaviour.
     // This behaviour may be changed in the future.
