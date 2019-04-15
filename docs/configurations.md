@@ -35,17 +35,17 @@ var sdk = sharetribeSdk.createInstance({
       customType: MyUuidType,
 
       // Writer fn type signature must be:
-      // type -> customType
-      //
-      // E.g.
-      // UUID -> MyUuidType
-      writer: v => new UUID(v.myUuid),
-
-      // Reader fn type signature must be:
       // customType -> type
       //
       // E.g.
       // MyUuidType -> UUID
+      writer: v => new UUID(v.myUuid),
+
+      // Reader fn type signature must be:
+      // type -> customType
+      //
+      // E.g.
+      // UUID -> MyUuidType
       reader: v => new MyUuidType(v.uuid),
     }
   ],

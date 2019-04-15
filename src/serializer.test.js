@@ -204,14 +204,14 @@ describe('serializer', () => {
     const w = writer([
       {
         type: UUID,
-        writer: () => new UUID('00000000-0000-0000-0000-000000000000'),
+        writer: v => new UUID(v.uuid.toUpperCase()),
       },
     ]);
 
     const data = '69c3d77a-db3f-11e6-bf26-cec0c932ce01';
 
     expect(r.read(w.write({ id: new UUID(data) })).id).toEqual(
-      new UUID('00000000-0000-0000-0000-000000000000')
+      new UUID('69C3D77A-DB3F-11E6-BF26-CEC0C932CE01')
     );
   });
 });
