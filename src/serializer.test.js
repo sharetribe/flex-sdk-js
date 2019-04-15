@@ -194,4 +194,24 @@ describe('serializer', () => {
 
     expect(r.read(w.write({ id: myUuid(data) })).id).toEqual(new UUID(data));
   });
+
+  it('allows you to override a default writer without specifying a custom type', () => {
+    // Please note! This is an undocumented and accidental behaviour.
+    // This behaviour may be changed in the future.
+
+    const r = reader();
+
+    const w = writer([
+      {
+        type: UUID,
+        writer: () => new UUID('00000000-0000-0000-0000-000000000000'),
+      },
+    ]);
+
+    const data = '69c3d77a-db3f-11e6-bf26-cec0c932ce01';
+
+    expect(r.read(w.write({ id: new UUID(data) })).id).toEqual(
+      new UUID('00000000-0000-0000-0000-000000000000')
+    );
+  });
 });
