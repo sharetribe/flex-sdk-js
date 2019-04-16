@@ -241,7 +241,7 @@ export const createTransitConverters = (typeHandlers = [], opts) => {
           handler.appType ||
           // DEPRECATED Use handler.appType instead of handler.customType
           handler.customType,
-        // TODO canHandle: handler.canHandle,
+        canHandle: handler.canHandle,
         writer: handler.writer,
       };
 

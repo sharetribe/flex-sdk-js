@@ -143,7 +143,7 @@ describe('new SharetribeSdk', () => {
       });
   });
 
-  it('allows user to pass custom read/write handlers', () => {
+  it('allows user to pass custom read handlers', () => {
     class MyUuid {
       constructor(uuid) {
         this.myUuid = uuid;
@@ -155,7 +155,6 @@ describe('new SharetribeSdk', () => {
         sdkType: UUID,
         appType: MyUuid,
         reader: v => new MyUuid(v.uuid), // reader fn type: UUID -> MyUuid
-        writer: v => new UUID(v.myUuid), // writer fn type: MyUuid -> UUID
       },
     ];
 
@@ -177,7 +176,7 @@ describe('new SharetribeSdk', () => {
     });
   });
 
-  it('[DEPRECATED, uses keys that are renamed] allows user to pass custom read/write handlers', () => {
+  it('[DEPRECATED, uses keys that are renamed] allows user to pass custom read handlers', () => {
     class MyUuid {
       constructor(uuid) {
         this.myUuid = uuid;
@@ -189,7 +188,6 @@ describe('new SharetribeSdk', () => {
         type: UUID,
         customType: MyUuid,
         reader: v => new MyUuid(v.uuid), // reader fn type: UUID -> MyUuid
-        writer: v => new UUID(v.myUuid), // writer fn type: MyUuid -> UUID
       },
     ];
 
@@ -449,6 +447,82 @@ describe('new SharetribeSdk', () => {
       description: 'Our Nth listing!',
       address: 'Bulevardi 14, Helsinki, Finland',
       geolocation: new LatLng(10.152, 15.375),
+    };
+
+    const transitEncoded =
+      '["^ ","~:title","A new hope","~:description","Our Nth listing!","~:address","Bulevardi 14, Helsinki, Finland","~:geolocation",["~#geo",[10.152,15.375]]]';
+
+    return report(
+      sdk
+        .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+        .then(() => sdk.ownListings.create(testData))
+        .then(() => {
+          const req = _.last(adapter.requests);
+          expect(req.data).toEqual(transitEncoded);
+          expect(req.headers).toEqual(
+            expect.objectContaining({
+              'Content-Type': 'application/transit+json',
+            })
+          );
+        })
+    );
+  });
+
+  it('encodes new listing post body to Transit, using type appTypes', () => {
+    class MyLatLng {
+      constructor(lat, lng) {
+        this.val = [lat, lng];
+      }
+    }
+
+    const handlers = [
+      { sdkType: LatLng, appType: MyLatLng, writer: v => new LatLng(v.val[0], v.val[1]) },
+    ];
+
+    const { sdk, adapter } = createSdk({ typeHandlers: handlers });
+
+    const testData = {
+      title: 'A new hope',
+      description: 'Our Nth listing!',
+      address: 'Bulevardi 14, Helsinki, Finland',
+      geolocation: new MyLatLng(10.152, 15.375),
+    };
+
+    const transitEncoded =
+      '["^ ","~:title","A new hope","~:description","Our Nth listing!","~:address","Bulevardi 14, Helsinki, Finland","~:geolocation",["~#geo",[10.152,15.375]]]';
+
+    return report(
+      sdk
+        .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+        .then(() => sdk.ownListings.create(testData))
+        .then(() => {
+          const req = _.last(adapter.requests);
+          expect(req.data).toEqual(transitEncoded);
+          expect(req.headers).toEqual(
+            expect.objectContaining({
+              'Content-Type': 'application/transit+json',
+            })
+          );
+        })
+    );
+  });
+
+  it('encodes new listing post body to Transit, using canHandle fn', () => {
+    const handlers = [
+      {
+        sdkType: LatLng,
+        canHandle: v => v[0] === '__my_lat_lng_type',
+        writer: v => new LatLng(v[1], v[2]),
+      },
+    ];
+
+    const { sdk, adapter } = createSdk({ typeHandlers: handlers });
+
+    const testData = {
+      title: 'A new hope',
+      description: 'Our Nth listing!',
+      address: 'Bulevardi 14, Helsinki, Finland',
+      geolocation: ['__my_lat_lng_type', 10.152, 15.375],
     };
 
     const transitEncoded =
