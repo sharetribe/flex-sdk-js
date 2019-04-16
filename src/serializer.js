@@ -42,44 +42,6 @@ const composeReader = (defaultReader, customReader) => {
 };
 
 /**
-   Composes two writers (default and custom) so that:
-
-  ```
-  class MyCustomUuid {
-    constructor(uuid) {
-      this.myUuid = uuid;
-    }
-  }
-
-  const defaultWriter = {
-     type: UUID,
-     writer: v => new UUID(v),
-  };
-
-  const customWriter = {
-     type: UUID,
-     customType: MyCustomUuid,
-
-     // type of writer fn: MyCustomUuid -> UUID
-     writer: v => new UUID(v.myUuid),
-  }
-
-  Composition creates a new reader:
-
-  {
-     type: UUID,
-     reader: v => new MyCustomUuid(new UUID(v))
-  }
-  ```
- */
-const composeWriter = (defaultWriter, customWriter) => {
-  const defaultWriterFn = defaultWriter.writer;
-  const customWriterFn = customWriter ? customWriter.writer : _.identity;
-
-  return rep => defaultWriterFn(customWriterFn(rep));
-};
-
-/**
    Type map from Transit tags to type classes
  */
 const typeMap = {
@@ -147,44 +109,18 @@ const constructReadHandlers = customReaders =>
     })
   );
 
-/**
-   Take `customWriters` param and construct a list of write handlers
-   from `customWriters`, `defaultWriters` and `typeMap`.
-*/
-const constructWriteHandlers = customWriters =>
-  _.flatten(
-    _.map(typeMap, (typeClass, tag) => {
-      const defaultWriter = _.find(defaultWriters, w => w.type === typeClass);
-      const customWriter = _.find(customWriters, w => w.type === typeClass);
+const writeHandlers = _.flatten(
+  _.map(typeMap, (typeClass, tag) => {
+    const defaultWriter = _.find(defaultWriters, w => w.type === typeClass);
 
-      if (customWriter && !customWriter.isCustomType) {
-        const composedWriter = composeWriter(defaultWriter, customWriter);
-        const customTypeClass = customWriter.customType;
+    const handler = transit.makeWriteHandler({
+      tag: () => tag,
+      rep: defaultWriter.writer,
+    });
 
-        const handler = transit.makeWriteHandler({
-          tag: () => tag,
-          rep: composedWriter,
-        });
-
-        if (customTypeClass) {
-          return [customTypeClass, handler];
-        }
-
-        // Please note! This allows overriding of the detaul handler,
-        // if the customType is not specified.
-        // This is an undocumented and accidental behaviour.
-        // This behaviour may be changed in the future.
-        return [typeClass, handler];
-      }
-
-      const handler = transit.makeWriteHandler({
-        tag: () => tag,
-        rep: defaultWriter.writer,
-      });
-
-      return [typeClass, handler];
-    })
-  );
+    return [typeClass, handler];
+  })
+);
 
 /**
    Builds JS objects from Transit maps
@@ -244,20 +180,24 @@ const MapHandler = [
 ];
 
 export const writer = (customWriters = [], opts = {}) => {
-  const ownHandlers = constructWriteHandlers(customWriters);
   const { verbose } = opts;
   const transitType = verbose ? 'json-verbose' : 'json';
 
   return transit.writer(transitType, {
-    handlers: transit.map([...ownHandlers, ...MapHandler]),
+    handlers: transit.map([...writeHandlers, ...MapHandler]),
 
+    // Use transform to transform custom types to sdk types before sdk
+    // types are encoded by transit.
     transform: v => {
       if (v && v instanceof Object) {
         if (v._sdkType) {
           return toClassInstance(v);
         }
 
-        const customWriter = _.find(customWriters, w => w.isCustomType && w.isCustomType(v));
+        const customWriter = _.find(
+          customWriters,
+          w => (w.customType && v instanceof w.customType) || (w.isCustomType && w.isCustomType(v))
+        );
 
         if (customWriter) {
           return customWriter.writer(v);
