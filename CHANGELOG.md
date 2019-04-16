@@ -8,6 +8,20 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.4.0] - 2019-04-16
+
+### Added
+
+- `sdkType` property to the type handler configuration. This property replaces the deprecated `type` property.
+- `appType` property to the type handler configuration. This property replaces the deprecated `customType` property.
+- `canHandle` property to the type handler configuration. The value is expected to be a predicate function (i.e. function that returns truthy or falsy values). If `canHandle` returns truthy value, the writer function will called. This allows users to fully customize how they use read and writer the data types to and from SDK.
+- Added information about the `canHandle` function in the "Your own types" document.
+
+### Deprecated
+
+- `type` property in type handler configuration. Use `sdkType` instead.
+- `customType` property in type handler configuration. Use `appType` instead.
+
 ## [v1.3.0] - 2019-02-27
 
 ### Added
@@ -57,6 +71,7 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
+[v1.4.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.3.0...v1.4.0
 [v1.3.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.2.0...v1.3.0
 [v1.2.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.0.0...v1.1.0
