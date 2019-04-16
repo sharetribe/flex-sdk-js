@@ -140,7 +140,7 @@ describe('serializer', () => {
 
     const r = reader([
       {
-        type: UUID,
+        sdkType: UUID,
         reader: v => new MyCustomUuid(v.uuid),
       },
     ]);
@@ -163,8 +163,8 @@ describe('serializer', () => {
 
     const w = writer([
       {
-        type: UUID,
-        customType: MyCustomUuid,
+        sdkType: UUID,
+        appType: MyCustomUuid,
         writer: v => new UUID(v.myCustomUuidRepresentation),
       },
     ]);
@@ -184,8 +184,8 @@ describe('serializer', () => {
 
     const w = writer([
       {
-        type: UUID,
-        isCustomType: v => v.myType === 'My plain object UUID type',
+        sdkType: UUID,
+        canHandle: v => v.myType === 'My plain object UUID type',
         writer: v => new UUID(v.myUuidValue),
       },
     ]);
@@ -210,13 +210,13 @@ describe('serializer', () => {
 
     const w = writer([
       {
-        type: UUID,
-        isCustomType: v => v.isMyFnUuid,
+        appType: UUID,
+        canHandle: v => v.isMyFnUuid,
         writer: v => new UUID(v()),
       },
       {
-        type: Money,
-        isCustomType: v => v[0] === '_my_money',
+        appType: Money,
+        canHandle: v => v[0] === '_my_money',
         writer: v => new Money(v[1], v[2]),
       },
     ]);

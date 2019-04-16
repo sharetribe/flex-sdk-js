@@ -152,6 +152,40 @@ describe('new SharetribeSdk', () => {
 
     const handlers = [
       {
+        sdkType: UUID,
+        appType: MyUuid,
+        reader: v => new MyUuid(v.uuid), // reader fn type: UUID -> MyUuid
+        writer: v => new UUID(v.myUuid), // writer fn type: MyUuid -> UUID
+      },
+    ];
+
+    const { sdk } = createSdk({
+      typeHandlers: handlers,
+    });
+
+    return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(res => {
+      const resource = res.data.data;
+      const attrs = resource.attributes;
+
+      expect(resource.id).toEqual(new MyUuid('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'));
+      expect(attrs).toEqual(
+        expect.objectContaining({
+          name: 'Awesome skies.',
+          description: 'Meet and greet with fanatical sky divers.',
+        })
+      );
+    });
+  });
+
+  it('[DEPRECATED, uses keys that are renamed] allows user to pass custom read/write handlers', () => {
+    class MyUuid {
+      constructor(uuid) {
+        this.myUuid = uuid;
+      }
+    }
+
+    const handlers = [
+      {
         type: UUID,
         customType: MyUuid,
         reader: v => new MyUuid(v.uuid), // reader fn type: UUID -> MyUuid

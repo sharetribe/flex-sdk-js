@@ -56,19 +56,19 @@ const typeMap = {
  */
 const defaultReaders = [
   {
-    type: UUID,
+    sdkType: UUID,
     reader: rep => new UUID(rep),
   },
   {
-    type: LatLng,
+    sdkType: LatLng,
     reader: ([lat, lng]) => new LatLng(lat, lng),
   },
   {
-    type: Money,
+    sdkType: Money,
     reader: ([amount, currency]) => new Money(amount, currency),
   },
   {
-    type: BigDecimal,
+    sdkType: BigDecimal,
     reader: rep => new BigDecimal(rep),
   },
 ];
@@ -78,19 +78,19 @@ const defaultReaders = [
  */
 const defaultWriters = [
   {
-    type: UUID,
+    sdkType: UUID,
     writer: v => v.uuid,
   },
   {
-    type: LatLng,
+    sdkType: LatLng,
     writer: v => [v.lat, v.lng],
   },
   {
-    type: Money,
+    sdkType: Money,
     writer: v => [v.amount, v.currency],
   },
   {
-    type: BigDecimal,
+    sdkType: BigDecimal,
     writer: v => v.value,
   },
 ];
@@ -102,8 +102,8 @@ const defaultWriters = [
 const constructReadHandlers = customReaders =>
   _.fromPairs(
     _.map(typeMap, (typeClass, tag) => {
-      const defaultReader = _.find(defaultReaders, r => r.type === typeClass);
-      const customReader = _.find(customReaders, r => r.type === typeClass);
+      const defaultReader = _.find(defaultReaders, r => r.sdkType === typeClass);
+      const customReader = _.find(customReaders, r => r.sdkType === typeClass);
 
       return [tag, composeReader(defaultReader, customReader)];
     })
@@ -111,7 +111,7 @@ const constructReadHandlers = customReaders =>
 
 const writeHandlers = _.flatten(
   _.map(typeMap, (typeClass, tag) => {
-    const defaultWriter = _.find(defaultWriters, w => w.type === typeClass);
+    const defaultWriter = _.find(defaultWriters, w => w.sdkType === typeClass);
 
     const handler = transit.makeWriteHandler({
       tag: () => tag,
@@ -196,7 +196,7 @@ export const writer = (customWriters = [], opts = {}) => {
 
         const customWriter = _.find(
           customWriters,
-          w => (w.customType && v instanceof w.customType) || (w.isCustomType && w.isCustomType(v))
+          w => (w.appType && v instanceof w.appType) || (w.canHandle && w.canHandle(v))
         );
 
         if (customWriter) {
@@ -226,12 +226,22 @@ export const createTransitConverters = (typeHandlers = [], opts) => {
   const { readers, writers } = typeHandlers.reduce(
     (memo, handler) => {
       const r = {
-        type: handler.type,
+        sdkType:
+          handler.sdkType ||
+          // DEPRECATED Use handler.sdkType instead of handler.type
+          handler.type,
         reader: handler.reader,
       };
       const w = {
-        type: handler.type,
-        customType: handler.customType,
+        sdkType:
+          handler.sdkType ||
+          // DEPRECATED Use handler.sdkType instead of handler.type
+          handler.type,
+        appType:
+          handler.appType ||
+          // DEPRECATED Use handler.appType instead of handler.customType
+          handler.customType,
+        // TODO canHandle: handler.canHandle,
         writer: handler.writer,
       };
 

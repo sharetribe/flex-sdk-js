@@ -11,10 +11,12 @@ A type handler is an object containing the following properties:
 
 | Property | Description |
 | -------- | ----------- |
-| `type` | The SDK type. |
-| `customType` | The custom type to convert to/from. |
-| `reader` | Conversion function. Gets an instance of `type` as an argument, should return instance of `customType`. |
-| `writer` | Conversion function. Gets an instance of `customType` as an argument, should return instance of `type`. |
+| `sdkType` | The SDK type. |
+| `appType` | The application specific type to convert SDK type to/from. |
+| `reader` | Conversion function. Gets an instance of `sdkType` as an argument, should return instance of `appType`. |
+| `writer` | Conversion function. Gets an instance of `appType` as an argument, should return instance of `sdkType`. |
+
+Please note: v1.4.0 renamed `type` to `sdkType` and `customType` to `appType`
 
 **Example:** Convert
 [`google.maps.LatLng`](https://developers.google.com/maps/documentation/javascript/reference/3/#LatLng)
@@ -30,13 +32,13 @@ const sdk = createInstance({
   baseUrl: config.sdk.baseUrl,
   typeHandlers: [
     {
-      type: BigDecimal,
-      customType: Decimal,
+      sdkType: BigDecimal,
+      appType: Decimal,
       writer: v => new BigDecimal(v.toString()),
       reader: v => new Decimal(v.value),
     },
-      type: LatLng,
-      customType: google.maps.LatLng,
+      sdkType: LatLng,
+      appType: google.maps.LatLng,
       writer: v => new LatLng(v.lat(), v.lng()),
       reader: v => new google.maps.LatLng(v.lat, v.lng)
     }

@@ -31,18 +31,20 @@ var sdk = sharetribeSdk.createInstance({
   // List of custom type handlers
   typeHandlers: [
     {
-      type: UUID,
-      customType: MyUuidType,
+      sdkType: UUID,
+      // "type" was renamed to "sdkType" on v1.4.0
+      appType: MyUuidType,
+      // "customType" was renamed to "appType" on v1.4.0
 
       // Writer fn type signature must be:
-      // customType -> type
+      // appType -> sdkType
       //
       // E.g.
       // MyUuidType -> UUID
       writer: v => new UUID(v.myUuid),
 
       // Reader fn type signature must be:
-      // type -> customType
+      // sdkType -> appType
       //
       // E.g.
       // UUID -> MyUuidType
