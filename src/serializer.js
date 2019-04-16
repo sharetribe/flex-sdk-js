@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { UUID, LatLng, Money, BigDecimal, toType } from './types';
 
 /**
-   Composes two readers (default and custom) so that:
+   Composes two readers (sdk type and app type) so that:
 
   ```
   class MyCustomUuid {
@@ -14,13 +14,13 @@ import { UUID, LatLng, Money, BigDecimal, toType } from './types';
     }
   }
 
-  const defaultReader = {
-     type: UUID,
+  const sdkTypeReader = {
+     sdkType: UUID,
      reader: v => new UUID(v),
   };
 
-  const customReader = {
-     type: UUID,
+  const appTypeReader = {
+     sdkType: UUID,
 
      // type of reader function: UUID -> MyCustomUuid
      reader: v => new MyCustomUuid(v.uuid),
@@ -29,16 +29,16 @@ import { UUID, LatLng, Money, BigDecimal, toType } from './types';
   Composition creates a new reader:
 
   {
-     type: UUID,
+     sdkType: UUID,
      reader: v => new MyCustomUuid(new UUID(v))
   }
   ```
  */
-const composeReader = (defaultReader, customReader) => {
-  const defaultReaderFn = defaultReader.reader;
-  const customReaderFn = customReader ? customReader.reader : _.identity;
+const composeReader = (sdkTypeReader, appTypeReader) => {
+  const sdkTypeReaderFn = sdkTypeReader.reader;
+  const appTypeReaderFn = appTypeReader ? appTypeReader.reader : _.identity;
 
-  return rep => customReaderFn(defaultReaderFn(rep));
+  return rep => appTypeReaderFn(sdkTypeReaderFn(rep));
 };
 
 /**
@@ -52,9 +52,9 @@ const typeMap = {
 };
 
 /**
-   List of default readers
+   List of SDK type readers
  */
-const defaultReaders = [
+const sdkTypeReaders = [
   {
     sdkType: UUID,
     reader: rep => new UUID(rep),
@@ -74,9 +74,9 @@ const defaultReaders = [
 ];
 
 /**
-   List of default writers
+   List of SDK type writers
  */
-const defaultWriters = [
+const sdkTypeWriters = [
   {
     sdkType: UUID,
     writer: v => v.uuid,
@@ -96,26 +96,26 @@ const defaultWriters = [
 ];
 
 /**
-   Take `customReaders` param and construct a list of read handlers
-   from `customReaders`, `defaultReaders` and `typeMap`.
+   Take `appTypeReaders` param and construct a list of read handlers
+   from `appTypeReaders`, `sdkTypeReaders` and `typeMap`.
 */
-const constructReadHandlers = customReaders =>
+const constructReadHandlers = appTypeReaders =>
   _.fromPairs(
     _.map(typeMap, (typeClass, tag) => {
-      const defaultReader = _.find(defaultReaders, r => r.sdkType === typeClass);
-      const customReader = _.find(customReaders, r => r.sdkType === typeClass);
+      const sdkTypeReader = _.find(sdkTypeReaders, r => r.sdkType === typeClass);
+      const appTypeReader = _.find(appTypeReaders, r => r.sdkType === typeClass);
 
-      return [tag, composeReader(defaultReader, customReader)];
+      return [tag, composeReader(sdkTypeReader, appTypeReader)];
     })
   );
 
 const writeHandlers = _.flatten(
   _.map(typeMap, (typeClass, tag) => {
-    const defaultWriter = _.find(defaultWriters, w => w.sdkType === typeClass);
+    const sdkTypeWriter = _.find(sdkTypeWriters, w => w.sdkType === typeClass);
 
     const handler = transit.makeWriteHandler({
       tag: () => tag,
-      rep: defaultWriter.writer,
+      rep: sdkTypeWriter.writer,
     });
 
     return [typeClass, handler];
@@ -135,8 +135,8 @@ const mapBuilder = {
   finalize: _.identity,
 };
 
-export const reader = (customReaders = []) => {
-  const handlers = constructReadHandlers(customReaders);
+export const reader = (appTypeReaders = []) => {
+  const handlers = constructReadHandlers(appTypeReaders);
 
   return transit.reader('json', {
     handlers: {
@@ -179,14 +179,14 @@ const MapHandler = [
   }),
 ];
 
-export const writer = (customWriters = [], opts = {}) => {
+export const writer = (appTypeWriters = [], opts = {}) => {
   const { verbose } = opts;
   const transitType = verbose ? 'json-verbose' : 'json';
 
   return transit.writer(transitType, {
     handlers: transit.map([...writeHandlers, ...MapHandler]),
 
-    // Use transform to transform custom types to sdk types before sdk
+    // Use transform to transform app types to sdk types before sdk
     // types are encoded by transit.
     transform: v => {
       if (v && v instanceof Object) {
@@ -194,13 +194,13 @@ export const writer = (customWriters = [], opts = {}) => {
           return toType(v);
         }
 
-        const customWriter = _.find(
-          customWriters,
+        const appTypeWriter = _.find(
+          appTypeWriters,
           w => (w.appType && v instanceof w.appType) || (w.canHandle && w.canHandle(v))
         );
 
-        if (customWriter) {
-          return customWriter.writer(v);
+        if (appTypeWriter) {
+          return appTypeWriter.writer(v);
         }
       }
 
