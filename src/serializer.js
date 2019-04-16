@@ -2,7 +2,7 @@
 
 import transit from 'transit-js';
 import _ from 'lodash';
-import { UUID, LatLng, Money, BigDecimal, toClassInstance } from './types';
+import { UUID, LatLng, Money, BigDecimal, toType } from './types';
 
 /**
    Composes two readers (default and custom) so that:
@@ -191,7 +191,7 @@ export const writer = (customWriters = [], opts = {}) => {
     transform: v => {
       if (v && v instanceof Object) {
         if (v._sdkType) {
-          return toClassInstance(v);
+          return toType(v);
         }
 
         const customWriter = _.find(

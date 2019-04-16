@@ -70,7 +70,7 @@ export class BigDecimal {
 }
 BigDecimal._sdkType = 'BigDecimal';
 
-export const toClassInstance = value => {
+export const toType = value => {
   // eslint-disable-next-line no-underscore-dangle
   const type = value && value._sdkType;
 
@@ -105,4 +105,4 @@ export const replacer = (key, value) => value;
 //
 // JSON reviver
 //
-export const reviver = (key, value) => toClassInstance(value);
+export const reviver = (key, value) => toType(value);
