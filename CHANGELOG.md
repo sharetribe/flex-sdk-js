@@ -12,10 +12,21 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- `sdkType` property to the type handler configuration. This property replaces the deprecated `type` property.
-- `appType` property to the type handler configuration. This property replaces the deprecated `customType` property.
-- `canHandle` property to the type handler configuration. The value is expected to be a predicate function (i.e. function that returns truthy or falsy values). If `canHandle` returns truthy value, the writer function will called. This allows users to fully customize how they use read and writer the data types to and from SDK.
-- Added information about the `canHandle` function in the "Your own types" document.
+- `sdkType` property to the type handler configuration. This property
+  replaces the deprecated `type`
+  property. [#94](https://github.com/sharetribe/flex-sdk-js/pull/94)
+- `appType` property to the type handler configuration. This property
+  replaces the deprecated `customType`
+  property. [#94](https://github.com/sharetribe/flex-sdk-js/pull/94)
+- `canHandle` property to the type handler configuration. The value is
+  expected to be a predicate function (i.e. function that returns
+  truthy or falsy values). If `canHandle` returns truthy value, the
+  writer function will called. This allows users to fully customize
+  how they use read and writer the data types to and from
+  SDK. [#94](https://github.com/sharetribe/flex-sdk-js/pull/94)
+- Added information about the `canHandle` function in the "Your own
+  types"
+  document. [#94](https://github.com/sharetribe/flex-sdk-js/pull/94)
 
 ### Deprecated
 
