@@ -20,27 +20,17 @@ const lineBreak = () => {
   console.log();
 };
 
-const baseUrl = process.argv[2];
-const clientId = process.argv[3];
+const clientId = process.argv[2];
 
 //
-// Ensure baseUrl and clientId are set
+// Ensure clientId is set
 //
-
-if (!baseUrl) {
-  lineBreak();
-  cyan('Could not found baseUrl!');
-  lineBreak();
-  yellow('Usage: node index.js [baseUrl] [clientId]');
-  lineBreak();
-  process.exit(1);
-}
 
 if (!clientId) {
   lineBreak();
   cyan('Could not found clientId!');
   lineBreak();
-  yellow('Usage: node index.js [baseUrl] [clientId]');
+  yellow('Usage: node index.js [clientId]');
   lineBreak();
   process.exit(1);
 }
@@ -87,7 +77,8 @@ const printMeta = response => {
 
 const printData = response => {
   // Group images by ID for easy and fast lookup
-  const images = groupById(response.data.included.filter(entity => entity.type === 'image'));
+  const included = response.data.included;
+  const images = included ? groupById(included.filter(entity => entity.type === 'image')) : {};
 
   cyan('** Response data:');
   lineBreak();
@@ -112,16 +103,14 @@ const printData = response => {
   });
 };
 
-// Create new SDK instance with clientId and baseUrl
+// Create new SDK instance with clientId
 const sdk = sharetribeSdk.createInstance({
   clientId,
-  baseUrl,
 });
 
 lineBreak();
 cyan('** Request:');
 lineBreak();
-yellow(`baseUrl: ${baseUrl}`);
 yellow(`clientId: ${clientId}`);
 
 // Call method sdk.listings.query with params include=images and
