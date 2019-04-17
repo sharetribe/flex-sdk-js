@@ -14,16 +14,10 @@ Set your clientId:
 const clientId = "<your clientId here>";
 ```
 
-Set your baseUrl:
-
-```js
-const baseUrl = "<your baseUrl here>";
-```
-
 Create new SDK instance:
 
 ```js
-const sdk = sharetribeSdk.createInstance({clientId, baseUrl});
+const sdk = sharetribeSdk.createInstance({clientId});
 ```
 
 Fetch 10 listings:
