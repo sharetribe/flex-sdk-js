@@ -13,7 +13,7 @@ A type handler is an object containing the following properties:
 | -------- | ----------- |
 | `sdkType` | The SDK type. |
 | `appType` | The application specific type to convert SDK type to/from. |
-| `canHandle` | A predicate function (i.e. function that returns truthy or falsy) that defines whether the this handler should be used. The SDK makes sure that `canHandle` will be only called for not `null` values what are `instanceof Object`, so `null` check can be safely ignored.|
+| `canHandle` | A predicate function (i.e. function that returns truthy or falsy) that defines whether the this handler should be used. The SDK makes sure that `canHandle` will be called only for not `null` Object values, thus `null` check can be safely omitted.|
 | `reader` | Conversion function. Gets an instance of `sdkType` as an argument, should return instance of `appType`. |
 | `writer` | Conversion function. Gets an instance of `appType` as an argument, should return instance of `sdkType`. |
 

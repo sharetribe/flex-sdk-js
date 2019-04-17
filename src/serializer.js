@@ -189,14 +189,21 @@ export const writer = (appTypeWriters = [], opts = {}) => {
     // Use transform to transform app types to sdk types before sdk
     // types are encoded by transit.
     transform: v => {
-      if (v && v instanceof Object) {
+      // Check _.isObject for two reasons:
+      // 1. _.isObject makes sure the value is not null, so the null check can be omitted in the canHandle implementation
+      // 2. Perf. No need to run canHandle for primitives
+      if (_.isObject(v)) {
         if (v._sdkType) {
           return toType(v);
         }
 
         const appTypeWriter = _.find(
           appTypeWriters,
-          w => (w.appType && v instanceof w.appType) || (w.canHandle && w.canHandle(v))
+          w =>
+            // Check if the value is an application type instance
+            (w.appType && v instanceof w.appType) ||
+            // ...or if the canHandle returns true.
+            (w.canHandle && w.canHandle(v))
         );
 
         if (appTypeWriter) {
