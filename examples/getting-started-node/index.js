@@ -77,7 +77,7 @@ const printMeta = response => {
 
 const printData = response => {
   // Group images by ID for easy and fast lookup
-  const included = response.data.included;
+  const { included } = response.data;
   const images = included ? groupById(included.filter(entity => entity.type === 'image')) : {};
 
   cyan('** Response data:');
