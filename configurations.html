@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=93f1a66c"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-flex-sdk-web.js?t=04c31ddd"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=0ece5d7f"></script>
     <title>Configurations - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
     <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
@@ -80,9 +80,6 @@
   <span class="pl-c">// The API ClientID (mandatory)</span>
   clientId: <span class="pl-s">&quot;08ec69f6-d37e-414d-83eb-324e94afddf0&quot;</span>,
 
-  <span class="pl-c">// The API base URL (mandatory)</span>
-  baseUrl: <span class="pl-s">&quot;https://the-api-base-url.example.sharetribe.com/&quot;</span>,
-
   <span class="pl-c">// Token store</span>
   <span class="pl-c">//</span>
   <span class="pl-c">// Token store instance to use. Token store is where the SDK saves the session information.</span>
@@ -100,21 +97,23 @@
   <span class="pl-c">// List of custom type handlers</span>
   typeHandlers: [
     {
-      <span class="hljs-attr">type</span>: UUID,
-      <span class="hljs-attr">customType</span>: MyUuidType,
+      <span class="hljs-attr">sdkType</span>: UUID,
+      <span class="pl-c">// &quot;type&quot; was renamed to &quot;sdkType&quot; on v1.4.0</span>
+      appType: MyUuidType,
+      <span class="pl-c">// &quot;customType&quot; was renamed to &quot;appType&quot; on v1.4.0</span>
 
       <span class="pl-c">// Writer fn type signature must be:</span>
-      <span class="pl-c">// type -&gt; customType</span>
-      <span class="pl-c">//</span>
-      <span class="pl-c">// E.g.</span>
-      <span class="pl-c">// UUID -&gt; MyUuidType</span>
-      writer: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> UUID(v.myUuid),
-
-      <span class="pl-c">// Reader fn type signature must be:</span>
-      <span class="pl-c">// customType -&gt; type</span>
+      <span class="pl-c">// appType -&gt; sdkType</span>
       <span class="pl-c">//</span>
       <span class="pl-c">// E.g.</span>
       <span class="pl-c">// MyUuidType -&gt; UUID</span>
+      writer: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> UUID(v.myUuid),
+
+      <span class="pl-c">// Reader fn type signature must be:</span>
+      <span class="pl-c">// sdkType -&gt; appType</span>
+      <span class="pl-c">//</span>
+      <span class="pl-c">// E.g.</span>
+      <span class="pl-c">// UUID -&gt; MyUuidType</span>
       reader: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> MyUuidType(v.uuid),
     }
   ],
@@ -136,7 +135,13 @@
   <span class="pl-c">// If this configuration is `true` a verbose Transit mode is enabled.</span>
   <span class="pl-c">// Useful for development.</span>
   <span class="pl-c">// Default: false</span>
-  transitVerbose: <span class="pl-c1">false</span>
+  transitVerbose: <span class="pl-c1">false</span>,
+
+  <span class="pl-c">// The API base URL (optional)</span>
+  <span class="pl-c">// Defaults to Sharetribe production (https://flex-api.sharetribe.com)</span>
+  <span class="pl-c">// Change this if you want to point the SDK to somewhere else (like localhost).</span>
+  <span class="pl-c">// Useful mainly for Sharetribe&apos;s internal development</span>
+  baseUrl: <span class="pl-s">&quot;https://the-api-base-url.example.sharetribe.com/&quot;</span>
 
 });
 </code></pre>

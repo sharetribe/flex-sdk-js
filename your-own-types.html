@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=93f1a66c"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-flex-sdk-web.js?t=04c31ddd"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=0ece5d7f"></script>
     <title>Your own types - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
     <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
@@ -86,28 +86,34 @@ types.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>type</code></td>
+<td><code>sdkType</code></td>
 <td>The SDK type.</td>
 </tr>
 <tr>
-<td><code>customType</code></td>
-<td>The custom type to convert to/from.</td>
+<td><code>appType</code></td>
+<td>The application specific type to convert SDK type to/from.</td>
+</tr>
+<tr>
+<td><code>canHandle</code></td>
+<td>A predicate function (i.e. function that returns truthy or falsy) that defines whether the this handler should be used. The SDK makes sure that <code>canHandle</code> will be called only for not <code>null</code> Object values, thus <code>null</code> check can be safely omitted.</td>
 </tr>
 <tr>
 <td><code>reader</code></td>
-<td>Conversion function. Gets an instance of <code>type</code> as an argument, should return instance of <code>customType</code>.</td>
+<td>Conversion function. Gets an instance of <code>sdkType</code> as an argument, should return instance of <code>appType</code>.</td>
 </tr>
 <tr>
 <td><code>writer</code></td>
-<td>Conversion function. Gets an instance of <code>customType</code> as an argument, should return instance of <code>type</code>.</td>
+<td>Conversion function. Gets an instance of <code>appType</code> as an argument, should return instance of <code>sdkType</code>.</td>
 </tr>
 </tbody>
 </table>
+<p>Either <code>appType</code> or <code>canHandle</code> should be provider, but not both.</p>
+<p>Please note: v1.4.0 renamed <code>type</code> to <code>sdkType</code> and <code>customType</code> to <code>appType</code>.</p>
 <p><strong>Example:</strong> Convert
 <a href="https://developers.google.com/maps/documentation/javascript/reference/3/#LatLng"><code>google.maps.LatLng</code></a>
-to/from <code>LatLng</code> and
-<a href="https://github.com/MikeMcl/decimal.js/">Decimal.js</a> <code>Decimal</code> to/from
-<code>BigDecimal</code></p>
+to/from <code>LatLng</code>, <a href="https://github.com/MikeMcl/decimal.js/">Decimal.js</a>
+<code>Decimal</code> to/from <code>BigDecimal</code> and own plain object UUID
+representation to UUID type class instance.</p>
 <pre><code class="lang-js"><span class="pl-k">const</span> { BigDecimal, LatLng } = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-flex-sdk&apos;</span>).types;
 
 <span class="pl-k">const</span> sdk = createInstance({
@@ -115,15 +121,22 @@ to/from <code>LatLng</code> and
   <span class="hljs-attr">baseUrl</span>: config.sdk.baseUrl,
   <span class="hljs-attr">typeHandlers</span>: [
     {
-      <span class="hljs-attr">type</span>: BigDecimal,
-      <span class="hljs-attr">customType</span>: Decimal,
+      <span class="hljs-attr">sdkType</span>: BigDecimal,
+      <span class="hljs-attr">appType</span>: Decimal,
       <span class="hljs-attr">writer</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> BigDecimal(v.toString()),
       <span class="hljs-attr">reader</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> Decimal(v.value),
     },
-      <span class="hljs-attr">type</span>: LatLng,
-      <span class="hljs-attr">customType</span>: google.maps.LatLng,
+      <span class="hljs-attr">sdkType</span>: LatLng,
+      <span class="hljs-attr">appType</span>: google.maps.LatLng,
       <span class="hljs-attr">writer</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> LatLng(v.lat(), v.lng()),
       <span class="hljs-attr">reader</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> google.maps.LatLng(v.lat, v.lng)
+    },
+    {
+      <span class="hljs-attr">sdkType</span>: UUID,
+      <span class="hljs-attr">canHandle</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> v.isMyOwnUuidType,
+      <span class="hljs-attr">writer</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> UUID(v.myOwnUuidValue),
+      <span class="hljs-attr">reader</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> ({<span class="hljs-attr">myOwnUuidValue</span>: v.uuid,
+                     <span class="hljs-attr">isMyOwnUuidType</span>: <span class="pl-c1">true</span>})
     }
   ]
 });

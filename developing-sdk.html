@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=93f1a66c"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-flex-sdk-web.js?t=04c31ddd"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=0ece5d7f"></script>
     <title>Developing SDK - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
     <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
@@ -109,19 +109,64 @@ $ // git add, commit, push
 </code></pre>
 <h4 id="release-a-new-version-to-npm">Release a new version to NPM</h4>
 <ol>
-<li>Update version in <code>package.json</code></li>
-<li>Update <a href="http://CHANGELOG.md">CHANGELOG.md</a>
+<li>
+<p>Update version in <code>package.json</code></p>
+</li>
+<li>
+<p>Update <a href="http://CHANGELOG.md">CHANGELOG.md</a></p>
 <ul>
 <li>Move everything in Unreleased to the corresponding version section</li>
 </ul>
 </li>
-<li>Login as <code>sharetribe</code> with <code>npm login</code>
+<li>
+<p>Login as <code>sharetribe</code> with <code>npm login</code></p>
 <ul>
 <li>check credentials from password manager</li>
 </ul>
 </li>
-<li>Publish with <code>npm publish</code></li>
-<li>Add an annotated Git tag to the published commit</li>
+<li>
+<p>Publish with <code>npm publish</code></p>
+</li>
+<li>
+<p>Add a new tag</p>
+<pre><code class="lang-bash">git tag -a v1.2.3 -m v1.2.3
+</code></pre>
+</li>
+<li>
+<p>Update <code>latest</code> tag</p>
+<pre><code class="lang-bash">git push origin :refs/tags/latest
+git tag -f -a latest -m latest
+</code></pre>
+</li>
+<li>
+<p>Push the tag</p>
+<pre><code class="lang-bash">git push --tags
+</code></pre>
+</li>
+<li>
+<p>Go to <a href="https://github.com/sharetribe/flex-sdk-js/releases/new">Github releases and draft a new release</a></p>
+<p>Use the following content:</p>
+<p><strong>Tag version:</strong> &lt;the newly created tag&gt;</p>
+<p><strong>Release title:</strong> &lt;version number&gt;</p>
+<p><strong>Describe this release:</strong></p>
+<pre><code class="lang-markdown"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">copy</span> <span class="hljs-attr">the</span> <span class="hljs-attr">content</span> <span class="hljs-attr">from</span> <span class="hljs-attr">the</span> [<span class="hljs-attr">CHANGELOG.md</span>](<span class="hljs-attr">CHANGELOG.md</span>)&gt;</span></span>
+</code></pre>
+<p>Here&apos;s a full example:</p>
+<p><strong>Tag version:</strong> v1.2.3</p>
+<p><strong>Release title:</strong> v1.2.3</p>
+<p><strong>Describe this release:</strong></p>
+<pre><code class="lang-markdown"><span class="hljs-section">### Added</span>
+
+<span class="hljs-bullet">- </span>Added many things
+
+<span class="hljs-section">### Changed</span>
+
+<span class="hljs-bullet">- </span>Changed this and that
+</code></pre>
+</li>
+<li>
+<p>Announce the new version in Slack</p>
+</li>
 </ol>
 
         </div>

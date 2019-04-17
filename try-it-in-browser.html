@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=93f1a66c"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-flex-sdk-web.js?t=04c31ddd"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=0ece5d7f"></script>
     <title>Try it in browser! - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
     <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
@@ -79,11 +79,8 @@ instance.</p>
 <p>Set your clientId:</p>
 <pre><code class="lang-js"><span class="pl-k">const</span> clientId = <span class="pl-s">&quot;&lt;your clientId here&gt;&quot;</span>;
 </code></pre>
-<p>Set your baseUrl:</p>
-<pre><code class="lang-js"><span class="pl-k">const</span> baseUrl = <span class="pl-s">&quot;&lt;your baseUrl here&gt;&quot;</span>;
-</code></pre>
 <p>Create new SDK instance:</p>
-<pre><code class="lang-js"><span class="pl-k">const</span> sdk = sharetribeSdk.createInstance({clientId, baseUrl});
+<pre><code class="lang-js"><span class="pl-k">const</span> sdk = sharetribeSdk.createInstance({clientId});
 </code></pre>
 <p>Fetch 10 listings:</p>
 <pre><code class="lang-js">sdk.listings.query({<span class="hljs-attr">per_page</span>: <span class="hljs-number">10</span>}).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
