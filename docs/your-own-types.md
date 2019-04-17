@@ -11,16 +11,21 @@ A type handler is an object containing the following properties:
 
 | Property | Description |
 | -------- | ----------- |
-| `type` | The SDK type. |
-| `customType` | The custom type to convert to/from. |
-| `reader` | Conversion function. Gets an instance of `type` as an argument, should return instance of `customType`. |
-| `writer` | Conversion function. Gets an instance of `customType` as an argument, should return instance of `type`. |
+| `sdkType` | The SDK type. |
+| `appType` | The application specific type to convert SDK type to/from. |
+| `canHandle` | A predicate function (i.e. function that returns truthy or falsy) that defines whether the this handler should be used. The SDK makes sure that `canHandle` will be called only for not `null` Object values, thus `null` check can be safely omitted.|
+| `reader` | Conversion function. Gets an instance of `sdkType` as an argument, should return instance of `appType`. |
+| `writer` | Conversion function. Gets an instance of `appType` as an argument, should return instance of `sdkType`. |
+
+Either `appType` or `canHandle` should be provider, but not both.
+
+Please note: v1.4.0 renamed `type` to `sdkType` and `customType` to `appType`.
 
 **Example:** Convert
 [`google.maps.LatLng`](https://developers.google.com/maps/documentation/javascript/reference/3/#LatLng)
-to/from `LatLng` and
-[Decimal.js](https://github.com/MikeMcl/decimal.js/) `Decimal` to/from
-`BigDecimal`
+to/from `LatLng`, [Decimal.js](https://github.com/MikeMcl/decimal.js/)
+`Decimal` to/from `BigDecimal` and own plain object UUID
+representation to UUID type class instance.
 
 ```js
 const { BigDecimal, LatLng } = require('sharetribe-flex-sdk').types;
@@ -30,15 +35,22 @@ const sdk = createInstance({
   baseUrl: config.sdk.baseUrl,
   typeHandlers: [
     {
-      type: BigDecimal,
-      customType: Decimal,
+      sdkType: BigDecimal,
+      appType: Decimal,
       writer: v => new BigDecimal(v.toString()),
       reader: v => new Decimal(v.value),
     },
-      type: LatLng,
-      customType: google.maps.LatLng,
+      sdkType: LatLng,
+      appType: google.maps.LatLng,
       writer: v => new LatLng(v.lat(), v.lng()),
       reader: v => new google.maps.LatLng(v.lat, v.lng)
+    },
+    {
+      sdkType: UUID,
+      canHandle: v => v.isMyOwnUuidType,
+      writer: v => new UUID(v.myOwnUuidValue),
+      reader: v => ({myOwnUuidValue: v.uuid,
+                     isMyOwnUuidType: true})
     }
   ]
 });

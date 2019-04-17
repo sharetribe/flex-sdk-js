@@ -123,6 +123,14 @@ describe('serializer', () => {
     expect(roundTrip.percentage).toBeInstanceOf(BigDecimal);
   });
 
+  it('handles types that are plain objects', () => {
+    const uuid = '69c3d77a-db3f-11e6-bf26-cec0c932ce01';
+
+    const roundTrip = reader().read(writer().write({ uuid, _sdkType: 'UUID' }));
+    expect(roundTrip).toEqual(new UUID(uuid));
+    expect(roundTrip).toBeInstanceOf(UUID);
+  });
+
   it('allows you to add your own reader handlers for predefined types', () => {
     class MyCustomUuid {
       constructor(str) {
@@ -132,7 +140,7 @@ describe('serializer', () => {
 
     const r = reader([
       {
-        type: UUID,
+        sdkType: UUID,
         reader: v => new MyCustomUuid(v.uuid),
       },
     ]);
@@ -155,8 +163,8 @@ describe('serializer', () => {
 
     const w = writer([
       {
-        type: UUID,
-        customType: MyCustomUuid,
+        sdkType: UUID,
+        appType: MyCustomUuid,
         writer: v => new UUID(v.myCustomUuidRepresentation),
       },
     ]);
@@ -164,5 +172,58 @@ describe('serializer', () => {
     const data = '69c3d77a-db3f-11e6-bf26-cec0c932ce01';
 
     expect(r.read(w.write({ id: new MyCustomUuid(data) })).id).toEqual(new UUID(data));
+  });
+
+  it('allows you to add your own writer handlers for predefined types using plain objects', () => {
+    const myUuid = uuid => ({
+      myType: 'My plain object UUID type',
+      myUuidValue: uuid,
+    });
+
+    const r = reader();
+
+    const w = writer([
+      {
+        sdkType: UUID,
+        canHandle: v => v.myType === 'My plain object UUID type',
+        writer: v => new UUID(v.myUuidValue),
+      },
+    ]);
+
+    const data = '69c3d77a-db3f-11e6-bf26-cec0c932ce01';
+
+    expect(r.read(w.write({ id: myUuid(data) })).id).toEqual(new UUID(data));
+
+    // Test that adding a custom writer doesn't break the default writer
+    expect(r.read(w.write({ id: new UUID(data) })).id).toEqual(new UUID(data));
+  });
+
+  it('allows you to add your own writer handlers for any type of data', () => {
+    const myArrayMoney = ['_my_money', 100, 'USD'];
+    const myFnUuid = uuid => {
+      const fn = () => uuid;
+      fn.isMyFnUuid = true;
+      return fn;
+    };
+
+    const r = reader();
+
+    const w = writer([
+      {
+        appType: UUID,
+        canHandle: v => v.isMyFnUuid,
+        writer: v => new UUID(v()),
+      },
+      {
+        appType: Money,
+        canHandle: v => v[0] === '_my_money',
+        writer: v => new Money(v[1], v[2]),
+      },
+    ]);
+
+    const data = '69c3d77a-db3f-11e6-bf26-cec0c932ce01';
+
+    expect(r.read(w.write({ id: myFnUuid(data) })).id).toEqual(new UUID(data));
+    expect(r.read(w.write({ money: myArrayMoney })).money).toEqual(new Money(100, 'USD'));
   });
 });

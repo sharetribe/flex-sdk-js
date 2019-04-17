@@ -1,9 +1,11 @@
+/* eslint no-underscore-dangle: ["error", { "allow": ["_sdkType"] }] */
+
 import transit from 'transit-js';
 import _ from 'lodash';
-import { UUID, LatLng, Money, BigDecimal } from './types';
+import { UUID, LatLng, Money, BigDecimal, toType } from './types';
 
 /**
-   Composes two readers (default and custom) so that:
+   Composes two readers (sdk type and app type) so that:
 
   ```
   class MyCustomUuid {
@@ -12,13 +14,13 @@ import { UUID, LatLng, Money, BigDecimal } from './types';
     }
   }
 
-  const defaultReader = {
-     type: UUID,
+  const sdkTypeReader = {
+     sdkType: UUID,
      reader: v => new UUID(v),
   };
 
-  const customReader = {
-     type: UUID,
+  const appTypeReader = {
+     sdkType: UUID,
 
      // type of reader function: UUID -> MyCustomUuid
      reader: v => new MyCustomUuid(v.uuid),
@@ -27,54 +29,16 @@ import { UUID, LatLng, Money, BigDecimal } from './types';
   Composition creates a new reader:
 
   {
-     type: UUID,
+     sdkType: UUID,
      reader: v => new MyCustomUuid(new UUID(v))
   }
   ```
  */
-const composeReader = (defaultReader, customReader) => {
-  const defaultReaderFn = defaultReader.reader;
-  const customReaderFn = customReader ? customReader.reader : _.identity;
+const composeReader = (sdkTypeReader, appTypeReader) => {
+  const sdkTypeReaderFn = sdkTypeReader.reader;
+  const appTypeReaderFn = appTypeReader ? appTypeReader.reader : _.identity;
 
-  return rep => customReaderFn(defaultReaderFn(rep));
-};
-
-/**
-   Composes two writers (default and custom) so that:
-
-  ```
-  class MyCustomUuid {
-    constructor(uuid) {
-      this.myUuid = uuid;
-    }
-  }
-
-  const defaultWriter = {
-     type: UUID,
-     writer: v => new UUID(v),
-  };
-
-  const customWriter = {
-     type: UUID,
-     customType: MyCustomUuid,
-
-     // type of writer fn: MyCustomUuid -> UUID
-     writer: v => new UUID(v.myUuid),
-  }
-
-  Composition creates a new reader:
-
-  {
-     type: UUID,
-     reader: v => new MyCustomUuid(new UUID(v))
-  }
-  ```
- */
-const composeWriter = (defaultWriter, customWriter) => {
-  const defaultWriterFn = defaultWriter.writer;
-  const customWriterFn = customWriter ? customWriter.writer : _.identity;
-
-  return rep => defaultWriterFn(customWriterFn(rep));
+  return rep => appTypeReaderFn(sdkTypeReaderFn(rep));
 };
 
 /**
@@ -88,83 +52,75 @@ const typeMap = {
 };
 
 /**
-   List of default readers
+   List of SDK type readers
  */
-const defaultReaders = [
+const sdkTypeReaders = [
   {
-    type: UUID,
+    sdkType: UUID,
     reader: rep => new UUID(rep),
   },
   {
-    type: LatLng,
+    sdkType: LatLng,
     reader: ([lat, lng]) => new LatLng(lat, lng),
   },
   {
-    type: Money,
+    sdkType: Money,
     reader: ([amount, currency]) => new Money(amount, currency),
   },
   {
-    type: BigDecimal,
+    sdkType: BigDecimal,
     reader: rep => new BigDecimal(rep),
   },
 ];
 
 /**
-   List of default writers
+   List of SDK type writers
  */
-const defaultWriters = [
+const sdkTypeWriters = [
   {
-    type: UUID,
+    sdkType: UUID,
     writer: v => v.uuid,
   },
   {
-    type: LatLng,
+    sdkType: LatLng,
     writer: v => [v.lat, v.lng],
   },
   {
-    type: Money,
+    sdkType: Money,
     writer: v => [v.amount, v.currency],
   },
   {
-    type: BigDecimal,
+    sdkType: BigDecimal,
     writer: v => v.value,
   },
 ];
 
 /**
-   Take `customReaders` param and construct a list of read handlers
-   from `customReaders`, `defaultReaders` and `typeMap`.
+   Take `appTypeReaders` param and construct a list of read handlers
+   from `appTypeReaders`, `sdkTypeReaders` and `typeMap`.
 */
-const constructReadHandlers = customReaders =>
+const constructReadHandlers = appTypeReaders =>
   _.fromPairs(
     _.map(typeMap, (typeClass, tag) => {
-      const defaultReader = _.find(defaultReaders, r => r.type === typeClass);
-      const customReader = _.find(customReaders, r => r.type === typeClass);
+      const sdkTypeReader = _.find(sdkTypeReaders, r => r.sdkType === typeClass);
+      const appTypeReader = _.find(appTypeReaders, r => r.sdkType === typeClass);
 
-      return [tag, composeReader(defaultReader, customReader)];
+      return [tag, composeReader(sdkTypeReader, appTypeReader)];
     })
   );
 
-/**
-   Take `customWriters` param and construct a list of write handlers
-   from `customWriters`, `defaultWriters` and `typeMap`.
-*/
-const constructWriteHandlers = customWriters =>
-  _.flatten(
-    _.map(typeMap, (typeClass, tag) => {
-      const defaultWriter = _.find(defaultWriters, w => w.type === typeClass);
-      const customWriter = _.find(customWriters, w => w.type === typeClass);
-      const composedWriter = composeWriter(defaultWriter, customWriter);
-      const customTypeClass = customWriter ? customWriter.customType : defaultWriter.type;
+const writeHandlers = _.flatten(
+  _.map(typeMap, (typeClass, tag) => {
+    const sdkTypeWriter = _.find(sdkTypeWriters, w => w.sdkType === typeClass);
 
-      const handler = transit.makeWriteHandler({
-        tag: () => tag,
-        rep: composedWriter,
-      });
+    const handler = transit.makeWriteHandler({
+      tag: () => tag,
+      rep: sdkTypeWriter.writer,
+    });
 
-      return [customTypeClass || typeClass, handler];
-    })
-  );
+    return [typeClass, handler];
+  })
+);
 
 /**
    Builds JS objects from Transit maps
@@ -179,8 +135,8 @@ const mapBuilder = {
   finalize: _.identity,
 };
 
-export const reader = (customReaders = []) => {
-  const handlers = constructReadHandlers(customReaders);
+export const reader = (appTypeReaders = []) => {
+  const handlers = constructReadHandlers(appTypeReaders);
 
   return transit.reader('json', {
     handlers: {
@@ -223,13 +179,40 @@ const MapHandler = [
   }),
 ];
 
-export const writer = (customWriters = [], opts = {}) => {
-  const ownHandlers = constructWriteHandlers(customWriters);
+export const writer = (appTypeWriters = [], opts = {}) => {
   const { verbose } = opts;
   const transitType = verbose ? 'json-verbose' : 'json';
 
   return transit.writer(transitType, {
-    handlers: transit.map([...ownHandlers, ...MapHandler]),
+    handlers: transit.map([...writeHandlers, ...MapHandler]),
+
+    // Use transform to transform app types to sdk types before sdk
+    // types are encoded by transit.
+    transform: v => {
+      // Check _.isObject for two reasons:
+      // 1. _.isObject makes sure the value is not null, so the null check can be omitted in the canHandle implementation
+      // 2. Perf. No need to run canHandle for primitives
+      if (_.isObject(v)) {
+        if (v._sdkType) {
+          return toType(v);
+        }
+
+        const appTypeWriter = _.find(
+          appTypeWriters,
+          w =>
+            // Check if the value is an application type instance
+            (w.appType && v instanceof w.appType) ||
+            // ...or if the canHandle returns true.
+            (w.canHandle && w.canHandle(v))
+        );
+
+        if (appTypeWriter) {
+          return appTypeWriter.writer(v);
+        }
+      }
+
+      return v;
+    },
 
     // This is only needed for the REPL
     // TODO This could be stripped out for production build
@@ -250,12 +233,22 @@ export const createTransitConverters = (typeHandlers = [], opts) => {
   const { readers, writers } = typeHandlers.reduce(
     (memo, handler) => {
       const r = {
-        type: handler.type,
+        sdkType:
+          handler.sdkType ||
+          // DEPRECATED Use handler.sdkType instead of handler.type
+          handler.type,
         reader: handler.reader,
       };
       const w = {
-        type: handler.type,
-        customType: handler.customType,
+        sdkType:
+          handler.sdkType ||
+          // DEPRECATED Use handler.sdkType instead of handler.type
+          handler.type,
+        appType:
+          handler.appType ||
+          // DEPRECATED Use handler.appType instead of handler.customType
+          handler.customType,
+        canHandle: handler.canHandle,
         writer: handler.writer,
       };
 
