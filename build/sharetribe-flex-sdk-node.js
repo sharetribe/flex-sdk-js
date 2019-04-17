@@ -109,7 +109,7 @@ module.exports = isArray;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var freeGlobal = __webpack_require__(35);
+var freeGlobal = __webpack_require__(34);
 
 /** Detect free variable `self`. */
 var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
@@ -214,55 +214,6 @@ module.exports = baseGetTag;
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var baseMatches = __webpack_require__(109),
-    baseMatchesProperty = __webpack_require__(136),
-    identity = __webpack_require__(10),
-    isArray = __webpack_require__(0),
-    property = __webpack_require__(139);
-
-/**
- * The base implementation of `_.iteratee`.
- *
- * @private
- * @param {*} [value=_.identity] The value to convert to an iteratee.
- * @returns {Function} Returns the iteratee.
- */
-function baseIteratee(value) {
-  // Don't store the `typeof` result in a variable to avoid a JIT bug in Safari 9.
-  // See https://bugs.webkit.org/show_bug.cgi?id=156034 for more details.
-  if (typeof value == 'function') {
-    return value;
-  }
-  if (value == null) {
-    return identity;
-  }
-  if (typeof value == 'object') {
-    return isArray(value)
-      ? baseMatchesProperty(value[0], value[1])
-      : baseMatches(value);
-  }
-  return property(value);
-}
-
-module.exports = baseIteratee;
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var root = __webpack_require__(1);
-
-/** Built-in value references. */
-var Symbol = root.Symbol;
-
-module.exports = Symbol;
-
-
-/***/ }),
-/* 7 */
 /***/ (function(module, exports) {
 
 /**
@@ -299,7 +250,19 @@ module.exports = isObject;
 
 
 /***/ }),
-/* 8 */
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var root = __webpack_require__(1);
+
+/** Built-in value references. */
+var Symbol = root.Symbol;
+
+module.exports = Symbol;
+
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isSymbol = __webpack_require__(13);
@@ -326,11 +289,11 @@ module.exports = toKey;
 
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isFunction = __webpack_require__(36),
-    isLength = __webpack_require__(32);
+var isFunction = __webpack_require__(35),
+    isLength = __webpack_require__(31);
 
 /**
  * Checks if `value` is array-like. A value is considered array-like if it's
@@ -365,6 +328,43 @@ module.exports = isArrayLike;
 
 
 /***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseMatches = __webpack_require__(109),
+    baseMatchesProperty = __webpack_require__(136),
+    identity = __webpack_require__(10),
+    isArray = __webpack_require__(0),
+    property = __webpack_require__(139);
+
+/**
+ * The base implementation of `_.iteratee`.
+ *
+ * @private
+ * @param {*} [value=_.identity] The value to convert to an iteratee.
+ * @returns {Function} Returns the iteratee.
+ */
+function baseIteratee(value) {
+  // Don't store the `typeof` result in a variable to avoid a JIT bug in Safari 9.
+  // See https://bugs.webkit.org/show_bug.cgi?id=156034 for more details.
+  if (typeof value == 'function') {
+    return value;
+  }
+  if (value == null) {
+    return identity;
+  }
+  if (typeof value == 'object') {
+    return isArray(value)
+      ? baseMatchesProperty(value[0], value[1])
+      : baseMatches(value);
+  }
+  return property(value);
+}
+
+module.exports = baseIteratee;
+
+
+/***/ }),
 /* 10 */
 /***/ (function(module, exports) {
 
@@ -396,7 +396,7 @@ module.exports = identity;
 /***/ (function(module, exports, __webpack_require__) {
 
 var castPath = __webpack_require__(12),
-    toKey = __webpack_require__(8);
+    toKey = __webpack_require__(7);
 
 /**
  * The base implementation of `_.get` without support for default values.
@@ -428,7 +428,7 @@ module.exports = baseGet;
 var isArray = __webpack_require__(0),
     isKey = __webpack_require__(23),
     stringToPath = __webpack_require__(71),
-    toString = __webpack_require__(38);
+    toString = __webpack_require__(37);
 
 /**
  * Casts `value` to a path array if it's not one.
@@ -590,7 +590,7 @@ module.exports = getMapData;
 
 var arrayLikeKeys = __webpack_require__(100),
     baseKeys = __webpack_require__(106),
-    isArrayLike = __webpack_require__(9);
+    isArrayLike = __webpack_require__(8);
 
 /**
  * Creates an array of the own enumerable property names of `object`.
@@ -1107,8 +1107,8 @@ module.exports = arrayMap;
 var assignValue = __webpack_require__(96),
     castPath = __webpack_require__(12),
     isIndex = __webpack_require__(29),
-    isObject = __webpack_require__(7),
-    toKey = __webpack_require__(8);
+    isObject = __webpack_require__(5),
+    toKey = __webpack_require__(7);
 
 /**
  * The base implementation of `_.set`.
@@ -1188,28 +1188,6 @@ module.exports = isIndex;
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseFor = __webpack_require__(98),
-    keys = __webpack_require__(18);
-
-/**
- * The base implementation of `_.forOwn` without support for iteratee shorthands.
- *
- * @private
- * @param {Object} object The object to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Object} Returns `object`.
- */
-function baseForOwn(object, iteratee) {
-  return object && baseFor(object, iteratee, keys);
-}
-
-module.exports = baseForOwn;
-
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
 var baseIsArguments = __webpack_require__(102),
     isObjectLike = __webpack_require__(2);
 
@@ -1249,7 +1227,7 @@ module.exports = isArguments;
 
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports) {
 
 /** Used as references for various `Number` constants. */
@@ -1290,12 +1268,12 @@ module.exports = isLength;
 
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var arrayReduce = __webpack_require__(154),
     baseEach = __webpack_require__(60),
-    baseIteratee = __webpack_require__(5),
+    baseIteratee = __webpack_require__(9),
     baseReduce = __webpack_require__(156),
     isArray = __webpack_require__(0);
 
@@ -1347,7 +1325,7 @@ module.exports = reduce;
 
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1356,17 +1334,10 @@ module.exports = reduce;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.reviver = exports.replacer = exports.BigDecimal = exports.Money = exports.LatLngBounds = exports.LatLng = exports.UUID = undefined;
-
-var _findKey2 = __webpack_require__(175);
-
-var _findKey3 = _interopRequireDefault(_findKey2);
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/* eslint no-underscore-dangle: ["error", { "allow": ["_sdkType"] }] */
 
 /**
    UUID type
@@ -1376,22 +1347,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var UUID = exports.UUID = function UUID(uuid) {
   _classCallCheck(this, UUID);
 
+  this._sdkType = this.constructor._sdkType;
   this.uuid = uuid;
 };
+
+UUID._sdkType = 'UUID';
 
 var LatLng = exports.LatLng = function LatLng(lat, lng) {
   _classCallCheck(this, LatLng);
 
+  this._sdkType = this.constructor._sdkType;
   this.lat = lat;
   this.lng = lng;
 };
 
+LatLng._sdkType = 'LatLng';
+
 var LatLngBounds = exports.LatLngBounds = function LatLngBounds(ne, sw) {
   _classCallCheck(this, LatLngBounds);
 
+  this._sdkType = this.constructor._sdkType;
   this.ne = ne;
   this.sw = sw;
 };
+
+LatLngBounds._sdkType = 'LatLngBounds';
 
 /**
    Money type to represent money
@@ -1410,13 +1390,15 @@ var LatLngBounds = exports.LatLngBounds = function LatLngBounds(ne, sw) {
    ```
 */
 
-
 var Money = exports.Money = function Money(amount, currency) {
   _classCallCheck(this, Money);
 
+  this._sdkType = this.constructor._sdkType;
   this.amount = amount;
   this.currency = currency;
 };
+
+Money._sdkType = 'Money';
 
 /**
   Type to represent arbitrary precision decimal value.
@@ -1425,46 +1407,16 @@ var Money = exports.Money = function Money(amount, currency) {
   calculations.
 */
 
-
 var BigDecimal = exports.BigDecimal = function BigDecimal(value) {
   _classCallCheck(this, BigDecimal);
 
+  this._sdkType = this.constructor._sdkType;
   this.value = value;
 };
 
-//
-// Map containing the type name for serialization and the type class
-//
+BigDecimal._sdkType = 'BigDecimal';
 
-
-var types = {
-  UUID: UUID,
-  LatLng: LatLng,
-  LatLngBounds: LatLngBounds,
-  Money: Money,
-  BigDecimal: BigDecimal
-};
-
-//
-// JSON replacer
-//
-var replacer = exports.replacer = function replacer(key, value) {
-  var type = (0, _findKey3.default)(types, function (typeClass) {
-    return value instanceof typeClass;
-  });
-
-  if (type) {
-    // eslint-disable-next-line no-underscore-dangle
-    return _extends({}, value, { _sdkType: type });
-  }
-
-  return value;
-};
-
-//
-// JSON reviver
-//
-var reviver = exports.reviver = function reviver(key, value) {
+var toType = exports.toType = function toType(value) {
   // eslint-disable-next-line no-underscore-dangle
   var type = value && value._sdkType;
 
@@ -1484,8 +1436,29 @@ var reviver = exports.reviver = function reviver(key, value) {
   }
 };
 
+//
+// JSON replacer
+//
+// Deprecated
+//
+// The _sdkType field is added to the type object itself,
+// so the use of replacer is not needed. The function exists purely
+// for backwards compatibility. We don't want to remove it in case
+// applications are using it.
+//
+var replacer = exports.replacer = function replacer(key, value) {
+  return value;
+};
+
+//
+// JSON reviver
+//
+var reviver = exports.reviver = function reviver(key, value) {
+  return toType(value);
+};
+
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports) {
 
 /** Detect free variable `global` from Node.js. */
@@ -1495,11 +1468,11 @@ module.exports = freeGlobal;
 
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGetTag = __webpack_require__(4),
-    isObject = __webpack_require__(7);
+    isObject = __webpack_require__(5);
 
 /** `Object#toString` result references. */
 var asyncTag = '[object AsyncFunction]',
@@ -1538,7 +1511,7 @@ module.exports = isFunction;
 
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports) {
 
 /** Used for built-in method references. */
@@ -1570,10 +1543,10 @@ module.exports = toSource;
 
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseToString = __webpack_require__(39);
+var baseToString = __webpack_require__(38);
 
 /**
  * Converts `value` to a string. An empty string is returned for `null`
@@ -1604,7 +1577,7 @@ module.exports = toString;
 
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(6),
@@ -1647,10 +1620,10 @@ module.exports = baseToString;
 
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var defineProperty = __webpack_require__(41);
+var defineProperty = __webpack_require__(40);
 
 /**
  * The base implementation of `assignValue` and `assignMergeValue` without
@@ -1678,7 +1651,7 @@ module.exports = baseAssignValue;
 
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getNative = __webpack_require__(3);
@@ -1692,6 +1665,28 @@ var defineProperty = (function() {
 }());
 
 module.exports = defineProperty;
+
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseFor = __webpack_require__(98),
+    keys = __webpack_require__(18);
+
+/**
+ * The base implementation of `_.forOwn` without support for iteratee shorthands.
+ *
+ * @private
+ * @param {Object} object The object to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Object} Returns `object`.
+ */
+function baseForOwn(object, iteratee) {
+  return object && baseFor(object, iteratee, keys);
+}
+
+module.exports = baseForOwn;
 
 
 /***/ }),
@@ -2079,7 +2074,7 @@ module.exports = arrayPush;
 /* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(7);
+var isObject = __webpack_require__(5);
 
 /**
  * Checks if `value` is suitable for strict equality comparisons, i.e. `===`.
@@ -2293,7 +2288,7 @@ module.exports = setToString;
 /* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseForOwn = __webpack_require__(30),
+var baseForOwn = __webpack_require__(41),
     createBaseEach = __webpack_require__(155);
 
 /**
@@ -2370,7 +2365,7 @@ module.exports = baseFindIndex;
 /***/ (function(module, exports, __webpack_require__) {
 
 var arrayMap = __webpack_require__(27),
-    baseIteratee = __webpack_require__(5),
+    baseIteratee = __webpack_require__(9),
     baseMap = __webpack_require__(174),
     isArray = __webpack_require__(0);
 
@@ -2436,7 +2431,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createTransitConverters = exports.writer = exports.reader = undefined;
 
-var _reduce2 = __webpack_require__(33);
+var _isObject2 = __webpack_require__(5);
+
+var _isObject3 = _interopRequireDefault(_isObject2);
+
+var _reduce2 = __webpack_require__(32);
 
 var _reduce3 = _interopRequireDefault(_reduce2);
 
@@ -2444,7 +2443,7 @@ var _flatten2 = __webpack_require__(57);
 
 var _flatten3 = _interopRequireDefault(_flatten2);
 
-var _find2 = __webpack_require__(191);
+var _find2 = __webpack_require__(189);
 
 var _find3 = _interopRequireDefault(_find2);
 
@@ -2452,7 +2451,7 @@ var _map2 = __webpack_require__(63);
 
 var _map3 = _interopRequireDefault(_map2);
 
-var _fromPairs2 = __webpack_require__(197);
+var _fromPairs2 = __webpack_require__(195);
 
 var _fromPairs3 = _interopRequireDefault(_fromPairs2);
 
@@ -2464,20 +2463,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /* eslint no-underscore-dangle: ["error", { "allow": ["_sdkType"] }] */
 
-var _transitJs = __webpack_require__(198);
+var _transitJs = __webpack_require__(196);
 
 var _transitJs2 = _interopRequireDefault(_transitJs);
 
-var _types = __webpack_require__(34);
+var _types = __webpack_require__(33);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 /**
-   Composes two readers (default and custom) so that:
+   Composes two readers (sdk type and app type) so that:
 
   ```
   class MyCustomUuid {
@@ -2486,13 +2485,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     }
   }
 
-  const defaultReader = {
-     type: UUID,
+  const sdkTypeReader = {
+     sdkType: UUID,
      reader: v => new UUID(v),
   };
 
-  const customReader = {
-     type: UUID,
+  const appTypeReader = {
+     sdkType: UUID,
 
      // type of reader function: UUID -> MyCustomUuid
      reader: v => new MyCustomUuid(v.uuid),
@@ -2501,57 +2500,17 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   Composition creates a new reader:
 
   {
-     type: UUID,
+     sdkType: UUID,
      reader: v => new MyCustomUuid(new UUID(v))
   }
   ```
  */
-var composeReader = function composeReader(defaultReader, customReader) {
-  var defaultReaderFn = defaultReader.reader;
-  var customReaderFn = customReader ? customReader.reader : _identity3.default;
+var composeReader = function composeReader(sdkTypeReader, appTypeReader) {
+  var sdkTypeReaderFn = sdkTypeReader.reader;
+  var appTypeReaderFn = appTypeReader ? appTypeReader.reader : _identity3.default;
 
   return function (rep) {
-    return customReaderFn(defaultReaderFn(rep));
-  };
-};
-
-/**
-   Composes two writers (default and custom) so that:
-
-  ```
-  class MyCustomUuid {
-    constructor(uuid) {
-      this.myUuid = uuid;
-    }
-  }
-
-  const defaultWriter = {
-     type: UUID,
-     writer: v => new UUID(v),
-  };
-
-  const customWriter = {
-     type: UUID,
-     customType: MyCustomUuid,
-
-     // type of writer fn: MyCustomUuid -> UUID
-     writer: v => new UUID(v.myUuid),
-  }
-
-  Composition creates a new reader:
-
-  {
-     type: UUID,
-     reader: v => new MyCustomUuid(new UUID(v))
-  }
-  ```
- */
-var composeWriter = function composeWriter(defaultWriter, customWriter) {
-  var defaultWriterFn = defaultWriter.writer;
-  var customWriterFn = customWriter ? customWriter.writer : _identity3.default;
-
-  return function (rep) {
-    return defaultWriterFn(customWriterFn(rep));
+    return appTypeReaderFn(sdkTypeReaderFn(rep));
   };
 };
 
@@ -2566,15 +2525,15 @@ var typeMap = {
 };
 
 /**
-   List of default readers
+   List of SDK type readers
  */
-var defaultReaders = [{
-  type: _types.UUID,
+var sdkTypeReaders = [{
+  sdkType: _types.UUID,
   reader: function reader(rep) {
     return new _types.UUID(rep);
   }
 }, {
-  type: _types.LatLng,
+  sdkType: _types.LatLng,
   reader: function reader(_ref) {
     var _ref2 = _slicedToArray(_ref, 2),
         lat = _ref2[0],
@@ -2583,7 +2542,7 @@ var defaultReaders = [{
     return new _types.LatLng(lat, lng);
   }
 }, {
-  type: _types.Money,
+  sdkType: _types.Money,
   reader: function reader(_ref3) {
     var _ref4 = _slicedToArray(_ref3, 2),
         amount = _ref4[0],
@@ -2592,79 +2551,68 @@ var defaultReaders = [{
     return new _types.Money(amount, currency);
   }
 }, {
-  type: _types.BigDecimal,
+  sdkType: _types.BigDecimal,
   reader: function reader(rep) {
     return new _types.BigDecimal(rep);
   }
 }];
 
 /**
-   List of default writers
+   List of SDK type writers
  */
-var defaultWriters = [{
-  type: _types.UUID,
+var sdkTypeWriters = [{
+  sdkType: _types.UUID,
   writer: function writer(v) {
     return v.uuid;
   }
 }, {
-  type: _types.LatLng,
+  sdkType: _types.LatLng,
   writer: function writer(v) {
     return [v.lat, v.lng];
   }
 }, {
-  type: _types.Money,
+  sdkType: _types.Money,
   writer: function writer(v) {
     return [v.amount, v.currency];
   }
 }, {
-  type: _types.BigDecimal,
+  sdkType: _types.BigDecimal,
   writer: function writer(v) {
     return v.value;
   }
 }];
 
 /**
-   Take `customReaders` param and construct a list of read handlers
-   from `customReaders`, `defaultReaders` and `typeMap`.
+   Take `appTypeReaders` param and construct a list of read handlers
+   from `appTypeReaders`, `sdkTypeReaders` and `typeMap`.
 */
-var constructReadHandlers = function constructReadHandlers(customReaders) {
+var constructReadHandlers = function constructReadHandlers(appTypeReaders) {
   return (0, _fromPairs3.default)((0, _map3.default)(typeMap, function (typeClass, tag) {
-    var defaultReader = (0, _find3.default)(defaultReaders, function (r) {
-      return r.type === typeClass;
+    var sdkTypeReader = (0, _find3.default)(sdkTypeReaders, function (r) {
+      return r.sdkType === typeClass;
     });
-    var customReader = (0, _find3.default)(customReaders, function (r) {
-      return r.type === typeClass;
+    var appTypeReader = (0, _find3.default)(appTypeReaders, function (r) {
+      return r.sdkType === typeClass;
     });
 
-    return [tag, composeReader(defaultReader, customReader)];
+    return [tag, composeReader(sdkTypeReader, appTypeReader)];
   }));
 };
 
-/**
-   Take `customWriters` param and construct a list of write handlers
-   from `customWriters`, `defaultWriters` and `typeMap`.
-*/
-var constructWriteHandlers = function constructWriteHandlers(customWriters) {
-  return (0, _flatten3.default)((0, _map3.default)(typeMap, function (typeClass, _tag) {
-    var defaultWriter = (0, _find3.default)(defaultWriters, function (w) {
-      return w.type === typeClass;
-    });
-    var customWriter = (0, _find3.default)(customWriters, function (w) {
-      return w.type === typeClass;
-    });
-    var composedWriter = composeWriter(defaultWriter, customWriter);
-    var customTypeClass = customWriter ? customWriter.customType : defaultWriter.type;
+var writeHandlers = (0, _flatten3.default)((0, _map3.default)(typeMap, function (typeClass, _tag) {
+  var sdkTypeWriter = (0, _find3.default)(sdkTypeWriters, function (w) {
+    return w.sdkType === typeClass;
+  });
 
-    var handler = _transitJs2.default.makeWriteHandler({
-      tag: function tag() {
-        return _tag;
-      },
-      rep: composedWriter
-    });
+  var handler = _transitJs2.default.makeWriteHandler({
+    tag: function tag() {
+      return _tag;
+    },
+    rep: sdkTypeWriter.writer
+  });
 
-    return [customTypeClass || typeClass, handler];
-  }));
-};
+  return [typeClass, handler];
+}));
 
 /**
    Builds JS objects from Transit maps
@@ -2682,9 +2630,9 @@ var mapBuilder = {
 };
 
 var reader = exports.reader = function reader() {
-  var customReaders = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var appTypeReaders = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
-  var handlers = constructReadHandlers(customReaders);
+  var handlers = constructReadHandlers(appTypeReaders);
 
   return _transitJs2.default.reader('json', {
     handlers: _extends({}, handlers, {
@@ -2729,16 +2677,42 @@ var MapHandler = [Object, _transitJs2.default.makeWriteHandler({
 })];
 
 var writer = exports.writer = function writer() {
-  var customWriters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var appTypeWriters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  var ownHandlers = constructWriteHandlers(customWriters);
   var verbose = opts.verbose;
 
   var transitType = verbose ? 'json-verbose' : 'json';
 
   return _transitJs2.default.writer(transitType, {
-    handlers: _transitJs2.default.map([].concat(_toConsumableArray(ownHandlers), MapHandler)),
+    handlers: _transitJs2.default.map([].concat(_toConsumableArray(writeHandlers), MapHandler)),
+
+    // Use transform to transform app types to sdk types before sdk
+    // types are encoded by transit.
+    transform: function transform(v) {
+      // Check _.isObject for two reasons:
+      // 1. _.isObject makes sure the value is not null, so the null check can be omitted in the canHandle implementation
+      // 2. Perf. No need to run canHandle for primitives
+      if ((0, _isObject3.default)(v)) {
+        if (v._sdkType) {
+          return (0, _types.toType)(v);
+        }
+
+        var appTypeWriter = (0, _find3.default)(appTypeWriters, function (w) {
+          return (
+            // Check if the value is an application type instance
+            w.appType && v instanceof w.appType ||
+            // ...or if the canHandle returns true.
+            w.canHandle && w.canHandle(v)
+          );
+        });
+
+        if (appTypeWriter) {
+          return appTypeWriter.writer(v);
+        }
+      }
+
+      return v;
+    },
 
     // This is only needed for the REPL
     // TODO This could be stripped out for production build
@@ -2761,12 +2735,19 @@ var createTransitConverters = exports.createTransitConverters = function createT
 
   var _typeHandlers$reduce = typeHandlers.reduce(function (memo, handler) {
     var r = {
-      type: handler.type,
+      sdkType: handler.sdkType ||
+      // DEPRECATED Use handler.sdkType instead of handler.type
+      handler.type,
       reader: handler.reader
     };
     var w = {
-      type: handler.type,
-      customType: handler.customType,
+      sdkType: handler.sdkType ||
+      // DEPRECATED Use handler.sdkType instead of handler.type
+      handler.type,
+      appType: handler.appType ||
+      // DEPRECATED Use handler.appType instead of handler.customType
+      handler.customType,
+      canHandle: handler.canHandle,
       writer: handler.writer
     };
 
@@ -2797,7 +2778,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _jsCookie = __webpack_require__(205);
+var _jsCookie = __webpack_require__(203);
 
 var _jsCookie2 = _interopRequireDefault(_jsCookie);
 
@@ -2883,7 +2864,7 @@ var _sdk = __webpack_require__(68);
 
 var _sdk2 = _interopRequireDefault(_sdk);
 
-var _types = __webpack_require__(34);
+var _types = __webpack_require__(33);
 
 var types = _interopRequireWildcard(_types);
 
@@ -2891,7 +2872,7 @@ var _browser_cookie_store = __webpack_require__(65);
 
 var _browser_cookie_store2 = _interopRequireDefault(_browser_cookie_store);
 
-var _express_cookie_store = __webpack_require__(206);
+var _express_cookie_store = __webpack_require__(204);
 
 var _express_cookie_store2 = _interopRequireDefault(_express_cookie_store);
 
@@ -2962,23 +2943,23 @@ var _params_serializer = __webpack_require__(173);
 
 var _params_serializer2 = _interopRequireDefault(_params_serializer);
 
-var _add_auth_header = __webpack_require__(177);
+var _add_auth_header = __webpack_require__(175);
 
 var _add_auth_header2 = _interopRequireDefault(_add_auth_header);
 
-var _retry_with_refresh_token = __webpack_require__(178);
+var _retry_with_refresh_token = __webpack_require__(176);
 
 var _retry_with_refresh_token2 = _interopRequireDefault(_retry_with_refresh_token);
 
-var _retry_with_anon_token = __webpack_require__(179);
+var _retry_with_anon_token = __webpack_require__(177);
 
 var _retry_with_anon_token2 = _interopRequireDefault(_retry_with_anon_token);
 
-var _clear_token_after_revoke = __webpack_require__(180);
+var _clear_token_after_revoke = __webpack_require__(178);
 
 var _clear_token_after_revoke2 = _interopRequireDefault(_clear_token_after_revoke);
 
-var _fetch_refresh_token_for_revoke = __webpack_require__(181);
+var _fetch_refresh_token_for_revoke = __webpack_require__(179);
 
 var _fetch_refresh_token_for_revoke2 = _interopRequireDefault(_fetch_refresh_token_for_revoke);
 
@@ -2990,39 +2971,39 @@ var _save_token = __webpack_require__(20);
 
 var _save_token2 = _interopRequireDefault(_save_token);
 
-var _fetch_auth_token_from_api = __webpack_require__(182);
+var _fetch_auth_token_from_api = __webpack_require__(180);
 
 var _fetch_auth_token_from_api2 = _interopRequireDefault(_fetch_auth_token_from_api);
 
-var _fetch_auth_token_from_store = __webpack_require__(183);
+var _fetch_auth_token_from_store = __webpack_require__(181);
 
 var _fetch_auth_token_from_store2 = _interopRequireDefault(_fetch_auth_token_from_store);
 
-var _add_client_id_to_params = __webpack_require__(184);
+var _add_client_id_to_params = __webpack_require__(182);
 
 var _add_client_id_to_params2 = _interopRequireDefault(_add_client_id_to_params);
 
-var _auth_info = __webpack_require__(185);
+var _auth_info = __webpack_require__(183);
 
 var _auth_info2 = _interopRequireDefault(_auth_info);
 
-var _default_params = __webpack_require__(186);
+var _default_params = __webpack_require__(184);
 
 var _default_params2 = _interopRequireDefault(_default_params);
 
-var _multipart_request = __webpack_require__(187);
+var _multipart_request = __webpack_require__(185);
 
 var _multipart_request2 = _interopRequireDefault(_multipart_request);
 
-var _transit_request = __webpack_require__(190);
+var _transit_request = __webpack_require__(188);
 
 var _transit_request2 = _interopRequireDefault(_transit_request);
 
-var _transit_response = __webpack_require__(199);
+var _transit_response = __webpack_require__(197);
 
 var _transit_response2 = _interopRequireDefault(_transit_response);
 
-var _token_store = __webpack_require__(203);
+var _token_store = __webpack_require__(201);
 
 var _context_runner = __webpack_require__(19);
 
@@ -4074,10 +4055,10 @@ module.exports = hashClear;
 /* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isFunction = __webpack_require__(36),
+var isFunction = __webpack_require__(35),
     isMasked = __webpack_require__(78),
-    isObject = __webpack_require__(7),
-    toSource = __webpack_require__(37);
+    isObject = __webpack_require__(5),
+    toSource = __webpack_require__(36);
 
 /**
  * Used to match `RegExp`
@@ -4598,7 +4579,7 @@ module.exports = set;
 /* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseAssignValue = __webpack_require__(40),
+var baseAssignValue = __webpack_require__(39),
     eq = __webpack_require__(25);
 
 /** Used for built-in method references. */
@@ -4632,9 +4613,9 @@ module.exports = assignValue;
 /* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseAssignValue = __webpack_require__(40),
-    baseForOwn = __webpack_require__(30),
-    baseIteratee = __webpack_require__(5);
+var baseAssignValue = __webpack_require__(39),
+    baseForOwn = __webpack_require__(41),
+    baseIteratee = __webpack_require__(9);
 
 /**
  * Creates an object with the same keys as `object` and values generated
@@ -4735,7 +4716,7 @@ module.exports = createBaseFor;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseTimes = __webpack_require__(101),
-    isArguments = __webpack_require__(31),
+    isArguments = __webpack_require__(30),
     isArray = __webpack_require__(0),
     isBuffer = __webpack_require__(42),
     isIndex = __webpack_require__(29),
@@ -4864,7 +4845,7 @@ module.exports = stubFalse;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGetTag = __webpack_require__(4),
-    isLength = __webpack_require__(32),
+    isLength = __webpack_require__(31),
     isObjectLike = __webpack_require__(2);
 
 /** `Object#toString` result references. */
@@ -4929,7 +4910,7 @@ module.exports = baseIsTypedArray;
 /* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {var freeGlobal = __webpack_require__(35);
+/* WEBPACK VAR INJECTION */(function(module) {var freeGlobal = __webpack_require__(34);
 
 /** Detect free variable `exports`. */
 var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
@@ -5845,7 +5826,7 @@ var DataView = __webpack_require__(131),
     Set = __webpack_require__(133),
     WeakMap = __webpack_require__(134),
     baseGetTag = __webpack_require__(4),
-    toSource = __webpack_require__(37);
+    toSource = __webpack_require__(36);
 
 /** `Object#toString` result references. */
 var mapTag = '[object Map]',
@@ -5991,7 +5972,7 @@ var baseIsEqual = __webpack_require__(48),
     isKey = __webpack_require__(23),
     isStrictComparable = __webpack_require__(53),
     matchesStrictComparable = __webpack_require__(54),
-    toKey = __webpack_require__(8);
+    toKey = __webpack_require__(7);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1,
@@ -6044,11 +6025,11 @@ module.exports = baseHasIn;
 /***/ (function(module, exports, __webpack_require__) {
 
 var castPath = __webpack_require__(12),
-    isArguments = __webpack_require__(31),
+    isArguments = __webpack_require__(30),
     isArray = __webpack_require__(0),
     isIndex = __webpack_require__(29),
-    isLength = __webpack_require__(32),
-    toKey = __webpack_require__(8);
+    isLength = __webpack_require__(31),
+    toKey = __webpack_require__(7);
 
 /**
  * Checks if `path` exists on `object`.
@@ -6091,7 +6072,7 @@ module.exports = hasPath;
 var baseProperty = __webpack_require__(140),
     basePropertyDeep = __webpack_require__(141),
     isKey = __webpack_require__(23),
-    toKey = __webpack_require__(8);
+    toKey = __webpack_require__(7);
 
 /**
  * Creates a function that returns the value at `path` of a given object.
@@ -6327,7 +6308,7 @@ module.exports = baseFlatten;
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(6),
-    isArguments = __webpack_require__(31),
+    isArguments = __webpack_require__(30),
     isArray = __webpack_require__(0);
 
 /** Built-in value references. */
@@ -6380,7 +6361,7 @@ module.exports = apply;
 /***/ (function(module, exports, __webpack_require__) {
 
 var constant = __webpack_require__(150),
-    defineProperty = __webpack_require__(41),
+    defineProperty = __webpack_require__(40),
     identity = __webpack_require__(10);
 
 /**
@@ -6496,7 +6477,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.formData = exports.fnPath = exports.trimEndSlash = undefined;
 
-var _reduce2 = __webpack_require__(33);
+var _reduce2 = __webpack_require__(32);
 
 var _reduce3 = _interopRequireDefault(_reduce2);
 
@@ -6576,7 +6557,7 @@ module.exports = arrayReduce;
 /* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isArrayLike = __webpack_require__(9);
+var isArrayLike = __webpack_require__(8);
 
 /**
  * Creates a `baseEach` or `baseEachRight` function.
@@ -6874,7 +6855,7 @@ module.exports = baseRest;
 /* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isArrayLike = __webpack_require__(9),
+var isArrayLike = __webpack_require__(8),
     isObjectLike = __webpack_require__(2);
 
 /**
@@ -6913,11 +6894,11 @@ module.exports = isArrayLikeObject;
 /* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseToString = __webpack_require__(39),
+var baseToString = __webpack_require__(38),
     castSlice = __webpack_require__(166),
     charsEndIndex = __webpack_require__(168),
     stringToArray = __webpack_require__(169),
-    toString = __webpack_require__(38);
+    toString = __webpack_require__(37);
 
 /** Used to match leading and trailing whitespace. */
 var reTrimEnd = /\s+$/;
@@ -7185,7 +7166,7 @@ var _compact3 = _interopRequireDefault(_compact2);
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _types = __webpack_require__(34);
+var _types = __webpack_require__(33);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7258,7 +7239,7 @@ exports.default = paramsSerializer;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseEach = __webpack_require__(60),
-    isArrayLike = __webpack_require__(9);
+    isArrayLike = __webpack_require__(8);
 
 /**
  * The base implementation of `_.map` without support for iteratee shorthands.
@@ -7283,85 +7264,6 @@ module.exports = baseMap;
 
 /***/ }),
 /* 175 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var baseFindKey = __webpack_require__(176),
-    baseForOwn = __webpack_require__(30),
-    baseIteratee = __webpack_require__(5);
-
-/**
- * This method is like `_.find` except that it returns the key of the first
- * element `predicate` returns truthy for instead of the element itself.
- *
- * @static
- * @memberOf _
- * @since 1.1.0
- * @category Object
- * @param {Object} object The object to inspect.
- * @param {Function} [predicate=_.identity] The function invoked per iteration.
- * @returns {string|undefined} Returns the key of the matched element,
- *  else `undefined`.
- * @example
- *
- * var users = {
- *   'barney':  { 'age': 36, 'active': true },
- *   'fred':    { 'age': 40, 'active': false },
- *   'pebbles': { 'age': 1,  'active': true }
- * };
- *
- * _.findKey(users, function(o) { return o.age < 40; });
- * // => 'barney' (iteration order is not guaranteed)
- *
- * // The `_.matches` iteratee shorthand.
- * _.findKey(users, { 'age': 1, 'active': true });
- * // => 'pebbles'
- *
- * // The `_.matchesProperty` iteratee shorthand.
- * _.findKey(users, ['active', false]);
- * // => 'fred'
- *
- * // The `_.property` iteratee shorthand.
- * _.findKey(users, 'active');
- * // => 'barney'
- */
-function findKey(object, predicate) {
-  return baseFindKey(object, baseIteratee(predicate, 3), baseForOwn);
-}
-
-module.exports = findKey;
-
-
-/***/ }),
-/* 176 */
-/***/ (function(module, exports) {
-
-/**
- * The base implementation of methods like `_.findKey` and `_.findLastKey`,
- * without support for iteratee shorthands, which iterates over `collection`
- * using `eachFunc`.
- *
- * @private
- * @param {Array|Object} collection The collection to inspect.
- * @param {Function} predicate The function invoked per iteration.
- * @param {Function} eachFunc The function to iterate over `collection`.
- * @returns {*} Returns the found element or its key, else `undefined`.
- */
-function baseFindKey(collection, predicate, eachFunc) {
-  var result;
-  eachFunc(collection, function(value, key, collection) {
-    if (predicate(value, key, collection)) {
-      result = key;
-      return false;
-    }
-  });
-  return result;
-}
-
-module.exports = baseFindKey;
-
-
-/***/ }),
-/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7426,7 +7328,7 @@ var AddAuthHeader = function () {
 exports.default = AddAuthHeader;
 
 /***/ }),
-/* 178 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7540,7 +7442,7 @@ var RetryWithRefreshToken = function () {
 exports.default = RetryWithRefreshToken;
 
 /***/ }),
-/* 179 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7644,7 +7546,7 @@ var RetryWithAnonToken = function () {
 exports.default = RetryWithAnonToken;
 
 /***/ }),
-/* 180 */
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7727,7 +7629,7 @@ var ClearTokenAfterRevoke = function () {
 exports.default = ClearTokenAfterRevoke;
 
 /***/ }),
-/* 181 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7783,7 +7685,7 @@ var FetchRefreshTokenForRevoke = function () {
 exports.default = FetchRefreshTokenForRevoke;
 
 /***/ }),
-/* 182 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7860,7 +7762,7 @@ var FetchAuthTokenFromApi = function () {
 exports.default = FetchAuthTokenFromApi;
 
 /***/ }),
-/* 183 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7915,7 +7817,7 @@ var FetchAuthTokenFromStore = function () {
 exports.default = FetchAuthTokenFromStore;
 
 /***/ }),
-/* 184 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7962,7 +7864,7 @@ var AddClientIdToParams = function () {
 exports.default = AddClientIdToParams;
 
 /***/ }),
-/* 185 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8021,7 +7923,7 @@ var AuthInfo = function () {
 exports.default = AuthInfo;
 
 /***/ }),
-/* 186 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8057,7 +7959,7 @@ var defaultParams = function defaultParams() {
 exports.default = defaultParams;
 
 /***/ }),
-/* 187 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8067,11 +7969,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _reduce2 = __webpack_require__(33);
+var _reduce2 = __webpack_require__(32);
 
 var _reduce3 = _interopRequireDefault(_reduce2);
 
-var _isPlainObject2 = __webpack_require__(188);
+var _isPlainObject2 = __webpack_require__(186);
 
 var _isPlainObject3 = _interopRequireDefault(_isPlainObject2);
 
@@ -8128,11 +8030,11 @@ var MultipartRequest = function () {
 exports.default = MultipartRequest;
 
 /***/ }),
-/* 188 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGetTag = __webpack_require__(4),
-    getPrototype = __webpack_require__(189),
+    getPrototype = __webpack_require__(187),
     isObjectLike = __webpack_require__(2);
 
 /** `Object#toString` result references. */
@@ -8196,7 +8098,7 @@ module.exports = isPlainObject;
 
 
 /***/ }),
-/* 189 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var overArg = __webpack_require__(46);
@@ -8208,7 +8110,7 @@ module.exports = getPrototype;
 
 
 /***/ }),
-/* 190 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8270,11 +8172,11 @@ var TransitRequest = function () {
 exports.default = TransitRequest;
 
 /***/ }),
-/* 191 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var createFind = __webpack_require__(192),
-    findIndex = __webpack_require__(193);
+var createFind = __webpack_require__(190),
+    findIndex = __webpack_require__(191);
 
 /**
  * Iterates over elements of `collection`, returning the first element
@@ -8318,11 +8220,11 @@ module.exports = find;
 
 
 /***/ }),
-/* 192 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIteratee = __webpack_require__(5),
-    isArrayLike = __webpack_require__(9),
+var baseIteratee = __webpack_require__(9),
+    isArrayLike = __webpack_require__(8),
     keys = __webpack_require__(18);
 
 /**
@@ -8349,12 +8251,12 @@ module.exports = createFind;
 
 
 /***/ }),
-/* 193 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseFindIndex = __webpack_require__(62),
-    baseIteratee = __webpack_require__(5),
-    toInteger = __webpack_require__(194);
+    baseIteratee = __webpack_require__(9),
+    toInteger = __webpack_require__(192);
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
@@ -8410,10 +8312,10 @@ module.exports = findIndex;
 
 
 /***/ }),
-/* 194 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toFinite = __webpack_require__(195);
+var toFinite = __webpack_require__(193);
 
 /**
  * Converts `value` to an integer.
@@ -8452,10 +8354,10 @@ module.exports = toInteger;
 
 
 /***/ }),
-/* 195 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toNumber = __webpack_require__(196);
+var toNumber = __webpack_require__(194);
 
 /** Used as references for various `Number` constants. */
 var INFINITY = 1 / 0,
@@ -8500,10 +8402,10 @@ module.exports = toFinite;
 
 
 /***/ }),
-/* 196 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(7),
+var isObject = __webpack_require__(5),
     isSymbol = __webpack_require__(13);
 
 /** Used as references for various `Number` constants. */
@@ -8572,7 +8474,7 @@ module.exports = toNumber;
 
 
 /***/ }),
-/* 197 */
+/* 195 */
 /***/ (function(module, exports) {
 
 /**
@@ -8606,12 +8508,12 @@ module.exports = fromPairs;
 
 
 /***/ }),
-/* 198 */
+/* 196 */
 /***/ (function(module, exports) {
 
 // transit-js 0.8.862
 // http://transit-format.org
-// 
+//
 // Copyright 2014 Cognitect. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -10645,8 +10547,8 @@ com.cognitect.transit.util.randHex = function() {
 };
 com.cognitect.transit.util.randomUUID = function() {
   var a = (8 | 3 & com.cognitect.transit.util.randInt(14)).toString(16);
-  return com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-4" + com.cognitect.transit.util.randHex() + 
-  com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + a + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + 
+  return com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-4" + com.cognitect.transit.util.randHex() +
+  com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + a + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() +
   com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex();
 };
 com.cognitect.transit.util.btoa = function(a) {
@@ -12460,23 +12362,23 @@ com.cognitect.transit.writeCache = com.cognitect.transit.caching.writeCache;
 com.cognitect.transit.UUIDfromString = com.cognitect.transit.types.UUIDfromString;
 com.cognitect.transit.randomUUID = com.cognitect.transit.util.randomUUID;
 com.cognitect.transit.stringableKeys = com.cognitect.transit.impl.writer.stringableKeys;
-TRANSIT_BROWSER_TARGET && (goog.exportSymbol("transit.reader", com.cognitect.transit.reader), goog.exportSymbol("transit.writer", com.cognitect.transit.writer), goog.exportSymbol("transit.makeBuilder", com.cognitect.transit.makeBuilder), goog.exportSymbol("transit.makeWriteHandler", com.cognitect.transit.makeWriteHandler), goog.exportSymbol("transit.date", com.cognitect.transit.types.date), goog.exportSymbol("transit.integer", com.cognitect.transit.types.intValue), goog.exportSymbol("transit.isInteger", 
-com.cognitect.transit.types.isInteger), goog.exportSymbol("transit.uuid", com.cognitect.transit.types.uuid), goog.exportSymbol("transit.isUUID", com.cognitect.transit.types.isUUID), goog.exportSymbol("transit.bigInt", com.cognitect.transit.types.bigInteger), goog.exportSymbol("transit.isBigInt", com.cognitect.transit.types.isBigInteger), goog.exportSymbol("transit.bigDec", com.cognitect.transit.types.bigDecimalValue), goog.exportSymbol("transit.isBigDec", com.cognitect.transit.types.isBigDecimal), 
-goog.exportSymbol("transit.keyword", com.cognitect.transit.types.keyword), goog.exportSymbol("transit.isKeyword", com.cognitect.transit.types.isKeyword), goog.exportSymbol("transit.symbol", com.cognitect.transit.types.symbol), goog.exportSymbol("transit.isSymbol", com.cognitect.transit.types.isSymbol), goog.exportSymbol("transit.binary", com.cognitect.transit.types.binary), goog.exportSymbol("transit.isBinary", com.cognitect.transit.types.isBinary), goog.exportSymbol("transit.uri", com.cognitect.transit.types.uri), 
-goog.exportSymbol("transit.isURI", com.cognitect.transit.types.isURI), goog.exportSymbol("transit.map", com.cognitect.transit.types.map), goog.exportSymbol("transit.isMap", com.cognitect.transit.types.isMap), goog.exportSymbol("transit.set", com.cognitect.transit.types.set), goog.exportSymbol("transit.isSet", com.cognitect.transit.types.isSet), goog.exportSymbol("transit.list", com.cognitect.transit.types.list), goog.exportSymbol("transit.isList", com.cognitect.transit.types.isList), goog.exportSymbol("transit.quoted", 
-com.cognitect.transit.types.quoted), goog.exportSymbol("transit.isQuoted", com.cognitect.transit.types.isQuoted), goog.exportSymbol("transit.tagged", com.cognitect.transit.types.taggedValue), goog.exportSymbol("transit.isTaggedValue", com.cognitect.transit.types.isTaggedValue), goog.exportSymbol("transit.link", com.cognitect.transit.types.link), goog.exportSymbol("transit.isLink", com.cognitect.transit.types.isLink), goog.exportSymbol("transit.hash", com.cognitect.transit.eq.hashCode), goog.exportSymbol("transit.hashMapLike", 
-com.cognitect.transit.eq.hashMapLike), goog.exportSymbol("transit.hashArrayLike", com.cognitect.transit.eq.hashArrayLike), goog.exportSymbol("transit.equals", com.cognitect.transit.eq.equals), goog.exportSymbol("transit.extendToEQ", com.cognitect.transit.eq.extendToEQ), goog.exportSymbol("transit.mapToObject", com.cognitect.transit.mapToObject), goog.exportSymbol("transit.objectToMap", com.cognitect.transit.objectToMap), goog.exportSymbol("transit.decoder", com.cognitect.transit.impl.decoder.decoder), 
+TRANSIT_BROWSER_TARGET && (goog.exportSymbol("transit.reader", com.cognitect.transit.reader), goog.exportSymbol("transit.writer", com.cognitect.transit.writer), goog.exportSymbol("transit.makeBuilder", com.cognitect.transit.makeBuilder), goog.exportSymbol("transit.makeWriteHandler", com.cognitect.transit.makeWriteHandler), goog.exportSymbol("transit.date", com.cognitect.transit.types.date), goog.exportSymbol("transit.integer", com.cognitect.transit.types.intValue), goog.exportSymbol("transit.isInteger",
+com.cognitect.transit.types.isInteger), goog.exportSymbol("transit.uuid", com.cognitect.transit.types.uuid), goog.exportSymbol("transit.isUUID", com.cognitect.transit.types.isUUID), goog.exportSymbol("transit.bigInt", com.cognitect.transit.types.bigInteger), goog.exportSymbol("transit.isBigInt", com.cognitect.transit.types.isBigInteger), goog.exportSymbol("transit.bigDec", com.cognitect.transit.types.bigDecimalValue), goog.exportSymbol("transit.isBigDec", com.cognitect.transit.types.isBigDecimal),
+goog.exportSymbol("transit.keyword", com.cognitect.transit.types.keyword), goog.exportSymbol("transit.isKeyword", com.cognitect.transit.types.isKeyword), goog.exportSymbol("transit.symbol", com.cognitect.transit.types.symbol), goog.exportSymbol("transit.isSymbol", com.cognitect.transit.types.isSymbol), goog.exportSymbol("transit.binary", com.cognitect.transit.types.binary), goog.exportSymbol("transit.isBinary", com.cognitect.transit.types.isBinary), goog.exportSymbol("transit.uri", com.cognitect.transit.types.uri),
+goog.exportSymbol("transit.isURI", com.cognitect.transit.types.isURI), goog.exportSymbol("transit.map", com.cognitect.transit.types.map), goog.exportSymbol("transit.isMap", com.cognitect.transit.types.isMap), goog.exportSymbol("transit.set", com.cognitect.transit.types.set), goog.exportSymbol("transit.isSet", com.cognitect.transit.types.isSet), goog.exportSymbol("transit.list", com.cognitect.transit.types.list), goog.exportSymbol("transit.isList", com.cognitect.transit.types.isList), goog.exportSymbol("transit.quoted",
+com.cognitect.transit.types.quoted), goog.exportSymbol("transit.isQuoted", com.cognitect.transit.types.isQuoted), goog.exportSymbol("transit.tagged", com.cognitect.transit.types.taggedValue), goog.exportSymbol("transit.isTaggedValue", com.cognitect.transit.types.isTaggedValue), goog.exportSymbol("transit.link", com.cognitect.transit.types.link), goog.exportSymbol("transit.isLink", com.cognitect.transit.types.isLink), goog.exportSymbol("transit.hash", com.cognitect.transit.eq.hashCode), goog.exportSymbol("transit.hashMapLike",
+com.cognitect.transit.eq.hashMapLike), goog.exportSymbol("transit.hashArrayLike", com.cognitect.transit.eq.hashArrayLike), goog.exportSymbol("transit.equals", com.cognitect.transit.eq.equals), goog.exportSymbol("transit.extendToEQ", com.cognitect.transit.eq.extendToEQ), goog.exportSymbol("transit.mapToObject", com.cognitect.transit.mapToObject), goog.exportSymbol("transit.objectToMap", com.cognitect.transit.objectToMap), goog.exportSymbol("transit.decoder", com.cognitect.transit.impl.decoder.decoder),
 goog.exportSymbol("transit.UUIDfromString", com.cognitect.transit.types.UUIDfromString), goog.exportSymbol("transit.randomUUID", com.cognitect.transit.util.randomUUID), goog.exportSymbol("transit.stringableKeys", com.cognitect.transit.impl.writer.stringableKeys), goog.exportSymbol("transit.readCache", com.cognitect.transit.caching.readCache), goog.exportSymbol("transit.writeCache", com.cognitect.transit.caching.writeCache));
-TRANSIT_NODE_TARGET && (module.exports = {reader:com.cognitect.transit.reader, writer:com.cognitect.transit.writer, makeBuilder:com.cognitect.transit.makeBuilder, makeWriteHandler:com.cognitect.transit.makeWriteHandler, date:com.cognitect.transit.types.date, integer:com.cognitect.transit.types.intValue, isInteger:com.cognitect.transit.types.isInteger, uuid:com.cognitect.transit.types.uuid, isUUID:com.cognitect.transit.types.isUUID, bigInt:com.cognitect.transit.types.bigInteger, isBigInt:com.cognitect.transit.types.isBigInteger, 
-bigDec:com.cognitect.transit.types.bigDecimalValue, isBigDec:com.cognitect.transit.types.isBigDecimal, keyword:com.cognitect.transit.types.keyword, isKeyword:com.cognitect.transit.types.isKeyword, symbol:com.cognitect.transit.types.symbol, isSymbol:com.cognitect.transit.types.isSymbol, binary:com.cognitect.transit.types.binary, isBinary:com.cognitect.transit.types.isBinary, uri:com.cognitect.transit.types.uri, isURI:com.cognitect.transit.types.isURI, map:com.cognitect.transit.types.map, isMap:com.cognitect.transit.types.isMap, 
-set:com.cognitect.transit.types.set, isSet:com.cognitect.transit.types.isSet, list:com.cognitect.transit.types.list, isList:com.cognitect.transit.types.isList, quoted:com.cognitect.transit.types.quoted, isQuoted:com.cognitect.transit.types.isQuoted, tagged:com.cognitect.transit.types.taggedValue, isTaggedValue:com.cognitect.transit.types.isTaggedValue, link:com.cognitect.transit.types.link, isLink:com.cognitect.transit.types.isLink, hash:com.cognitect.transit.eq.hashCode, hashArrayLike:com.cognitect.transit.eq.hashArrayLike, 
-hashMapLike:com.cognitect.transit.eq.hashMapLike, equals:com.cognitect.transit.eq.equals, extendToEQ:com.cognitect.transit.eq.extendToEQ, mapToObject:com.cognitect.transit.mapToObject, objectToMap:com.cognitect.transit.objectToMap, decoder:com.cognitect.transit.impl.decoder.decoder, UUIDfromString:com.cognitect.transit.types.UUIDfromString, randomUUID:com.cognitect.transit.util.randomUUID, stringableKeys:com.cognitect.transit.impl.writer.stringableKeys, readCache:com.cognitect.transit.caching.readCache, 
+TRANSIT_NODE_TARGET && (module.exports = {reader:com.cognitect.transit.reader, writer:com.cognitect.transit.writer, makeBuilder:com.cognitect.transit.makeBuilder, makeWriteHandler:com.cognitect.transit.makeWriteHandler, date:com.cognitect.transit.types.date, integer:com.cognitect.transit.types.intValue, isInteger:com.cognitect.transit.types.isInteger, uuid:com.cognitect.transit.types.uuid, isUUID:com.cognitect.transit.types.isUUID, bigInt:com.cognitect.transit.types.bigInteger, isBigInt:com.cognitect.transit.types.isBigInteger,
+bigDec:com.cognitect.transit.types.bigDecimalValue, isBigDec:com.cognitect.transit.types.isBigDecimal, keyword:com.cognitect.transit.types.keyword, isKeyword:com.cognitect.transit.types.isKeyword, symbol:com.cognitect.transit.types.symbol, isSymbol:com.cognitect.transit.types.isSymbol, binary:com.cognitect.transit.types.binary, isBinary:com.cognitect.transit.types.isBinary, uri:com.cognitect.transit.types.uri, isURI:com.cognitect.transit.types.isURI, map:com.cognitect.transit.types.map, isMap:com.cognitect.transit.types.isMap,
+set:com.cognitect.transit.types.set, isSet:com.cognitect.transit.types.isSet, list:com.cognitect.transit.types.list, isList:com.cognitect.transit.types.isList, quoted:com.cognitect.transit.types.quoted, isQuoted:com.cognitect.transit.types.isQuoted, tagged:com.cognitect.transit.types.taggedValue, isTaggedValue:com.cognitect.transit.types.isTaggedValue, link:com.cognitect.transit.types.link, isLink:com.cognitect.transit.types.isLink, hash:com.cognitect.transit.eq.hashCode, hashArrayLike:com.cognitect.transit.eq.hashArrayLike,
+hashMapLike:com.cognitect.transit.eq.hashMapLike, equals:com.cognitect.transit.eq.equals, extendToEQ:com.cognitect.transit.eq.extendToEQ, mapToObject:com.cognitect.transit.mapToObject, objectToMap:com.cognitect.transit.objectToMap, decoder:com.cognitect.transit.impl.decoder.decoder, UUIDfromString:com.cognitect.transit.types.UUIDfromString, randomUUID:com.cognitect.transit.util.randomUUID, stringableKeys:com.cognitect.transit.impl.writer.stringableKeys, readCache:com.cognitect.transit.caching.readCache,
 writeCache:com.cognitect.transit.caching.writeCache});
 
 
 
 /***/ }),
-/* 199 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12486,7 +12388,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _update2 = __webpack_require__(200);
+var _update2 = __webpack_require__(198);
 
 var _update3 = _interopRequireDefault(_update2);
 
@@ -12544,11 +12446,11 @@ var TransitResponse = function () {
 exports.default = TransitResponse;
 
 /***/ }),
-/* 200 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseUpdate = __webpack_require__(201),
-    castFunction = __webpack_require__(202);
+var baseUpdate = __webpack_require__(199),
+    castFunction = __webpack_require__(200);
 
 /**
  * This method is like `_.set` except that accepts `updater` to produce the
@@ -12585,7 +12487,7 @@ module.exports = update;
 
 
 /***/ }),
-/* 201 */
+/* 199 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGet = __webpack_require__(11),
@@ -12609,7 +12511,7 @@ module.exports = baseUpdate;
 
 
 /***/ }),
-/* 202 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var identity = __webpack_require__(10);
@@ -12629,7 +12531,7 @@ module.exports = castFunction;
 
 
 /***/ }),
-/* 203 */
+/* 201 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12640,7 +12542,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createDefaultTokenStore = undefined;
 
-var _detect = __webpack_require__(204);
+var _detect = __webpack_require__(202);
 
 var _browser_cookie_store = __webpack_require__(65);
 
@@ -12665,7 +12567,7 @@ var createDefaultTokenStore = exports.createDefaultTokenStore = function createD
 };
 
 /***/ }),
-/* 204 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12691,7 +12593,7 @@ var hasBrowserCookies = exports.hasBrowserCookies = function hasBrowserCookies()
 };
 
 /***/ }),
-/* 205 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -12866,7 +12768,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 /***/ }),
-/* 206 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
