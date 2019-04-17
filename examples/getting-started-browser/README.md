@@ -4,7 +4,7 @@ This example shows how to query listings using the SDK, in browser.
 
 ## Requirements
 
-* Client ID and Base URL
+* Client ID
 
 ## How to run the example:
 

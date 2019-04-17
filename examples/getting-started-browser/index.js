@@ -68,7 +68,8 @@
 
   const renderData = response => {
     // Group images by ID for easy and fast lookup
-    const images = groupById(response.data.included.filter(entity => entity.type === 'image'));
+    const included = response.data.included;
+    const images = included ? groupById(included.filter(entity => entity.type === 'image')) : {};
 
     const listingsTemplate = document.querySelector('.listings');
     const listingsContainerElem = listingsTemplate.content.cloneNode(true);
@@ -82,9 +83,9 @@
         listing.attributes.title
       }, ${formatMoney(listing.attributes.price)}`;
       elem.querySelector('.listing-id').textContent = listing.id.uuid;
-      elem.querySelector('.listing-geolocation').textContent = `${
-        listing.attributes.geolocation.lat
-      },${listing.attributes.geolocation.lng}`;
+      elem.querySelector('.listing-geolocation').textContent = listing.attributes.geolocation
+        ? `${listing.attributes.geolocation.lat},${listing.attributes.geolocation.lng}`
+        : 'No location';
       elem.querySelector('.listing-created-at').textContent = listing.attributes.createdAt;
       elem.querySelector('.listing-state').textContent = listing.attributes.state;
 
@@ -113,11 +114,10 @@
   // Do the request
   //
 
-  const doRequest = (clientId, baseUrl) => {
-    // Create new SDK instance using the given clientId and baseUrl
+  const doRequest = clientId => {
+    // Create new SDK instance using the given clientId
     const sdk = sharetribeSdk.createInstance({
       clientId,
-      baseUrl,
     });
 
     // Call method sdk.listings.query with params include=images and
@@ -148,8 +148,8 @@
 
   const params = parseParams(window.location.search);
 
-  if (params.client_id && params.base_url) {
-    doRequest(params.client_id, params.base_url);
+  if (params.client_id) {
+    doRequest(params.client_id);
   } else {
     renderForm();
   }
