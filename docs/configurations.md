@@ -11,9 +11,6 @@ var sdk = sharetribeSdk.createInstance({
   // The API ClientID (mandatory)
   clientId: "08ec69f6-d37e-414d-83eb-324e94afddf0",
 
-  // The API base URL (mandatory)
-  baseUrl: "https://the-api-base-url.example.sharetribe.com/",
-
   // Token store
   //
   // Token store instance to use. Token store is where the SDK saves the session information.
@@ -69,7 +66,13 @@ var sdk = sharetribeSdk.createInstance({
   // If this configuration is `true` a verbose Transit mode is enabled.
   // Useful for development.
   // Default: false
-  transitVerbose: false
+  transitVerbose: false,
+
+  // The API base URL (optional)
+  // Defaults to Sharetribe production (https://flex-api.sharetribe.com)
+  // Change this if you want to point the SDK to somewhere else (like localhost).
+  // Useful mainly for Sharetribe's internal development
+  baseUrl: "https://the-api-base-url.example.sharetribe.com/"
 
 });
 ```
