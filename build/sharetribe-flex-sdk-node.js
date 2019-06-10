@@ -629,22 +629,32 @@ module.exports = keys;
 
 /***/ }),
 /* 19 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var DEBUG = false;
 
@@ -654,27 +664,30 @@ var resolve = function resolve(ctx) {
 
 var buildCtx = function buildCtx() {
   var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var middleware = arguments[1];
-  return _extends({}, params, {
-    enterQueue: [].concat(_toConsumableArray(middleware)).reverse(),
+  var middleware = arguments.length > 1 ? arguments[1] : undefined;
+  return _objectSpread({}, params, {
+    enterQueue: _toConsumableArray(middleware).reverse(),
     leaveStack: []
   });
 };
 
 var tryExecuteMw = function tryExecuteMw(ctx, mw, stage) {
   /* eslint-disable no-console */
+
   /* eslint-disable no-undef */
   if (DEBUG) {
     if (mw[stage]) {
-      console.log('Executing ' + mw.constructor.name + '#' + stage);
+      console.log("Executing ".concat(mw.constructor.name, "#").concat(stage));
     }
   }
   /* eslint-enable no-console */
+
   /* eslint-enable no-undef */
 
-  return resolve(ctx).then(mw[stage] || resolve).catch(function (error) {
+
+  return resolve(ctx).then(mw[stage] || resolve)["catch"](function (error) {
     var errorCtx = error.ctx || ctx;
-    return Promise.resolve(_extends({}, errorCtx, {
+    return Promise.resolve(_objectSpread({}, errorCtx, {
       error: error,
       errorMiddleware: mw.constructor.name,
       errorStage: stage
@@ -683,10 +696,12 @@ var tryExecuteMw = function tryExecuteMw(ctx, mw, stage) {
 };
 
 var nextMw = function nextMw(ctx) {
-  var leaveStack = [].concat(_toConsumableArray(ctx.leaveStack));
-  var enterQueue = [].concat(_toConsumableArray(ctx.enterQueue));
-  var mw = void 0;
-  var type = void 0;
+  var leaveStack = _toConsumableArray(ctx.leaveStack);
+
+  var enterQueue = _toConsumableArray(ctx.enterQueue);
+
+  var mw;
+  var type;
 
   if (ctx.error) {
     mw = leaveStack.shift();
@@ -699,7 +714,11 @@ var nextMw = function nextMw(ctx) {
     mw = leaveStack.shift();
     type = 'leave';
   }
-  return [_extends({}, ctx, { enterQueue: enterQueue, leaveStack: leaveStack }), mw, type];
+
+  return [_objectSpread({}, ctx, {
+    enterQueue: enterQueue,
+    leaveStack: leaveStack
+  }), mw, type];
 };
 
 var executeCtx = function executeCtx(ctx) {
@@ -715,7 +734,7 @@ var executeCtx = function executeCtx(ctx) {
 
   if (newCtx.error) {
     var error = newCtx.error,
-        errorCtx = _objectWithoutProperties(newCtx, ['error']);
+        errorCtx = _objectWithoutProperties(newCtx, ["error"]);
 
     error.ctx = errorCtx;
     return Promise.reject(error);
@@ -723,7 +742,6 @@ var executeCtx = function executeCtx(ctx) {
 
   return Promise.resolve(newCtx);
 };
-
 /**
 
    ## contextRunner([interceptors]) => (ctx: Object) => Promise
@@ -802,28 +820,27 @@ var executeCtx = function executeCtx(ctx) {
    ```
 
  */
+
+
 var contextRunner = function contextRunner(middleware) {
   return function (params) {
     return executeCtx(buildCtx(params, middleware));
   };
 };
 
-exports.default = contextRunner;
+/* harmony default export */ __webpack_exports__["a"] = (contextRunner);
 
 /***/ }),
 /* 20 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SaveToken; });
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    On `leave` phase, take `authToken` from `ctx` and save it to tokenStore
@@ -832,7 +849,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
    - None
 */
-var SaveToken = function () {
+var SaveToken =
+/*#__PURE__*/
+function () {
   function SaveToken() {
     _classCallCheck(this, SaveToken);
   }
@@ -842,7 +861,6 @@ var SaveToken = function () {
     value: function leave(ctx) {
       var authToken = ctx.authToken,
           tokenStore = ctx.tokenStore;
-
 
       if (tokenStore) {
         return Promise.resolve().then(function () {
@@ -859,24 +877,23 @@ var SaveToken = function () {
   return SaveToken;
 }();
 
-exports.default = SaveToken;
+
 
 /***/ }),
 /* 21 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AddAuthTokenResponse; });
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Take `authToken` from `res` and add it to `ctx` top-level.
@@ -885,7 +902,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
    - add `authToken` (from res)
 */
-var AddAuthTokenResponse = function () {
+var AddAuthTokenResponse =
+/*#__PURE__*/
+function () {
   function AddAuthTokenResponse() {
     _classCallCheck(this, AddAuthTokenResponse);
   }
@@ -894,16 +913,16 @@ var AddAuthTokenResponse = function () {
     key: "leave",
     value: function leave(ctx) {
       var authToken = ctx.res.data;
-
-
-      return _extends({}, ctx, { authToken: authToken });
+      return _objectSpread({}, ctx, {
+        authToken: authToken
+      });
     }
   }]);
 
   return AddAuthTokenResponse;
 }();
 
-exports.default = AddAuthTokenResponse;
+
 
 /***/ }),
 /* 22 */
@@ -1326,15 +1345,18 @@ module.exports = reduce;
 
 /***/ }),
 /* 33 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UUID", function() { return UUID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LatLng", function() { return LatLng; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LatLngBounds", function() { return LatLngBounds; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Money", function() { return Money; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BigDecimal", function() { return BigDecimal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toType", function() { return toType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "replacer", function() { return replacer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "reviver", function() { return reviver; });
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /* eslint no-underscore-dangle: ["error", { "allow": ["_sdkType"] }] */
@@ -1344,35 +1366,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    @constructor
    @param {string} uuid - UUID represented as string
  */
-var UUID = exports.UUID = function UUID(uuid) {
+var UUID = function UUID(uuid) {
   _classCallCheck(this, UUID);
 
   this._sdkType = this.constructor._sdkType;
   this.uuid = uuid;
 };
-
 UUID._sdkType = 'UUID';
-
-var LatLng = exports.LatLng = function LatLng(lat, lng) {
+var LatLng = function LatLng(lat, lng) {
   _classCallCheck(this, LatLng);
 
   this._sdkType = this.constructor._sdkType;
   this.lat = lat;
   this.lng = lng;
 };
-
 LatLng._sdkType = 'LatLng';
-
-var LatLngBounds = exports.LatLngBounds = function LatLngBounds(ne, sw) {
+var LatLngBounds = function LatLngBounds(ne, sw) {
   _classCallCheck(this, LatLngBounds);
 
   this._sdkType = this.constructor._sdkType;
   this.ne = ne;
   this.sw = sw;
 };
-
 LatLngBounds._sdkType = 'LatLngBounds';
-
 /**
    Money type to represent money
 
@@ -1390,16 +1406,14 @@ LatLngBounds._sdkType = 'LatLngBounds';
    ```
 */
 
-var Money = exports.Money = function Money(amount, currency) {
+var Money = function Money(amount, currency) {
   _classCallCheck(this, Money);
 
   this._sdkType = this.constructor._sdkType;
   this.amount = amount;
   this.currency = currency;
 };
-
 Money._sdkType = 'Money';
-
 /**
   Type to represent arbitrary precision decimal value.
 
@@ -1407,36 +1421,37 @@ Money._sdkType = 'Money';
   calculations.
 */
 
-var BigDecimal = exports.BigDecimal = function BigDecimal(value) {
+var BigDecimal = function BigDecimal(value) {
   _classCallCheck(this, BigDecimal);
 
   this._sdkType = this.constructor._sdkType;
   this.value = value;
 };
-
 BigDecimal._sdkType = 'BigDecimal';
-
-var toType = exports.toType = function toType(value) {
+var toType = function toType(value) {
   // eslint-disable-next-line no-underscore-dangle
   var type = value && value._sdkType;
 
   switch (type) {
     case 'LatLng':
       return new LatLng(value.lat, value.lng);
+
     case 'LatLngBounds':
       return new LatLngBounds(value.ne, value.sw);
+
     case 'UUID':
       return new UUID(value.uuid);
+
     case 'Money':
       return new Money(value.amount, value.currency);
+
     case 'BigDecimal':
       return new BigDecimal(value.value);
+
     default:
       return value;
   }
-};
-
-//
+}; //
 // JSON replacer
 //
 // Deprecated
@@ -1446,14 +1461,14 @@ var toType = exports.toType = function toType(value) {
 // for backwards compatibility. We don't want to remove it in case
 // applications are using it.
 //
-var replacer = exports.replacer = function replacer(key, value) {
-  return value;
-};
 
-//
+var replacer = function replacer(key, value) {
+  return value;
+}; //
 // JSON reviver
 //
-var reviver = exports.reviver = function reviver(key, value) {
+
+var reviver = function reviver(key, value) {
   return toType(value);
 };
 
@@ -2421,59 +2436,61 @@ module.exports = map;
 
 /***/ }),
 /* 64 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* unused harmony export reader */
+/* unused harmony export writer */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return createTransitConverters; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_isObject__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_isObject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash_isObject__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_reduce__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_reduce___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash_reduce__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash_flatten__ = __webpack_require__(57);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash_flatten___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash_flatten__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_find__ = __webpack_require__(189);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_find___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_lodash_find__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_map__ = __webpack_require__(63);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_lodash_map__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash_fromPairs__ = __webpack_require__(195);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash_fromPairs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash_fromPairs__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_lodash_identity__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_lodash_identity___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_lodash_identity__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_transit_js__ = __webpack_require__(196);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_transit_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_transit_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__types__ = __webpack_require__(33);
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.createTransitConverters = exports.writer = exports.reader = undefined;
 
-var _isObject2 = __webpack_require__(5);
 
-var _isObject3 = _interopRequireDefault(_isObject2);
 
-var _reduce2 = __webpack_require__(32);
 
-var _reduce3 = _interopRequireDefault(_reduce2);
 
-var _flatten2 = __webpack_require__(57);
 
-var _flatten3 = _interopRequireDefault(_flatten2);
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-var _find2 = __webpack_require__(189);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
-var _find3 = _interopRequireDefault(_find2);
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
 
-var _map2 = __webpack_require__(63);
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
 
-var _map3 = _interopRequireDefault(_map2);
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
-var _fromPairs2 = __webpack_require__(195);
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-var _fromPairs3 = _interopRequireDefault(_fromPairs2);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var _identity2 = __webpack_require__(10);
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
-var _identity3 = _interopRequireDefault(_identity2);
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /* eslint no-underscore-dangle: ["error", { "allow": ["_sdkType"] }] */
+/* eslint no-underscore-dangle: ["error", { "allow": ["_sdkType"] }] */
 
-var _transitJs = __webpack_require__(196);
-
-var _transitJs2 = _interopRequireDefault(_transitJs);
-
-var _types = __webpack_require__(33);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 /**
    Composes two readers (sdk type and app type) so that:
@@ -2505,93 +2522,95 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   }
   ```
  */
+
 var composeReader = function composeReader(sdkTypeReader, appTypeReader) {
   var sdkTypeReaderFn = sdkTypeReader.reader;
-  var appTypeReaderFn = appTypeReader ? appTypeReader.reader : _identity3.default;
-
+  var appTypeReaderFn = appTypeReader ? appTypeReader.reader : __WEBPACK_IMPORTED_MODULE_6_lodash_identity___default.a;
   return function (rep) {
     return appTypeReaderFn(sdkTypeReaderFn(rep));
   };
 };
-
 /**
    Type map from Transit tags to type classes
  */
-var typeMap = {
-  u: _types.UUID,
-  geo: _types.LatLng,
-  mn: _types.Money,
-  f: _types.BigDecimal
-};
 
+
+var typeMap = {
+  u: __WEBPACK_IMPORTED_MODULE_8__types__["UUID"],
+  geo: __WEBPACK_IMPORTED_MODULE_8__types__["LatLng"],
+  mn: __WEBPACK_IMPORTED_MODULE_8__types__["Money"],
+  f: __WEBPACK_IMPORTED_MODULE_8__types__["BigDecimal"]
+};
 /**
    List of SDK type readers
  */
+
 var sdkTypeReaders = [{
-  sdkType: _types.UUID,
+  sdkType: __WEBPACK_IMPORTED_MODULE_8__types__["UUID"],
   reader: function reader(rep) {
-    return new _types.UUID(rep);
+    return new __WEBPACK_IMPORTED_MODULE_8__types__["UUID"](rep);
   }
 }, {
-  sdkType: _types.LatLng,
+  sdkType: __WEBPACK_IMPORTED_MODULE_8__types__["LatLng"],
   reader: function reader(_ref) {
     var _ref2 = _slicedToArray(_ref, 2),
         lat = _ref2[0],
         lng = _ref2[1];
 
-    return new _types.LatLng(lat, lng);
+    return new __WEBPACK_IMPORTED_MODULE_8__types__["LatLng"](lat, lng);
   }
 }, {
-  sdkType: _types.Money,
+  sdkType: __WEBPACK_IMPORTED_MODULE_8__types__["Money"],
   reader: function reader(_ref3) {
     var _ref4 = _slicedToArray(_ref3, 2),
         amount = _ref4[0],
         currency = _ref4[1];
 
-    return new _types.Money(amount, currency);
+    return new __WEBPACK_IMPORTED_MODULE_8__types__["Money"](amount, currency);
   }
 }, {
-  sdkType: _types.BigDecimal,
+  sdkType: __WEBPACK_IMPORTED_MODULE_8__types__["BigDecimal"],
   reader: function reader(rep) {
-    return new _types.BigDecimal(rep);
+    return new __WEBPACK_IMPORTED_MODULE_8__types__["BigDecimal"](rep);
   }
 }];
-
 /**
    List of SDK type writers
  */
+
 var sdkTypeWriters = [{
-  sdkType: _types.UUID,
+  sdkType: __WEBPACK_IMPORTED_MODULE_8__types__["UUID"],
   writer: function writer(v) {
     return v.uuid;
   }
 }, {
-  sdkType: _types.LatLng,
+  sdkType: __WEBPACK_IMPORTED_MODULE_8__types__["LatLng"],
   writer: function writer(v) {
     return [v.lat, v.lng];
   }
 }, {
-  sdkType: _types.Money,
+  sdkType: __WEBPACK_IMPORTED_MODULE_8__types__["Money"],
   writer: function writer(v) {
     return [v.amount, v.currency];
   }
 }, {
-  sdkType: _types.BigDecimal,
+  sdkType: __WEBPACK_IMPORTED_MODULE_8__types__["BigDecimal"],
   writer: function writer(v) {
     return v.value;
   }
 }];
-
 /**
    Take `appTypeReaders` param and construct a list of read handlers
    from `appTypeReaders`, `sdkTypeReaders` and `typeMap`.
 */
+
 var constructReadHandlers = function constructReadHandlers(appTypeReaders) {
-  return (0, _fromPairs3.default)((0, _map3.default)(typeMap, function (typeClass, tag) {
-    var sdkTypeReader = (0, _find3.default)(sdkTypeReaders, function (r) {
+  return __WEBPACK_IMPORTED_MODULE_5_lodash_fromPairs___default()(__WEBPACK_IMPORTED_MODULE_4_lodash_map___default()(typeMap, function (typeClass, tag) {
+    var sdkTypeReader = __WEBPACK_IMPORTED_MODULE_3_lodash_find___default()(sdkTypeReaders, function (r) {
       return r.sdkType === typeClass;
     });
-    var appTypeReader = (0, _find3.default)(appTypeReaders, function (r) {
+
+    var appTypeReader = __WEBPACK_IMPORTED_MODULE_3_lodash_find___default()(appTypeReaders, function (r) {
       return r.sdkType === typeClass;
     });
 
@@ -2599,24 +2618,24 @@ var constructReadHandlers = function constructReadHandlers(appTypeReaders) {
   }));
 };
 
-var writeHandlers = (0, _flatten3.default)((0, _map3.default)(typeMap, function (typeClass, _tag) {
-  var sdkTypeWriter = (0, _find3.default)(sdkTypeWriters, function (w) {
+var writeHandlers = __WEBPACK_IMPORTED_MODULE_2_lodash_flatten___default()(__WEBPACK_IMPORTED_MODULE_4_lodash_map___default()(typeMap, function (typeClass, _tag) {
+  var sdkTypeWriter = __WEBPACK_IMPORTED_MODULE_3_lodash_find___default()(sdkTypeWriters, function (w) {
     return w.sdkType === typeClass;
   });
 
-  var handler = _transitJs2.default.makeWriteHandler({
+  var handler = __WEBPACK_IMPORTED_MODULE_7_transit_js___default.a.makeWriteHandler({
     tag: function tag() {
       return _tag;
     },
     rep: sdkTypeWriter.writer
   });
-
   return [typeClass, handler];
 }));
-
 /**
    Builds JS objects from Transit maps
  */
+
+
 var mapBuilder = {
   init: function init() {
     return {};
@@ -2626,17 +2645,13 @@ var mapBuilder = {
     ret[key] = val;
     return ret;
   },
-  finalize: _identity3.default
+  finalize: __WEBPACK_IMPORTED_MODULE_6_lodash_identity___default.a
 };
-
-var reader = exports.reader = function reader() {
+var reader = function reader() {
   var appTypeReaders = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
   var handlers = constructReadHandlers(appTypeReaders);
-
-  return _transitJs2.default.reader('json', {
-    handlers: _extends({}, handlers, {
-
+  return __WEBPACK_IMPORTED_MODULE_7_transit_js___default.a.reader('json', {
+    handlers: _objectSpread({}, handlers, {
       // Convert keywords to plain strings.
       // The conversion loses the information that the
       // string was originally a keyword. However, the API
@@ -2645,7 +2660,6 @@ var reader = exports.reader = function reader() {
       ':': function _(rep) {
         return rep;
       },
-
       // Convert set to an array
       // The conversion loses the information that the
       // array was originally a set. However, the API
@@ -2654,7 +2668,6 @@ var reader = exports.reader = function reader() {
       set: function set(rep) {
         return rep;
       },
-
       // Convert list to an array
       list: function list(rep) {
         return rep;
@@ -2663,45 +2676,38 @@ var reader = exports.reader = function reader() {
     mapBuilder: mapBuilder
   });
 };
-
-var MapHandler = [Object, _transitJs2.default.makeWriteHandler({
+var MapHandler = [Object, __WEBPACK_IMPORTED_MODULE_7_transit_js___default.a.makeWriteHandler({
   tag: function tag() {
     return 'map';
   },
   rep: function rep(v) {
-    return (0, _reduce3.default)(v, function (map, val, key) {
-      map.set(_transitJs2.default.keyword(key), val);
+    return __WEBPACK_IMPORTED_MODULE_1_lodash_reduce___default()(v, function (map, val, key) {
+      map.set(__WEBPACK_IMPORTED_MODULE_7_transit_js___default.a.keyword(key), val);
       return map;
-    }, _transitJs2.default.map());
+    }, __WEBPACK_IMPORTED_MODULE_7_transit_js___default.a.map());
   }
 })];
-
-var writer = exports.writer = function writer() {
+var writer = function writer() {
   var appTypeWriters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var verbose = opts.verbose;
-
   var transitType = verbose ? 'json-verbose' : 'json';
-
-  return _transitJs2.default.writer(transitType, {
-    handlers: _transitJs2.default.map([].concat(_toConsumableArray(writeHandlers), MapHandler)),
-
+  return __WEBPACK_IMPORTED_MODULE_7_transit_js___default.a.writer(transitType, {
+    handlers: __WEBPACK_IMPORTED_MODULE_7_transit_js___default.a.map([].concat(_toConsumableArray(writeHandlers), MapHandler)),
     // Use transform to transform app types to sdk types before sdk
     // types are encoded by transit.
     transform: function transform(v) {
       // Check _.isObject for two reasons:
       // 1. _.isObject makes sure the value is not null, so the null check can be omitted in the canHandle implementation
       // 2. Perf. No need to run canHandle for primitives
-      if ((0, _isObject3.default)(v)) {
+      if (__WEBPACK_IMPORTED_MODULE_0_lodash_isObject___default()(v)) {
         if (v._sdkType) {
-          return (0, _types.toType)(v);
+          return Object(__WEBPACK_IMPORTED_MODULE_8__types__["toType"])(v);
         }
 
-        var appTypeWriter = (0, _find3.default)(appTypeWriters, function (w) {
-          return (
-            // Check if the value is an application type instance
-            w.appType && v instanceof w.appType ||
-            // ...or if the canHandle returns true.
+        var appTypeWriter = __WEBPACK_IMPORTED_MODULE_3_lodash_find___default()(appTypeWriters, function (w) {
+          return (// Check if the value is an application type instance
+            w.appType && v instanceof w.appType || // ...or if the canHandle returns true.
             w.canHandle && w.canHandle(v)
           );
         });
@@ -2713,14 +2719,14 @@ var writer = exports.writer = function writer() {
 
       return v;
     },
-
     // This is only needed for the REPL
     // TODO This could be stripped out for production build
     handlerForForeign: function handlerForForeign(x, handlers) {
       if (Array.isArray(x)) {
         return handlers.get('array');
       }
-      if ((typeof x === 'undefined' ? 'undefined' : _typeof(x)) === 'object') {
+
+      if (_typeof(x) === 'object') {
         return handlers.get('map');
       }
 
@@ -2728,34 +2734,31 @@ var writer = exports.writer = function writer() {
     }
   });
 };
-
-var createTransitConverters = exports.createTransitConverters = function createTransitConverters() {
+var createTransitConverters = function createTransitConverters() {
   var typeHandlers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var opts = arguments[1];
+  var opts = arguments.length > 1 ? arguments[1] : undefined;
 
   var _typeHandlers$reduce = typeHandlers.reduce(function (memo, handler) {
     var r = {
-      sdkType: handler.sdkType ||
-      // DEPRECATED Use handler.sdkType instead of handler.type
+      sdkType: handler.sdkType || // DEPRECATED Use handler.sdkType instead of handler.type
       handler.type,
       reader: handler.reader
     };
     var w = {
-      sdkType: handler.sdkType ||
-      // DEPRECATED Use handler.sdkType instead of handler.type
+      sdkType: handler.sdkType || // DEPRECATED Use handler.sdkType instead of handler.type
       handler.type,
-      appType: handler.appType ||
-      // DEPRECATED Use handler.appType instead of handler.customType
+      appType: handler.appType || // DEPRECATED Use handler.appType instead of handler.customType
       handler.customType,
       canHandle: handler.canHandle,
       writer: handler.writer
     };
-
     memo.readers.push(r);
     memo.writers.push(w);
-
     return memo;
-  }, { readers: [], writers: [] }),
+  }, {
+    readers: [],
+    writers: []
+  }),
       readers = _typeHandlers$reduce.readers,
       writers = _typeHandlers$reduce.writers;
 
@@ -2767,44 +2770,44 @@ var createTransitConverters = exports.createTransitConverters = function createT
 
 /***/ }),
 /* 65 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_js_cookie__ = __webpack_require__(203);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_js_cookie___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_js_cookie__);
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _jsCookie = __webpack_require__(203);
-
-var _jsCookie2 = _interopRequireDefault(_jsCookie);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var generateKey = function generateKey(clientId, namespace) {
-  return namespace + '-' + clientId + '-token';
+  return "".concat(namespace, "-").concat(clientId, "-token");
 };
 
 var createStore = function createStore(_ref) {
   var clientId = _ref.clientId,
       secure = _ref.secure;
-
   var expiration = 30; // 30 days
+
   var namespace = 'st';
   var key = generateKey(clientId, namespace);
 
   var getToken = function getToken() {
-    return _jsCookie2.default.getJSON(key);
+    return __WEBPACK_IMPORTED_MODULE_0_js_cookie___default.a.getJSON(key);
   };
+
   var setToken = function setToken(tokenData) {
-    var secureFlag = secure ? { secure: true } : {};
-    _jsCookie2.default.set(key, tokenData, _extends({ expires: expiration }, secureFlag));
+    var secureFlag = secure ? {
+      secure: true
+    } : {};
+    __WEBPACK_IMPORTED_MODULE_0_js_cookie___default.a.set(key, tokenData, _objectSpread({
+      expires: expiration
+    }, secureFlag));
   };
+
   var removeToken = function removeToken() {
-    _jsCookie2.default.remove(key);
+    __WEBPACK_IMPORTED_MODULE_0_js_cookie___default.a.remove(key);
   };
 
   return {
@@ -2814,27 +2817,24 @@ var createStore = function createStore(_ref) {
   };
 };
 
-exports.default = createStore;
+/* harmony default export */ __webpack_exports__["a"] = (createStore);
 
 /***/ }),
 /* 66 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 var createStore = function createStore() {
-  var memo = void 0;
+  var memo;
 
   var getToken = function getToken() {
     return memo;
   };
+
   var setToken = function setToken(tokenData) {
     memo = tokenData;
   };
+
   var removeToken = function removeToken() {
     memo = null;
   };
@@ -2846,176 +2846,122 @@ var createStore = function createStore() {
   };
 };
 
-exports.default = createStore;
+/* harmony default export */ __webpack_exports__["a"] = (createStore);
 
 /***/ }),
 /* 67 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createInstance", function() { return createInstance; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tokenStore", function() { return tokenStore; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__sdk__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__types__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__browser_cookie_store__ = __webpack_require__(65);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__express_cookie_store__ = __webpack_require__(204);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__memory_store__ = __webpack_require__(66);
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "types", function() { return __WEBPACK_IMPORTED_MODULE_1__types__; });
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.tokenStore = exports.types = exports.createInstance = undefined;
 
-var _sdk = __webpack_require__(68);
 
-var _sdk2 = _interopRequireDefault(_sdk);
 
-var _types = __webpack_require__(33);
-
-var types = _interopRequireWildcard(_types);
-
-var _browser_cookie_store = __webpack_require__(65);
-
-var _browser_cookie_store2 = _interopRequireDefault(_browser_cookie_store);
-
-var _express_cookie_store = __webpack_require__(204);
-
-var _express_cookie_store2 = _interopRequireDefault(_express_cookie_store);
-
-var _memory_store = __webpack_require__(66);
-
-var _memory_store2 = _interopRequireDefault(_memory_store);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var createInstance = function createInstance(config) {
-  return new _sdk2.default(config);
-};
+  return new __WEBPACK_IMPORTED_MODULE_0__sdk__["a" /* default */](config);
+}; // Export token stores
 
-// Export token stores
+
 var tokenStore = {
-  memoryStore: _memory_store2.default,
-  browserCookieStore: _browser_cookie_store2.default,
-  expressCookieStore: _express_cookie_store2.default
+  memoryStore: __WEBPACK_IMPORTED_MODULE_4__memory_store__["a" /* default */],
+  browserCookieStore: __WEBPACK_IMPORTED_MODULE_2__browser_cookie_store__["a" /* default */],
+  expressCookieStore: __WEBPACK_IMPORTED_MODULE_3__express_cookie_store__["a" /* default */]
 };
-
 /* eslint-disable import/prefer-default-export */
-exports.createInstance = createInstance;
-exports.types = types;
-exports.tokenStore = tokenStore;
+
+
 
 /***/ }),
 /* 68 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SharetribeSdk; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_get__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_get___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash_get__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_set__ = __webpack_require__(95);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_set___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash_set__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash_mapValues__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash_mapValues___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash_mapValues__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_compact__ = __webpack_require__(56);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_compact___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_lodash_compact__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_pick__ = __webpack_require__(142);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_pick___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_lodash_pick__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_axios__ = __webpack_require__(152);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils__ = __webpack_require__(153);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__params_serializer__ = __webpack_require__(173);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__interceptors_add_auth_header__ = __webpack_require__(175);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__interceptors_retry_with_refresh_token__ = __webpack_require__(176);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__interceptors_retry_with_anon_token__ = __webpack_require__(177);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__interceptors_clear_token_after_revoke__ = __webpack_require__(178);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__interceptors_fetch_refresh_token_for_revoke__ = __webpack_require__(179);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__interceptors_add_auth_token_response__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__interceptors_save_token__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__interceptors_fetch_auth_token_from_api__ = __webpack_require__(180);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__ = __webpack_require__(181);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__interceptors_add_client_id_to_params__ = __webpack_require__(182);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__interceptors_auth_info__ = __webpack_require__(183);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__interceptors_default_params__ = __webpack_require__(184);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__interceptors_multipart_request__ = __webpack_require__(185);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__ = __webpack_require__(188);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__ = __webpack_require__(197);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__token_store__ = __webpack_require__(201);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__context_runner__ = __webpack_require__(19);
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
-var _get2 = __webpack_require__(22);
 
-var _get3 = _interopRequireDefault(_get2);
 
-var _set2 = __webpack_require__(95);
-
-var _set3 = _interopRequireDefault(_set2);
-
-var _mapValues2 = __webpack_require__(97);
-
-var _mapValues3 = _interopRequireDefault(_mapValues2);
-
-var _compact2 = __webpack_require__(56);
-
-var _compact3 = _interopRequireDefault(_compact2);
-
-var _pick2 = __webpack_require__(142);
-
-var _pick3 = _interopRequireDefault(_pick2);
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _axios = __webpack_require__(152);
-
-var _axios2 = _interopRequireDefault(_axios);
-
-var _utils = __webpack_require__(153);
-
-var _params_serializer = __webpack_require__(173);
-
-var _params_serializer2 = _interopRequireDefault(_params_serializer);
-
-var _add_auth_header = __webpack_require__(175);
-
-var _add_auth_header2 = _interopRequireDefault(_add_auth_header);
-
-var _retry_with_refresh_token = __webpack_require__(176);
-
-var _retry_with_refresh_token2 = _interopRequireDefault(_retry_with_refresh_token);
-
-var _retry_with_anon_token = __webpack_require__(177);
-
-var _retry_with_anon_token2 = _interopRequireDefault(_retry_with_anon_token);
-
-var _clear_token_after_revoke = __webpack_require__(178);
-
-var _clear_token_after_revoke2 = _interopRequireDefault(_clear_token_after_revoke);
-
-var _fetch_refresh_token_for_revoke = __webpack_require__(179);
-
-var _fetch_refresh_token_for_revoke2 = _interopRequireDefault(_fetch_refresh_token_for_revoke);
-
-var _add_auth_token_response = __webpack_require__(21);
-
-var _add_auth_token_response2 = _interopRequireDefault(_add_auth_token_response);
-
-var _save_token = __webpack_require__(20);
-
-var _save_token2 = _interopRequireDefault(_save_token);
-
-var _fetch_auth_token_from_api = __webpack_require__(180);
-
-var _fetch_auth_token_from_api2 = _interopRequireDefault(_fetch_auth_token_from_api);
-
-var _fetch_auth_token_from_store = __webpack_require__(181);
-
-var _fetch_auth_token_from_store2 = _interopRequireDefault(_fetch_auth_token_from_store);
-
-var _add_client_id_to_params = __webpack_require__(182);
-
-var _add_client_id_to_params2 = _interopRequireDefault(_add_client_id_to_params);
-
-var _auth_info = __webpack_require__(183);
-
-var _auth_info2 = _interopRequireDefault(_auth_info);
-
-var _default_params = __webpack_require__(184);
-
-var _default_params2 = _interopRequireDefault(_default_params);
-
-var _multipart_request = __webpack_require__(185);
-
-var _multipart_request2 = _interopRequireDefault(_multipart_request);
-
-var _transit_request = __webpack_require__(188);
-
-var _transit_request2 = _interopRequireDefault(_transit_request);
-
-var _transit_response = __webpack_require__(197);
-
-var _transit_response2 = _interopRequireDefault(_transit_response);
-
-var _token_store = __webpack_require__(201);
-
-var _context_runner = __webpack_require__(19);
-
-var _context_runner2 = _interopRequireDefault(_context_runner);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* eslint-disable class-methods-use-this */
 
@@ -3030,7 +2976,6 @@ var defaultSdkConfig = {
   httpsAgent: null,
   transitVerbose: false
 };
-
 /**
    Basic configurations for different 'apis'.
 
@@ -3069,7 +3014,7 @@ var apis = {
         transitVerbose = _ref.transitVerbose;
     return {
       headers: createHeaders(transitVerbose),
-      baseURL: baseUrl + '/' + version,
+      baseURL: "".concat(baseUrl, "/").concat(version),
       transformRequest: function transformRequest(v) {
         return v;
       },
@@ -3077,7 +3022,7 @@ var apis = {
         return v;
       },
       adapter: adapter,
-      paramsSerializer: _params_serializer2.default,
+      paramsSerializer: __WEBPACK_IMPORTED_MODULE_7__params_serializer__["a" /* default */],
       httpAgent: httpAgent,
       httpsAgent: httpsAgent
     };
@@ -3093,9 +3038,9 @@ var apis = {
         'Content-Type': 'application/x-www-form-urlencoded',
         Accept: 'application/json'
       },
-      baseURL: baseUrl + '/' + version + '/',
+      baseURL: "".concat(baseUrl, "/").concat(version, "/"),
       transformRequest: [function (data) {
-        return (0, _utils.formData)(data);
+        return Object(__WEBPACK_IMPORTED_MODULE_6__utils__["b" /* formData */])(data);
       }],
       // using default transformRequest, which can handle JSON and fallback to plain
       // test if JSON parsing fails
@@ -3105,7 +3050,6 @@ var apis = {
     };
   }
 };
-
 /**
    List of all known endpoints
 
@@ -3115,312 +3059,323 @@ var apis = {
      or will it be part of the public SDK interface
    - method: HTTP method
  */
+
 var endpointDefinitions = [{
   apiName: 'api',
   path: 'marketplace/show',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'users/show',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/show',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/create',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/update_profile',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/change_email',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/change_password',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/verify_email',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/send_verification_email',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/create_stripe_account',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/update_stripe_account',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/delete_stripe_account',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'password_reset/request',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'password_reset/reset',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'listings/show',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/show',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'listings/query',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/query',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'listings/search',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/create',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/create_draft',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/publish_draft',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/discard_draft',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/update',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/open',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/close',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/add_image',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'availability_exceptions/create',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'availability_exceptions/delete',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'availability_exceptions/query',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'images/upload',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _multipart_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_20__interceptors_multipart_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/initiate',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/initiate_speculative',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/transition',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/transition_speculative',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/query',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/show',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'process_transitions/query',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'bookings/query',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'messages/query',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'messages/send',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'reviews/query',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'reviews/show',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'timeslots/query',
   internal: false,
   method: 'get',
-  interceptors: [new _transit_response2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_account/create',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_account/update',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_persons/create',
   internal: false,
   method: 'post',
-  interceptors: [new _transit_response2.default(), new _transit_request2.default()]
-}, { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] }, { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] }];
-
-var authenticateInterceptors = [new _fetch_auth_token_from_store2.default(), new _fetch_auth_token_from_api2.default(), new _retry_with_anon_token2.default(), new _retry_with_refresh_token2.default(), new _add_auth_header2.default()];
-
-var loginInterceptors = [(0, _default_params2.default)({ grant_type: 'password', scope: 'user' }), new _add_client_id_to_params2.default(), new _save_token2.default(), new _add_auth_token_response2.default()];
-
-var logoutInterceptors = [new _fetch_auth_token_from_store2.default(), new _clear_token_after_revoke2.default(), new _retry_with_refresh_token2.default(), new _add_auth_header2.default(), new _fetch_refresh_token_for_revoke2.default()];
-
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
+}, {
+  apiName: 'auth',
+  path: 'token',
+  internal: true,
+  method: 'post',
+  interceptors: []
+}, {
+  apiName: 'auth',
+  path: 'revoke',
+  internal: true,
+  method: 'post',
+  interceptors: []
+}];
+var authenticateInterceptors = [new __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_15__interceptors_fetch_auth_token_from_api__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_10__interceptors_retry_with_anon_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_9__interceptors_retry_with_refresh_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_8__interceptors_add_auth_header__["a" /* default */]()];
+var loginInterceptors = [Object(__WEBPACK_IMPORTED_MODULE_19__interceptors_default_params__["a" /* default */])({
+  grant_type: 'password',
+  scope: 'user'
+}), new __WEBPACK_IMPORTED_MODULE_17__interceptors_add_client_id_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_14__interceptors_save_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_13__interceptors_add_auth_token_response__["a" /* default */]()];
+var logoutInterceptors = [new __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_11__interceptors_clear_token_after_revoke__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_9__interceptors_retry_with_refresh_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_8__interceptors_add_auth_header__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_12__interceptors_fetch_refresh_token_for_revoke__["a" /* default */]()];
 /**
    Take endpoint definitions and return SDK function definition.
  */
+
 var sdkFnDefsFromEndpointDefs = function sdkFnDefsFromEndpointDefs(epDefs) {
   return epDefs.filter(function (_ref3) {
     var _ref3$internal = _ref3.internal,
-        internal = _ref3$internal === undefined ? false : _ref3$internal;
+        internal = _ref3$internal === void 0 ? false : _ref3$internal;
     return !internal;
   }).map(function (_ref4) {
     var apiName = _ref4.apiName,
         path = _ref4.path,
         method = _ref4.method;
-
-    var fnPath = (0, _utils.fnPath)(path);
+    var fnPath = Object(__WEBPACK_IMPORTED_MODULE_6__utils__["a" /* fnPath */])(path);
     var fullFnPath = [apiName].concat(_toConsumableArray(fnPath));
-
     return {
       method: method,
       path: fnPath,
@@ -3429,7 +3384,6 @@ var sdkFnDefsFromEndpointDefs = function sdkFnDefsFromEndpointDefs(epDefs) {
     };
   });
 };
-
 /**
    List of SDK methods that will be part of the SDKs public interface.
    The list is created from the `endpointDefinitions` list.
@@ -3442,14 +3396,25 @@ var sdkFnDefsFromEndpointDefs = function sdkFnDefsFromEndpointDefs(epDefs) {
    - interceptors: List of additional interceptors.
 
  */
-var endpointSdkFnDefinitions = sdkFnDefsFromEndpointDefs(endpointDefinitions);
 
+
+var endpointSdkFnDefinitions = sdkFnDefsFromEndpointDefs(endpointDefinitions);
 /**
    List of SDK methods that are not derived from the endpoints.
  */
-var additionalSdkFnDefinitions = [{ path: 'login', endpointInterceptorPath: 'auth.token', interceptors: loginInterceptors }, { path: 'logout', endpointInterceptorPath: 'auth.revoke', interceptors: [].concat(logoutInterceptors) }, { path: 'authInfo', interceptors: [new _auth_info2.default()] }];
 
-// const logAndReturn = (data) => {
+var additionalSdkFnDefinitions = [{
+  path: 'login',
+  endpointInterceptorPath: 'auth.token',
+  interceptors: loginInterceptors
+}, {
+  path: 'logout',
+  endpointInterceptorPath: 'auth.revoke',
+  interceptors: [].concat(logoutInterceptors)
+}, {
+  path: 'authInfo',
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_18__interceptors_auth_info__["a" /* default */]()]
+}]; // const logAndReturn = (data) => {
 //   console.log(data);
 //   return data;
 // };
@@ -3458,23 +3423,23 @@ var handleSuccessResponse = function handleSuccessResponse(response) {
   var status = response.status,
       statusText = response.statusText,
       data = response.data;
-
-
-  return { status: status, statusText: statusText, data: data };
-};
-
-// GET requests: `params` includes query params. `queryParams` will be ignored
+  return {
+    status: status,
+    statusText: statusText,
+    data: data
+  };
+}; // GET requests: `params` includes query params. `queryParams` will be ignored
 // POST requests: `params` includes body params. `queryParams` includes URL query params
+
+
 var doRequest = function doRequest(_ref5) {
   var _ref5$params = _ref5.params,
-      params = _ref5$params === undefined ? {} : _ref5$params,
+      params = _ref5$params === void 0 ? {} : _ref5$params,
       _ref5$queryParams = _ref5.queryParams,
-      queryParams = _ref5$queryParams === undefined ? {} : _ref5$queryParams,
+      queryParams = _ref5$queryParams === void 0 ? {} : _ref5$queryParams,
       httpOpts = _ref5.httpOpts;
   var _httpOpts$method = httpOpts.method,
-      method = _httpOpts$method === undefined ? 'get' : _httpOpts$method;
-
-
+      method = _httpOpts$method === void 0 ? 'get' : _httpOpts$method;
   var data = null;
   var query = null;
 
@@ -3482,30 +3447,30 @@ var doRequest = function doRequest(_ref5) {
     data = params;
     query = queryParams;
   } else {
-    query = params;
-    // leave `data` null
+    query = params; // leave `data` null
   }
 
-  var req = _extends({}, httpOpts, {
+  var req = _objectSpread({}, httpOpts, {
     method: method,
     data: data,
     params: query
   });
 
-  return _axios2.default.request(req).then(handleSuccessResponse);
+  return __WEBPACK_IMPORTED_MODULE_5_axios___default.a.request(req).then(handleSuccessResponse);
 };
-
 /**
    Creates a list of endpoint interceptors that call the endpoint with the
    given parameters.
 */
+
+
 var createEndpointInterceptors = function createEndpointInterceptors(_ref6) {
   var method = _ref6.method,
       url = _ref6.url,
       httpOpts = _ref6.httpOpts;
 
   var httpOptsHeaders = httpOpts.headers,
-      restHttpOpts = _objectWithoutProperties(httpOpts, ['headers']);
+      restHttpOpts = _objectWithoutProperties(httpOpts, ["headers"]);
 
   return {
     enter: function enter(ctx) {
@@ -3513,22 +3478,26 @@ var createEndpointInterceptors = function createEndpointInterceptors(_ref6) {
           queryParams = ctx.queryParams,
           headers = ctx.headers,
           perRequestOpts = ctx.perRequestOpts;
-
       return doRequest({
         params: params,
         queryParams: queryParams,
-        httpOpts: _extends({}, perRequestOpts, {
+        httpOpts: _objectSpread({}, perRequestOpts, {
           method: method || 'get',
           // Merge additional headers
-          headers: _extends({}, httpOptsHeaders, headers)
+          headers: _objectSpread({}, httpOptsHeaders, headers)
         }, restHttpOpts, {
           url: url
         })
       }).then(function (res) {
-        return _extends({}, ctx, { res: res });
-      }).catch(function (error) {
-        var errorCtx = _extends({}, ctx, { res: error.response });
-        // eslint-disable-next-line no-param-reassign
+        return _objectSpread({}, ctx, {
+          res: res
+        });
+      })["catch"](function (error) {
+        var errorCtx = _objectSpread({}, ctx, {
+          res: error.response
+        }); // eslint-disable-next-line no-param-reassign
+
+
         error.ctx = errorCtx;
         throw error;
       });
@@ -3543,8 +3512,11 @@ var formatError = function formatError(e) {
         status = _e$response.status,
         statusText = _e$response.statusText,
         data = _e$response.data;
-
-    Object.assign(e, { status: status, statusText: statusText, data: data });
+    Object.assign(e, {
+      status: status,
+      statusText: statusText,
+      data: data
+    });
     delete e.response;
   }
 
@@ -3573,7 +3545,7 @@ var formatError = function formatError(e) {
 };
 
 var allowedPerRequestOpts = function allowedPerRequestOpts(opts) {
-  return (0, _pick3.default)(opts, ['onUploadProgress']);
+  return __WEBPACK_IMPORTED_MODULE_4_lodash_pick___default()(opts, ['onUploadProgress']);
 };
 
 var createSdkFnContextRunner = function createSdkFnContextRunner(_ref7) {
@@ -3583,31 +3555,35 @@ var createSdkFnContextRunner = function createSdkFnContextRunner(_ref7) {
       ctx = _ref7.ctx,
       interceptors = _ref7.interceptors,
       endpointInterceptors = _ref7.endpointInterceptors;
-  return (0, _context_runner2.default)((0, _compact3.default)([].concat(_toConsumableArray(interceptors), _toConsumableArray(endpointInterceptors))))(_extends({}, ctx, {
+  return Object(__WEBPACK_IMPORTED_MODULE_24__context_runner__["a" /* default */])(__WEBPACK_IMPORTED_MODULE_3_lodash_compact___default()([].concat(_toConsumableArray(interceptors), _toConsumableArray(endpointInterceptors))))(_objectSpread({}, ctx, {
     params: params,
     queryParams: queryParams,
     perRequestOpts: perRequestOpts
   })).then(function (_ref8) {
     var res = _ref8.res;
     return res;
-  }).catch(formatError);
+  })["catch"](formatError);
 };
+
 var createSdkPostFn = function createSdkPostFn(sdkFnParams) {
   return function () {
     var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var queryParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var perRequestOpts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    return createSdkFnContextRunner(_extends({
+    return createSdkFnContextRunner(_objectSpread({
       params: params,
       queryParams: queryParams,
       perRequestOpts: allowedPerRequestOpts(perRequestOpts)
     }, sdkFnParams));
   };
 };
+
 var createSdkGetFn = function createSdkGetFn(sdkFnParams) {
   return function () {
     var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    return createSdkFnContextRunner(_extends({ params: params }, sdkFnParams));
+    return createSdkFnContextRunner(_objectSpread({
+      params: params
+    }, sdkFnParams));
   };
 };
 /**
@@ -3618,30 +3594,32 @@ var createSdkGetFn = function createSdkGetFn(sdkFnParams) {
 
    It's meant to used by the user of the SDK.
  */
+
+
 var createSdkFn = function createSdkFn(_ref9) {
   var method = _ref9.method,
-      sdkFnParams = _objectWithoutProperties(_ref9, ['method']);
+      sdkFnParams = _objectWithoutProperties(_ref9, ["method"]);
 
   if (method && method.toLowerCase() === 'post') {
     return createSdkPostFn(sdkFnParams);
   }
 
   return createSdkGetFn(sdkFnParams);
-};
+}; // Take SDK configurations, do transformation and return.
 
-// Take SDK configurations, do transformation and return.
+
 var transformSdkConfig = function transformSdkConfig(_ref10) {
   var baseUrl = _ref10.baseUrl,
       tokenStore = _ref10.tokenStore,
-      sdkConfig = _objectWithoutProperties(_ref10, ['baseUrl', 'tokenStore']);
+      sdkConfig = _objectWithoutProperties(_ref10, ["baseUrl", "tokenStore"]);
 
-  return _extends({}, sdkConfig, {
-    baseUrl: (0, _utils.trimEndSlash)(baseUrl),
-    tokenStore: tokenStore || (0, _token_store.createDefaultTokenStore)(tokenStore, sdkConfig.clientId, !!sdkConfig.secure)
+  return _objectSpread({}, sdkConfig, {
+    baseUrl: Object(__WEBPACK_IMPORTED_MODULE_6__utils__["c" /* trimEndSlash */])(baseUrl),
+    tokenStore: tokenStore || Object(__WEBPACK_IMPORTED_MODULE_23__token_store__["a" /* createDefaultTokenStore */])(tokenStore, sdkConfig.clientId, !!sdkConfig.secure)
   });
-};
+}; // Validate SDK configurations, throw an error if invalid, otherwise return.
 
-// Validate SDK configurations, throw an error if invalid, otherwise return.
+
 var validateSdkConfig = function validateSdkConfig(sdkConfig) {
   if (!sdkConfig.clientId) {
     throw new Error('clientId must be provided');
@@ -3666,55 +3644,52 @@ function SharetribeSdk(userSdkConfig) {
   _classCallCheck(this, SharetribeSdk);
 
   // Transform and validation SDK configurations
-  var sdkConfig = validateSdkConfig(transformSdkConfig(_extends({}, defaultSdkConfig, userSdkConfig)));
+  var sdkConfig = validateSdkConfig(transformSdkConfig(_objectSpread({}, defaultSdkConfig, userSdkConfig))); // Instantiate API configs
 
-  // Instantiate API configs
-  var apiConfigs = (0, _mapValues3.default)(apis, function (apiConfig) {
+  var apiConfigs = __WEBPACK_IMPORTED_MODULE_2_lodash_mapValues___default()(apis, function (apiConfig) {
     return apiConfig(sdkConfig);
-  });
+  }); // Read the endpoint definitions and do some mapping
 
-  // Read the endpoint definitions and do some mapping
+
   var endpointDefs = [].concat(endpointDefinitions).map(function (epDef) {
     var path = epDef.path,
         apiName = epDef.apiName,
         method = epDef.method,
         _epDef$interceptors = epDef.interceptors,
-        interceptors = _epDef$interceptors === undefined ? [] : _epDef$interceptors;
-
-    var fnPath = (0, _utils.fnPath)(path);
+        interceptors = _epDef$interceptors === void 0 ? [] : _epDef$interceptors;
+    var fnPath = Object(__WEBPACK_IMPORTED_MODULE_6__utils__["a" /* fnPath */])(path);
     var fullFnPath = [apiName].concat(_toConsumableArray(fnPath));
     var url = [apiName, path].join('/');
     var httpOpts = apiConfigs[apiName];
-
-    var endpointInterceptors = [].concat(_toConsumableArray(interceptors), [createEndpointInterceptors({ method: method, url: url, httpOpts: httpOpts })]);
-
-    return _extends({}, epDef, {
+    var endpointInterceptors = [].concat(_toConsumableArray(interceptors), [createEndpointInterceptors({
+      method: method,
+      url: url,
+      httpOpts: httpOpts
+    })]);
+    return _objectSpread({}, epDef, {
       fnPath: fnPath,
       fullFnPath: fullFnPath,
       endpointInterceptors: endpointInterceptors
     });
-  });
-
-  // Create `endpointInterceptors` object, which is object
+  }); // Create `endpointInterceptors` object, which is object
   // containing interceptors for all defined endpoints.
   // This object can be passed to other interceptors in the interceptor context so they
   // are able to do API calls (e.g. authentication interceptors)
+
   var endpointInterceptors = endpointDefs.reduce(function (acc, _ref11) {
     var fullFnPath = _ref11.fullFnPath,
         interceptors = _ref11.endpointInterceptors;
-    return (0, _set3.default)(acc, fullFnPath, interceptors);
-  }, {});
+    return __WEBPACK_IMPORTED_MODULE_1_lodash_set___default()(acc, fullFnPath, interceptors);
+  }, {}); // Create a context object that will be passed to the interceptor context runner
 
-  // Create a context object that will be passed to the interceptor context runner
   var ctx = {
     tokenStore: sdkConfig.tokenStore,
     endpointInterceptors: endpointInterceptors,
     clientId: sdkConfig.clientId,
     typeHandlers: sdkConfig.typeHandlers,
     transitVerbose: sdkConfig.transitVerbose
-  };
+  }; // Create SDK functions
 
-  // Create SDK functions
   var sdkFns = [].concat(_toConsumableArray(endpointSdkFnDefinitions), additionalSdkFnDefinitions).map(function (_ref12) {
     var path = _ref12.path,
         method = _ref12.method,
@@ -3725,21 +3700,20 @@ function SharetribeSdk(userSdkConfig) {
       fn: createSdkFn({
         method: method,
         ctx: ctx,
-        endpointInterceptors: (0, _get3.default)(endpointInterceptors, endpointInterceptorPath) || [],
+        endpointInterceptors: __WEBPACK_IMPORTED_MODULE_0_lodash_get___default()(endpointInterceptors, endpointInterceptorPath) || [],
         interceptors: interceptors
       })
     };
-  });
+  }); // Assign SDK functions to 'this'
 
-  // Assign SDK functions to 'this'
   sdkFns.forEach(function (_ref13) {
     var path = _ref13.path,
         fn = _ref13.fn;
-    return (0, _set3.default)(_this, path, fn);
+    return __WEBPACK_IMPORTED_MODULE_1_lodash_set___default()(_this, path, fn);
   });
 };
 
-exports.default = SharetribeSdk;
+
 
 /***/ }),
 /* 69 */
@@ -6467,29 +6441,21 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_152__;
 
 /***/ }),
 /* 153 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return trimEndSlash; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return fnPath; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return formData; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_reduce__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_reduce___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash_reduce__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_without__ = __webpack_require__(157);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_without___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash_without__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash_trimEnd__ = __webpack_require__(165);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash_trimEnd___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash_trimEnd__);
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.formData = exports.fnPath = exports.trimEndSlash = undefined;
 
-var _reduce2 = __webpack_require__(32);
-
-var _reduce3 = _interopRequireDefault(_reduce2);
-
-var _without2 = __webpack_require__(157);
-
-var _without3 = _interopRequireDefault(_without2);
-
-var _trimEnd2 = __webpack_require__(165);
-
-var _trimEnd3 = _interopRequireDefault(_trimEnd2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
    Take URL and remove the trailing slashes.
@@ -6502,21 +6468,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
    trimEndSlash("http://www.api.com//") => "http://www.api.com"
    ```
  */
-var trimEndSlash = exports.trimEndSlash = function trimEndSlash(url) {
-  return (0, _trimEnd3.default)(url, '/');
+var trimEndSlash = function trimEndSlash(url) {
+  return __WEBPACK_IMPORTED_MODULE_2_lodash_trimEnd___default()(url, '/');
 };
-
-var fnPath = exports.fnPath = function fnPath(path) {
-  return (0, _without3.default)(path.split('/'), '').map(function (part) {
+var fnPath = function fnPath(path) {
+  return __WEBPACK_IMPORTED_MODULE_1_lodash_without___default()(path.split('/'), '').map(function (part) {
     return part.replace(/_\w/g, function (m) {
       return m[1].toUpperCase();
     });
   });
 };
-
-var formData = exports.formData = function formData(params) {
-  return (0, _reduce3.default)(params, function (pairs, v, k) {
-    pairs.push(encodeURIComponent(k) + '=' + encodeURIComponent(v));
+var formData = function formData(params) {
+  return __WEBPACK_IMPORTED_MODULE_0_lodash_reduce___default()(params, function (pairs, v, k) {
+    pairs.push("".concat(encodeURIComponent(k), "=").concat(encodeURIComponent(v)));
     return pairs;
   }, []).join('&');
 };
@@ -7147,28 +7111,19 @@ module.exports = unicodeToArray;
 
 /***/ }),
 /* 173 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_map__ = __webpack_require__(63);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash_map__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_compact__ = __webpack_require__(56);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_compact___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash_compact__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__types__ = __webpack_require__(33);
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
-var _map2 = __webpack_require__(63);
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-var _map3 = _interopRequireDefault(_map2);
-
-var _compact2 = __webpack_require__(56);
-
-var _compact3 = _interopRequireDefault(_compact2);
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _types = __webpack_require__(33);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * Takes a value for query string and returns it in encoded form.
@@ -7180,10 +7135,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Inspired by the `encode` function in Axios:
  * https://github.com/mzabriskie/axios/blob/b8f6f5049cf3da8126a184b6b270316402b5b374/lib/helpers/buildURL.js#L5
  */
+
 var encode = function encode(value) {
   return encodeURIComponent(value).replace(/%2C/gi, ',');
 };
-
 /**
  * Take `key` and `value` and return a key-value tuple where
  * key and value are stringified.
@@ -7191,28 +7146,30 @@ var encode = function encode(value) {
  * TODO Consider moving this function closer to the type definitions,
  * maybe in types.js file(?).
  */
-var serialize = function serialize(key, value) {
-  var v = void 0;
 
-  if (value instanceof _types.UUID) {
+
+var serialize = function serialize(key, value) {
+  var v;
+
+  if (value instanceof __WEBPACK_IMPORTED_MODULE_2__types__["UUID"]) {
     v = value.uuid;
-  } else if (value instanceof _types.LatLng) {
-    v = value.lat + ',' + value.lng;
-  } else if (value instanceof _types.LatLngBounds) {
-    v = value.ne.lat + ',' + value.ne.lng + ',' + value.sw.lat + ',' + value.sw.lng;
+  } else if (value instanceof __WEBPACK_IMPORTED_MODULE_2__types__["LatLng"]) {
+    v = "".concat(value.lat, ",").concat(value.lng);
+  } else if (value instanceof __WEBPACK_IMPORTED_MODULE_2__types__["LatLngBounds"]) {
+    v = "".concat(value.ne.lat, ",").concat(value.ne.lng, ",").concat(value.sw.lat, ",").concat(value.sw.lng);
   } else if (Array.isArray(value)) {
     v = value;
   } else if (value instanceof Date) {
     v = value.toISOString();
   } else if (value == null) {
     v = value;
-  } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object') {
+  } else if (_typeof(value) !== 'object') {
     v = value;
   } else {
-    throw new Error('Don\'t know how to serialize query parameter \'' + key + '\': ' + value);
-  }
+    throw new Error("Don't know how to serialize query parameter '".concat(key, "': ").concat(value));
+  } // Ignore null and undefined values
 
-  // Ignore null and undefined values
+
   if (v == null) {
     return null;
   }
@@ -7221,7 +7178,7 @@ var serialize = function serialize(key, value) {
 };
 
 var paramsSerializer = function paramsSerializer(params) {
-  return (0, _compact3.default)((0, _map3.default)(params, function (value, key) {
+  return __WEBPACK_IMPORTED_MODULE_1_lodash_compact___default()(__WEBPACK_IMPORTED_MODULE_0_lodash_map___default()(params, function (value, key) {
     var serialized = serialize(key, value);
 
     if (serialized) {
@@ -7232,7 +7189,7 @@ var paramsSerializer = function paramsSerializer(params) {
   })).join('&');
 };
 
-exports.default = paramsSerializer;
+/* harmony default export */ __webpack_exports__["a"] = (paramsSerializer);
 
 /***/ }),
 /* 174 */
@@ -7264,20 +7221,19 @@ module.exports = baseMap;
 
 /***/ }),
 /* 175 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AddAuthHeader; });
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var constructAuthHeader = function constructAuthHeader(authToken) {
   /* eslint-disable camelcase */
@@ -7285,13 +7241,14 @@ var constructAuthHeader = function constructAuthHeader(authToken) {
 
   switch (token_type) {
     case 'bearer':
-      return 'Bearer ' + authToken.access_token;
+      return "Bearer ".concat(authToken.access_token);
+
     default:
-      throw new Error('Unknown token type: ' + token_type);
+      throw new Error("Unknown token type: ".concat(token_type));
   }
   /* eslint-enable camelcase */
-};
 
+};
 /**
    Read `authToken` from `ctx`. Then construct Authorize header and add it to `headers`.
 
@@ -7300,65 +7257,68 @@ var constructAuthHeader = function constructAuthHeader(authToken) {
    - Add `headers.Authorize`
  */
 
-var AddAuthHeader = function () {
+
+var AddAuthHeader =
+/*#__PURE__*/
+function () {
   function AddAuthHeader() {
     _classCallCheck(this, AddAuthHeader);
   }
 
   _createClass(AddAuthHeader, [{
-    key: 'enter',
+    key: "enter",
     value: function enter(ctx) {
       var authToken = ctx.authToken,
           _ctx$headers = ctx.headers,
-          headers = _ctx$headers === undefined ? {} : _ctx$headers;
-
+          headers = _ctx$headers === void 0 ? {} : _ctx$headers;
 
       if (!authToken) {
         return ctx;
       }
 
-      var authHeaders = { Authorization: constructAuthHeader(authToken) };
-      return _extends({}, ctx, { headers: _extends({}, headers, authHeaders) });
+      var authHeaders = {
+        Authorization: constructAuthHeader(authToken)
+      };
+      return _objectSpread({}, ctx, {
+        headers: _objectSpread({}, headers, authHeaders)
+      });
     }
   }]);
 
   return AddAuthHeader;
 }();
 
-exports.default = AddAuthHeader;
+
 
 /***/ }),
 /* 176 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return RetryWithRefreshToken; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__context_runner__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__save_token__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__add_auth_token_response__ = __webpack_require__(21);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-var _context_runner = __webpack_require__(19);
-
-var _context_runner2 = _interopRequireDefault(_context_runner);
-
-var _save_token = __webpack_require__(20);
-
-var _save_token2 = _interopRequireDefault(_save_token);
-
-var _add_auth_token_response = __webpack_require__(21);
-
-var _add_auth_token_response2 = _interopRequireDefault(_add_auth_token_response);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
 
 /**
    Retries with a fresh password token.
@@ -7373,21 +7333,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    - add `anonTokenRetry`
    - add `authToken`
  */
-var RetryWithRefreshToken = function () {
+
+var RetryWithRefreshToken =
+/*#__PURE__*/
+function () {
   function RetryWithRefreshToken() {
     _classCallCheck(this, RetryWithRefreshToken);
   }
 
   _createClass(RetryWithRefreshToken, [{
-    key: 'enter',
+    key: "enter",
     value: function enter(enterCtx) {
       var enterQueue = enterCtx.enterQueue,
           _enterCtx$refreshToke = enterCtx.refreshTokenRetry;
-      _enterCtx$refreshToke = _enterCtx$refreshToke === undefined ? {} : _enterCtx$refreshToke;
+      _enterCtx$refreshToke = _enterCtx$refreshToke === void 0 ? {} : _enterCtx$refreshToke;
       var _enterCtx$refreshToke2 = _enterCtx$refreshToke.attempts,
-          attempts = _enterCtx$refreshToke2 === undefined ? 0 : _enterCtx$refreshToke2;
-
-      return _extends({}, enterCtx, {
+          attempts = _enterCtx$refreshToke2 === void 0 ? 0 : _enterCtx$refreshToke2;
+      return _objectSpread({}, enterCtx, {
         refreshTokenRetry: {
           retryQueue: [].concat(_toConsumableArray(enterQueue), [new RetryWithRefreshToken()]),
           attempts: attempts + 1
@@ -7395,7 +7357,7 @@ var RetryWithRefreshToken = function () {
       });
     }
   }, {
-    key: 'error',
+    key: "error",
     value: function error(errorCtx) {
       var authToken = errorCtx.authToken,
           clientId = errorCtx.clientId,
@@ -7405,13 +7367,12 @@ var RetryWithRefreshToken = function () {
           retryQueue = _errorCtx$refreshToke.retryQueue,
           attempts = _errorCtx$refreshToke.attempts;
 
-
       if (attempts > 1) {
         return errorCtx;
       }
 
       if (errorCtx.res && errorCtx.res.status === 401 && authToken.refresh_token) {
-        return (0, _context_runner2.default)([new _save_token2.default(), new _add_auth_token_response2.default()].concat(_toConsumableArray(endpointInterceptors.auth.token)))({
+        return Object(__WEBPACK_IMPORTED_MODULE_0__context_runner__["a" /* default */])([new __WEBPACK_IMPORTED_MODULE_1__save_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_2__add_auth_token_response__["a" /* default */]()].concat(_toConsumableArray(endpointInterceptors.auth.token)))({
           params: {
             client_id: clientId,
             grant_type: 'refresh_token',
@@ -7420,14 +7381,18 @@ var RetryWithRefreshToken = function () {
           tokenStore: tokenStore
         }).then(function (_ref) {
           var newAuthToken = _ref.authToken;
-          return _extends({}, errorCtx, {
+          return _objectSpread({}, errorCtx, {
             authToken: newAuthToken,
             enterQueue: retryQueue,
             error: null
           });
-        }).catch(function (e) {
-          return _extends({}, errorCtx, {
-            refreshTokenRetry: { retryQueue: retryQueue, attempts: attempts, res: e.response }
+        })["catch"](function (e) {
+          return _objectSpread({}, errorCtx, {
+            refreshTokenRetry: {
+              retryQueue: retryQueue,
+              attempts: attempts,
+              res: e.response
+            }
           });
         });
       }
@@ -7439,40 +7404,37 @@ var RetryWithRefreshToken = function () {
   return RetryWithRefreshToken;
 }();
 
-exports.default = RetryWithRefreshToken;
+
 
 /***/ }),
 /* 177 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return RetryWithAnonToken; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__context_runner__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__save_token__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__add_auth_token_response__ = __webpack_require__(21);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-var _context_runner = __webpack_require__(19);
-
-var _context_runner2 = _interopRequireDefault(_context_runner);
-
-var _save_token = __webpack_require__(20);
-
-var _save_token2 = _interopRequireDefault(_save_token);
-
-var _add_auth_token_response = __webpack_require__(21);
-
-var _add_auth_token_response2 = _interopRequireDefault(_add_auth_token_response);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
 
 /**
    Retries with a fresh anon token.
@@ -7486,21 +7448,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    - add `anonTokenRetry`
    - add `authToken`
  */
-var RetryWithAnonToken = function () {
+
+var RetryWithAnonToken =
+/*#__PURE__*/
+function () {
   function RetryWithAnonToken() {
     _classCallCheck(this, RetryWithAnonToken);
   }
 
   _createClass(RetryWithAnonToken, [{
-    key: 'enter',
+    key: "enter",
     value: function enter(enterCtx) {
       var enterQueue = enterCtx.enterQueue,
           _enterCtx$anonTokenRe = enterCtx.anonTokenRetry;
-      _enterCtx$anonTokenRe = _enterCtx$anonTokenRe === undefined ? {} : _enterCtx$anonTokenRe;
+      _enterCtx$anonTokenRe = _enterCtx$anonTokenRe === void 0 ? {} : _enterCtx$anonTokenRe;
       var _enterCtx$anonTokenRe2 = _enterCtx$anonTokenRe.attempts,
-          attempts = _enterCtx$anonTokenRe2 === undefined ? 0 : _enterCtx$anonTokenRe2;
-
-      return _extends({}, enterCtx, {
+          attempts = _enterCtx$anonTokenRe2 === void 0 ? 0 : _enterCtx$anonTokenRe2;
+      return _objectSpread({}, enterCtx, {
         anonTokenRetry: {
           retryQueue: [].concat(_toConsumableArray(enterQueue), [new RetryWithAnonToken()]),
           attempts: attempts + 1
@@ -7508,7 +7472,7 @@ var RetryWithAnonToken = function () {
       });
     }
   }, {
-    key: 'error',
+    key: "error",
     value: function error(errorCtx) {
       var clientId = errorCtx.clientId,
           tokenStore = errorCtx.tokenStore,
@@ -7517,13 +7481,12 @@ var RetryWithAnonToken = function () {
           retryQueue = _errorCtx$anonTokenRe.retryQueue,
           attempts = _errorCtx$anonTokenRe.attempts;
 
-
       if (attempts > 1) {
         return errorCtx;
       }
 
       if (errorCtx.res && errorCtx.res.status === 401) {
-        return (0, _context_runner2.default)([new _save_token2.default(), new _add_auth_token_response2.default()].concat(_toConsumableArray(endpointInterceptors.auth.token)))({
+        return Object(__WEBPACK_IMPORTED_MODULE_0__context_runner__["a" /* default */])([new __WEBPACK_IMPORTED_MODULE_1__save_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_2__add_auth_token_response__["a" /* default */]()].concat(_toConsumableArray(endpointInterceptors.auth.token)))({
           params: {
             client_id: clientId,
             grant_type: 'client_credentials',
@@ -7532,7 +7495,11 @@ var RetryWithAnonToken = function () {
           tokenStore: tokenStore
         }).then(function (_ref) {
           var authToken = _ref.authToken;
-          return _extends({}, errorCtx, { authToken: authToken, enterQueue: retryQueue, error: null });
+          return _objectSpread({}, errorCtx, {
+            authToken: authToken,
+            enterQueue: retryQueue,
+            error: null
+          });
         });
       }
 
@@ -7543,30 +7510,27 @@ var RetryWithAnonToken = function () {
   return RetryWithAnonToken;
 }();
 
-exports.default = RetryWithAnonToken;
+
 
 /***/ }),
 /* 178 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ClearTokenAfterRevoke; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_get__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_get___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash_get__);
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-var _get2 = __webpack_require__(22);
-
-var _get3 = _interopRequireDefault(_get2);
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Clears token after revoke.
@@ -7583,23 +7547,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
    - Remove `error`, if 401
 */
-var ClearTokenAfterRevoke = function () {
+var ClearTokenAfterRevoke =
+/*#__PURE__*/
+function () {
   function ClearTokenAfterRevoke() {
     _classCallCheck(this, ClearTokenAfterRevoke);
   }
 
   _createClass(ClearTokenAfterRevoke, [{
-    key: 'leave',
+    key: "leave",
     value: function leave(ctx) {
       return ClearTokenAfterRevoke.clearTokenAndResque(ctx);
     }
   }, {
-    key: 'error',
+    key: "error",
     value: function error(ctx) {
       var _ref = ctx.res || {},
           status = _ref.status;
 
-      var retryStatus = (0, _get3.default)(ctx, ['refreshTokenRetry', 'res', 'status']);
+      var retryStatus = __WEBPACK_IMPORTED_MODULE_0_lodash_get___default()(ctx, ['refreshTokenRetry', 'res', 'status']);
 
       if (status === 401 && retryStatus === 401) {
         return ClearTokenAfterRevoke.clearTokenAndResque(ctx);
@@ -7608,42 +7574,44 @@ var ClearTokenAfterRevoke = function () {
       return ctx;
     }
   }], [{
-    key: 'clearTokenAndResque',
+    key: "clearTokenAndResque",
     value: function clearTokenAndResque(ctx) {
       var tokenStore = ctx.tokenStore;
 
-
       if (tokenStore) {
         return Promise.resolve().then(tokenStore.removeToken).then(function () {
-          return _extends({}, ctx, { error: null });
+          return _objectSpread({}, ctx, {
+            error: null
+          });
         });
       }
 
-      return _extends({}, ctx, { error: null });
+      return _objectSpread({}, ctx, {
+        error: null
+      });
     }
   }]);
 
   return ClearTokenAfterRevoke;
 }();
 
-exports.default = ClearTokenAfterRevoke;
+
 
 /***/ }),
 /* 179 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FetchRefreshTokenForRevoke; });
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Fetch `refresh_token` from `authToken` in `ctx`. If
@@ -7655,7 +7623,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    - Add `params.token`
    - Clear `enterQueue` (if no need to revoke)
 */
-var FetchRefreshTokenForRevoke = function () {
+var FetchRefreshTokenForRevoke =
+/*#__PURE__*/
+function () {
   function FetchRefreshTokenForRevoke() {
     _classCallCheck(this, FetchRefreshTokenForRevoke);
   }
@@ -7664,58 +7634,60 @@ var FetchRefreshTokenForRevoke = function () {
     key: "enter",
     value: function enter(ctx) {
       var _ctx$authToken = ctx.authToken;
-      _ctx$authToken = _ctx$authToken === undefined ? {} : _ctx$authToken;
+      _ctx$authToken = _ctx$authToken === void 0 ? {} : _ctx$authToken;
       var token = _ctx$authToken.refresh_token;
 
-
       if (token) {
-        return _extends({}, ctx, { params: { token: token } });
-      }
-
-      // No need to call `revoke` endpoint, because we don't have
+        return _objectSpread({}, ctx, {
+          params: {
+            token: token
+          }
+        });
+      } // No need to call `revoke` endpoint, because we don't have
       // refresh_token.
       // Clear the enterQueue
-      return _extends({}, ctx, { enterQueue: [] });
+
+
+      return _objectSpread({}, ctx, {
+        enterQueue: []
+      });
     }
   }]);
 
   return FetchRefreshTokenForRevoke;
 }();
 
-exports.default = FetchRefreshTokenForRevoke;
+
 
 /***/ }),
 /* 180 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FetchAuthTokenFromApi; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__context_runner__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__save_token__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__add_auth_token_response__ = __webpack_require__(21);
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
 
-var _context_runner = __webpack_require__(19);
-
-var _context_runner2 = _interopRequireDefault(_context_runner);
-
-var _save_token = __webpack_require__(20);
-
-var _save_token2 = _interopRequireDefault(_save_token);
-
-var _add_auth_token_response = __webpack_require__(21);
-
-var _add_auth_token_response2 = _interopRequireDefault(_add_auth_token_response);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
 
 /**
    If there's no `authToken` stored to the `ctx`, try to fetch new auth token from the API.
@@ -7724,25 +7696,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
    - add `authToken`
 */
-var FetchAuthTokenFromApi = function () {
+
+var FetchAuthTokenFromApi =
+/*#__PURE__*/
+function () {
   function FetchAuthTokenFromApi() {
     _classCallCheck(this, FetchAuthTokenFromApi);
   }
 
   _createClass(FetchAuthTokenFromApi, [{
-    key: 'enter',
+    key: "enter",
     value: function enter(ctx) {
       var tokenStore = ctx.tokenStore,
           authToken = ctx.authToken,
           endpointInterceptors = ctx.endpointInterceptors,
           clientId = ctx.clientId;
 
-
       if (authToken) {
         return ctx;
       }
 
-      return (0, _context_runner2.default)([new _save_token2.default(), new _add_auth_token_response2.default()].concat(_toConsumableArray(endpointInterceptors.auth.token)))({
+      return Object(__WEBPACK_IMPORTED_MODULE_0__context_runner__["a" /* default */])([new __WEBPACK_IMPORTED_MODULE_1__save_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_2__add_auth_token_response__["a" /* default */]()].concat(_toConsumableArray(endpointInterceptors.auth.token)))({
         params: {
           client_id: clientId,
           grant_type: 'client_credentials',
@@ -7751,7 +7725,9 @@ var FetchAuthTokenFromApi = function () {
         tokenStore: tokenStore
       }).then(function (_ref) {
         var newAuthToken = _ref.authToken;
-        return _extends({}, ctx, { authToken: newAuthToken });
+        return _objectSpread({}, ctx, {
+          authToken: newAuthToken
+        });
       });
     }
   }]);
@@ -7759,24 +7735,23 @@ var FetchAuthTokenFromApi = function () {
   return FetchAuthTokenFromApi;
 }();
 
-exports.default = FetchAuthTokenFromApi;
+
 
 /***/ }),
 /* 181 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FetchAuthTokenFromStore; });
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Fetches the auth token from tokenStore and adds it to the context.
@@ -7786,7 +7761,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    - add `authToken`
 
  */
-var FetchAuthTokenFromStore = function () {
+var FetchAuthTokenFromStore =
+/*#__PURE__*/
+function () {
   function FetchAuthTokenFromStore() {
     _classCallCheck(this, FetchAuthTokenFromStore);
   }
@@ -7796,14 +7773,15 @@ var FetchAuthTokenFromStore = function () {
     value: function enter(enterCtx) {
       var tokenStore = enterCtx.tokenStore;
 
-
       if (!tokenStore) {
         return enterCtx;
       }
 
       return Promise.resolve().then(tokenStore.getToken).then(function (storedToken) {
         if (storedToken) {
-          return _extends({}, enterCtx, { authToken: storedToken });
+          return _objectSpread({}, enterCtx, {
+            authToken: storedToken
+          });
         }
 
         return enterCtx;
@@ -7814,26 +7792,27 @@ var FetchAuthTokenFromStore = function () {
   return FetchAuthTokenFromStore;
 }();
 
-exports.default = FetchAuthTokenFromStore;
+
 
 /***/ }),
 /* 182 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AddClientIdToParams; });
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Read `clientId` from `ctx` and add it to `params`
@@ -7842,7 +7821,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
    - add `params.clientId`
  */
-var AddClientIdToParams = function () {
+var AddClientIdToParams =
+/*#__PURE__*/
+function () {
   function AddClientIdToParams() {
     _classCallCheck(this, AddClientIdToParams);
   }
@@ -7854,31 +7835,35 @@ var AddClientIdToParams = function () {
           params = _ref.params,
           ctx = _objectWithoutProperties(_ref, ["clientId", "params"]);
 
-      return _extends({}, ctx, { clientId: clientId, params: _extends({}, params, { client_id: clientId }) });
+      return _objectSpread({}, ctx, {
+        clientId: clientId,
+        params: _objectSpread({}, params, {
+          client_id: clientId
+        })
+      });
     }
   }]);
 
   return AddClientIdToParams;
 }();
 
-exports.default = AddClientIdToParams;
+
 
 /***/ }),
 /* 183 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AuthInfo; });
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Reads current authentication token from the tokenStore and returns
@@ -7890,52 +7875,58 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    - add `res`
 
 */
-var AuthInfo = function () {
+var AuthInfo =
+/*#__PURE__*/
+function () {
   function AuthInfo() {
     _classCallCheck(this, AuthInfo);
   }
 
   _createClass(AuthInfo, [{
-    key: 'enter',
+    key: "enter",
     value: function enter(ctx) {
       var tokenStore = ctx.tokenStore;
-
 
       if (tokenStore) {
         return Promise.resolve().then(tokenStore.getToken).then(function (storedToken) {
           if (storedToken) {
             var grantType = storedToken.refresh_token ? 'refresh_token' : 'client_credentials';
-
-            return _extends({}, ctx, { res: { grantType: grantType } });
+            return _objectSpread({}, ctx, {
+              res: {
+                grantType: grantType
+              }
+            });
           }
 
-          return _extends({}, ctx, { res: {} });
+          return _objectSpread({}, ctx, {
+            res: {}
+          });
         });
       }
 
-      return _extends({}, ctx, { res: {} });
+      return _objectSpread({}, ctx, {
+        res: {}
+      });
     }
   }]);
 
   return AuthInfo;
 }();
 
-exports.default = AuthInfo;
+
 
 /***/ }),
 /* 184 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 /**
    Add given params to the `ctx.params`
@@ -7951,41 +7942,41 @@ var defaultParams = function defaultParams() {
       var ctxParams = _ref.params,
           ctx = _objectWithoutProperties(_ref, ["params"]);
 
-      return _extends({}, ctx, { params: _extends({}, params, ctxParams) });
+      return _objectSpread({}, ctx, {
+        params: _objectSpread({}, params, ctxParams)
+      });
     }
   };
 };
 
-exports.default = defaultParams;
+/* harmony default export */ __webpack_exports__["a"] = (defaultParams);
 
 /***/ }),
 /* 185 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MultipartRequest; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_reduce__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_reduce___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash_reduce__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_isPlainObject__ = __webpack_require__(186);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_isPlainObject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash_isPlainObject__);
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
-var _reduce2 = __webpack_require__(32);
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-var _reduce3 = _interopRequireDefault(_reduce2);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var _isPlainObject2 = __webpack_require__(186);
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
-var _isPlainObject3 = _interopRequireDefault(_isPlainObject2);
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Takes `params` from `ctx` and converts to `FormData`
@@ -7994,40 +7985,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
    - Modify `ctx.params`
  */
-var MultipartRequest = function () {
+var MultipartRequest =
+/*#__PURE__*/
+function () {
   function MultipartRequest() {
     _classCallCheck(this, MultipartRequest);
   }
 
   _createClass(MultipartRequest, [{
-    key: 'enter',
+    key: "enter",
     value: function enter(_ref) {
       var params = _ref.params,
-          ctx = _objectWithoutProperties(_ref, ['params']);
+          ctx = _objectWithoutProperties(_ref, ["params"]);
 
-      if ((0, _isPlainObject3.default)(params)) {
+      if (__WEBPACK_IMPORTED_MODULE_1_lodash_isPlainObject___default()(params)) {
         /* eslint-disable no-undef */
         if (typeof FormData === 'undefined') {
           throw new Error("Don't know how to create multipart request from Object, when the FormData is undefined");
         }
 
-        var formDataObj = (0, _reduce3.default)(params, function (fd, val, key) {
+        var formDataObj = __WEBPACK_IMPORTED_MODULE_0_lodash_reduce___default()(params, function (fd, val, key) {
           fd.append(key, val);
           return fd;
         }, new FormData());
         /* eslint-enable no-undef */
 
-        return _extends({ params: formDataObj }, ctx);
+
+        return _objectSpread({
+          params: formDataObj
+        }, ctx);
       }
 
-      return _extends({ params: params }, ctx);
+      return _objectSpread({
+        params: params
+      }, ctx);
     }
   }]);
 
   return MultipartRequest;
 }();
 
-exports.default = MultipartRequest;
+
 
 /***/ }),
 /* 186 */
@@ -8111,53 +8109,59 @@ module.exports = getPrototype;
 
 /***/ }),
 /* 188 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TransitRequest; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__serializer__ = __webpack_require__(64);
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _serializer = __webpack_require__(64);
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 /**
    Transit encode the request
  */
-var TransitRequest = function () {
+
+var TransitRequest =
+/*#__PURE__*/
+function () {
   function TransitRequest() {
     _classCallCheck(this, TransitRequest);
   }
 
   _createClass(TransitRequest, [{
-    key: 'enter',
+    key: "enter",
     value: function enter(ctx) {
       var params = ctx.params,
           _ctx$headers = ctx.headers,
-          headers = _ctx$headers === undefined ? {} : _ctx$headers,
+          headers = _ctx$headers === void 0 ? {} : _ctx$headers,
           typeHandlers = ctx.typeHandlers,
           transitVerbose = ctx.transitVerbose,
-          restCtx = _objectWithoutProperties(ctx, ['params', 'headers', 'typeHandlers', 'transitVerbose']);
+          restCtx = _objectWithoutProperties(ctx, ["params", "headers", "typeHandlers", "transitVerbose"]);
 
       if (headers['Content-Type'] === 'application/transit+json') {
         return ctx;
       }
 
-      var _createTransitConvert = (0, _serializer.createTransitConverters)(typeHandlers, { verbose: transitVerbose }),
+      var _createTransitConvert = Object(__WEBPACK_IMPORTED_MODULE_0__serializer__["a" /* createTransitConverters */])(typeHandlers, {
+        verbose: transitVerbose
+      }),
           writer = _createTransitConvert.writer;
 
-      return _extends({
+      return _objectSpread({
         params: writer.write(params),
-        headers: _extends({}, headers, {
+        headers: _objectSpread({}, headers, {
           'Content-Type': 'application/transit+json'
         }),
         typeHandlers: typeHandlers,
@@ -8169,7 +8173,7 @@ var TransitRequest = function () {
   return TransitRequest;
 }();
 
-exports.default = TransitRequest;
+
 
 /***/ }),
 /* 189 */
@@ -8513,7 +8517,7 @@ module.exports = fromPairs;
 
 // transit-js 0.8.862
 // http://transit-format.org
-//
+// 
 // Copyright 2014 Cognitect. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -10547,8 +10551,8 @@ com.cognitect.transit.util.randHex = function() {
 };
 com.cognitect.transit.util.randomUUID = function() {
   var a = (8 | 3 & com.cognitect.transit.util.randInt(14)).toString(16);
-  return com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-4" + com.cognitect.transit.util.randHex() +
-  com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + a + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() +
+  return com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-4" + com.cognitect.transit.util.randHex() + 
+  com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + a + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + "-" + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + 
   com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex() + com.cognitect.transit.util.randHex();
 };
 com.cognitect.transit.util.btoa = function(a) {
@@ -12362,79 +12366,79 @@ com.cognitect.transit.writeCache = com.cognitect.transit.caching.writeCache;
 com.cognitect.transit.UUIDfromString = com.cognitect.transit.types.UUIDfromString;
 com.cognitect.transit.randomUUID = com.cognitect.transit.util.randomUUID;
 com.cognitect.transit.stringableKeys = com.cognitect.transit.impl.writer.stringableKeys;
-TRANSIT_BROWSER_TARGET && (goog.exportSymbol("transit.reader", com.cognitect.transit.reader), goog.exportSymbol("transit.writer", com.cognitect.transit.writer), goog.exportSymbol("transit.makeBuilder", com.cognitect.transit.makeBuilder), goog.exportSymbol("transit.makeWriteHandler", com.cognitect.transit.makeWriteHandler), goog.exportSymbol("transit.date", com.cognitect.transit.types.date), goog.exportSymbol("transit.integer", com.cognitect.transit.types.intValue), goog.exportSymbol("transit.isInteger",
-com.cognitect.transit.types.isInteger), goog.exportSymbol("transit.uuid", com.cognitect.transit.types.uuid), goog.exportSymbol("transit.isUUID", com.cognitect.transit.types.isUUID), goog.exportSymbol("transit.bigInt", com.cognitect.transit.types.bigInteger), goog.exportSymbol("transit.isBigInt", com.cognitect.transit.types.isBigInteger), goog.exportSymbol("transit.bigDec", com.cognitect.transit.types.bigDecimalValue), goog.exportSymbol("transit.isBigDec", com.cognitect.transit.types.isBigDecimal),
-goog.exportSymbol("transit.keyword", com.cognitect.transit.types.keyword), goog.exportSymbol("transit.isKeyword", com.cognitect.transit.types.isKeyword), goog.exportSymbol("transit.symbol", com.cognitect.transit.types.symbol), goog.exportSymbol("transit.isSymbol", com.cognitect.transit.types.isSymbol), goog.exportSymbol("transit.binary", com.cognitect.transit.types.binary), goog.exportSymbol("transit.isBinary", com.cognitect.transit.types.isBinary), goog.exportSymbol("transit.uri", com.cognitect.transit.types.uri),
-goog.exportSymbol("transit.isURI", com.cognitect.transit.types.isURI), goog.exportSymbol("transit.map", com.cognitect.transit.types.map), goog.exportSymbol("transit.isMap", com.cognitect.transit.types.isMap), goog.exportSymbol("transit.set", com.cognitect.transit.types.set), goog.exportSymbol("transit.isSet", com.cognitect.transit.types.isSet), goog.exportSymbol("transit.list", com.cognitect.transit.types.list), goog.exportSymbol("transit.isList", com.cognitect.transit.types.isList), goog.exportSymbol("transit.quoted",
-com.cognitect.transit.types.quoted), goog.exportSymbol("transit.isQuoted", com.cognitect.transit.types.isQuoted), goog.exportSymbol("transit.tagged", com.cognitect.transit.types.taggedValue), goog.exportSymbol("transit.isTaggedValue", com.cognitect.transit.types.isTaggedValue), goog.exportSymbol("transit.link", com.cognitect.transit.types.link), goog.exportSymbol("transit.isLink", com.cognitect.transit.types.isLink), goog.exportSymbol("transit.hash", com.cognitect.transit.eq.hashCode), goog.exportSymbol("transit.hashMapLike",
-com.cognitect.transit.eq.hashMapLike), goog.exportSymbol("transit.hashArrayLike", com.cognitect.transit.eq.hashArrayLike), goog.exportSymbol("transit.equals", com.cognitect.transit.eq.equals), goog.exportSymbol("transit.extendToEQ", com.cognitect.transit.eq.extendToEQ), goog.exportSymbol("transit.mapToObject", com.cognitect.transit.mapToObject), goog.exportSymbol("transit.objectToMap", com.cognitect.transit.objectToMap), goog.exportSymbol("transit.decoder", com.cognitect.transit.impl.decoder.decoder),
+TRANSIT_BROWSER_TARGET && (goog.exportSymbol("transit.reader", com.cognitect.transit.reader), goog.exportSymbol("transit.writer", com.cognitect.transit.writer), goog.exportSymbol("transit.makeBuilder", com.cognitect.transit.makeBuilder), goog.exportSymbol("transit.makeWriteHandler", com.cognitect.transit.makeWriteHandler), goog.exportSymbol("transit.date", com.cognitect.transit.types.date), goog.exportSymbol("transit.integer", com.cognitect.transit.types.intValue), goog.exportSymbol("transit.isInteger", 
+com.cognitect.transit.types.isInteger), goog.exportSymbol("transit.uuid", com.cognitect.transit.types.uuid), goog.exportSymbol("transit.isUUID", com.cognitect.transit.types.isUUID), goog.exportSymbol("transit.bigInt", com.cognitect.transit.types.bigInteger), goog.exportSymbol("transit.isBigInt", com.cognitect.transit.types.isBigInteger), goog.exportSymbol("transit.bigDec", com.cognitect.transit.types.bigDecimalValue), goog.exportSymbol("transit.isBigDec", com.cognitect.transit.types.isBigDecimal), 
+goog.exportSymbol("transit.keyword", com.cognitect.transit.types.keyword), goog.exportSymbol("transit.isKeyword", com.cognitect.transit.types.isKeyword), goog.exportSymbol("transit.symbol", com.cognitect.transit.types.symbol), goog.exportSymbol("transit.isSymbol", com.cognitect.transit.types.isSymbol), goog.exportSymbol("transit.binary", com.cognitect.transit.types.binary), goog.exportSymbol("transit.isBinary", com.cognitect.transit.types.isBinary), goog.exportSymbol("transit.uri", com.cognitect.transit.types.uri), 
+goog.exportSymbol("transit.isURI", com.cognitect.transit.types.isURI), goog.exportSymbol("transit.map", com.cognitect.transit.types.map), goog.exportSymbol("transit.isMap", com.cognitect.transit.types.isMap), goog.exportSymbol("transit.set", com.cognitect.transit.types.set), goog.exportSymbol("transit.isSet", com.cognitect.transit.types.isSet), goog.exportSymbol("transit.list", com.cognitect.transit.types.list), goog.exportSymbol("transit.isList", com.cognitect.transit.types.isList), goog.exportSymbol("transit.quoted", 
+com.cognitect.transit.types.quoted), goog.exportSymbol("transit.isQuoted", com.cognitect.transit.types.isQuoted), goog.exportSymbol("transit.tagged", com.cognitect.transit.types.taggedValue), goog.exportSymbol("transit.isTaggedValue", com.cognitect.transit.types.isTaggedValue), goog.exportSymbol("transit.link", com.cognitect.transit.types.link), goog.exportSymbol("transit.isLink", com.cognitect.transit.types.isLink), goog.exportSymbol("transit.hash", com.cognitect.transit.eq.hashCode), goog.exportSymbol("transit.hashMapLike", 
+com.cognitect.transit.eq.hashMapLike), goog.exportSymbol("transit.hashArrayLike", com.cognitect.transit.eq.hashArrayLike), goog.exportSymbol("transit.equals", com.cognitect.transit.eq.equals), goog.exportSymbol("transit.extendToEQ", com.cognitect.transit.eq.extendToEQ), goog.exportSymbol("transit.mapToObject", com.cognitect.transit.mapToObject), goog.exportSymbol("transit.objectToMap", com.cognitect.transit.objectToMap), goog.exportSymbol("transit.decoder", com.cognitect.transit.impl.decoder.decoder), 
 goog.exportSymbol("transit.UUIDfromString", com.cognitect.transit.types.UUIDfromString), goog.exportSymbol("transit.randomUUID", com.cognitect.transit.util.randomUUID), goog.exportSymbol("transit.stringableKeys", com.cognitect.transit.impl.writer.stringableKeys), goog.exportSymbol("transit.readCache", com.cognitect.transit.caching.readCache), goog.exportSymbol("transit.writeCache", com.cognitect.transit.caching.writeCache));
-TRANSIT_NODE_TARGET && (module.exports = {reader:com.cognitect.transit.reader, writer:com.cognitect.transit.writer, makeBuilder:com.cognitect.transit.makeBuilder, makeWriteHandler:com.cognitect.transit.makeWriteHandler, date:com.cognitect.transit.types.date, integer:com.cognitect.transit.types.intValue, isInteger:com.cognitect.transit.types.isInteger, uuid:com.cognitect.transit.types.uuid, isUUID:com.cognitect.transit.types.isUUID, bigInt:com.cognitect.transit.types.bigInteger, isBigInt:com.cognitect.transit.types.isBigInteger,
-bigDec:com.cognitect.transit.types.bigDecimalValue, isBigDec:com.cognitect.transit.types.isBigDecimal, keyword:com.cognitect.transit.types.keyword, isKeyword:com.cognitect.transit.types.isKeyword, symbol:com.cognitect.transit.types.symbol, isSymbol:com.cognitect.transit.types.isSymbol, binary:com.cognitect.transit.types.binary, isBinary:com.cognitect.transit.types.isBinary, uri:com.cognitect.transit.types.uri, isURI:com.cognitect.transit.types.isURI, map:com.cognitect.transit.types.map, isMap:com.cognitect.transit.types.isMap,
-set:com.cognitect.transit.types.set, isSet:com.cognitect.transit.types.isSet, list:com.cognitect.transit.types.list, isList:com.cognitect.transit.types.isList, quoted:com.cognitect.transit.types.quoted, isQuoted:com.cognitect.transit.types.isQuoted, tagged:com.cognitect.transit.types.taggedValue, isTaggedValue:com.cognitect.transit.types.isTaggedValue, link:com.cognitect.transit.types.link, isLink:com.cognitect.transit.types.isLink, hash:com.cognitect.transit.eq.hashCode, hashArrayLike:com.cognitect.transit.eq.hashArrayLike,
-hashMapLike:com.cognitect.transit.eq.hashMapLike, equals:com.cognitect.transit.eq.equals, extendToEQ:com.cognitect.transit.eq.extendToEQ, mapToObject:com.cognitect.transit.mapToObject, objectToMap:com.cognitect.transit.objectToMap, decoder:com.cognitect.transit.impl.decoder.decoder, UUIDfromString:com.cognitect.transit.types.UUIDfromString, randomUUID:com.cognitect.transit.util.randomUUID, stringableKeys:com.cognitect.transit.impl.writer.stringableKeys, readCache:com.cognitect.transit.caching.readCache,
+TRANSIT_NODE_TARGET && (module.exports = {reader:com.cognitect.transit.reader, writer:com.cognitect.transit.writer, makeBuilder:com.cognitect.transit.makeBuilder, makeWriteHandler:com.cognitect.transit.makeWriteHandler, date:com.cognitect.transit.types.date, integer:com.cognitect.transit.types.intValue, isInteger:com.cognitect.transit.types.isInteger, uuid:com.cognitect.transit.types.uuid, isUUID:com.cognitect.transit.types.isUUID, bigInt:com.cognitect.transit.types.bigInteger, isBigInt:com.cognitect.transit.types.isBigInteger, 
+bigDec:com.cognitect.transit.types.bigDecimalValue, isBigDec:com.cognitect.transit.types.isBigDecimal, keyword:com.cognitect.transit.types.keyword, isKeyword:com.cognitect.transit.types.isKeyword, symbol:com.cognitect.transit.types.symbol, isSymbol:com.cognitect.transit.types.isSymbol, binary:com.cognitect.transit.types.binary, isBinary:com.cognitect.transit.types.isBinary, uri:com.cognitect.transit.types.uri, isURI:com.cognitect.transit.types.isURI, map:com.cognitect.transit.types.map, isMap:com.cognitect.transit.types.isMap, 
+set:com.cognitect.transit.types.set, isSet:com.cognitect.transit.types.isSet, list:com.cognitect.transit.types.list, isList:com.cognitect.transit.types.isList, quoted:com.cognitect.transit.types.quoted, isQuoted:com.cognitect.transit.types.isQuoted, tagged:com.cognitect.transit.types.taggedValue, isTaggedValue:com.cognitect.transit.types.isTaggedValue, link:com.cognitect.transit.types.link, isLink:com.cognitect.transit.types.isLink, hash:com.cognitect.transit.eq.hashCode, hashArrayLike:com.cognitect.transit.eq.hashArrayLike, 
+hashMapLike:com.cognitect.transit.eq.hashMapLike, equals:com.cognitect.transit.eq.equals, extendToEQ:com.cognitect.transit.eq.extendToEQ, mapToObject:com.cognitect.transit.mapToObject, objectToMap:com.cognitect.transit.objectToMap, decoder:com.cognitect.transit.impl.decoder.decoder, UUIDfromString:com.cognitect.transit.types.UUIDfromString, randomUUID:com.cognitect.transit.util.randomUUID, stringableKeys:com.cognitect.transit.impl.writer.stringableKeys, readCache:com.cognitect.transit.caching.readCache, 
 writeCache:com.cognitect.transit.caching.writeCache});
 
 
 
 /***/ }),
 /* 197 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TransitResponse; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_update__ = __webpack_require__(198);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_update___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash_update__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__serializer__ = __webpack_require__(64);
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-var _update2 = __webpack_require__(198);
-
-var _update3 = _interopRequireDefault(_update2);
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _serializer = __webpack_require__(64);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 /**
    Transit encode the response
  */
-var TransitResponse = function () {
+
+var TransitResponse =
+/*#__PURE__*/
+function () {
   function TransitResponse() {
     _classCallCheck(this, TransitResponse);
   }
 
   _createClass(TransitResponse, [{
-    key: 'error',
+    key: "error",
     value: function error(ctx) {
-      var _createTransitConvert = (0, _serializer.createTransitConverters)(ctx.typeHandlers),
+      var _createTransitConvert = Object(__WEBPACK_IMPORTED_MODULE_1__serializer__["a" /* createTransitConverters */])(ctx.typeHandlers),
           reader = _createTransitConvert.reader;
 
       if (!ctx.error.response) {
         return ctx;
       }
 
-      return (0, _update3.default)(_extends({}, ctx), 'error.response.data', function (data) {
+      return __WEBPACK_IMPORTED_MODULE_0_lodash_update___default()(_objectSpread({}, ctx), 'error.response.data', function (data) {
         return reader.read(data);
       });
     }
   }, {
-    key: 'leave',
+    key: "leave",
     value: function leave(ctx) {
-      var _createTransitConvert2 = (0, _serializer.createTransitConverters)(ctx.typeHandlers),
+      var _createTransitConvert2 = Object(__WEBPACK_IMPORTED_MODULE_1__serializer__["a" /* createTransitConverters */])(ctx.typeHandlers),
           reader = _createTransitConvert2.reader;
 
       if (!ctx.res) {
         return ctx;
       }
 
-      return (0, _update3.default)(_extends({}, ctx), 'res.data', function (data) {
+      return __WEBPACK_IMPORTED_MODULE_0_lodash_update___default()(_objectSpread({}, ctx), 'res.data', function (data) {
         return reader.read(data);
       });
     }
@@ -12443,7 +12447,7 @@ var TransitResponse = function () {
   return TransitResponse;
 }();
 
-exports.default = TransitResponse;
+
 
 /***/ }),
 /* 198 */
@@ -12532,52 +12536,38 @@ module.exports = castFunction;
 
 /***/ }),
 /* 201 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return createDefaultTokenStore; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__detect__ = __webpack_require__(202);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__browser_cookie_store__ = __webpack_require__(65);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__memory_store__ = __webpack_require__(66);
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.createDefaultTokenStore = undefined;
-
-var _detect = __webpack_require__(202);
-
-var _browser_cookie_store = __webpack_require__(65);
-
-var _browser_cookie_store2 = _interopRequireDefault(_browser_cookie_store);
-
-var _memory_store = __webpack_require__(66);
-
-var _memory_store2 = _interopRequireDefault(_memory_store);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint-disable import/prefer-default-export */
 
-var createDefaultTokenStore = exports.createDefaultTokenStore = function createDefaultTokenStore(tokenStore, clientId, secure) {
-  if ((0, _detect.hasBrowserCookies)()) {
-    return (0, _browser_cookie_store2.default)({ clientId: clientId, secure: secure });
-  }
-
-  // Token store was not given and we can't use browser cookie store.
+var createDefaultTokenStore = function createDefaultTokenStore(tokenStore, clientId, secure) {
+  if (Object(__WEBPACK_IMPORTED_MODULE_0__detect__["a" /* hasBrowserCookies */])()) {
+    return Object(__WEBPACK_IMPORTED_MODULE_1__browser_cookie_store__["a" /* default */])({
+      clientId: clientId,
+      secure: secure
+    });
+  } // Token store was not given and we can't use browser cookie store.
   // Default to in-memory store.
-  return (0, _memory_store2.default)();
+
+
+  return Object(__WEBPACK_IMPORTED_MODULE_2__memory_store__["a" /* default */])();
 };
 
 /***/ }),
 /* 202 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return hasBrowserCookies; });
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /**
 
@@ -12586,10 +12576,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  */
 
 /* eslint-disable import/prefer-default-export */
-/* eslint-disable no-undef */
 
-var hasBrowserCookies = exports.hasBrowserCookies = function hasBrowserCookies() {
-  return (typeof document === 'undefined' ? 'undefined' : _typeof(document)) === 'object' && typeof document.cookie === 'string';
+/* eslint-disable no-undef */
+var hasBrowserCookies = function hasBrowserCookies() {
+  return (typeof document === "undefined" ? "undefined" : _typeof(document)) === 'object' && typeof document.cookie === 'string';
 };
 
 /***/ }),
@@ -12769,19 +12759,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 /***/ }),
 /* 204 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var generateKey = function generateKey(clientId, namespace) {
-  return namespace + '-' + clientId + '-token';
+  return "".concat(namespace, "-").concat(clientId, "-token");
 };
 
 var createStore = function createStore(_ref) {
@@ -12789,16 +12775,15 @@ var createStore = function createStore(_ref) {
       req = _ref.req,
       res = _ref.res,
       secure = _ref.secure;
-
   var expiration = 30; // 30 days
-  var namespace = 'st';
-  var key = generateKey(clientId, namespace);
 
-  // A mutable variable containing the current token.
+  var namespace = 'st';
+  var key = generateKey(clientId, namespace); // A mutable variable containing the current token.
   // When a `setToken` is called, the current token will be
   // stored to this variable. `getToken` will read subsequent
   // calls from this variable.
-  var currentToken = void 0;
+
+  var currentToken;
 
   var readCookie = function readCookie() {
     var cookie = req.cookies[key];
@@ -12812,20 +12797,20 @@ var createStore = function createStore(_ref) {
 
   var getToken = function getToken() {
     currentToken = currentToken || readCookie();
-
     return currentToken;
   };
 
   var setToken = function setToken(tokenData) {
     currentToken = tokenData;
-    var secureFlag = secure ? { secure: true } : {};
-
-    // Manually stringify tokenData.
+    var secureFlag = secure ? {
+      secure: true
+    } : {}; // Manually stringify tokenData.
     // Express supports passing object to `res.cookie` which will be then automatically
     // JSON stringified. However, we CAN NOT use it, because it seems to output invalid JSON
     // with a "j" tag in front of the content (`"j:{ ...json here... }`). Because we want
     // to read that cookie also in browser, we don't want to produce invalid JSON.
-    res.cookie(key, JSON.stringify(tokenData), _extends({
+
+    res.cookie(key, JSON.stringify(tokenData), _objectSpread({
       maxAge: 1000 * 60 * 60 * 24 * expiration
     }, secureFlag));
   };
@@ -12842,7 +12827,7 @@ var createStore = function createStore(_ref) {
   };
 };
 
-exports.default = createStore;
+/* harmony default export */ __webpack_exports__["a"] = (createStore);
 
 /***/ })
 /******/ ]);
