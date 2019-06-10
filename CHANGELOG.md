@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Security
+
+- Upgrade dependencies with security issues:
+  - Axios (thanks [@joekarasek](https://github.com/joekarasek)!) [#98](https://github.com/sharetribe/flex-sdk-js/pull/95)
+  - Docpress [#97](https://github.com/sharetribe/flex-sdk-js/pull/97)
+  - Jest and Babel [#96](https://github.com/sharetribe/flex-sdk-js/pull/96)
+
 ## [v1.4.0] - 2019-04-16
 
 ### Added
