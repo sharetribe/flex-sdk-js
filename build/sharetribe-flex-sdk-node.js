@@ -3343,6 +3343,30 @@ var endpointDefinitions = [{
   method: 'post',
   interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
+  apiName: 'api',
+  path: 'stripe_setup_intents/create',
+  internal: false,
+  method: 'post',
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
+}, {
+  apiName: 'api',
+  path: 'stripe_customer/create',
+  internal: false,
+  method: 'post',
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
+}, {
+  apiName: 'api',
+  path: 'stripe_customer/add_payment_method',
+  internal: false,
+  method: 'post',
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
+}, {
+  apiName: 'api',
+  path: 'stripe_customer/delete_payment_method',
+  internal: false,
+  method: 'post',
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
+}, {
   apiName: 'auth',
   path: 'token',
   internal: true,
