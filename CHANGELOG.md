@@ -15,6 +15,14 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
   - Docpress [#97](https://github.com/sharetribe/flex-sdk-js/pull/97)
   - Jest and Babel [#96](https://github.com/sharetribe/flex-sdk-js/pull/96)
 
+### Added
+
+- New endpoints [#100](https://github.com/sharetribe/flex-sdk-js/pull/100)
+  * `sdk.stripeSetupIntents.create(/* ... */)`
+  * `sdk.stripeCustomer.create(/* ... */)`
+  * `sdk.stripeCustomer.addPaymentMethod(/* ... */)`
+  * `sdk.stripeCustomer.deletePaymentMethod(/* ... */)`
+
 ## [v1.4.0] - 2019-04-16
 
 ### Added
