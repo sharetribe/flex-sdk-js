@@ -59,6 +59,9 @@
     "lodash": "^4.17.10",
     "transit-js": "^0.8.861"
   },
+  "resolutions": {
+    "docpress/**/lodash": "^4.17.10"
+  },
   "babel": {
     "plugins": [
       "lodash",
