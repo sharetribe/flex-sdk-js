@@ -8,20 +8,23 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.5.0] - 2019-08-21
+
 ### Security
 
 - Upgrade dependencies with security issues:
   - Axios (thanks [@joekarasek](https://github.com/joekarasek)!) [#98](https://github.com/sharetribe/flex-sdk-js/pull/95)
   - Docpress [#97](https://github.com/sharetribe/flex-sdk-js/pull/97)
   - Jest and Babel [#96](https://github.com/sharetribe/flex-sdk-js/pull/96)
+  - all the patch and minor release updateds for all the dependencies [#101](https://github.com/sharetribe/flex-sdk-js/pull/101)
 
 ### Added
 
 - New endpoints [#100](https://github.com/sharetribe/flex-sdk-js/pull/100)
-  * `sdk.stripeSetupIntents.create(/* ... */)`
-  * `sdk.stripeCustomer.create(/* ... */)`
-  * `sdk.stripeCustomer.addPaymentMethod(/* ... */)`
-  * `sdk.stripeCustomer.deletePaymentMethod(/* ... */)`
+  - `sdk.stripeSetupIntents.create(/* ... */)`
+  - `sdk.stripeCustomer.create(/* ... */)`
+  - `sdk.stripeCustomer.addPaymentMethod(/* ... */)`
+  - `sdk.stripeCustomer.deletePaymentMethod(/* ... */)`
 
 ## [v1.4.0] - 2019-04-16
 
@@ -54,22 +57,23 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 - Missing step (copy sharetribe-flex-sdk-web.js from /build/ to /docs/)
 - New endpoints [#92](https://github.com/sharetribe/flex-sdk-js/pull/92)
-  * `sdk.stripeAccount.create(/* ... */)`
-  * `sdk.stripeAccount.update(/* ... */)`
-  * `sdk.stripePersons.create(/* ... */)`
+  - `sdk.stripeAccount.create(/* ... */)`
+  - `sdk.stripeAccount.update(/* ... */)`
+  - `sdk.stripePersons.create(/* ... */)`
 
 ### Changed
 
 - Updated dependencies
 
 ## [v1.2.0] - 2018-11-27
+
 ### Added
 
 - New endpoints [#89](https://github.com/sharetribe/flex-sdk-js/pull/89)
-  * `sdk.availabilityExceptions.create(/* ... */)`
-  * `sdk.availabilityExceptions.delete(/* ... */)`
-  * `sdk.availabilityExceptions.query(/* ... */)`
-  * `sdk.bookings.query(/* ... */)`
+  - `sdk.availabilityExceptions.create(/* ... */)`
+  - `sdk.availabilityExceptions.delete(/* ... */)`
+  - `sdk.availabilityExceptions.query(/* ... */)`
+  - `sdk.bookings.query(/* ... */)`
 
 ### Changed
 
@@ -80,9 +84,9 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 ### Added
 
 - New endpoints [#88](https://github.com/sharetribe/flex-sdk-js/pull/88)
-  * `sdk.ownListings.createDraft(/* ... */)`
-  * `sdk.ownListings.publishDraft(/* ... */)`
-  * `sdk.ownListings.discardDraft(/* ... */)`
+  - `sdk.ownListings.createDraft(/* ... */)`
+  - `sdk.ownListings.publishDraft(/* ... */)`
+  - `sdk.ownListings.discardDraft(/* ... */)`
 
 ## v1.0.0 - 2018-08-07
 
@@ -97,6 +101,7 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
+[v1.5.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.4.0...v1.5.0
 [v1.4.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.3.0...v1.4.0
 [v1.3.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.2.0...v1.3.0
 [v1.2.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.1.0...v1.2.0
