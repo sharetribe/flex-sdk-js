@@ -105,3 +105,25 @@ sdk.authInfo().then(authInfo => {
     console.log(`Request failed with status: ${res.status} ${res.statusText}`);
   });
 ```
+
+## Seeing occasional 401 errors?
+
+Are you seeing occasional 401 errors in the browser's Web Console?
+Don't worry! That's part of the normal operations.
+
+Flex API uses two authentication tokens for each session:
+
+* *Access token* that is used to authenticate the user. Valid only a
+  short amount of time.
+* *Refresh token* that is used to issue a fresh authentication
+  token. Long lived.
+
+When *access token* expires, you will see a 401 error in browser's Web
+Console. The SDK will handle this and automatically issue new fresh
+authentication token and retry the request. This all happens under the
+hood and you don't need to worry about it. SDK will do the heavy
+lifting.
+
+See [Authentication API reference
+document](https://www.sharetribe.com/api-reference/authentication.html)
+for more information.
