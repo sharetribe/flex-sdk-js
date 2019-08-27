@@ -42,6 +42,8 @@
                       </li>
                       <li class="heading-item -depth-2"><a class="hlink link-example" href="#example">Example</a>
                       </li>
+                      <li class="heading-item -depth-2"><a class="hlink link-seeing-occasional-401-errors" href="#seeing-occasional-401-errors">Seeing occasional 401 errors?</a>
+                      </li>
                     </ul>
                   </li>
                   <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the API</a>
@@ -164,6 +166,24 @@ sdk.authInfo().then(<span class="hljs-function"><span class="hljs-params">authIn
     <span class="pl-c1">console</span>.log(<span class="pl-s">`Request failed with status: <span class="hljs-subst">${res.status}</span> <span class="hljs-subst">${res.statusText}</span>`</span>);
   });
 </code></pre>
+<h2 id="seeing-occasional-401-errors">Seeing occasional 401 errors?</h2>
+<p>Are you seeing occasional 401 errors in the browser&apos;s Web Console?
+Don&apos;t worry! That&apos;s part of the normal operations.</p>
+<p>Flex API uses two authentication tokens for each session:</p>
+<ul>
+<li><em>Access token</em> that is used to authenticate the user. Valid only a
+short amount of time.</li>
+<li><em>Refresh token</em> that is used to issue a fresh authentication
+token. Long lived.</li>
+</ul>
+<p>When <em>access token</em> expires, you will see a 401 error in browser&apos;s Web
+Console. The SDK will handle this and automatically issue new fresh
+authentication token and retry the request. This all happens under the
+hood and you don&apos;t need to worry about it. SDK will do the heavy
+lifting.</p>
+<p>See <a href="https://www.sharetribe.com/api-reference/authentication.html">Authentication API reference
+document</a>
+for more information.</p>
 
         </div>
         <div class="footer-nav">

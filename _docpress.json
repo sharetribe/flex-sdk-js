@@ -95,6 +95,11 @@
                 "title": "Example",
                 "depth": 2,
                 "id": "example"
+              },
+              {
+                "title": "Seeing occasional 401 errors?",
+                "depth": 2,
+                "id": "seeing-occasional-401-errors"
               }
             ]
           },
@@ -339,6 +344,11 @@
           "title": "Example",
           "depth": 2,
           "id": "example"
+        },
+        {
+          "title": "Seeing occasional 401 errors?",
+          "depth": 2,
+          "id": "seeing-occasional-401-errors"
         }
       ]
     },
