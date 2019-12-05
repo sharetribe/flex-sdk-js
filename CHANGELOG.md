@@ -8,6 +8,10 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.6.0] - 2019-12-05
+
+### Added
+
 - New endpoints [#100](https://github.com/sharetribe/flex-sdk-js/pull/103)
   - `sdk.stripeAccountData.fetch(/* ... */)`
   - `sdk.stripeAccountLinks.create(/* ... */)`
