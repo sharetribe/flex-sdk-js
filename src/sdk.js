@@ -422,13 +422,6 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
-    path: 'stripe_account_data/fetch',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
     path: 'stripe_account_links/create',
     internal: false,
     method: 'post',
