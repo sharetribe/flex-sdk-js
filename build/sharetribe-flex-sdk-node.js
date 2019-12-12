@@ -3342,6 +3342,12 @@ var endpointDefinitions = [{
   interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
+  path: 'stripe_account/fetch',
+  internal: false,
+  method: 'get',
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_response__["a" /* default */]()]
+}, {
+  apiName: 'api',
   path: 'stripe_account/update',
   internal: false,
   method: 'post',
