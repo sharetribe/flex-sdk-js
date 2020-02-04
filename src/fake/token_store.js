@@ -2,27 +2,27 @@ import _ from 'lodash';
 
 const createTokenStore = () => {
   const tokens = [];
-  let anonAccessCount = 0;
-  let passwordAccessCount = 0;
-  let passwordRefreshCount = 0;
+  let anonAccessTokenCount = 0;
+  let accessTokenCount = 0;
+  let refreshTokenCount = 0;
 
   const knownUsers = [['joe.dunphy@example.com', 'secret-joe']];
 
   // Private
 
   const generateAnonAccessToken = () => {
-    anonAccessCount += 1;
-    return `anonymous-access-${anonAccessCount}`;
+    anonAccessTokenCount += 1;
+    return `anonymous-access-${anonAccessTokenCount}`;
   };
 
-  const generatePasswordAccessToken = (username, password) => {
-    passwordAccessCount += 1;
-    return `${username}-${password}-access-${passwordAccessCount}`;
+  const generateAccessToken = username => {
+    accessTokenCount += 1;
+    return `${username}-access-${accessTokenCount}`;
   };
 
-  const generatePasswordRefreshToken = (username, password) => {
-    passwordRefreshCount += 1;
-    return `${username}-${password}-refresh-${passwordRefreshCount}`;
+  const generateRefreshToken = username => {
+    refreshTokenCount += 1;
+    return `${username}-refresh-${refreshTokenCount}`;
   };
 
   // Public
@@ -52,7 +52,7 @@ const createTokenStore = () => {
     return token.token;
   };
 
-  const createPasswordToken = (username, password) => {
+  const createTokenWithCredentials = (username, password) => {
     const user = _.find(knownUsers, u => _.isEqual(u, [username, password]));
 
     if (!user) {
@@ -61,14 +61,13 @@ const createTokenStore = () => {
 
     const token = {
       token: {
-        access_token: generatePasswordAccessToken(username, password),
-        refresh_token: generatePasswordRefreshToken(username, password),
+        access_token: generateAccessToken(username),
+        refresh_token: generateRefreshToken(username),
         token_type: 'bearer',
         expires_in: 86400,
       },
       user: {
         username,
-        password,
       },
     };
     tokens.push(token);
@@ -88,15 +87,29 @@ const createTokenStore = () => {
     });
   };
 
-  const revokePasswordToken = refreshToken =>
+  const revokeRefreshToken = refreshToken =>
     _.remove(tokens, t => t.token.refresh_token === refreshToken);
 
-  const freshPasswordToken = refreshToken => {
-    const existingToken = revokePasswordToken(refreshToken);
+  const freshToken = refreshToken => {
+    const existingToken = revokeRefreshToken(refreshToken);
 
     if (existingToken.length) {
-      const { username, password } = existingToken[0].user;
-      return createPasswordToken(username, password);
+      const { username } = existingToken[0].user;
+
+      const token = {
+        token: {
+          access_token: generateAccessToken(username),
+          refresh_token: generateRefreshToken(username),
+          token_type: 'bearer',
+          expires_in: 86400,
+        },
+        user: {
+          username,
+        },
+      };
+      tokens.push(token);
+
+      return token.token;
     }
 
     return null;
@@ -104,9 +117,9 @@ const createTokenStore = () => {
 
   return {
     createAnonToken,
-    createPasswordToken,
-    freshPasswordToken,
-    revokePasswordToken,
+    createTokenWithCredentials,
+    freshToken,
+    revokeRefreshToken,
     validToken,
     expireAccessToken,
   };
