@@ -8,6 +8,10 @@ const createTokenStore = () => {
 
   const knownUsers = [['joe.dunphy@example.com', 'secret-joe']];
 
+  const knownAuthorizationCodes = [
+    { code: 'flex-authorization-code', username: 'joe.dunphy@example.com' },
+  ];
+
   // Private
 
   const generateAnonAccessToken = () => {
@@ -75,6 +79,30 @@ const createTokenStore = () => {
     return token.token;
   };
 
+  const createTokenWithAuthorizationCode = authorizationCode => {
+    const knownCode = _.find(knownAuthorizationCodes, ({ code }) => code === authorizationCode);
+
+    if (!knownCode) {
+      return null;
+    }
+
+    const { username } = knownCode;
+    const token = {
+      token: {
+        access_token: generateAccessToken(username),
+        refresh_token: generateRefreshToken(username),
+        token_type: 'bearer',
+        expires_in: 86400,
+      },
+      user: {
+        username,
+      },
+    };
+    tokens.push(token);
+
+    return token.token;
+  };
+
   const expireAccessToken = accessToken => {
     _.map(tokens, t => {
       const { token } = t;
@@ -118,6 +146,7 @@ const createTokenStore = () => {
   return {
     createAnonToken,
     createTokenWithCredentials,
+    createTokenWithAuthorizationCode,
     freshToken,
     revokeRefreshToken,
     validToken,

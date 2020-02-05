@@ -334,6 +334,16 @@ describe('new SharetribeSdk', () => {
     );
   });
 
+  it('logs in with an authorization code', () => {
+    const { sdk, sdkTokenStore } = createSdk();
+
+    return sdk.login({ code: 'flex-authorization-code' }).then(() => {
+      const { access_token, refresh_token } = sdkTokenStore.getToken();
+      expect(access_token).toEqual('joe.dunphy@example.com-access-1');
+      expect(refresh_token).toEqual('joe.dunphy@example.com-refresh-1');
+    });
+  });
+
   it('revokes token (a.k.a logout)', () => {
     const { sdk, sdkTokenStore } = createSdk();
 

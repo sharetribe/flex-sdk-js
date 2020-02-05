@@ -32,6 +32,8 @@ export const token = (config, resolve, reject, fakeTokenStore) => {
       res = fakeTokenStore.createAnonToken();
     } else if (formData.grant_type === 'password') {
       res = fakeTokenStore.createTokenWithCredentials(formData.username, formData.password);
+    } else if (formData.grant_type === 'authorization_code') {
+      res = fakeTokenStore.createTokenWithAuthorizationCode(formData.code);
     } else if (formData.grant_type === 'refresh_token') {
       res = fakeTokenStore.freshToken(formData.refresh_token);
     }
