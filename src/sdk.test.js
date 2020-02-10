@@ -636,6 +636,8 @@ describe('new SharetribeSdk', () => {
           .then(authInfo => {
             // No auth info yet.
             expect(authInfo.grantType).toBeUndefined();
+            expect(authInfo.isAnonymous).toBeUndefined();
+            expect(authInfo.scopes).toBeUndefined();
           })
           .then(() =>
             sdk.marketplace
@@ -644,6 +646,8 @@ describe('new SharetribeSdk', () => {
               .then(authInfo => {
                 // Anonymous token
                 expect(authInfo.grantType).toEqual('client_credentials');
+                expect(authInfo.isAnonymous).toEqual(true);
+                expect(authInfo.scopes).toEqual(['public-read']);
               })
           )
           .then(() =>
@@ -653,6 +657,8 @@ describe('new SharetribeSdk', () => {
               .then(authInfo => {
                 // Login token
                 expect(authInfo.grantType).toEqual('refresh_token');
+                expect(authInfo.isAnonymous).toEqual(false);
+                expect(authInfo.scopes).toEqual(['user']);
               })
           )
           .then(() =>
@@ -662,6 +668,8 @@ describe('new SharetribeSdk', () => {
               .then(authInfo => {
                 // Logout
                 expect(authInfo.grantType).toBeUndefined();
+                expect(authInfo.isAnonymous).toBeUndefined();
+                expect(authInfo.scopes).toBeUndefined();
               })
           )
           .then(() =>
@@ -671,6 +679,8 @@ describe('new SharetribeSdk', () => {
               .then(authInfo => {
                 // Logging out already logged out user does nothing
                 expect(authInfo.grantType).toBeUndefined();
+                expect(authInfo.isAnonymous).toBeUndefined();
+                expect(authInfo.scopes).toBeUndefined();
               })
           )
       );

@@ -49,6 +49,7 @@ const createTokenStore = () => {
         access_token: generateAnonAccessToken(),
         token_type: 'bearer',
         expires_in: 86400,
+        scope: 'public-read',
       },
     };
     tokens.push(token);
@@ -69,6 +70,7 @@ const createTokenStore = () => {
         refresh_token: generateRefreshToken(username),
         token_type: 'bearer',
         expires_in: 86400,
+        scope: 'user',
       },
       user: {
         username,
@@ -93,6 +95,7 @@ const createTokenStore = () => {
         refresh_token: generateRefreshToken(username),
         token_type: 'bearer',
         expires_in: 86400,
+        scope: 'user:limited',
       },
       user: {
         username,
