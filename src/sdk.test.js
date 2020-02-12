@@ -269,7 +269,7 @@ describe('new SharetribeSdk', () => {
           .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
           .then(() => {
             expect(sdkTokenStore.getToken().access_token).toEqual(
-              'joe.dunphy@example.com-secret-joe-access-1'
+              'joe.dunphy@example.com-access-1'
             );
           });
       })
@@ -283,14 +283,12 @@ describe('new SharetribeSdk', () => {
     return report(
       sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
         const { access_token } = sdkTokenStore.getToken();
-        expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
+        expect(access_token).toEqual('joe.dunphy@example.com-access-1');
 
         adapterTokenStore.expireAccessToken(access_token);
 
         return sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(res => {
-          expect(sdkTokenStore.getToken().access_token).toEqual(
-            'joe.dunphy@example.com-secret-joe-access-2'
-          );
+          expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-access-2');
 
           const resource = res.data.data;
           const attrs = resource.attributes;
@@ -336,15 +334,23 @@ describe('new SharetribeSdk', () => {
     );
   });
 
+  it('logs in with an authorization code', () => {
+    const { sdk, sdkTokenStore } = createSdk();
+
+    return sdk.login({ code: 'flex-authorization-code' }).then(() => {
+      const { access_token, refresh_token } = sdkTokenStore.getToken();
+      expect(access_token).toEqual('joe.dunphy@example.com-access-1');
+      expect(refresh_token).toEqual('joe.dunphy@example.com-refresh-1');
+    });
+  });
+
   it('revokes token (a.k.a logout)', () => {
     const { sdk, sdkTokenStore } = createSdk();
 
     // First, login
     return report(
       sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
-        expect(sdkTokenStore.getToken().access_token).toEqual(
-          'joe.dunphy@example.com-secret-joe-access-1'
-        );
+        expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-access-1');
 
         // Revoke token
         return sdk.logout().then(res => {
@@ -367,7 +373,7 @@ describe('new SharetribeSdk', () => {
     return report(
       sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
         const { access_token } = sdkTokenStore.getToken();
-        expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
+        expect(access_token).toEqual('joe.dunphy@example.com-access-1');
 
         adapterTokenStore.expireAccessToken(access_token);
 
@@ -392,10 +398,10 @@ describe('new SharetribeSdk', () => {
     return report(
       sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
         const { access_token, refresh_token } = sdkTokenStore.getToken();
-        expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
+        expect(access_token).toEqual('joe.dunphy@example.com-access-1');
 
         adapterTokenStore.expireAccessToken(access_token);
-        adapterTokenStore.revokePasswordToken(refresh_token);
+        adapterTokenStore.revokeRefreshToken(refresh_token);
 
         // Revoke token
         return sdk.logout().then(() => {
@@ -419,10 +425,10 @@ describe('new SharetribeSdk', () => {
     return report(
       sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
         const { access_token, refresh_token } = sdkTokenStore.getToken();
-        expect(access_token).toEqual('joe.dunphy@example.com-secret-joe-access-1');
+        expect(access_token).toEqual('joe.dunphy@example.com-access-1');
 
         adapterTokenStore.expireAccessToken(access_token);
-        adapterTokenStore.revokePasswordToken(refresh_token);
+        adapterTokenStore.revokeRefreshToken(refresh_token);
 
         // Revoke token
         return sdk
@@ -630,6 +636,8 @@ describe('new SharetribeSdk', () => {
           .then(authInfo => {
             // No auth info yet.
             expect(authInfo.grantType).toBeUndefined();
+            expect(authInfo.isAnonymous).toBeUndefined();
+            expect(authInfo.scopes).toBeUndefined();
           })
           .then(() =>
             sdk.marketplace
@@ -638,6 +646,8 @@ describe('new SharetribeSdk', () => {
               .then(authInfo => {
                 // Anonymous token
                 expect(authInfo.grantType).toEqual('client_credentials');
+                expect(authInfo.isAnonymous).toEqual(true);
+                expect(authInfo.scopes).toEqual(['public-read']);
               })
           )
           .then(() =>
@@ -647,6 +657,8 @@ describe('new SharetribeSdk', () => {
               .then(authInfo => {
                 // Login token
                 expect(authInfo.grantType).toEqual('refresh_token');
+                expect(authInfo.isAnonymous).toEqual(false);
+                expect(authInfo.scopes).toEqual(['user']);
               })
           )
           .then(() =>
@@ -656,6 +668,8 @@ describe('new SharetribeSdk', () => {
               .then(authInfo => {
                 // Logout
                 expect(authInfo.grantType).toBeUndefined();
+                expect(authInfo.isAnonymous).toBeUndefined();
+                expect(authInfo.scopes).toBeUndefined();
               })
           )
           .then(() =>
@@ -665,6 +679,8 @@ describe('new SharetribeSdk', () => {
               .then(authInfo => {
                 // Logging out already logged out user does nothing
                 expect(authInfo.grantType).toBeUndefined();
+                expect(authInfo.isAnonymous).toBeUndefined();
+                expect(authInfo.scopes).toBeUndefined();
               })
           )
       );

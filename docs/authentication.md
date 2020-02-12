@@ -28,25 +28,19 @@ store](./token-store.md#memory-store).
 
 **`sdk.authInfo() : Promise(Object)`**
 
-Returns a Promise with an Object as a value. The object may contain a
-`grantType` field with either `'client_credentials'`,
-`'refresh_token'` as a value. The different values have the following
-meanings:
+Returns a Promise with an Object as a value. The object may contain two fields:
 
-* No grant type: user hasn't yet authenticated itself (i.e. hasn't
-  done any requests to the API).
-* Grant type `'client_credentials'`: user has authenticated as an
-  anonymous user (i.e. has not logged in)
-* Grant type `'refresh_token'`: user has logged in.
+* `scopes`: an array containing the scopes associated with the currently stored token
+* `isAnonymous`: a boolean denoting if the currently stored token only allows public read access
 
-To determine if the user is logged in, check if `grantType` equals
-`'refresh_token'`.
+To determine if the user is logged in, check if `isAnonymous` equals
+`false`.
 
 **Example:**
 
 ```js
 sdk.authInfo().then(authInfo => {
-  if (authInfo && authInfo.grantType === 'refresh_token') {
+  if (authInfo && authInfo.isAnonymous === false) {
     console.log("User is logged in.");
   } else {
     console.log("User is NOT logged in.")
@@ -72,7 +66,7 @@ current authentication status.
 **Example:**
 
 ```js
-const isLoggedIn = authInfo => authInfo && authInfo.grantType === 'refresh_token';
+const isLoggedIn = authInfo => authInfo && authInfo.isAnonymous === false;
 
 sdk.authInfo().then(authInfo => {
     console.log(`Logged in: ${isLoggedIn(authInfo)}`)

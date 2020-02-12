@@ -1,7 +1,11 @@
 /**
    Reads current authentication token from the tokenStore and returns
-   information whether the user is currently logged in with anon token
-   or password token.
+   the following information:
+
+   - scopes: list of scopes associated with the access token in store
+   - isAnonymous: boolean value indicating if the access token only grants
+     access to publicly read data from API
+
 
    Changes to `ctx`:
 
@@ -17,9 +21,15 @@ export default class AuthInfo {
         .then(tokenStore.getToken)
         .then(storedToken => {
           if (storedToken) {
-            const grantType = storedToken.refresh_token ? 'refresh_token' : 'client_credentials';
+            const tokenScope = storedToken.scope;
+            const scopes = tokenScope.split(' ');
+            const isAnonymous = tokenScope === 'public-read';
 
-            return { ...ctx, res: { grantType } };
+            // Deprecated attribute, maintained here for client implementations
+            // that rely on this attribute
+            const grantType = isAnonymous ? 'client_credentials' : 'refresh_token';
+
+            return { ...ctx, res: { scopes, isAnonymous, grantType } };
           }
 
           return { ...ctx, res: {} };

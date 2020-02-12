@@ -8,19 +8,35 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.9.0] - 2020-02-12
+
+### Added
+
+- Support for logging in using an authorization code
+  [#107](https://github.com/sharetribe/flex-sdk-js/pull/107)
+
+### Changed
+
+- `sdk.authInfo` return value has been updated
+   [#107](https://github.com/sharetribe/flex-sdk-js/pull/107). The `grantType`
+   attribute has been deprecated and now the returned attributes are:
+  - `isAnonymous`: a boolean denoting if the currently stored token only allows
+     public read access
+  - `scopes`: an array containing the scopes associated with the access token
+
 ## [v1.8.0] - 2019-12-20
 
 ### Changed
 
- - Add endpoint [#105](https://github.com/sharetribe/flex-sdk-js/pull/105)
-    - `sdk.stripeAccount.fetch(/* ... */)`
+- Add endpoint [#105](https://github.com/sharetribe/flex-sdk-js/pull/105)
+  - `sdk.stripeAccount.fetch(/* ... */)`
 
 ## [v1.7.0] - 2019-12-05
 
 ### Changed
 
- - Remove endpoint [#104](https://github.com/sharetribe/flex-sdk-js/pull/103)
-    - `sdk.stripeAccountData.fetch(/* ... */)`
+- Remove endpoint [#104](https://github.com/sharetribe/flex-sdk-js/pull/103)
+  - `sdk.stripeAccountData.fetch(/* ... */)`
 
 ## [v1.6.0] - 2019-12-05
 

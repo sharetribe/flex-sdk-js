@@ -12,8 +12,9 @@ import SaveToken from './interceptors/save_token';
 import FetchAuthTokenFromApi from './interceptors/fetch_auth_token_from_api';
 import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
 import AddClientIdToParams from './interceptors/add_client_id_to_params';
+import AddGrantTypeToParams from './interceptors/add_grant_type_to_params';
+import AddScopeToParams from './interceptors/add_scope_to_params';
 import AuthInfo from './interceptors/auth_info';
-import defaultParams from './interceptors/default_params';
 import MultipartRequest from './interceptors/multipart_request';
 import TransitRequest from './interceptors/transit_request';
 import TransitResponse from './interceptors/transit_response';
@@ -488,8 +489,9 @@ const authenticateInterceptors = [
 ];
 
 const loginInterceptors = [
-  defaultParams({ grant_type: 'password', scope: 'user' }),
   new AddClientIdToParams(),
+  new AddGrantTypeToParams(),
+  new AddScopeToParams(),
   new SaveToken(),
   new AddAuthTokenResponse(),
 ];
