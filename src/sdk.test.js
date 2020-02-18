@@ -685,6 +685,39 @@ describe('new SharetribeSdk', () => {
           )
       );
     });
+
+    it('supports anonymous tokens without scope attribute', () => {
+      const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
+      const anonToken = adapterTokenStore.createAnonToken();
+      const { scope, ...rest } = anonToken;
+      sdkTokenStore.setToken({ ...rest });
+
+      return report(
+        sdk.authInfo().then(authInfo => {
+          expect(authInfo.grantType).toEqual('client_credentials');
+          expect(authInfo.isAnonymous).toEqual(true);
+          expect(authInfo.scopes).toBeUndefined();
+        })
+      );
+    });
+
+    it('supports access tokens without scope attribute', () => {
+      const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
+      const accessToken = adapterTokenStore.createTokenWithCredentials(
+        'joe.dunphy@example.com',
+        'secret-joe'
+      );
+      const { scope, ...rest } = accessToken;
+      sdkTokenStore.setToken({ ...rest });
+
+      return report(
+        sdk.authInfo().then(authInfo => {
+          expect(authInfo.grantType).toEqual('refresh_token');
+          expect(authInfo.isAnonymous).toEqual(false);
+          expect(authInfo.scopes).toBeUndefined();
+        })
+      );
+    });
   });
 
   it('allows sending query params in POST request (such as `expand=true`)', () => {
