@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.9.1] - 2020-02-18
+
+### Fixed
+
+- Handling old API tokens that lack the `scope` attribute in `sdk.authInfo`
+  [108](https://github.com/sharetribe/flex-sdk-js/pull/108)
+
 ## [v1.9.0] - 2020-02-12
 
 ### Added
