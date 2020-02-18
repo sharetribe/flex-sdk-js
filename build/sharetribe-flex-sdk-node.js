@@ -8096,14 +8096,31 @@ function () {
         return Promise.resolve().then(tokenStore.getToken).then(function (storedToken) {
           if (storedToken) {
             var tokenScope = storedToken.scope;
-            var scopes = tokenScope.split(' ');
-            var isAnonymous = tokenScope === 'public-read'; // Deprecated attribute, maintained here for client implementations
-            // that rely on this attribute
 
+            if (tokenScope) {
+              var scopes = tokenScope.split(' ');
+
+              var _isAnonymous = tokenScope === 'public-read'; // Deprecated attribute, maintained here for client implementations
+              // that rely on this attribute
+
+
+              var _grantType = _isAnonymous ? 'client_credentials' : 'refresh_token';
+
+              return _objectSpread({}, ctx, {
+                res: {
+                  scopes: scopes,
+                  isAnonymous: _isAnonymous,
+                  grantType: _grantType
+                }
+              });
+            } // Support old tokens that are stored in the client's token store
+            // and possibly do not have the scope attribute
+
+
+            var isAnonymous = !storedToken.refresh_token;
             var grantType = isAnonymous ? 'client_credentials' : 'refresh_token';
             return _objectSpread({}, ctx, {
               res: {
-                scopes: scopes,
                 isAnonymous: isAnonymous,
                 grantType: grantType
               }
