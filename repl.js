@@ -9,90 +9,90 @@ const repl = require('repl');
 const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
 const sharetribeSdk = require('./src/index');
+const fs = require('fs');
 
 // Welcome message when Playground starts
-const printWelcomeMessage = raw =>
-      _ => {
-        colors.setTheme({
-          h1: 'yellow',
-          h2: 'yellow',
-          inline: 'gray',
-          block: 'gray',
-        });
+const printWelcomeMessage = raw => {
+  colors.setTheme({
+    h1: 'yellow',
+    h2: 'yellow',
+    inline: 'gray',
+    block: 'gray',
+  });
 
-        if (raw) {
-          console.log('');
-          console.log('  # Playground (raw mode)'.h1);
-          console.log('  ');
-          console.log('  With the Marketplace API Playground you can test and try out the SDK with real results from the API.');
-          console.log('  ');
-          console.log('  ## Globals'.h2);
-          console.log('  ');
-          console.log('  The following globals are available:');
-          console.log('  ');
-          console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
-          console.log(`  - ${'`printResponse`'.inline}: Helper function for pretty printing the API response.`);
-          console.log('  ');
-          console.log('  ## Example usage'.h2);
-          console.log('  ');
-          console.log('  Create new SDK instance:');
-          console.log('  ');
-          console.log('  ```'.block);
-          console.log('  const clientId = "<your clientId here>";'.block);
-          console.log('  const sdk = sharetribeSdk.createInstance({'.block);
-          console.log('    clientId,'.block);
-          console.log('    tokenStore: sharetribeSdk.tokenStore.memoryStore()'.block);
-          console.log('  });'.block);
-          console.log('  ```'.block);
-          console.log('  ');
-          console.log('  Print marketplace information:');
-          console.log('  ');
-          console.log('  sdk.marketplace.show().then(printResponse);'.block);
-          console.log('  ');
-          console.log('  Fetch 10 listings:');
-          console.log('  ');
-          console.log('  sdk.listings.query({per_page: 10}).then(response => {'.block);
-          console.log('    console.log("Fetched " + response.data.data.length + " listings.");'.block);
-          console.log('    response.data.data.forEach(listing => {'.block);
-          console.log('      console.log(listing.attributes.title);'.block);
-          console.log('    });'.block);
-          console.log('  });'.block);
-          console.log('  ');
-          console.log(`  Type ${'`.exit`'.inline} when you want to exit the Playground`);
-        } else {
-          console.log('');
-          console.log('  # Playground'.h1);
-          console.log('  ');
-          console.log('  With the Marketplace API Playground you can test and try out the SDK with real results from the API.');
-          console.log('  ');
-          console.log('  ## Globals'.h2);
-          console.log('  ');
-          console.log('  The following globals are available:');
-          console.log('  ');
-          console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
-          console.log(`  - ${'`sdk`'.inline}: An SDK instance initialized with your client ID`);
-          console.log(`  - ${'`printResponse`'.inline}: Helper function for pretty printing the API response.`);
-          console.log('  ');
-          console.log('  ## Example usage'.h2);
-          console.log('  ');
-          console.log('  Print marketplace information:');
-          console.log('  ');
-          console.log('  sdk.marketplace.show().then(printResponse);'.block);
-          console.log('  ');
-          console.log('  Fetch 10 listings:');
-          console.log('  ');
-          console.log('  ```'.block);
-          console.log('  sdk.listings.query({per_page: 10}).then(response => {'.block);
-          console.log('    console.log("Fetched " + response.data.data.length + " listings.");'.block);
-          console.log('    response.data.data.forEach(listing => {'.block);
-          console.log('      console.log(listing.attributes.title);'.block);
-          console.log('    });'.block);
-          console.log('  });'.block);
-          console.log('  ```'.block);
-          console.log('  ');
-          console.log(`  Type ${'`.exit`'.inline} when you want to exit the Playground`);
-        };
-      }
+  if (raw) {
+    console.log('');
+    console.log('  # Playground (raw mode)'.h1);
+    console.log('  ');
+    console.log('  With the Marketplace API Playground you can test and try out the SDK with real results from the API.');
+    console.log('  ');
+    console.log('  ## Globals'.h2);
+    console.log('  ');
+    console.log('  The following globals are available:');
+    console.log('  ');
+    console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
+    console.log(`  - ${'`printResponse`'.inline}: Helper function for pretty printing the API response.`);
+    console.log('  ');
+    console.log('  ## Example usage'.h2);
+    console.log('  ');
+    console.log('  Create new SDK instance:');
+    console.log('  ');
+    console.log('  ```'.block);
+    console.log('  const clientId = "<your clientId here>";'.block);
+    console.log('  const sdk = sharetribeSdk.createInstance({'.block);
+    console.log('    clientId,'.block);
+    console.log('    tokenStore: sharetribeSdk.tokenStore.memoryStore()'.block);
+    console.log('  });'.block);
+    console.log('  ```'.block);
+    console.log('  ');
+    console.log('  Print marketplace information:');
+    console.log('  ');
+    console.log('  sdk.marketplace.show().then(printResponse);'.block);
+    console.log('  ');
+    console.log('  Fetch 10 listings:');
+    console.log('  ');
+    console.log('  sdk.listings.query({per_page: 10}).then(response => {'.block);
+    console.log('    console.log("Fetched " + response.data.data.length + " listings.");'.block);
+    console.log('    response.data.data.forEach(listing => {'.block);
+    console.log('      console.log(listing.attributes.title);'.block);
+    console.log('    });'.block);
+    console.log('  });'.block);
+    console.log('  ');
+    console.log(`  Type ${'`.exit`'.inline} when you want to exit the Playground`);
+  } else {
+    console.log('');
+    console.log('  # Playground'.h1);
+    console.log('  ');
+    console.log('  With the Marketplace API Playground you can test and try out the SDK with real results from the API.');
+    console.log('  ');
+    console.log('  ## Globals'.h2);
+    console.log('  ');
+    console.log('  The following globals are available:');
+    console.log('  ');
+    console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
+    console.log(`  - ${'`sdk`'.inline}: An SDK instance initialized with your client ID`);
+    console.log(`  - ${'`printResponse`'.inline}: Helper function for pretty printing the API response.`);
+    console.log('  ');
+    console.log('  ## Example usage'.h2);
+    console.log('  ');
+    console.log('  Print marketplace information:');
+    console.log('  ');
+    console.log('  sdk.marketplace.show().then(printResponse);'.block);
+    console.log('  ');
+    console.log('  Fetch 10 listings:');
+    console.log('  ');
+    console.log('  ```'.block);
+    console.log('  sdk.listings.query({per_page: 10}).then(response => {'.block);
+    console.log('    console.log("Fetched " + response.data.data.length + " listings.");'.block);
+    console.log('    response.data.data.forEach(listing => {'.block);
+    console.log('      console.log(listing.attributes.title);'.block);
+    console.log('    });'.block);
+    console.log('  });'.block);
+    console.log('  ```'.block);
+    console.log('  ');
+    console.log(`  Type ${'`.exit`'.inline} when you want to exit the Playground`);
+  }
+};
 
 // CLI Usage information
 const optionDefinitions = [
@@ -127,6 +127,12 @@ const optionDefinitions = [
     name: 'raw',
     description: 'Start the playground without initializing the SDK.',
     type: Boolean
+  },
+  {
+    name: 'script',
+    description: 'Execute a playground script, i.e. a file that contains one or more playground commands.',
+    typeLabel: '{underline script_file.js}',
+    type: String
   }
 ];
 
@@ -157,20 +163,50 @@ if (options.help || (!options.raw && options.clientid == null)) {
   process.exit();
 };
 
-const startRepl = (sharetribeSdk, sdk) =>
-      _ => {
-        // Start REPL
-        const replInstance = repl.start('> ');
-        // Attach history
-        replInstance.setupHistory('./.repl_history', (err, repl) => null);
+var scriptSrc;
+if (options.script) {
+  scriptSrc = fs.createReadStream(options.script);
+} else {
+  scriptSrc = null;
+}
 
-        // Assign SDK as global
-        const ctx = replInstance.context;
-        ctx.sharetribeSdk = sharetribeSdk;
-        ctx.printResponse = printResponse;
-        if (sdk) {
-          ctx.sdk = sdk;
+const startRepl = (sharetribeSdk, sdk, rawMode, scriptSrc) =>
+      _ => {
+        if (scriptSrc) {
+          // Setup context
+          global.sharetribeSdk = sharetribeSdk;
+          global.printResponse = printResponse;
+          if (sdk) {
+            global.sdk = sdk;
+          }
+
+          // Start REPL
+          console.log('Executing script...');
+          console.log();
+          const replInstance = repl.start({
+            prompt: '> ',
+            input: scriptSrc,
+            output: process.stdout,
+            useGlobal: true,
+            writer: result => result instanceof Promise ? '' : util.inspect(result)
+          });
+        } else {
+          printWelcomeMessage(rawMode);
+          // Start REPL
+          const replInstance = repl.start('> ');
+
+          // Attach history
+          replInstance.setupHistory('./.repl_history', (err, repl) => null);
+
+          // Setup context
+          const ctx = replInstance.context;
+          ctx.sharetribeSdk = sharetribeSdk;
+          ctx.printResponse = printResponse;
+          if (sdk) {
+            ctx.sdk = sdk;
+          }
         }
+
       }
 
 const exitOnFailure = msg =>
@@ -199,8 +235,8 @@ if (options.clientid) {
           password: options.password
         })
           .catch(exitOnFailure(`Unable to log in with the email: ${options.user} and password: ${options.password}`))
-          .then(printWelcomeMessage(false))
-          .then(startRepl(sharetribeSdk, sdk))
+          // .then(printWelcomeMessage(false))
+          .then(startRepl(sharetribeSdk, sdk, false, scriptSrc))
       });
 
   // No user auth, just Client ID
@@ -209,13 +245,13 @@ if (options.clientid) {
     sdk.marketplace.show()
       .then(result => console.log(`Successfully connected to ${result.data.data.attributes.name} marketplace.`))
       .catch(exitOnFailure(`Unable to access the Marketplace API with the given Client ID: ${options.clientid}.`))
-      .then(printWelcomeMessage(false))
-      .then(startRepl(sharetribeSdk, sdk));
+      // .then(printWelcomeMessage(false))
+      .then(startRepl(sharetribeSdk, sdk, false, scriptSrc));
 
   }
 // Raw mode
 } else {
-  printWelcomeMessage(true)();
-  startRepl(sharetribeSdk, null)();
+  // printWelcomeMessage(true)();
+  startRepl(sharetribeSdk, null, true, scriptSrc)();
 }
 
