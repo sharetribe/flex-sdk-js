@@ -10,7 +10,6 @@ const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
 const sharetribeSdk = require('./src/index');
 
-
 // Welcome message when Playground starts
 const printWelcomeMessage = raw =>
       _ => {
@@ -33,6 +32,7 @@ const printWelcomeMessage = raw =>
           console.log('  The following globals are available:');
           console.log('  ');
           console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
+          console.log(`  - ${'`printResponse`'.inline}: Helper function for pretty printing the API response.`);
           console.log('  ');
           console.log('  ## Example usage'.h2);
           console.log('  ');
@@ -46,16 +46,18 @@ const printWelcomeMessage = raw =>
           console.log('  });'.block);
           console.log('  ```'.block);
           console.log('  ');
+          console.log('  Print marketplace information:');
+          console.log('  ');
+          console.log('  sdk.marketplace.show().then(printResponse);'.block);
+          console.log('  ');
           console.log('  Fetch 10 listings:');
           console.log('  ');
-          console.log('  ```'.block);
           console.log('  sdk.listings.query({per_page: 10}).then(response => {'.block);
           console.log('    console.log("Fetched " + response.data.data.length + " listings.");'.block);
           console.log('    response.data.data.forEach(listing => {'.block);
           console.log('      console.log(listing.attributes.title);'.block);
           console.log('    });'.block);
           console.log('  });'.block);
-          console.log('  ```'.block);
           console.log('  ');
           console.log(`  Type ${'`.exit`'.inline} when you want to exit the Playground`);
           console.log('  ');
@@ -73,8 +75,13 @@ const printWelcomeMessage = raw =>
           console.log('  ');
           console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
           console.log(`  - ${'`sdk`'.inline}: An SDK instance initialized with your client ID`);
+          console.log(`  - ${'`printResponse`'.inline}: Helper function for pretty printing the API response.`);
           console.log('  ');
           console.log('  ## Example usage'.h2);
+          console.log('  ');
+          console.log('  Print marketplace information:');
+          console.log('  ');
+          console.log('  sdk.marketplace.show().then(printResponse);'.block);
           console.log('  ');
           console.log('  Fetch 10 listings:');
           console.log('  ');
@@ -142,6 +149,11 @@ const printUsage = _ => {
   ]));
 };
 
+const printResponse = response => {
+  console.log(JSON.stringify(response.data, null, 4));
+  return response;
+}
+
 // Parse command line args
 //
 const options = commandLineArgs(optionDefinitions);
@@ -162,6 +174,7 @@ const startRepl = (sharetribeSdk, sdk) =>
         // Assign SDK as global
         const ctx = replInstance.context;
         ctx.sharetribeSdk = sharetribeSdk;
+        ctx.printResponse = printResponse;
         if (sdk) {
           ctx.sdk = sdk;
         }
