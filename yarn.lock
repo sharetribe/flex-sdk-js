@@ -7405,11 +7405,6 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-repl.history@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/repl.history/-/repl.history-0.1.4.tgz#80367171f3781d6e4299c71758c253097f5d5832"
-  integrity sha1-gDZxcfN4HW5CmccXWMJTCX9dWDI=
-
 request-promise-core@1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/request-promise-core/-/request-promise-core-1.1.2.tgz#339f6aababcafdb31c799ff158700336301d3346"

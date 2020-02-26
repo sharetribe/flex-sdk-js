@@ -22,7 +22,6 @@ const printWelcomeMessage = raw =>
 
         if (raw) {
           console.log('');
-          console.log('');
           console.log('  # Playground (raw mode)'.h1);
           console.log('  ');
           console.log('  With the Marketplace API Playground you can test and try out the SDK with real results from the API.');
@@ -60,10 +59,7 @@ const printWelcomeMessage = raw =>
           console.log('  });'.block);
           console.log('  ');
           console.log(`  Type ${'`.exit`'.inline} when you want to exit the Playground`);
-          console.log('  ');
-          console.log('  Hit [Enter] when you\'re ready to start!')
         } else {
-          console.log('');
           console.log('');
           console.log('  # Playground'.h1);
           console.log('  ');
@@ -95,8 +91,6 @@ const printWelcomeMessage = raw =>
           console.log('  ```'.block);
           console.log('  ');
           console.log(`  Type ${'`.exit`'.inline} when you want to exit the Playground`);
-          console.log('  ');
-          console.log('  Hit [Enter] when you\'re ready to start!');
         };
       }
 
@@ -168,8 +162,7 @@ const startRepl = (sharetribeSdk, sdk) =>
         // Start REPL
         const replInstance = repl.start('> ');
         // Attach history
-        // TODO, upgrade repl.history, it's accessing deprecated internals
-        require('repl.history')(replInstance, './.repl_history');
+        replInstance.setupHistory('./.repl_history', (err, repl) => null);
 
         // Assign SDK as global
         const ctx = replInstance.context;
@@ -225,3 +218,4 @@ if (options.clientid) {
   printWelcomeMessage(true)();
   startRepl(sharetribeSdk, null)();
 }
+
