@@ -94,6 +94,41 @@ const printWelcomeMessage = raw =>
       }
 
 // CLI Usage information
+const optionDefinitions = [
+  {
+    name: 'help',
+    description: 'Display this usage guide.',
+    alias: 'h',
+    type: Boolean
+  },
+  {
+    name: 'clientid',
+    description: 'Your Marketplace API Client ID to initialize the SDK with. You create your Client ID in Flex Console: {underline https://flex-console.sharetribe.com/applications}.',
+    alias: 'c',
+    typeLabel: '{underline ID}',
+    type: String
+  },
+  {
+    name: 'user',
+    description: 'The email of the user to log in with. The SDK is initialized in an authenticated state.',
+    alias: 'u',
+    typeLabel: '{underline email}',
+    type: String
+  },
+  {
+    name: 'password',
+    description: 'The password of the user to log in with. The SDK is initialized in an authenticated state.',
+    alias: 's',
+    typeLabel: '{underline password}',
+    type: String
+  },
+  {
+    name: 'raw',
+    description: 'Start the playground without initializing the SDK.',
+    type: Boolean
+  }
+];
+
 const printUsage = _ => {
   console.log(commandLineUsage([
     {
@@ -102,53 +137,13 @@ const printUsage = _ => {
     },
     {
       header: 'Options',
-      optionList: [
-        {
-          name: 'help',
-          description: 'Display this usage guide.',
-          alias: 'h',
-          type: Boolean
-        },
-        {
-          name: 'clientid',
-          description: 'Your Marketplace API Client ID to initialize the SDK with. You create your Client ID in Flex Console: {underline https://flex-console.sharetribe.com/applications}.',
-          alias: 'c',
-          typeLabel: '{underline ID}',
-          type: String
-        },
-        {
-          name: 'user',
-          description: 'The email of the user to log in with. The SDK is initialized in an authenticated state.',
-          alias: 'u',
-          typeLabel: '{underline email}',
-          type: String
-        },
-        {
-          name: 'password',
-          description: 'The password of the user to log in with. The SDK is initialized in an authenticated state.',
-          alias: 'pwd',
-          typeLabel: '{underline password}',
-          type: String
-        },
-        {
-          name: 'raw',
-          description: 'Start the playground without initializing the SDK.',
-          type: Boolean
-        }
-      ]
+      optionList: optionDefinitions
     }
   ]));
 };
 
 // Parse command line args
 //
-const optionDefinitions = [
-  { name: 'clientid', alias: 'c', type: String },
-  { name: 'user', alias: 'u', type: String },
-  { name: 'password', alias: 'p', type: String },
-  { name: 'raw', type: Boolean },
-  { name: 'help', alias: 'h', type: Boolean }
-];
 const options = commandLineArgs(optionDefinitions);
 
 if (options.help || (!options.raw && options.clientid == null)) {
@@ -161,7 +156,7 @@ const startRepl = (sharetribeSdk, sdk) =>
         // Start REPL
         const replInstance = repl.start('> ');
         // Attach history
-        // TODO, upgrade repl.history, is't accessing deprecated internals
+        // TODO, upgrade repl.history, it's accessing deprecated internals
         require('repl.history')(replInstance, './.repl_history');
 
         // Assign SDK as global
