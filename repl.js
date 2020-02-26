@@ -184,6 +184,7 @@ if (options.clientid) {
   if (options.user && options.password) {
     console.log('Initializing SDK instance with Client ID: ' + options.clientid)
     sdk.marketplace.show()
+      .then(result => console.log(`Successfully connected to ${result.data.data.attributes.name} marketplace.`))
       .catch(exitOnFailure(`Unable to access the Marketplace API with the given Client ID: ${options.clientid}.`))
       .then(_ => {
         console.log('Logging in user ' + options.user);
@@ -200,6 +201,7 @@ if (options.clientid) {
   } else {
     console.log('Initializing SDK instance with Client ID: ' + options.clientid)
     sdk.marketplace.show()
+      .then(result => console.log(`Successfully connected to ${result.data.data.attributes.name} marketplace.`))
       .catch(exitOnFailure(`Unable to access the Marketplace API with the given Client ID: ${options.clientid}.`))
       .then(printWelcomeMessage(false))
       .then(startRepl(sharetribeSdk, sdk));
