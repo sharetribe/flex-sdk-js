@@ -120,7 +120,7 @@ Executing script...
 
 > sdk.ownListings.query().then(res => {
 ...   console.log(`You have ${res.data.data.length} listings.`);
-... }).then(_ => {
+... }).then(() => {
 ...   console.log('Creating a new listing');
 ...   return sdk.ownListings.create({
 .....     title: "My new listings",

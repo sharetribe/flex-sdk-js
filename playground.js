@@ -8,10 +8,11 @@ const colors = require('colors');
 const repl = require('repl');
 const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
-const sharetribeSdk = require('./src/index');
-const {LatLng, LatLgnBounds, UUID, Money, BigDecimal} = require('./src/types');
 const fs = require('fs');
 const open = require('open');
+const util = require('util');
+const sharetribeSdk = require('./src/index');
+const {LatLng, LatLgnBounds, UUID, Money, BigDecimal} = require('./src/types');
 
 // Welcome message when Playground starts
 const printWelcomeMessage = raw => {
@@ -34,7 +35,7 @@ const printWelcomeMessage = raw => {
     console.log('  ');
     console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
     console.log(`  - ${'`printResponse`'.inline}: Helper function for pretty printing the API response.`);
-    console.log(`  - ${'`showDocs`'.inline}: Open the Marketplace API documentation in your browser.`);
+    console.log(`  - ${'`apiDocs`'.inline}: Open the Marketplace API documentation in your browser.`);
     console.log('  ');
     console.log('  ## Example usage'.h2);
     console.log('  ');
@@ -75,7 +76,7 @@ const printWelcomeMessage = raw => {
     console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
     console.log(`  - ${'`sdk`'.inline}: An SDK instance initialized with your client ID`);
     console.log(`  - ${'`printResponse`'.inline}: Helper function for pretty printing the API response.`);
-    console.log(`  - ${'`showDocs`'.inline}: Open the Marketplace API documentation in your browser.`);
+    console.log(`  - ${'`apiDocs`'.inline}: Open the Marketplace API documentation in your browser.`);
     console.log('  ');
     console.log('  ## Example usage'.h2);
     console.log('  ');
@@ -145,7 +146,7 @@ const optionDefinitions = [
   }
 ];
 
-const printUsage = _ => {
+const printUsage = () => {
   console.log(commandLineUsage([
     {
       header: 'Marketplace API Playground',
@@ -163,9 +164,9 @@ const printResponse = response => {
   return response;
 }
 
-const apiDocs = _ =>
+const apiDocs = () =>
       open('https://www.sharetribe.com/api-reference/marketplace.html?javascript#marketplace-api')
-      .then(_ => '');
+      .then(() => '');
 
 // Parse command line args
 //
@@ -181,14 +182,14 @@ if (options.help || (!options.raw && options.clientid == null)) {
   process.exit();
 };
 
-var scriptSrc;
+let scriptSrc;
 if (options.script) {
   scriptSrc = fs.createReadStream(options.script);
 } else {
   scriptSrc = null;
 }
 
-const setupContext = (ctx, sharetribeSdk, sdk) => {
+const setupContext = (ctx, sdk) => {
   ctx.sharetribeSdk = sharetribeSdk;
   if (sdk) {
     ctx.sdk = sdk;
@@ -202,18 +203,18 @@ const setupContext = (ctx, sharetribeSdk, sdk) => {
   ctx.BigDecimal = BigDecimal;
 }
 
-const startRepl = (sharetribeSdk, sdk, rawMode, scriptSrc) =>
-      _ => {
-        if (scriptSrc) {
+const startRepl = (sdk, rawMode, src) =>
+      () => {
+        if (src) {
           // Setup context
-          setupContext(global, sharetribeSdk, sdk);
+          setupContext(global, sdk);
 
           // Start REPL
           console.log('Executing script...');
           console.log();
-          const replInstance = repl.start({
+          repl.start({
             prompt: '> ',
-            input: scriptSrc,
+            input: src,
             output: process.stdout,
             useGlobal: true,
             writer: result => result instanceof Promise ? '' : util.inspect(result)
@@ -224,16 +225,16 @@ const startRepl = (sharetribeSdk, sdk, rawMode, scriptSrc) =>
           const replInstance = repl.start('> ');
 
           // Attach history
-          replInstance.setupHistory('./.repl_history', (err, repl) => null);
+          replInstance.setupHistory('./.repl_history', () => null);
 
           // Setup context
           const ctx = replInstance.context;
-          setupContext(ctx, sharetribeSdk, sdk);
+          setupContext(ctx, sdk);
         }
       }
 
 const exitOnFailure = msg =>
-      _ => {
+      () => {
         console.error(msg)
         process.exit(1);
       };
@@ -247,31 +248,31 @@ if (options.clientid) {
 
   // If user auth info is given too, log in with the user.
   if (options.user && options.password) {
-    console.log('Initializing SDK instance with Client ID: ' + options.clientid + '...')
+    console.log(`Initializing SDK instance with Client ID: ${options.clientid}...`)
     sdk.marketplace.show()
       .then(result => console.log(`Successfully connected to ${result.data.data.attributes.name} marketplace.`))
       .catch(exitOnFailure(`Unable to access the Marketplace API with the given Client ID: ${options.clientid}.`))
-      .then(_ => {
-        console.log('Logging in user ' + options.user + '...');
+      .then(() => {
+        console.log(`Logging in user ${options.user}...`);
         sdk.login({
           username: options.user,
           password: options.password
         })
           .catch(exitOnFailure(`Unable to log in with the email: ${options.user} and password: ${options.password}`))
-          .then(startRepl(sharetribeSdk, sdk, false, scriptSrc))
+          .then(startRepl(sdk, false, scriptSrc))
       });
 
   // No user auth, just Client ID
   } else {
-    console.log('Initializing SDK instance with Client ID: ' + options.clientid + '...')
+    console.log(`Initializing SDK instance with Client ID: ${options.clientid}...`)
     sdk.marketplace.show()
       .then(result => console.log(`Successfully connected to ${result.data.data.attributes.name} marketplace.`))
       .catch(exitOnFailure(`Unable to access the Marketplace API with the given Client ID: ${options.clientid}.`))
-      .then(startRepl(sharetribeSdk, sdk, false, scriptSrc));
+      .then(startRepl(sdk, false, scriptSrc));
 
   }
 // Raw mode
 } else {
-  startRepl(sharetribeSdk, null, true, scriptSrc)();
+  startRepl(null, true, scriptSrc)();
 }
 
