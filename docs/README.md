@@ -3,7 +3,7 @@
 * [Sharetribe Flex SDK for JavaScript](../README.md)
 * [Features](./features.md)
 * [Try it in browser!](./try-it-in-browser.md)
-* [Try it in command-line!](./try-it-in-command-line.md)
+* [Try it in the API Playground!](./try-it-in-the-playground.md)
 * Getting started
   * [Authentication](./authentication.md)
   * [Calling the API](./calling-the-api.md)

@@ -9,7 +9,9 @@ const repl = require('repl');
 const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
 const sharetribeSdk = require('./src/index');
+const {LatLng, LatLgnBounds, UUID, Money, BigDecimal} = require('./src/types');
 const fs = require('fs');
+const open = require('open');
 
 // Welcome message when Playground starts
 const printWelcomeMessage = raw => {
@@ -32,6 +34,7 @@ const printWelcomeMessage = raw => {
     console.log('  ');
     console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
     console.log(`  - ${'`printResponse`'.inline}: Helper function for pretty printing the API response.`);
+    console.log(`  - ${'`showDocs`'.inline}: Open the Marketplace API documentation in your browser.`);
     console.log('  ');
     console.log('  ## Example usage'.h2);
     console.log('  ');
@@ -72,6 +75,7 @@ const printWelcomeMessage = raw => {
     console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
     console.log(`  - ${'`sdk`'.inline}: An SDK instance initialized with your client ID`);
     console.log(`  - ${'`printResponse`'.inline}: Helper function for pretty printing the API response.`);
+    console.log(`  - ${'`showDocs`'.inline}: Open the Marketplace API documentation in your browser.`);
     console.log('  ');
     console.log('  ## Example usage'.h2);
     console.log('  ');
@@ -133,6 +137,11 @@ const optionDefinitions = [
     description: 'Execute a playground script, i.e. a file that contains one or more playground commands.',
     typeLabel: '{underline script_file.js}',
     type: String
+  },
+  {
+    name: 'apidocs',
+    description: 'Open the Marketplace API reference using default browser.',
+    type: Boolean
   }
 ];
 
@@ -154,9 +163,18 @@ const printResponse = response => {
   return response;
 }
 
+const apiDocs = _ =>
+      open('https://www.sharetribe.com/api-reference/marketplace.html?javascript#marketplace-api')
+      .then(_ => '');
+
 // Parse command line args
 //
 const options = commandLineArgs(optionDefinitions);
+
+if (options.apidocs) {
+  apiDocs();
+  process.exit();
+}
 
 if (options.help || (!options.raw && options.clientid == null)) {
   printUsage();
@@ -170,15 +188,25 @@ if (options.script) {
   scriptSrc = null;
 }
 
+const setupContext = (ctx, sharetribeSdk, sdk) => {
+  ctx.sharetribeSdk = sharetribeSdk;
+  if (sdk) {
+    ctx.sdk = sdk;
+  }
+  ctx.printResponse = printResponse;
+  ctx.apiDocs = apiDocs;
+  ctx.LatLng = LatLng;
+  ctx.LatLngBounds = LatLgnBounds;
+  ctx.UUID = UUID;
+  ctx.Money = Money;
+  ctx.BigDecimal = BigDecimal;
+}
+
 const startRepl = (sharetribeSdk, sdk, rawMode, scriptSrc) =>
       _ => {
         if (scriptSrc) {
           // Setup context
-          global.sharetribeSdk = sharetribeSdk;
-          global.printResponse = printResponse;
-          if (sdk) {
-            global.sdk = sdk;
-          }
+          setupContext(global, sharetribeSdk, sdk);
 
           // Start REPL
           console.log('Executing script...');
@@ -200,13 +228,8 @@ const startRepl = (sharetribeSdk, sdk, rawMode, scriptSrc) =>
 
           // Setup context
           const ctx = replInstance.context;
-          ctx.sharetribeSdk = sharetribeSdk;
-          ctx.printResponse = printResponse;
-          if (sdk) {
-            ctx.sdk = sdk;
-          }
+          setupContext(ctx, sharetribeSdk, sdk);
         }
-
       }
 
 const exitOnFailure = msg =>
@@ -224,34 +247,31 @@ if (options.clientid) {
 
   // If user auth info is given too, log in with the user.
   if (options.user && options.password) {
-    console.log('Initializing SDK instance with Client ID: ' + options.clientid)
+    console.log('Initializing SDK instance with Client ID: ' + options.clientid + '...')
     sdk.marketplace.show()
       .then(result => console.log(`Successfully connected to ${result.data.data.attributes.name} marketplace.`))
       .catch(exitOnFailure(`Unable to access the Marketplace API with the given Client ID: ${options.clientid}.`))
       .then(_ => {
-        console.log('Logging in user ' + options.user);
+        console.log('Logging in user ' + options.user + '...');
         sdk.login({
           username: options.user,
           password: options.password
         })
           .catch(exitOnFailure(`Unable to log in with the email: ${options.user} and password: ${options.password}`))
-          // .then(printWelcomeMessage(false))
           .then(startRepl(sharetribeSdk, sdk, false, scriptSrc))
       });
 
   // No user auth, just Client ID
   } else {
-    console.log('Initializing SDK instance with Client ID: ' + options.clientid)
+    console.log('Initializing SDK instance with Client ID: ' + options.clientid + '...')
     sdk.marketplace.show()
       .then(result => console.log(`Successfully connected to ${result.data.data.attributes.name} marketplace.`))
       .catch(exitOnFailure(`Unable to access the Marketplace API with the given Client ID: ${options.clientid}.`))
-      // .then(printWelcomeMessage(false))
       .then(startRepl(sharetribeSdk, sdk, false, scriptSrc));
 
   }
 // Raw mode
 } else {
-  // printWelcomeMessage(true)();
   startRepl(sharetribeSdk, null, true, scriptSrc)();
 }
 
