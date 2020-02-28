@@ -225,7 +225,10 @@ const startRepl = (sdk, rawMode, src) =>
           const replInstance = repl.start('> ');
 
           // Attach history
-          replInstance.setupHistory('./.repl_history', () => null);
+          // Node versions prior to 10.11 don't support setupHistory
+          if (replInstance.setupHistory) {
+            replInstance.setupHistory('./.repl_history', () => null);
+          }
 
           // Setup context
           const ctx = replInstance.context;
@@ -275,4 +278,3 @@ if (options.clientid) {
 } else {
   startRepl(null, true, scriptSrc)();
 }
-
