@@ -35,6 +35,7 @@ const printWelcomeMessage = raw => {
     console.log('  ');
     console.log(`  - ${'`sharetribeSdk`'.inline}: The SDK module`);
     console.log(`  - ${'`printResponse`'.inline}: Helper function for pretty printing the API response.`);
+    console.log(`  - ${'`pr`'.inline}: Helper function for pretty printing the API response from the last command that ran (presumably an API call).`);
     console.log(`  - ${'`apiDocs`'.inline}: Open the Marketplace API documentation in your browser.`);
     console.log('  ');
     console.log('  ## Example usage'.h2);
@@ -52,6 +53,11 @@ const printWelcomeMessage = raw => {
     console.log('  Print marketplace information:');
     console.log('  ');
     console.log('  sdk.marketplace.show().then(printResponse);'.block);
+    console.log('  ');
+    console.log('  Alternative version using pr():');
+    console.log('  ');
+    console.log('  sdk.marketplace.show();'.block);
+    console.log('  pr();'.block);
     console.log('  ');
     console.log('  Fetch 10 listings:');
     console.log('  ');
@@ -83,6 +89,11 @@ const printWelcomeMessage = raw => {
     console.log('  Print marketplace information:');
     console.log('  ');
     console.log('  sdk.marketplace.show().then(printResponse);'.block);
+    console.log('  ');
+    console.log('  Alternative version using pr():');
+    console.log('  ');
+    console.log('  sdk.marketplace.show();'.block);
+    console.log('  pr();'.block);
     console.log('  ');
     console.log('  Fetch 10 listings:');
     console.log('  ');
@@ -164,6 +175,9 @@ const printResponse = response => {
   return response;
 }
 
+const printLastResponse = (ctx) =>
+      () => ctx._.then(printResponse);
+
 const apiDocs = () =>
       open('https://www.sharetribe.com/api-reference/marketplace.html?javascript#marketplace-api')
       .then(() => '');
@@ -174,6 +188,7 @@ const setupContext = (ctx, sdk) => {
     ctx.sdk = sdk;
   }
   ctx.printResponse = printResponse;
+  ctx.pr = printLastResponse(ctx);
   ctx.apiDocs = apiDocs;
   ctx.LatLng = LatLng;
   ctx.LatLngBounds = LatLgnBounds;

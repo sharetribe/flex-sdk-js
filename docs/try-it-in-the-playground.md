@@ -30,6 +30,12 @@ using the built-in response printer:
 sdk.listings.query({per_page: 5}).then(printResponse);
 ```
 
+Alternatively you can use the pr() helper function:
+```js
+sdk.listings.query({per_page: 5});
+pr();
+```
+
 You can also do custom processing of responses:
 
 ```js
