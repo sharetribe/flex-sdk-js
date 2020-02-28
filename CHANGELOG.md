@@ -8,6 +8,16 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.10.0] - 2020-02-28
+
+### Changed
+
+- The JS SDK Repl environment replaced with a new API Playground
+  [109](https://github.com/sharetribe/flex-sdk-js/pull/109)
+  - Support starting in an initialized and authenticated modes
+  - Support running scripts
+  - Add helpers and support all API value types
+
 ## [v1.9.1] - 2020-02-18
 
 ### Fixed
