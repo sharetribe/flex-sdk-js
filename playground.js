@@ -257,13 +257,13 @@ if (options.clientid) {
       .catch(exitOnFailure(`Unable to access the Marketplace API with the given Client ID: ${options.clientid}.`))
       .then(() => {
         console.log(`Logging in user ${options.user}...`);
-        sdk.login({
+        return sdk.login({
           username: options.user,
           password: options.password
-        })
-          .catch(exitOnFailure(`Unable to log in with the email: ${options.user} and password: ${options.password}`))
-          .then(startRepl(sdk, false, scriptSrc))
-      });
+        });
+      })
+      .catch(exitOnFailure(`Unable to log in with the email: ${options.user} and password you gave.`))
+      .then(startRepl(sdk, false, scriptSrc));
 
   // No user auth, just Client ID
   } else {
