@@ -168,27 +168,6 @@ const apiDocs = () =>
       open('https://www.sharetribe.com/api-reference/marketplace.html?javascript#marketplace-api')
       .then(() => '');
 
-// Parse command line args
-//
-const options = commandLineArgs(optionDefinitions);
-
-if (options.apidocs) {
-  apiDocs();
-  process.exit();
-}
-
-if (options.help || (!options.raw && options.clientid == null)) {
-  printUsage();
-  process.exit();
-};
-
-let scriptSrc;
-if (options.script) {
-  scriptSrc = fs.createReadStream(options.script);
-} else {
-  scriptSrc = null;
-}
-
 const setupContext = (ctx, sdk) => {
   ctx.sharetribeSdk = sharetribeSdk;
   if (sdk) {
@@ -241,6 +220,27 @@ const exitOnFailure = msg =>
         console.error(msg)
         process.exit(1);
       };
+
+// Parse command line args
+//
+const options = commandLineArgs(optionDefinitions);
+
+if (options.apidocs) {
+  apiDocs();
+  process.exit();
+}
+
+if (options.help || (!options.raw && options.clientid == null)) {
+  printUsage();
+  process.exit();
+};
+
+let scriptSrc;
+if (options.script) {
+  scriptSrc = fs.createReadStream(options.script);
+} else {
+  scriptSrc = null;
+}
 
 // If client ID is provided on start, instantiate and expose sdk
 if (options.clientid) {
