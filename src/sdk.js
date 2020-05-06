@@ -12,7 +12,10 @@ import SaveToken from './interceptors/save_token';
 import FetchAuthTokenFromApi from './interceptors/fetch_auth_token_from_api';
 import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
 import AddClientIdToParams from './interceptors/add_client_id_to_params';
+import AddClientSecretToParams from './interceptors/add_client_secret_to_params';
+import AddSubjectTokenToParams from './interceptors/add_subject_token_to_params';
 import AddGrantTypeToParams from './interceptors/add_grant_type_to_params';
+import AddTokenExchangeGrantTypeToParams from './interceptors/add_token_exchange_grant_type_to_params';
 import AddScopeToParams from './interceptors/add_scope_to_params';
 import AuthInfo from './interceptors/auth_info';
 import MultipartRequest from './interceptors/multipart_request';
@@ -25,6 +28,7 @@ import contextRunner from './context_runner';
 
 const defaultSdkConfig = {
   clientId: null,
+  clientSecret: null,
   baseUrl: 'https://flex-api.sharetribe.com',
   typeHandlers: [],
   endpoints: [],
@@ -504,6 +508,15 @@ const logoutInterceptors = [
   new FetchRefreshTokenForRevoke(),
 ];
 
+const exchangeTokenInterceptors = [
+  new FetchAuthTokenFromStore(),
+  new RetryWithRefreshToken(),
+  new AddClientIdToParams(),
+  new AddClientSecretToParams(),
+  new AddSubjectTokenToParams(),
+  new AddTokenExchangeGrantTypeToParams(),
+];
+
 /**
    Take endpoint definitions and return SDK function definition.
  */
@@ -542,6 +555,11 @@ const endpointSdkFnDefinitions = sdkFnDefsFromEndpointDefs(endpointDefinitions);
 const additionalSdkFnDefinitions = [
   { path: 'login', endpointInterceptorPath: 'auth.token', interceptors: loginInterceptors },
   { path: 'logout', endpointInterceptorPath: 'auth.revoke', interceptors: [...logoutInterceptors] },
+  {
+    path: 'exchangeToken',
+    endpointInterceptorPath: 'auth.token',
+    interceptors: exchangeTokenInterceptors,
+  },
   { path: 'authInfo', interceptors: [new AuthInfo()] },
 ];
 
@@ -762,6 +780,7 @@ export default class SharetribeSdk {
       tokenStore: sdkConfig.tokenStore,
       endpointInterceptors,
       clientId: sdkConfig.clientId,
+      clientSecret: sdkConfig.clientSecret,
       typeHandlers: sdkConfig.typeHandlers,
       transitVerbose: sdkConfig.transitVerbose,
     };

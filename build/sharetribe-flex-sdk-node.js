@@ -2452,15 +2452,15 @@ module.exports = map;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_reduce___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash_reduce__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash_flatten__ = __webpack_require__(57);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash_flatten___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash_flatten__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_find__ = __webpack_require__(190);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_find__ = __webpack_require__(193);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_find___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_lodash_find__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_map__ = __webpack_require__(63);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_lodash_map__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash_fromPairs__ = __webpack_require__(196);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash_fromPairs__ = __webpack_require__(199);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash_fromPairs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash_fromPairs__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_lodash_identity__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_lodash_identity___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_lodash_identity__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_transit_js__ = __webpack_require__(197);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_transit_js__ = __webpack_require__(200);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_transit_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_transit_js__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__types__ = __webpack_require__(33);
 
@@ -2779,7 +2779,7 @@ var createTransitConverters = function createTransitConverters() {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_js_cookie__ = __webpack_require__(204);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_js_cookie__ = __webpack_require__(207);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_js_cookie___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_js_cookie__);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -2867,7 +2867,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__sdk__ = __webpack_require__(68);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__types__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__browser_cookie_store__ = __webpack_require__(65);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__express_cookie_store__ = __webpack_require__(205);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__express_cookie_store__ = __webpack_require__(208);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__memory_store__ = __webpack_require__(66);
 /* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "types", function() { return __WEBPACK_IMPORTED_MODULE_1__types__; });
 
@@ -2920,14 +2920,17 @@ var tokenStore = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__interceptors_fetch_auth_token_from_api__ = __webpack_require__(180);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__ = __webpack_require__(181);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__interceptors_add_client_id_to_params__ = __webpack_require__(182);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__interceptors_add_grant_type_to_params__ = __webpack_require__(183);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__interceptors_add_scope_to_params__ = __webpack_require__(184);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__interceptors_auth_info__ = __webpack_require__(185);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__interceptors_multipart_request__ = __webpack_require__(186);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__ = __webpack_require__(189);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__ = __webpack_require__(198);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__token_store__ = __webpack_require__(202);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__context_runner__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__interceptors_add_client_secret_to_params__ = __webpack_require__(183);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__interceptors_add_client_token_to_params__ = __webpack_require__(184);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__interceptors_add_grant_type_to_params__ = __webpack_require__(185);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__interceptors_add_token_exchange_grant_type_to_params__ = __webpack_require__(186);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__interceptors_add_scope_to_params__ = __webpack_require__(187);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__interceptors_auth_info__ = __webpack_require__(188);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__interceptors_multipart_request__ = __webpack_require__(189);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__ = __webpack_require__(192);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__ = __webpack_require__(201);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__token_store__ = __webpack_require__(205);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__context_runner__ = __webpack_require__(19);
 
 
 
@@ -2975,10 +2978,14 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 
 
+
+
+
 /* eslint-disable class-methods-use-this */
 
 var defaultSdkConfig = {
   clientId: null,
+  clientSecret: null,
   baseUrl: 'https://flex-api.sharetribe.com',
   typeHandlers: [],
   endpoints: [],
@@ -3077,319 +3084,319 @@ var endpointDefinitions = [{
   path: 'marketplace/show',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'users/show',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/show',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/create',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/update_profile',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/change_email',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/change_password',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/verify_email',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/send_verification_email',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/create_stripe_account',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/update_stripe_account',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'current_user/delete_stripe_account',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'password_reset/request',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'password_reset/reset',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'listings/show',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/show',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'listings/query',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/query',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'listings/search',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/create',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/create_draft',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/publish_draft',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/discard_draft',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/update',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/open',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/close',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'own_listings/add_image',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'availability_exceptions/create',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'availability_exceptions/delete',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'availability_exceptions/query',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'images/upload',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_multipart_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_24__interceptors_multipart_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/initiate',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/initiate_speculative',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/transition',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/transition_speculative',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/query',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'transactions/show',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'process_transitions/query',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'bookings/query',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'messages/query',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'messages/send',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'reviews/query',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'reviews/show',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'timeslots/query',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_account/create',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_account/fetch',
   internal: false,
   method: 'get',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_account/update',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_account_links/create',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_persons/create',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_setup_intents/create',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_customer/create',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_customer/add_payment_method',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'api',
   path: 'stripe_customer/delete_payment_method',
   internal: false,
   method: 'post',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_transit_request__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_26__interceptors_transit_response__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_25__interceptors_transit_request__["a" /* default */]()]
 }, {
   apiName: 'auth',
   path: 'token',
@@ -3404,8 +3411,9 @@ var endpointDefinitions = [{
   interceptors: []
 }];
 var authenticateInterceptors = [new __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_15__interceptors_fetch_auth_token_from_api__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_10__interceptors_retry_with_anon_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_9__interceptors_retry_with_refresh_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_8__interceptors_add_auth_header__["a" /* default */]()];
-var loginInterceptors = [new __WEBPACK_IMPORTED_MODULE_17__interceptors_add_client_id_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_18__interceptors_add_grant_type_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_19__interceptors_add_scope_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_14__interceptors_save_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_13__interceptors_add_auth_token_response__["a" /* default */]()];
+var loginInterceptors = [new __WEBPACK_IMPORTED_MODULE_17__interceptors_add_client_id_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_20__interceptors_add_grant_type_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_add_scope_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_14__interceptors_save_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_13__interceptors_add_auth_token_response__["a" /* default */]()];
 var logoutInterceptors = [new __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_11__interceptors_clear_token_after_revoke__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_9__interceptors_retry_with_refresh_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_8__interceptors_add_auth_header__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_12__interceptors_fetch_refresh_token_for_revoke__["a" /* default */]()];
+var exchangeTokenInterceptors = [new __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_9__interceptors_retry_with_refresh_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_17__interceptors_add_client_id_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_18__interceptors_add_client_secret_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_19__interceptors_add_client_token_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_add_token_exchange_grant_type_to_params__["a" /* default */]()];
 /**
    Take endpoint definitions and return SDK function definition.
  */
@@ -3457,8 +3465,12 @@ var additionalSdkFnDefinitions = [{
   endpointInterceptorPath: 'auth.revoke',
   interceptors: [].concat(logoutInterceptors)
 }, {
+  path: 'exchangeToken',
+  endpointInterceptorPath: 'auth.token',
+  interceptors: exchangeTokenInterceptors
+}, {
   path: 'authInfo',
-  interceptors: [new __WEBPACK_IMPORTED_MODULE_20__interceptors_auth_info__["a" /* default */]()]
+  interceptors: [new __WEBPACK_IMPORTED_MODULE_23__interceptors_auth_info__["a" /* default */]()]
 }]; // const logAndReturn = (data) => {
 //   console.log(data);
 //   return data;
@@ -3600,7 +3612,7 @@ var createSdkFnContextRunner = function createSdkFnContextRunner(_ref7) {
       ctx = _ref7.ctx,
       interceptors = _ref7.interceptors,
       endpointInterceptors = _ref7.endpointInterceptors;
-  return Object(__WEBPACK_IMPORTED_MODULE_25__context_runner__["a" /* default */])(__WEBPACK_IMPORTED_MODULE_3_lodash_compact___default()([].concat(_toConsumableArray(interceptors), _toConsumableArray(endpointInterceptors))))(_objectSpread({}, ctx, {
+  return Object(__WEBPACK_IMPORTED_MODULE_28__context_runner__["a" /* default */])(__WEBPACK_IMPORTED_MODULE_3_lodash_compact___default()([].concat(_toConsumableArray(interceptors), _toConsumableArray(endpointInterceptors))))(_objectSpread({}, ctx, {
     params: params,
     queryParams: queryParams,
     perRequestOpts: perRequestOpts
@@ -3660,7 +3672,7 @@ var transformSdkConfig = function transformSdkConfig(_ref10) {
 
   return _objectSpread({}, sdkConfig, {
     baseUrl: Object(__WEBPACK_IMPORTED_MODULE_6__utils__["c" /* trimEndSlash */])(baseUrl),
-    tokenStore: tokenStore || Object(__WEBPACK_IMPORTED_MODULE_24__token_store__["a" /* createDefaultTokenStore */])(tokenStore, sdkConfig.clientId, !!sdkConfig.secure)
+    tokenStore: tokenStore || Object(__WEBPACK_IMPORTED_MODULE_27__token_store__["a" /* createDefaultTokenStore */])(tokenStore, sdkConfig.clientId, !!sdkConfig.secure)
   });
 }; // Validate SDK configurations, throw an error if invalid, otherwise return.
 
@@ -3731,6 +3743,7 @@ function SharetribeSdk(userSdkConfig) {
     tokenStore: sdkConfig.tokenStore,
     endpointInterceptors: endpointInterceptors,
     clientId: sdkConfig.clientId,
+    clientSecret: sdkConfig.clientSecret,
     typeHandlers: sdkConfig.typeHandlers,
     transitVerbose: sdkConfig.transitVerbose
   }; // Create SDK functions
@@ -7915,6 +7928,114 @@ function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AddClientSecretToParams; });
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+/**
+   Read `clientSecret` from `ctx` and add it to `params`
+
+   Changes to `ctx`:
+
+   - add `params.clientSecret`
+ */
+var AddClientSecretToParams =
+/*#__PURE__*/
+function () {
+  function AddClientSecretToParams() {
+    _classCallCheck(this, AddClientSecretToParams);
+  }
+
+  _createClass(AddClientSecretToParams, [{
+    key: "enter",
+    value: function enter(_ref) {
+      var clientSecret = _ref.clientSecret,
+          params = _ref.params,
+          ctx = _objectWithoutProperties(_ref, ["clientSecret", "params"]);
+
+      return _objectSpread({}, ctx, {
+        clientSecret: clientSecret,
+        params: _objectSpread({}, params, {
+          client_secret: clientSecret
+        })
+      });
+    }
+  }]);
+
+  return AddClientSecretToParams;
+}();
+
+
+
+/***/ }),
+/* 184 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AddClientTokenToParams; });
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+/**
+   TODO: rename, doc
+ */
+var AddClientTokenToParams =
+/*#__PURE__*/
+function () {
+  function AddClientTokenToParams() {
+    _classCallCheck(this, AddClientTokenToParams);
+  }
+
+  _createClass(AddClientTokenToParams, [{
+    key: "enter",
+    value: function enter(ctx) {
+      var authToken = ctx.authToken,
+          params = ctx.params;
+
+      if (authToken && authToken.access_token) {
+        return _objectSpread({}, ctx, {
+          params: _objectSpread({}, params, {
+            subject_token: authToken.access_token
+          })
+        });
+      }
+
+      return ctx;
+    }
+  }]);
+
+  return AddClientTokenToParams;
+}();
+
+
+
+/***/ }),
+/* 185 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AddGrantTypeToParams; });
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -7985,7 +8106,58 @@ function () {
 
 
 /***/ }),
-/* 184 */
+/* 186 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AddTokenExchangeGrantTypeToParams; });
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+/**
+   TODO
+ */
+var AddTokenExchangeGrantTypeToParams =
+/*#__PURE__*/
+function () {
+  function AddTokenExchangeGrantTypeToParams() {
+    _classCallCheck(this, AddTokenExchangeGrantTypeToParams);
+  }
+
+  _createClass(AddTokenExchangeGrantTypeToParams, [{
+    key: "enter",
+    value: function enter(_ref) {
+      var params = _ref.params,
+          ctx = _objectWithoutProperties(_ref, ["params"]);
+
+      return _objectSpread({}, ctx, {
+        params: _objectSpread({}, params, {
+          grant_type: 'token_exchange'
+        })
+      });
+    }
+  }]);
+
+  return AddTokenExchangeGrantTypeToParams;
+}();
+
+
+
+/***/ }),
+/* 187 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8049,7 +8221,7 @@ function () {
 
 
 /***/ }),
-/* 185 */
+/* 188 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8145,14 +8317,14 @@ function () {
 
 
 /***/ }),
-/* 186 */
+/* 189 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MultipartRequest; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_reduce__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_reduce___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash_reduce__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_isPlainObject__ = __webpack_require__(187);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_isPlainObject__ = __webpack_require__(190);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_isPlainObject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash_isPlainObject__);
 
 
@@ -8223,11 +8395,11 @@ function () {
 
 
 /***/ }),
-/* 187 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGetTag = __webpack_require__(4),
-    getPrototype = __webpack_require__(188),
+    getPrototype = __webpack_require__(191),
     isObjectLike = __webpack_require__(2);
 
 /** `Object#toString` result references. */
@@ -8291,7 +8463,7 @@ module.exports = isPlainObject;
 
 
 /***/ }),
-/* 188 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var overArg = __webpack_require__(46);
@@ -8303,7 +8475,7 @@ module.exports = getPrototype;
 
 
 /***/ }),
-/* 189 */
+/* 192 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8373,11 +8545,11 @@ function () {
 
 
 /***/ }),
-/* 190 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var createFind = __webpack_require__(191),
-    findIndex = __webpack_require__(192);
+var createFind = __webpack_require__(194),
+    findIndex = __webpack_require__(195);
 
 /**
  * Iterates over elements of `collection`, returning the first element
@@ -8421,7 +8593,7 @@ module.exports = find;
 
 
 /***/ }),
-/* 191 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIteratee = __webpack_require__(9),
@@ -8452,12 +8624,12 @@ module.exports = createFind;
 
 
 /***/ }),
-/* 192 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseFindIndex = __webpack_require__(62),
     baseIteratee = __webpack_require__(9),
-    toInteger = __webpack_require__(193);
+    toInteger = __webpack_require__(196);
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
@@ -8513,10 +8685,10 @@ module.exports = findIndex;
 
 
 /***/ }),
-/* 193 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toFinite = __webpack_require__(194);
+var toFinite = __webpack_require__(197);
 
 /**
  * Converts `value` to an integer.
@@ -8555,10 +8727,10 @@ module.exports = toInteger;
 
 
 /***/ }),
-/* 194 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toNumber = __webpack_require__(195);
+var toNumber = __webpack_require__(198);
 
 /** Used as references for various `Number` constants. */
 var INFINITY = 1 / 0,
@@ -8603,7 +8775,7 @@ module.exports = toFinite;
 
 
 /***/ }),
-/* 195 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(5),
@@ -8675,7 +8847,7 @@ module.exports = toNumber;
 
 
 /***/ }),
-/* 196 */
+/* 199 */
 /***/ (function(module, exports) {
 
 /**
@@ -8709,7 +8881,7 @@ module.exports = fromPairs;
 
 
 /***/ }),
-/* 197 */
+/* 200 */
 /***/ (function(module, exports) {
 
 // transit-js 0.8.862
@@ -12579,12 +12751,12 @@ writeCache:com.cognitect.transit.caching.writeCache});
 
 
 /***/ }),
-/* 198 */
+/* 201 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TransitResponse; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_update__ = __webpack_require__(199);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_update__ = __webpack_require__(202);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_update___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash_update__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__serializer__ = __webpack_require__(64);
 
@@ -12649,11 +12821,11 @@ function () {
 
 
 /***/ }),
-/* 199 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseUpdate = __webpack_require__(200),
-    castFunction = __webpack_require__(201);
+var baseUpdate = __webpack_require__(203),
+    castFunction = __webpack_require__(204);
 
 /**
  * This method is like `_.set` except that accepts `updater` to produce the
@@ -12690,7 +12862,7 @@ module.exports = update;
 
 
 /***/ }),
-/* 200 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGet = __webpack_require__(11),
@@ -12714,7 +12886,7 @@ module.exports = baseUpdate;
 
 
 /***/ }),
-/* 201 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var identity = __webpack_require__(10);
@@ -12734,12 +12906,12 @@ module.exports = castFunction;
 
 
 /***/ }),
-/* 202 */
+/* 205 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return createDefaultTokenStore; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__detect__ = __webpack_require__(203);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__detect__ = __webpack_require__(206);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__browser_cookie_store__ = __webpack_require__(65);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__memory_store__ = __webpack_require__(66);
 
@@ -12761,7 +12933,7 @@ var createDefaultTokenStore = function createDefaultTokenStore(tokenStore, clien
 };
 
 /***/ }),
-/* 203 */
+/* 206 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12782,7 +12954,7 @@ var hasBrowserCookies = function hasBrowserCookies() {
 };
 
 /***/ }),
-/* 204 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -12955,7 +13127,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 /***/ }),
-/* 205 */
+/* 208 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
