@@ -2921,7 +2921,7 @@ var tokenStore = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__ = __webpack_require__(181);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__interceptors_add_client_id_to_params__ = __webpack_require__(182);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__interceptors_add_client_secret_to_params__ = __webpack_require__(183);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__interceptors_add_client_token_to_params__ = __webpack_require__(184);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__interceptors_add_subject_token_to_params__ = __webpack_require__(184);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__interceptors_add_grant_type_to_params__ = __webpack_require__(185);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__interceptors_add_token_exchange_grant_type_to_params__ = __webpack_require__(186);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__interceptors_add_scope_to_params__ = __webpack_require__(187);
@@ -3413,7 +3413,7 @@ var endpointDefinitions = [{
 var authenticateInterceptors = [new __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_15__interceptors_fetch_auth_token_from_api__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_10__interceptors_retry_with_anon_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_9__interceptors_retry_with_refresh_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_8__interceptors_add_auth_header__["a" /* default */]()];
 var loginInterceptors = [new __WEBPACK_IMPORTED_MODULE_17__interceptors_add_client_id_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_20__interceptors_add_grant_type_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_22__interceptors_add_scope_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_14__interceptors_save_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_13__interceptors_add_auth_token_response__["a" /* default */]()];
 var logoutInterceptors = [new __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_11__interceptors_clear_token_after_revoke__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_9__interceptors_retry_with_refresh_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_8__interceptors_add_auth_header__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_12__interceptors_fetch_refresh_token_for_revoke__["a" /* default */]()];
-var exchangeTokenInterceptors = [new __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_9__interceptors_retry_with_refresh_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_17__interceptors_add_client_id_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_18__interceptors_add_client_secret_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_19__interceptors_add_client_token_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_add_token_exchange_grant_type_to_params__["a" /* default */]()];
+var exchangeTokenInterceptors = [new __WEBPACK_IMPORTED_MODULE_16__interceptors_fetch_auth_token_from_store__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_9__interceptors_retry_with_refresh_token__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_17__interceptors_add_client_id_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_18__interceptors_add_client_secret_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_19__interceptors_add_subject_token_to_params__["a" /* default */](), new __WEBPACK_IMPORTED_MODULE_21__interceptors_add_token_exchange_grant_type_to_params__["a" /* default */]()];
 /**
    Take endpoint definitions and return SDK function definition.
  */
@@ -7950,7 +7950,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
    Changes to `ctx`:
 
-   - add `params.clientSecret`
+   - add `params.client_secret`
  */
 var AddClientSecretToParams =
 /*#__PURE__*/
@@ -7965,6 +7965,10 @@ function () {
       var clientSecret = _ref.clientSecret,
           params = _ref.params,
           ctx = _objectWithoutProperties(_ref, ["clientSecret", "params"]);
+
+      if (!clientSecret) {
+        throw new Error('SDK instance is missing the clientSecret config.');
+      }
 
       return _objectSpread({}, ctx, {
         clientSecret: clientSecret,
@@ -7985,7 +7989,7 @@ function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AddClientTokenToParams; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AddSubjectTokenToParams; });
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -7999,16 +8003,22 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
-   TODO: rename, doc
+   Read `authToken.access_token` from `ctx` and adds it as
+   `subject_token` in params
+
+   Changes to `ctx`:
+
+   - add `params.subject_token`
+
  */
-var AddClientTokenToParams =
+var AddSubjectTokenToParams =
 /*#__PURE__*/
 function () {
-  function AddClientTokenToParams() {
-    _classCallCheck(this, AddClientTokenToParams);
+  function AddSubjectTokenToParams() {
+    _classCallCheck(this, AddSubjectTokenToParams);
   }
 
-  _createClass(AddClientTokenToParams, [{
+  _createClass(AddSubjectTokenToParams, [{
     key: "enter",
     value: function enter(ctx) {
       var authToken = ctx.authToken,
@@ -8026,7 +8036,7 @@ function () {
     }
   }]);
 
-  return AddClientTokenToParams;
+  return AddSubjectTokenToParams;
 }();
 
 
@@ -8128,7 +8138,11 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
-   TODO
+   Add "token_exchange" as the `grant_type` in `params`
+
+   Changes to `ctx`:
+
+   - add `params.grant_type`
  */
 var AddTokenExchangeGrantTypeToParams =
 /*#__PURE__*/
