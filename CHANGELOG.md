@@ -8,6 +8,11 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Added
+
+- New experimental method `exchangeToken`
+  [110](https://github.com/sharetribe/flex-sdk-js/pull/110)
+
 ## [v1.10.0] - 2020-02-28
 
 ### Changed
