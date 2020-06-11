@@ -265,3 +265,15 @@ export const createTransitConverters = (typeHandlers = [], opts) => {
     writer: writer(writers, opts),
   };
 };
+
+export const read = (str, opts = {}) => {
+  const { typeHandlers = [] } = opts;
+  const converters = createTransitConverters(typeHandlers);
+  return converters.reader.read(str);
+};
+
+export const write = (data, opts = {}) => {
+  const { typeHandlers = [], verbose = false } = opts;
+  const converters = createTransitConverters(typeHandlers, { verbose });
+  return converters.writer.write(data);
+};
