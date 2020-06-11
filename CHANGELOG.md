@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.11.0-alpha-1] - 2020-06-11
+
+### Added
+
+- Export Transit serialization helpers
+  [113](https://github.com/sharetribe/flex-sdk-js/pull/113)
+
 ## [v1.11.0-alpha] - 2020-05-08
 
 ### Added
