@@ -8,6 +8,11 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.11.0] - 2020-06-16
+
+This release just changes the version number, making the alpha release
+into a proper release.
+
 ## [v1.11.0-alpha-1] - 2020-06-11
 
 ### Added
