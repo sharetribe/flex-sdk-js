@@ -35,13 +35,16 @@ const createSdk = (config = {}) => {
     clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
   };
 
-  const sdkTokenStore = memoryStore();
-  const adapter = createAdapter();
+  // Extract adapter and token store here so that they can be passed to SDK
+  // constructor and included in the returned object
+  const { adapter: configAdapter, tokenStore: configTokenStore, ...restConfig } = config;
+  const adapter = configAdapter || createAdapter();
+  const sdkTokenStore = configTokenStore || memoryStore();
 
   const sdk = new SharetribeSdk({
     ...defaults,
+    ...restConfig,
     tokenStore: sdkTokenStore,
-    ...config,
     adapter: adapter.adapterFn,
   });
 
