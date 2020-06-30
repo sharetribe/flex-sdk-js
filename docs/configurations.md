@@ -8,12 +8,17 @@ const sharetribeSdk = require('sharetribe-flex-sdk');
 
 var sdk = sharetribeSdk.createInstance({
 
-  // The API ClientID (mandatory)
+  // An API application client ID (mandatory)
   clientId: "08ec69f6-d37e-414d-83eb-324e94afddf0",
+
+  // An API application client secret. Only to be used in a server
+  // environment and not to be exposed to a client/browser.
+  clientSecret: "8af2bf99c380b3a303ab90ae4012c8cd8f69d309",
 
   // Token store
   //
-  // Token store instance to use. Token store is where the SDK saves the session information.
+  // Token store instance to use. Token store is where the SDK
+  // saves the session information.
   //
   // Built-in token stores:
   //

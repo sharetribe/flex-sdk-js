@@ -57,7 +57,7 @@ information in addition to the authentication token. If you need, for
 example, to know the name of the logged in user, you need to call
 `sdk.current_user.show()`, which calls the corresponding API endpoint.
 
-## Example
+## Authentication example
 
 
 Here's a full example how to log user in and out and determine the
@@ -98,6 +98,36 @@ sdk.authInfo().then(authInfo => {
     // An error occurred
     console.log(`Request failed with status: ${res.status} ${res.statusText}`);
   });
+```
+
+## Exchange token
+
+**`sdk.exchangeToken() : Promise`**
+
+A valid access token can be exchanged to a trusted token when combined with a client
+secret. A trusted token is required by the Flex APIs for certain requests, for
+example, [privileged
+transitions](https://www.sharetribe.com/docs/background/privileged-transitions/).
+
+In order to exchange an access token, a valid access token needs to be stored in
+the SDK's token store. This can be achieved by logging in or by initializing the
+SDK with a token store that holds an access token.
+
+**Example:**
+
+```js
+const sdk = sharetribeSdk.createInstance({
+  clientId: 'a client ID',
+  clientSecret: 'a client secret',
+  tokenStore: sharetribeSdk.tokenStore.memoryStore(),
+})
+
+sdk.login({ username: 'test-user@example.com', password: 'test-secret' });
+
+sdk.exchangeToken().then(res => {
+  console.log('Trusted token: ', res.data);
+});
+
 ```
 
 ## Seeing occasional 401 errors?
