@@ -36,6 +36,11 @@ export const token = (config, resolve, reject, fakeTokenStore) => {
       res = fakeTokenStore.createTokenWithAuthorizationCode(formData.code);
     } else if (formData.grant_type === 'refresh_token') {
       res = fakeTokenStore.freshToken(formData.refresh_token);
+    } else if (
+      formData.grant_type === 'token_exchange' &&
+      formData.client_secret === '8af2bf99c380b3a303ab90ae4012c8cd8f69d309'
+    ) {
+      res = fakeTokenStore.exchangeToken(formData.subject_token);
     }
   }
 

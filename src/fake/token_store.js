@@ -106,6 +106,38 @@ const createTokenStore = () => {
     return token.token;
   };
 
+  const exchangeToken = accessToken => {
+    const currentToken = _.find(
+      tokens,
+      ({ token }) =>
+        token.access_token &&
+        accessToken &&
+        token.access_token.toLowerCase() === accessToken.toLowerCase()
+    );
+
+    if (!currentToken) {
+      return null;
+    }
+
+    const { username } = currentToken.user;
+
+    const trustedToken = {
+      token: {
+        access_token: generateAccessToken(username),
+        refresh_token: generateRefreshToken(username),
+        token_type: 'bearer',
+        expires_in: 86400,
+        scope: 'trusted:user',
+      },
+      user: {
+        username,
+      },
+    };
+    tokens.push(trustedToken);
+
+    return trustedToken.token;
+  };
+
   const expireAccessToken = accessToken => {
     _.map(tokens, t => {
       const { token } = t;
@@ -150,6 +182,7 @@ const createTokenStore = () => {
     createAnonToken,
     createTokenWithCredentials,
     createTokenWithAuthorizationCode,
+    exchangeToken,
     freshToken,
     revokeRefreshToken,
     validToken,

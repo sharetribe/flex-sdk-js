@@ -35,13 +35,16 @@ const createSdk = (config = {}) => {
     clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
   };
 
-  const sdkTokenStore = memoryStore();
-  const adapter = createAdapter();
+  // Extract adapter and token store here so that they can be passed to SDK
+  // constructor and included in the returned object
+  const { adapter: configAdapter, tokenStore: configTokenStore, ...restConfig } = config;
+  const adapter = configAdapter || createAdapter();
+  const sdkTokenStore = configTokenStore || memoryStore();
 
   const sdk = new SharetribeSdk({
     ...defaults,
+    ...restConfig,
     tokenStore: sdkTokenStore,
-    ...config,
     adapter: adapter.adapterFn,
   });
 
@@ -828,5 +831,51 @@ describe('new SharetribeSdk', () => {
           return Promise.resolve();
         })
     );
+  });
+});
+
+describe('exchangeToken', () => {
+  it('returns a trusted token on exchange', () => {
+    const { sdk, sdkTokenStore, adapter } = createSdk();
+
+    sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+      const stdToken = sdkTokenStore.getToken();
+      expect(stdToken.access_token).toEqual('joe.dunphy@example.com-access-1');
+
+      const subjectTokenStore = memoryStore();
+      subjectTokenStore.setToken(stdToken);
+
+      const { sdk: subjectSdk } = createSdk({
+        clientSecret: '8af2bf99c380b3a303ab90ae4012c8cd8f69d309',
+        tokenStore: subjectTokenStore,
+        adapter,
+      });
+
+      subjectSdk.exchangeToken().then(res => {
+        expect(res.data.scope).toEqual('trusted:user');
+      });
+    });
+  });
+
+  it('does not store a trusted token on exchange', () => {
+    const { sdk, sdkTokenStore, adapter } = createSdk();
+
+    sdk.login({ username: 'joe.dunphy@example.com', password: 'secret-joe' }).then(() => {
+      const stdToken = sdkTokenStore.getToken();
+      expect(stdToken.access_token).toEqual('joe.dunphy@example.com-access-1');
+
+      const subjectTokenStore = memoryStore();
+      subjectTokenStore.setToken(stdToken);
+
+      const { sdk: subjectSdk, sdkTokenStore: subjectSdkTokenStore } = createSdk({
+        clientSecret: '8af2bf99c380b3a303ab90ae4012c8cd8f69d309',
+        tokenStore: subjectTokenStore,
+        adapter,
+      });
+
+      subjectSdk.exchangeToken().then(() => {
+        expect(subjectSdkTokenStore.getToken().scope).toEqual('user');
+      });
+    });
   });
 });
