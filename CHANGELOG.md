@@ -8,6 +8,11 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Added
+
+- A utility function to convert an object query parameter into a URL compatible
+  string. [119](https://github.com/sharetribe/flex-sdk-js/pull/119)
+
 ## [v1.11.0] - 2020-06-16
 
 This release just changes the version number, making the alpha release
