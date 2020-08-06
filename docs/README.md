@@ -12,6 +12,7 @@
   * [Configurations](./configurations.md)
   * [Your own types](./your-own-types.md)
   * [Serializing types to JSON](./serializing-types-to-json.md)
+  * [Object query parameters](./object-query-parameters.md)
   * [Token store](./token-store.md)
   * [Sharing session between client and server](sharing-session-between-client-and-server.md)
   * [Keep-Alive](./keep-alive.md)
