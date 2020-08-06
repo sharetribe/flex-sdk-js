@@ -25,3 +25,44 @@ export const formData = params =>
     },
     []
   ).join('&');
+
+/**
+   Serialize a single attribute in an object query parameter.
+*/
+const serializeAttribute = attribute => {
+  if (_.isPlainObject(attribute)) {
+    throw new Error('Nested object in query parameter.');
+  } else if (Array.isArray(attribute)) {
+    return attribute.join(',');
+  } else {
+    return attribute;
+  }
+};
+
+/**
+   Serializes an object into a Flex API query parameter value format. Null and
+   undefined object attributes are dropped.
+
+   Example:
+
+   {
+     a: 'foo',
+     b: '150',
+     c: null,
+     d: ['foo', 'bar'],
+   }
+
+   =>
+
+   'a:foo;b:150;d:foo,bar'
+*/
+export const objectQueryString = obj => {
+  if (!_.isPlainObject(obj)) {
+    throw new Error('Parameter not an object.');
+  }
+
+  return Object.entries(obj)
+    .filter(([, v]) => v !== null && v !== undefined)
+    .map(([k, v]) => `${k}:${serializeAttribute(v)}`)
+    .join(';');
+};
