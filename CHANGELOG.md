@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.12.0] - 2020-08-12
+
 ### Added
 
 - A utility function to convert an object query parameter into a URL compatible
