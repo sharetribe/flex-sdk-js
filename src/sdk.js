@@ -13,6 +13,8 @@ import FetchAuthTokenFromApi from './interceptors/fetch_auth_token_from_api';
 import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
 import AddClientIdToParams from './interceptors/add_client_id_to_params';
 import AddClientSecretToParams from './interceptors/add_client_secret_to_params';
+import AddIdpClientIdToParams from './interceptors/add_idp_client_id_to_params';
+import AddIdpTokenToParams from './interceptors/add_idp_token_to_params';
 import AddSubjectTokenToParams from './interceptors/add_subject_token_to_params';
 import AddGrantTypeToParams from './interceptors/add_grant_type_to_params';
 import AddTokenExchangeGrantTypeToParams from './interceptors/add_token_exchange_grant_type_to_params';
@@ -476,6 +478,20 @@ const endpointDefinitions = [
   },
   { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
   { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
+  {
+    apiName: 'auth',
+    path: 'auth_with_idp',
+    internal: false,
+    method: 'post',
+    interceptors: [
+      new AddClientIdToParams(),
+      new AddClientSecretToParams(),
+      new AddIdpClientIdToParams(),
+      new AddIdpTokenToParams(),
+      new SaveToken(),
+      new AddAuthTokenResponse(),
+    ],
+  },
 
   /* ******************************************************************************** */
 
