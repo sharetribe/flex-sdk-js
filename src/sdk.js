@@ -135,6 +135,13 @@ const endpointDefinitions = [
   },
   {
     apiName: 'api',
+    path: 'current_user/create_with_idp',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
     path: 'current_user/update_profile',
     internal: false,
     method: 'post',
