@@ -58,3 +58,27 @@ export const token = (config, resolve, reject, fakeTokenStore) => {
     __additionalTestInfo: { formData },
   });
 };
+
+export const authWithIdp = (config, resolve, reject, fakeTokenStore) => {
+  const formData = parseFormData(config.data);
+  const { idpId, idpClientId, idpToken } = formData;
+  let res;
+
+  if (formData.client_id === '08ec69f6-d37e-414d-83eb-324e94afddf0') {
+    res = fakeTokenStore.createTokenWithIdp(idpId, idpClientId, idpToken);
+  }
+
+  if (res) {
+    return resolve({ data: JSON.stringify(res) });
+  }
+
+  return reject({
+    status: 401,
+    statusText: 'Unauthorized',
+    data: 'Unauthorized',
+
+    // Add additional information to help debugging when testing.
+    // This key is NOT returned by the real API.
+    __additionalTestInfo: { formData },
+  });
+};

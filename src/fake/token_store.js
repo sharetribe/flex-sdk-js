@@ -12,6 +12,15 @@ const createTokenStore = () => {
     { code: 'flex-authorization-code', username: 'joe.dunphy@example.com' },
   ];
 
+  const knownIdpTokens = [
+    {
+      id: 'facebook',
+      token: 'idp-token',
+      clientId: 'idp-client-id',
+      username: 'joe.dunphy@example.com',
+    },
+  ];
+
   // Private
 
   const generateAnonAccessToken = () => {
@@ -106,6 +115,34 @@ const createTokenStore = () => {
     return token.token;
   };
 
+  const createTokenWithIdp = (idpId, idpClientId, idpToken) => {
+    const knownIdpToken = _.find(
+      knownIdpTokens,
+      ({ id, token, clientId }) => id === idpId && token === idpToken && clientId === idpClientId
+    );
+
+    if (!knownIdpToken) {
+      return null;
+    }
+
+    const { username } = knownIdpToken;
+    const token = {
+      token: {
+        access_token: generateAccessToken(username),
+        refresh_token: generateRefreshToken(username),
+        token_type: 'bearer',
+        expires_in: 86400,
+        scope: 'user',
+      },
+      user: {
+        username,
+      },
+    };
+    tokens.push(token);
+
+    return token.token;
+  };
+
   const exchangeToken = accessToken => {
     const currentToken = _.find(
       tokens,
@@ -182,6 +219,7 @@ const createTokenStore = () => {
     createAnonToken,
     createTokenWithCredentials,
     createTokenWithAuthorizationCode,
+    createTokenWithIdp,
     exchangeToken,
     freshToken,
     revokeRefreshToken,
