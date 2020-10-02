@@ -10,7 +10,7 @@ the user is already logged in or not.
 Logs in the user and returns a Promise.
 
 The session information will be saved to the SDK instance when the
-Promise is resolved. Subsequest requests will be made as the logged in
+Promise is resolved. Subsequent requests will be made as the logged in
 user.
 
 ## Logout
@@ -30,11 +30,23 @@ store](./token-store.md#memory-store).
 
 Returns a Promise with an Object as a value. The object may contain two fields:
 
-* `scopes`: an array containing the scopes associated with the currently stored token
-* `isAnonymous`: a boolean denoting if the currently stored token only allows public read access
+- `scopes`: an array containing the scopes associated with the currently stored token
+- `isAnonymous`: a boolean denoting if the currently stored token only allows public read access
 
 To determine if the user is logged in, check if `isAnonymous` equals
 `false`.
+
+## Login with IdP
+
+**`sdk.loginWithIdp({ idpId: string, idpClientId: string, idpToken: string }) : Promise`**
+
+Logs in the user with information from the identity provider (e.g. Facebook) and returns a Promise.
+User can be authenticated if the corresponding idpToken is found or if the email address from IdP
+matches the verified email of the Flex account.
+
+The session information will be saved to the SDK instance when the
+Promise is resolved. Subsequent requests will be made as the logged in
+user.
 
 **Example:**
 
@@ -59,42 +71,52 @@ example, to know the name of the logged in user, you need to call
 
 ## Authentication example
 
-
 Here's a full example how to log user in and out and determine the
 current authentication status.
 
 **Example:**
 
 ```js
-const isLoggedIn = authInfo => authInfo && authInfo.isAnonymous === false;
+const isLoggedIn = (authInfo) => authInfo && authInfo.isAnonymous === false;
 
-sdk.authInfo().then(authInfo => {
-    console.log(`Logged in: ${isLoggedIn(authInfo)}`)
+sdk
+  .authInfo()
+  .then((authInfo) => {
+    console.log(`Logged in: ${isLoggedIn(authInfo)}`);
     // prints: "Logged in: false"
 
-    return sdk.login({ username: 'test-user@example.com', password: 'test-secret' });
-  }).then(loginRes => {
+    return sdk.login({
+      username: "test-user@example.com",
+      password: "test-secret",
+    });
+  })
+  .then((loginRes) => {
     console.log("Login successful!");
 
     return sdk.authInfo();
-  }).then(authInfo => {
+  })
+  .then((authInfo) => {
     console.log(`Logged in: ${isLoggedIn(authInfo)}`);
     // prints: "Logged in: true"
 
     return sdk.currentUser.show();
-  }).then(userRes => {
+  })
+  .then((userRes) => {
     const profile = userRes.data.data.attributes.profile;
     console.log(`Current user: ${profile.firstName} ${profile.lastName}`);
 
     return sdk.logout();
-  }).then(logoutRes => {
+  })
+  .then((logoutRes) => {
     console.log("Logged out!");
 
     return sdk.authInfo();
-  }).then(authInfo => {
-    console.log(`Logged in: ${isLoggedIn(authInfo)}`)
+  })
+  .then((authInfo) => {
+    console.log(`Logged in: ${isLoggedIn(authInfo)}`);
     // prints: "Logged in: false"
-  }).catch(res => {
+  })
+  .catch((res) => {
     // An error occurred
     console.log(`Request failed with status: ${res.status} ${res.statusText}`);
   });
@@ -117,17 +139,16 @@ SDK with a token store that holds an access token.
 
 ```js
 const sdk = sharetribeSdk.createInstance({
-  clientId: 'a client ID',
-  clientSecret: 'a client secret',
+  clientId: "a client ID",
+  clientSecret: "a client secret",
   tokenStore: sharetribeSdk.tokenStore.memoryStore(),
-})
-
-sdk.login({ username: 'test-user@example.com', password: 'test-secret' });
-
-sdk.exchangeToken().then(res => {
-  console.log('Trusted token: ', res.data);
 });
 
+sdk.login({ username: "test-user@example.com", password: "test-secret" });
+
+sdk.exchangeToken().then((res) => {
+  console.log("Trusted token: ", res.data);
+});
 ```
 
 ## Seeing occasional 401 errors?
@@ -137,12 +158,12 @@ Don't worry! That's part of the normal operations.
 
 Flex API uses two authentication tokens for each session:
 
-* *Access token* that is used to authenticate the user. Valid only a
+- _Access token_ that is used to authenticate the user. Valid only a
   short amount of time.
-* *Refresh token* that is used to issue a fresh authentication
+- _Refresh token_ that is used to issue a fresh authentication
   token. Long lived.
 
-When *access token* expires, you will see a 401 error in browser's Web
+When _access token_ expires, you will see a 401 error in browser's Web
 Console. The SDK will handle this and automatically issue new fresh
 authentication token and retry the request. This all happens under the
 hood and you don't need to worry about it. SDK will do the heavy
