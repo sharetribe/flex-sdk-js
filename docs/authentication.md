@@ -40,9 +40,8 @@ To determine if the user is logged in, check if `isAnonymous` equals
 
 **`sdk.loginWithIdp({ idpId: string, idpClientId: string, idpToken: string }) : Promise`**
 
-Logs in the user with information from the identity provider (e.g. Facebook) and returns a Promise.
-User can be authenticated if the corresponding idpToken is found or if the email address from IdP
-matches the verified email of the Flex account.
+Logs in the user with information from an identity provider (e.g. Facebook) and returns a Promise.
+User can be authenticated if the `idpToken` can be verified and an identity provider account resolved from the token is associated with a Flex account or if an email address resolved from the token matches a verified email of a Flex account.
 
 The session information will be saved to the SDK instance when the
 Promise is resolved. Subsequent requests will be made as the logged in
