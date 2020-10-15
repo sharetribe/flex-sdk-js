@@ -24,6 +24,23 @@ the session information may not be saved after successful login. In
 this case, you should configure the SDK to use [memory-based token
 store](./token-store.md#memory-store).
 
+## Login with IdP
+
+**`sdk.loginWithIdp({ idpId: string, idpClientId: string, idpToken: string }) : Promise`**
+
+Logs in the user with information from an identity provider (e.g. Facebook) and
+returns a Promise. User can be authenticated if the `idpToken` can be verified
+and an identity provider account resolved from the token is associated with a
+Flex account or if an email address resolved from the token matches a verified
+email of a Flex account.
+
+`sdk.loginWithIdp` requires that the SDK instance is initialized with a
+`clientSecret` attribute.
+
+The session information will be saved to the SDK instance when the
+Promise is resolved. Subsequent requests will be made as the logged in
+user.
+
 ## Determine if user is logged in
 
 **`sdk.authInfo() : Promise(Object)`**
@@ -35,17 +52,6 @@ Returns a Promise with an Object as a value. The object may contain two fields:
 
 To determine if the user is logged in, check if `isAnonymous` equals
 `false`.
-
-## Login with IdP
-
-**`sdk.loginWithIdp({ idpId: string, idpClientId: string, idpToken: string }) : Promise`**
-
-Logs in the user with information from an identity provider (e.g. Facebook) and returns a Promise.
-User can be authenticated if the `idpToken` can be verified and an identity provider account resolved from the token is associated with a Flex account or if an email address resolved from the token matches a verified email of a Flex account.
-
-The session information will be saved to the SDK instance when the
-Promise is resolved. Subsequent requests will be made as the logged in
-user.
 
 **Example:**
 
