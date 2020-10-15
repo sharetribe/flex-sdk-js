@@ -13,6 +13,9 @@ import FetchAuthTokenFromApi from './interceptors/fetch_auth_token_from_api';
 import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
 import AddClientIdToParams from './interceptors/add_client_id_to_params';
 import AddClientSecretToParams from './interceptors/add_client_secret_to_params';
+import AddIdpClientIdToParams from './interceptors/add_idp_client_id_to_params';
+import AddIdpIdToParams from './interceptors/add_idp_id_to_params';
+import AddIdpTokenToParams from './interceptors/add_idp_token_to_params';
 import AddSubjectTokenToParams from './interceptors/add_subject_token_to_params';
 import AddGrantTypeToParams from './interceptors/add_grant_type_to_params';
 import AddTokenExchangeGrantTypeToParams from './interceptors/add_token_exchange_grant_type_to_params';
@@ -127,6 +130,13 @@ const endpointDefinitions = [
   {
     apiName: 'api',
     path: 'current_user/create',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
+    apiName: 'api',
+    path: 'current_user/create_with_idp',
     internal: false,
     method: 'post',
     interceptors: [new TransitResponse(), new TransitRequest()],
@@ -474,8 +484,27 @@ const endpointDefinitions = [
     method: 'post',
     interceptors: [new TransitResponse(), new TransitRequest()],
   },
-  { apiName: 'auth', path: 'token', internal: true, method: 'post', interceptors: [] },
-  { apiName: 'auth', path: 'revoke', internal: true, method: 'post', interceptors: [] },
+  {
+    apiName: 'auth',
+    path: 'token',
+    internal: true,
+    method: 'post',
+    interceptors: [],
+  },
+  {
+    apiName: 'auth',
+    path: 'revoke',
+    internal: true,
+    method: 'post',
+    interceptors: [],
+  },
+  {
+    apiName: 'auth',
+    path: 'auth_with_idp',
+    internal: true,
+    method: 'post',
+    interceptors: [],
+  },
 
   /* ******************************************************************************** */
 
@@ -517,6 +546,16 @@ const exchangeTokenInterceptors = [
   new AddTokenExchangeGrantTypeToParams(),
 ];
 
+const authWithIdpInterceptors = [
+  new AddClientIdToParams(),
+  new AddClientSecretToParams(),
+  new AddIdpClientIdToParams(),
+  new AddIdpIdToParams(),
+  new AddIdpTokenToParams(),
+  new SaveToken(),
+  new AddAuthTokenResponse(),
+];
+
 /**
    Take endpoint definitions and return SDK function definition.
  */
@@ -553,14 +592,27 @@ const endpointSdkFnDefinitions = sdkFnDefsFromEndpointDefs(endpointDefinitions);
    List of SDK methods that are not derived from the endpoints.
  */
 const additionalSdkFnDefinitions = [
-  { path: 'login', endpointInterceptorPath: 'auth.token', interceptors: loginInterceptors },
-  { path: 'logout', endpointInterceptorPath: 'auth.revoke', interceptors: [...logoutInterceptors] },
+  {
+    path: 'login',
+    endpointInterceptorPath: 'auth.token',
+    interceptors: loginInterceptors,
+  },
+  {
+    path: 'logout',
+    endpointInterceptorPath: 'auth.revoke',
+    interceptors: [...logoutInterceptors],
+  },
   {
     path: 'exchangeToken',
     endpointInterceptorPath: 'auth.token',
     interceptors: exchangeTokenInterceptors,
   },
   { path: 'authInfo', interceptors: [new AuthInfo()] },
+  {
+    path: 'loginWithIdp',
+    endpointInterceptorPath: 'auth.authWithIdp',
+    interceptors: authWithIdpInterceptors,
+  },
 ];
 
 // const logAndReturn = (data) => {

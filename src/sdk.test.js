@@ -269,7 +269,10 @@ describe('new SharetribeSdk', () => {
 
         // After login, the anonymous token will be overriden
         return sdk
-          .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+          .login({
+            username: 'joe.dunphy@example.com',
+            password: 'secret-joe',
+          })
           .then(() => {
             expect(sdkTokenStore.getToken().access_token).toEqual(
               'joe.dunphy@example.com-access-1'
@@ -345,6 +348,24 @@ describe('new SharetribeSdk', () => {
       expect(access_token).toEqual('joe.dunphy@example.com-access-1');
       expect(refresh_token).toEqual('joe.dunphy@example.com-refresh-1');
     });
+  });
+
+  it('logs in with idp token', () => {
+    const { sdk, sdkTokenStore } = createSdk({
+      clientSecret: '8af2bf99c380b3a303ab90ae4012c8cd8f69d309',
+    });
+
+    return sdk
+      .loginWithIdp({
+        idpId: 'facebook',
+        idpClientId: 'idp-client-id',
+        idpToken: 'idp-token',
+      })
+      .then(() => {
+        const { access_token, refresh_token } = sdkTokenStore.getToken();
+        expect(access_token).toEqual('joe.dunphy@example.com-access-1');
+        expect(refresh_token).toEqual('joe.dunphy@example.com-refresh-1');
+      });
   });
 
   it('revokes token (a.k.a logout)', () => {
@@ -485,7 +506,11 @@ describe('new SharetribeSdk', () => {
     }
 
     const handlers = [
-      { sdkType: LatLng, appType: MyLatLng, writer: v => new LatLng(v.val[0], v.val[1]) },
+      {
+        sdkType: LatLng,
+        appType: MyLatLng,
+        writer: v => new LatLng(v.val[0], v.val[1]),
+      },
     ];
 
     const { sdk, adapter } = createSdk({ typeHandlers: handlers });
@@ -655,7 +680,10 @@ describe('new SharetribeSdk', () => {
           )
           .then(() =>
             sdk
-              .login({ username: 'joe.dunphy@example.com', password: 'secret-joe' })
+              .login({
+                username: 'joe.dunphy@example.com',
+                password: 'secret-joe',
+              })
               .then(sdk.authInfo)
               .then(authInfo => {
                 // Login token

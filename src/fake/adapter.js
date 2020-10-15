@@ -84,6 +84,8 @@ const defaultHandler = (config, resolve, reject, tokenStore) => {
       return requireAuth(config, reject, tokenStore).then(() =>
         auth.revoke(config, resolve, reject, tokenStore)
       );
+    case 'fake-adapter://fake-api/v1/auth/auth_with_idp':
+      return auth.authWithIdp(config, resolve, reject, tokenStore);
     default:
       throw new Error(`Not implemented to Fake adapter: ${config.url}`);
   }
