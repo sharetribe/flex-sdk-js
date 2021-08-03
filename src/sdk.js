@@ -778,6 +778,22 @@ const validateSdkConfig = sdkConfig => {
     throw new Error('baseUrl must be provided');
   }
 
+  /* global window, console */
+  const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+
+  if (isBrowser && sdkConfig.clientSecret && !sdkConfig.dangerouslyAllowClientSecretInBrowser) {
+    /* eslint-disable no-console */
+    console.warn(
+      'Security warning! You are using client secret in a browser. This may expose the client secret to the public.'
+    );
+    console.warn(
+      'If you know what you are doing and you have secured the websited by other means (e.g. HTTP auth), you should set the SDK configuration `dangerouslyAllowClientSecretInBrowser` to `true` to dismiss this warning.'
+    );
+    console.warn(
+      'In the future SDK versions, we may change this warning to an error causing the site not to work properly, unless `dangerouslyAllowClientSecretInBrowser` is set'
+    );
+  }
+
   return sdkConfig;
 };
 
