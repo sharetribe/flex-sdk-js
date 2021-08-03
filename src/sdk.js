@@ -792,6 +792,7 @@ const validateSdkConfig = sdkConfig => {
     console.warn(
       'In the future SDK versions, we may change this warning to an error causing the site not to work properly, unless `dangerouslyAllowClientSecretInBrowser` is set'
     );
+    /* eslint-enable no-console */
   }
 
   return sdkConfig;
