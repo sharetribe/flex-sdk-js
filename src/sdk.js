@@ -787,7 +787,7 @@ const validateSdkConfig = sdkConfig => {
       'Security warning! You are using client secret in a browser. This may expose the client secret to the public.'
     );
     console.warn(
-      'If you know what you are doing and you have secured the websited by other means (e.g. HTTP auth), you should set the SDK configuration `dangerouslyAllowClientSecretInBrowser` to `true` to dismiss this warning.'
+      'If you know what you are doing and you have secured the website by other means (e.g. HTTP basic auth), you should set the SDK configuration `dangerouslyAllowClientSecretInBrowser` to `true` to dismiss this warning.'
     );
     console.warn(
       'In the future SDK versions, we may change this warning to an error causing the site not to work properly, unless `dangerouslyAllowClientSecretInBrowser` is set'
