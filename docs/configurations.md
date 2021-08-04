@@ -77,7 +77,19 @@ var sdk = sharetribeSdk.createInstance({
   // Defaults to Sharetribe production (https://flex-api.sharetribe.com)
   // Change this if you want to point the SDK to somewhere else (like localhost).
   // Useful mainly for Sharetribe's internal development
-  baseUrl: "https://the-api-base-url.example.sharetribe.com/"
+  baseUrl: "https://the-api-base-url.example.sharetribe.com/",
+
+  // Allow use of Client Secret in browser (optional, defaults to false)
+  //
+  // Privileged Marketplace API calls that use Client Secret are meant to be done
+  // from a secure context, e.g. from a private Node.js server. Using Client Secret
+  // in an open website exposes the it to the public.
+  //
+  // By default, the SDK will display a warning if Client Secret is used in browser
+  // but if you know what you are doing, and you have secured the website properly so
+  // that Client Secret is not leaked, you can suppress the warning by setting this
+  // to `true`.
+  dangerouslyAllowClientSecretInBrowser: false
 
 });
 ```
