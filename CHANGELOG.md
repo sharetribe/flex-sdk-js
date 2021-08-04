@@ -8,6 +8,11 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Changed
+
+- SDK shows a warning if Client Secret is used in a browser.
+  [#134](https://github.com/sharetribe/flex-sdk-js/pull/134)
+
 ## [v1.13.0] - 2020-10-15
 
 ### Added
