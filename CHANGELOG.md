@@ -26,7 +26,7 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 ### Added
 
 - A utility function to convert an object query parameter into a URL compatible
-  string. [119](https://github.com/sharetribe/flex-sdk-js/pull/119)
+  string. [#119](https://github.com/sharetribe/flex-sdk-js/pull/119)
 
 ## [v1.11.0] - 2020-06-16
 
@@ -38,21 +38,21 @@ into a proper release.
 ### Added
 
 - Export Transit serialization helpers
-  [113](https://github.com/sharetribe/flex-sdk-js/pull/113)
+  [#113](https://github.com/sharetribe/flex-sdk-js/pull/113)
 
 ## [v1.11.0-alpha] - 2020-05-08
 
 ### Added
 
 - New experimental method `exchangeToken`
-  [110](https://github.com/sharetribe/flex-sdk-js/pull/110)
+  [#110](https://github.com/sharetribe/flex-sdk-js/pull/110)
 
 ## [v1.10.0] - 2020-02-28
 
 ### Changed
 
 - The JS SDK Repl environment replaced with a new API Playground
-  [109](https://github.com/sharetribe/flex-sdk-js/pull/109)
+  [#109](https://github.com/sharetribe/flex-sdk-js/pull/109)
   - Support starting in an initialized and authenticated modes
   - Support running scripts
   - Add helpers and support all API value types
@@ -62,7 +62,7 @@ into a proper release.
 ### Fixed
 
 - Handling old API tokens that lack the `scope` attribute in `sdk.authInfo`
-  [108](https://github.com/sharetribe/flex-sdk-js/pull/108)
+  [#108](https://github.com/sharetribe/flex-sdk-js/pull/108)
 
 ## [v1.9.0] - 2020-02-12
 
