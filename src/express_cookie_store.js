@@ -1,7 +1,7 @@
 const generateKey = (clientId, namespace) => `${namespace}-${clientId}-token`;
 
 const createStore = ({ clientId, req, res, secure }) => {
-  const expiration = 30; // 30 days
+  const expiration = 180; // 180 days
   const namespace = 'st';
   const key = generateKey(clientId, namespace);
 
