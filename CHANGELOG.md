@@ -19,6 +19,7 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 ### Security
 
 - Update Axios to 0.21.1 [#126](https://github.com/sharetribe/flex-sdk-js/pull/126)
+- Update Lodash to 4.17.21 [#131](https://github.com/sharetribe/flex-sdk-js/pull/131)
 
 ## [v1.13.0] - 2020-10-15
 
