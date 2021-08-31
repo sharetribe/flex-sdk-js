@@ -64,27 +64,27 @@ const requireAuth = (config, reject, tokenStore) => {
 
 const defaultHandler = (config, resolve, reject, tokenStore) => {
   switch (config.url) {
-    case 'fake-adapter://fake-api/v1/api/users/show':
+    case 'api/users/show':
       return requireAuth(config, reject, tokenStore).then(() => api.users.show(config, resolve));
-    case 'fake-adapter://fake-api/v1/api/marketplace/show':
+    case 'api/marketplace/show':
       return requireAuth(config, reject, tokenStore).then(() =>
         api.marketplace.show(config, resolve)
       );
-    case 'fake-adapter://fake-api/v1/api/listings/search':
+    case 'api/listings/search':
       return requireAuth(config, reject, tokenStore).then(() =>
         api.listings.search(config, resolve)
       );
-    case 'fake-adapter://fake-api/v1/api/own_listings/create':
+    case 'api/own_listings/create':
       return requireAuth(config, reject, tokenStore).then(() =>
         api.ownListings.create(config, resolve, reject)
       );
-    case 'fake-adapter://fake-api/v1/auth/token':
+    case 'auth/token':
       return auth.token(config, resolve, reject, tokenStore);
-    case 'fake-adapter://fake-api/v1/auth/revoke':
+    case 'auth/revoke':
       return requireAuth(config, reject, tokenStore).then(() =>
         auth.revoke(config, resolve, reject, tokenStore)
       );
-    case 'fake-adapter://fake-api/v1/auth/auth_with_idp':
+    case 'auth/auth_with_idp':
       return auth.authWithIdp(config, resolve, reject, tokenStore);
     default:
       throw new Error(`Not implemented to Fake adapter: ${config.url}`);
