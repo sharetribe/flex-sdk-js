@@ -13463,7 +13463,7 @@ var createStore = function createStore(_ref) {
       req = _ref.req,
       res = _ref.res,
       secure = _ref.secure;
-  var expiration = 30; // 30 days
+  var expiration = 180; // 180 days
 
   var namespace = 'st';
   var key = generateKey(clientId, namespace); // A mutable variable containing the current token.
