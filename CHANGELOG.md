@@ -10,6 +10,9 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Extend cookie expiration from 30 days to 180 days. This matches 
+  with the lifetime of the refresh token returned by the Auth API.
+  [#138](https://github.com/sharetribe/flex-sdk-js/pull/138)
 - SDK shows a warning if Client Secret is used in a browser.
   [#134](https://github.com/sharetribe/flex-sdk-js/pull/134)
 
