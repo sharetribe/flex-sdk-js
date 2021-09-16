@@ -506,6 +506,13 @@ const endpointDefinitions = [
     interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
+    apiName: 'api',
+    path: 'stock/compare_and_set',
+    internal: false,
+    method: 'post',
+    interceptors: [new TransitResponse(), new TransitRequest()],
+  },
+  {
     apiName: 'auth',
     path: 'token',
     internal: true,
