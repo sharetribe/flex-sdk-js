@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Added
+
+- New endpoints [#133](https://github.com/sharetribe/flex-sdk-js/pull/133)
+  - `sdk.stockAdjustments.query(/* ... */)`
+  - `sdk.stockAdjustments.create(/* ... */)`
+  - `sdk.stock.compareAndSet(/* ... */)`
+
 ### Changed
 
 - Extend cookie expiration from 30 days to 180 days. This matches 
