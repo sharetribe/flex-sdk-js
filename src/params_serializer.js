@@ -13,6 +13,35 @@ import { UUID, LatLng, LatLngBounds } from './types';
  */
 const encode = value => encodeURIComponent(value).replace(/%2C/gi, ',');
 
+const UNKNOWN_TYPE = 'unknown-type';
+
+/**
+ * Serialize a single value. May be called recursively in case of array value.
+ */
+const serializeValue = value => {
+  let v;
+
+  if (value instanceof UUID) {
+    v = value.uuid;
+  } else if (value instanceof LatLng) {
+    v = `${value.lat},${value.lng}`;
+  } else if (value instanceof LatLngBounds) {
+    v = `${value.ne.lat},${value.ne.lng},${value.sw.lat},${value.sw.lng}`;
+  } else if (Array.isArray(value)) {
+    v = _.map(value, serializeValue);
+  } else if (value instanceof Date) {
+    v = value.toISOString();
+  } else if (value == null) {
+    v = value;
+  } else if (typeof value !== 'object') {
+    v = value;
+  } else {
+    throw new Error(UNKNOWN_TYPE);
+  }
+
+  return v;
+};
+
 /**
  * Take `key` and `value` and return a key-value tuple where
  * key and value are stringified.
@@ -23,22 +52,14 @@ const encode = value => encodeURIComponent(value).replace(/%2C/gi, ',');
 const serialize = (key, value) => {
   let v;
 
-  if (value instanceof UUID) {
-    v = value.uuid;
-  } else if (value instanceof LatLng) {
-    v = `${value.lat},${value.lng}`;
-  } else if (value instanceof LatLngBounds) {
-    v = `${value.ne.lat},${value.ne.lng},${value.sw.lat},${value.sw.lng}`;
-  } else if (Array.isArray(value)) {
-    v = value;
-  } else if (value instanceof Date) {
-    v = value.toISOString();
-  } else if (value == null) {
-    v = value;
-  } else if (typeof value !== 'object') {
-    v = value;
-  } else {
-    throw new Error(`Don't know how to serialize query parameter '${key}': ${value}`);
+  try {
+    v = serializeValue(value);
+  } catch (e) {
+    if (e && e.message === 'unknown-type') {
+      throw new Error(`Don't know how to serialize query parameter '${key}': ${value}`);
+    } else {
+      throw e;
+    }
   }
 
   // Ignore null and undefined values
