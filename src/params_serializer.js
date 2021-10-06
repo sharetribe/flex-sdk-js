@@ -55,7 +55,7 @@ const serialize = (key, value) => {
   try {
     v = serializeValue(value);
   } catch (e) {
-    if (e && e.message === 'unknown-type') {
+    if (e && e.message === UNKNOWN_TYPE) {
       throw new Error(`Don't know how to serialize query parameter '${key}': ${value}`);
     } else {
       throw e;
