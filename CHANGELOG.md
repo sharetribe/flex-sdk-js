@@ -8,6 +8,12 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Added
+
+- Ability to serialize an array of SDK types, i.e. array of UUIDs. Useful when
+  calling e.g. `sdk.listings.query` with `ids` parameter.
+  [#147](https://github.com/sharetribe/flex-sdk-js/pull/147)
+
 ## [v1.14.1] - 2021-09-20
 
 ### Security

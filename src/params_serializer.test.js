@@ -27,6 +27,17 @@ describe('params serializer', () => {
     expect(ps({ alphabets: ['a', 'b', 'c'] })).toEqual('alphabets=a,b,c');
   });
 
+  it('serializes array of UUIDs', () => {
+    expect(
+      ps({
+        ids: [
+          new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'),
+          new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce02'),
+        ],
+      })
+    ).toEqual('ids=0e0b60fe-d9a2-11e6-bf26-cec0c932ce01,0e0b60fe-d9a2-11e6-bf26-cec0c932ce02');
+  });
+
   it('serializes Date', () => {
     expect(ps({ start: new Date('2018-07-01T00:00:00.000Z') })).toEqual(
       'start=2018-07-01T00%3A00%3A00.000Z'
