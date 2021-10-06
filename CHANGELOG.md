@@ -231,6 +231,9 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
+[Unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.14.1...HEAD
+[v1.14.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.14.0...v1.14.1
+[v1.14.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.13.0...v1.14.0
 [v1.13.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.12.0...v1.13.0
 [v1.12.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.11.0...v1.12.0
 [v1.11.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.11.0-alpha-1...v1.11.0
