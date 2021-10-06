@@ -28,7 +28,7 @@ const serializeValue = value => {
   } else if (value instanceof LatLngBounds) {
     v = `${value.ne.lat},${value.ne.lng},${value.sw.lat},${value.sw.lng}`;
   } else if (Array.isArray(value)) {
-    v = _.map(value, serializeValue);
+    v = value.map(serializeValue);
   } else if (value instanceof Date) {
     v = value.toISOString();
   } else if (value == null) {
