@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/style.css?t=90051322">
+    <link rel="stylesheet" href="styles.css?t=6eea839d">
+    <script src="assets/script.js?t=93f1a66c"></script>
+    <script src="scripts.js?t=bafb4b9e"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=29a7ddea"></script>
+    <title>Try it in the API Playground! - Sharetribe Flex SDK for JavaScript</title>
+    <meta name="viewport" content="width=device-width">
+    <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
+        (function(d,o,c,p,r,e,s){d['GoogleAnalyticsObject']=r;d[r]=d[r]||function(){(d[r].q=d[r].q||[]).push(arguments)},d[r].l=1*new Date();e=o.createElement(c),s=o.getElementsByTagName(c)[0];e.async=1;e.src=p;s.parentNode.insertBefore(e,s)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create',"UA-10178914-13",'auto')
+      }
+    </script>
+  </head>
+  <body class="-menu-visible">
+    <div class="doc-layout">
+      <div class="toggle menu-toggle js-menu-toggle"></div>
+      <div class="menu toc-menu">
+        <ul>
+          <li class="menu-item -level-0 -parent">
+            <ul class="submenu">
+              <li class="menu-item -level-1"><a class="link title  link-index" href="index.html">Sharetribe Flex SDK for JavaScript</a>
+              </li>
+              <li class="menu-item -level-1"><a class="link title  link-features" href="features.html">Features</a>
+              </li>
+              <li class="menu-item -level-1"><a class="link title  link-try-it-in-browser" href="try-it-in-browser.html">Try it in browser!</a>
+              </li>
+              <li class="menu-item -level-1"><a class="link title -active link-try-it-in-the-playground" href="try-it-in-the-playground.html">Try it in the API Playground!</a>
+                <ul class="headings heading-list">
+                  <li class="heading-item -depth-2"><a class="hlink link-making-api-requests" href="#making-api-requests">Making API Requests</a>
+                  </li>
+                  <li class="heading-item -depth-2"><a class="hlink link-authenticated-access" href="#authenticated-access">Authenticated access</a>
+                  </li>
+                  <li class="heading-item -depth-2"><a class="hlink link-viewing-marketplace-api-reference-documentation" href="#viewing-marketplace-api-reference-documentation">Viewing Marketplace API reference documentation</a>
+                  </li>
+                  <li class="heading-item -depth-2"><a class="hlink link-scripting-support" href="#scripting-support">Scripting support</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-item -level-1 -parent"><span class="title">Getting started</span>
+                <ul class="submenu">
+                  <li class="menu-item -level-2"><a class="link title  link-authentication" href="authentication.html">Authentication</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the API</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-types" href="types.html">Types</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-item -level-1 -parent"><span class="title">Advanced</span>
+                <ul class="submenu">
+                  <li class="menu-item -level-2"><a class="link title  link-configurations" href="configurations.html">Configurations</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-serializing-types-to-json" href="serializing-types-to-json.html">Serializing types to JSON</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-object-query-parameters" href="object-query-parameters.html">Object query parameters</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-token-store" href="token-store.html">Token store</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-sharing-session-between-client-and-server" href="sharing-session-between-client-and-server.html">Sharing session between client and server</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-keep-alive" href="keep-alive.html">Keep-Alive</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-writing-your-own-token-store" href="writing-your-own-token-store.html">Writing your own token store</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-item -level-1"><a class="link title  link-developing-sdk" href="developing-sdk.html">Developing SDK</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="body page-try-it-in-the-playground">
+        <div class="header-nav">
+          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/flex-sdk-js" data-title="sharetribe/flex-sdk-js">
+              <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
+          </div>
+        </div>
+        <div class="markdown-body"><h1 id="try-it-in-the-api-playground!">Try it in the API Playground!</h1>
+<p>The SDK ships with a command-line based API Playground. You can use
+the Playground to try out the SDK with real API access to learn and
+test things. It also supports executing scripts against the API.</p>
+<p>To start the Playground, go to the directory where you cloned the SDK
+Git repository and type:</p>
+<pre><code>$ yarn run playground --clientid &lt;CLIENT-ID&gt;
+</code></pre>
+<p>or use the shorthand:</p>
+<pre><code>$ yarn run pg -c &lt;CLIENT-ID&gt;
+</code></pre>
+<p>This will start the playground using your Marketplace API Client ID to
+connect to to your marketplace. You can create a new or find your
+existing Client ID in Flex Console at
+<a href="https://flex-console.sharetribe.com/applications">https://flex-console.sharetribe.com/applications</a>.</p>
+<h2 id="making-api-requests">Making API Requests</h2>
+<p>You can make API requests to the Marketplace API and print the results
+using the built-in response printer:</p>
+<pre><code class="lang-js">sdk.listings.query({<span class="hljs-attr">per_page</span>: <span class="hljs-number">5</span>}).then(printResponse);
+</code></pre>
+<p>Alternatively you can use the pr() helper function:</p>
+<pre><code class="lang-js">sdk.listings.query({<span class="hljs-attr">per_page</span>: <span class="hljs-number">5</span>});
+pr();
+</code></pre>
+<p>You can also do custom processing of responses:</p>
+<pre><code class="lang-js">sdk.listings.query({<span class="hljs-attr">per_page</span>: <span class="hljs-number">10</span>}).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+  <span class="pl-c1">console</span>.log(<span class="pl-s">&quot;Fetched &quot;</span> + response.data.data.length + <span class="pl-s">&quot; listings.&quot;</span>);
+  response.data.data.forEach(<span class="hljs-function"><span class="hljs-params">listing</span> =&gt;</span> {
+    <span class="pl-c1">console</span>.log(listing.attributes.title);
+  });
+});
+</code></pre>
+<h2 id="authenticated-access">Authenticated access</h2>
+<p>To start the Playground in a user authenticated mode you can pass in
+the user info you want to log in with:</p>
+<pre><code>$ yarn run pg -c &lt;CLIENT-ID&gt; -u useremail@yourdomain.com -s user-secret-password
+</code></pre>
+<p>In the Playground you can now make requests authenticated as the user:</p>
+<pre><code class="lang-js">sdk.currentUser.show().then(printResponse);
+</code></pre>
+<h2 id="viewing-marketplace-api-reference-documentation">Viewing Marketplace API reference documentation</h2>
+<p>The Playground has a command for opening the Marketplace API reference
+documentation in browser:</p>
+<pre><code>$ yarn run pg --apidocs
+</code></pre>
+<p>You can also do this in a playground session using the built-in
+apiDocs function:</p>
+<pre><code class="lang-js">apiDocs();
+</code></pre>
+<h2 id="scripting-support">Scripting support</h2>
+<p>The Playground also supports reading commands from a script file. The
+commands from the given file are read as if they were lines entered
+into an interactive Playground.</p>
+<p>Let&apos;s say you have a script file create-listing.js for creating a new
+listing for the logged in user:</p>
+<pre><code class="lang-js">sdk.ownListings.query().then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
+  <span class="pl-c1">console</span>.log(<span class="pl-s">`You have <span class="hljs-subst">${res.data.data.length}</span> listings.`</span>);
+}).then(<span class="hljs-function"><span class="hljs-params">_</span> =&gt;</span> {
+  <span class="pl-c1">console</span>.log(<span class="pl-s">&apos;Creating a new listings&apos;</span>);
+  <span class="pl-k">return</span> sdk.ownListings.create({
+    <span class="hljs-attr">title</span>: <span class="pl-s">&quot;My new listings&quot;</span>,
+    <span class="hljs-attr">description</span>: <span class="pl-s">&quot;A shiny new listing&quot;</span>,
+    <span class="hljs-attr">geolocation</span>: <span class="pl-k">new</span> LatLng(<span class="hljs-number">40.64542</span>, <span class="hljs-number">-74.08508</span>),
+    <span class="hljs-attr">price</span>: <span class="pl-k">new</span> Money(<span class="hljs-number">1590</span>, <span class="pl-s">&quot;USD&quot;</span>),
+    <span class="hljs-attr">publicData</span>: {
+      <span class="hljs-attr">category</span>: <span class="pl-s">&apos;Electric&apos;</span>,
+      <span class="hljs-attr">gears</span>: <span class="hljs-number">22</span>
+    }
+  });
+}).then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
+  <span class="pl-c1">console</span>.log(<span class="pl-s">`Created a new listings with id <span class="hljs-subst">${res.data.data.id.uuid}</span>`</span>);
+  <span class="pl-k">return</span> sdk.ownListings.query();
+}).then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
+  <span class="pl-c1">console</span>.log(<span class="pl-s">`You now have <span class="hljs-subst">${res.data.data.length}</span> listings.`</span>);
+});
+</code></pre>
+<p>You can execute the script by running:</p>
+<pre><code>$ yarn run pg -c &lt;CLIENT-ID&gt; -u useremail@yourdomain.com -s user-secret-password --script create-listing.js
+</code></pre>
+<p>The output will look something like:</p>
+<pre><code>Initializing SDK instance with Client ID: &lt;CLIENT-ID&gt;...
+Successfully connected to Saunatime marketplace.
+Logging in user useremail@yourdomain.com...
+Executing script...
+
+&gt; sdk.ownListings.query().then(res =&gt; {
+...   console.log(`You have ${res.data.data.length} listings.`);
+... }).then(() =&gt; {
+...   console.log(&apos;Creating a new listing&apos;);
+...   return sdk.ownListings.create({
+.....     title: &quot;My new listings&quot;,
+.....     description: &quot;A shiny new listing&quot;,
+.....     geolocation: new LatLng(40.64542, -74.08508),
+.....     price: new Money(1590, &quot;USD&quot;),
+.....     publicData: {
+.......       category: &apos;Electric&apos;,
+.......       gears: 22
+.......     }
+.....   });
+... }).then(res =&gt; {
+...   console.log(`Created a new listing with id ${res.data.data.id.uuid}`);
+...   return sdk.ownListings.query();
+... }).then(res =&gt; {
+...   console.log(`You now have ${res.data.data.length} listings.`);
+... });
+
+&gt; You have 10 listings.
+Creating a new listing
+Created a new listing with id 5e579343-0241-4d73-a50a-d8c5062feb86
+You now have 11 listings.
+</code></pre>
+
+        </div>
+        <div class="footer-nav">
+          <div class="left"><a href="try-it-in-browser.html"><span class="title">Try it in browser!</span></a></div>
+          <div class="right"><a href="authentication.html"><span class="label">Next: </span><span class="title">Authentication</span></a></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

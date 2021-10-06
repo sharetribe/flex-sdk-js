@@ -62,10 +62,32 @@
         "slug": "try-it-in-browser"
       },
       {
-        "title": "Try it in command-line!",
-        "source": "docs/try-it-in-command-line.md",
-        "url": "try-it-in-command-line.html",
-        "slug": "try-it-in-command-line"
+        "title": "Try it in the API Playground!",
+        "source": "docs/try-it-in-the-playground.md",
+        "url": "try-it-in-the-playground.html",
+        "slug": "try-it-in-the-playground",
+        "headings": [
+          {
+            "title": "Making API Requests",
+            "depth": 2,
+            "id": "making-api-requests"
+          },
+          {
+            "title": "Authenticated access",
+            "depth": 2,
+            "id": "authenticated-access"
+          },
+          {
+            "title": "Viewing Marketplace API reference documentation",
+            "depth": 2,
+            "id": "viewing-marketplace-api-reference-documentation"
+          },
+          {
+            "title": "Scripting support",
+            "depth": 2,
+            "id": "scripting-support"
+          }
+        ]
       },
       {
         "title": "Getting started",
@@ -87,14 +109,24 @@
                 "id": "logout"
               },
               {
+                "title": "Login with IdP",
+                "depth": 2,
+                "id": "login-with-idp"
+              },
+              {
                 "title": "Determine if user is logged in",
                 "depth": 2,
                 "id": "determine-if-user-is-logged-in"
               },
               {
-                "title": "Example",
+                "title": "Authentication example",
                 "depth": 2,
-                "id": "example"
+                "id": "authentication-example"
+              },
+              {
+                "title": "Exchange token",
+                "depth": 2,
+                "id": "exchange-token"
               },
               {
                 "title": "Seeing occasional 401 errors?",
@@ -188,6 +220,12 @@
             "source": "docs/serializing-types-to-json.md",
             "url": "serializing-types-to-json.html",
             "slug": "serializing-types-to-json"
+          },
+          {
+            "title": "Object query parameters",
+            "source": "docs/object-query-parameters.md",
+            "url": "object-query-parameters.html",
+            "slug": "object-query-parameters"
           },
           {
             "title": "Token store",
@@ -313,11 +351,33 @@
       "pageTitle": "Try it in browser!",
       "slug": "try-it-in-browser"
     },
-    "try-it-in-command-line.html": {
-      "source": "docs/try-it-in-command-line.md",
-      "title": "Try it in command-line! - Sharetribe Flex SDK for JavaScript",
-      "pageTitle": "Try it in command-line!",
-      "slug": "try-it-in-command-line"
+    "try-it-in-the-playground.html": {
+      "source": "docs/try-it-in-the-playground.md",
+      "title": "Try it in the API Playground! - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Try it in the API Playground!",
+      "slug": "try-it-in-the-playground",
+      "headings": [
+        {
+          "title": "Making API Requests",
+          "depth": 2,
+          "id": "making-api-requests"
+        },
+        {
+          "title": "Authenticated access",
+          "depth": 2,
+          "id": "authenticated-access"
+        },
+        {
+          "title": "Viewing Marketplace API reference documentation",
+          "depth": 2,
+          "id": "viewing-marketplace-api-reference-documentation"
+        },
+        {
+          "title": "Scripting support",
+          "depth": 2,
+          "id": "scripting-support"
+        }
+      ]
     },
     "authentication.html": {
       "source": "docs/authentication.md",
@@ -336,14 +396,24 @@
           "id": "logout"
         },
         {
+          "title": "Login with IdP",
+          "depth": 2,
+          "id": "login-with-idp"
+        },
+        {
           "title": "Determine if user is logged in",
           "depth": 2,
           "id": "determine-if-user-is-logged-in"
         },
         {
-          "title": "Example",
+          "title": "Authentication example",
           "depth": 2,
-          "id": "example"
+          "id": "authentication-example"
+        },
+        {
+          "title": "Exchange token",
+          "depth": 2,
+          "id": "exchange-token"
         },
         {
           "title": "Seeing occasional 401 errors?",
@@ -433,6 +503,12 @@
       "pageTitle": "Serializing types to JSON",
       "slug": "serializing-types-to-json"
     },
+    "object-query-parameters.html": {
+      "source": "docs/object-query-parameters.md",
+      "title": "Object query parameters - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Object query parameters",
+      "slug": "object-query-parameters"
+    },
     "token-store.html": {
       "source": "docs/token-store.md",
       "title": "Token store - Sharetribe Flex SDK for JavaScript",
@@ -497,13 +573,14 @@
     "README.md": "index.html",
     "docs/features.md": "features.html",
     "docs/try-it-in-browser.md": "try-it-in-browser.html",
-    "docs/try-it-in-command-line.md": "try-it-in-command-line.html",
+    "docs/try-it-in-the-playground.md": "try-it-in-the-playground.html",
     "docs/authentication.md": "authentication.html",
     "docs/calling-the-api.md": "calling-the-api.html",
     "docs/types.md": "types.html",
     "docs/configurations.md": "configurations.html",
     "docs/your-own-types.md": "your-own-types.html",
     "docs/serializing-types-to-json.md": "serializing-types-to-json.html",
+    "docs/object-query-parameters.md": "object-query-parameters.html",
     "docs/token-store.md": "token-store.html",
     "docs/sharing-session-between-client-and-server.md": "sharing-session-between-client-and-server.html",
     "docs/keep-alive.md": "keep-alive.html",

@@ -7,7 +7,7 @@
     <script src="assets/script.js?t=93f1a66c"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
     <script src="sharetribe-flex-sdk-web.js?t=29a7ddea"></script>
-    <title>Features - Sharetribe Flex SDK for JavaScript</title>
+    <title>Object query parameters - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
     <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
         (function(d,o,c,p,r,e,s){d['GoogleAnalyticsObject']=r;d[r]=d[r]||function(){(d[r].q=d[r].q||[]).push(arguments)},d[r].l=1*new Date();e=o.createElement(c),s=o.getElementsByTagName(c)[0];e.async=1;e.src=p;s.parentNode.insertBefore(e,s)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
@@ -24,7 +24,7 @@
             <ul class="submenu">
               <li class="menu-item -level-1"><a class="link title  link-index" href="index.html">Sharetribe Flex SDK for JavaScript</a>
               </li>
-              <li class="menu-item -level-1"><a class="link title -active link-features" href="features.html">Features</a>
+              <li class="menu-item -level-1"><a class="link title  link-features" href="features.html">Features</a>
               </li>
               <li class="menu-item -level-1"><a class="link title  link-try-it-in-browser" href="try-it-in-browser.html">Try it in browser!</a>
               </li>
@@ -48,7 +48,7 @@
                   </li>
                   <li class="menu-item -level-2"><a class="link title  link-serializing-types-to-json" href="serializing-types-to-json.html">Serializing types to JSON</a>
                   </li>
-                  <li class="menu-item -level-2"><a class="link title  link-object-query-parameters" href="object-query-parameters.html">Object query parameters</a>
+                  <li class="menu-item -level-2"><a class="link title -active link-object-query-parameters" href="object-query-parameters.html">Object query parameters</a>
                   </li>
                   <li class="menu-item -level-2"><a class="link title  link-token-store" href="token-store.html">Token store</a>
                   </li>
@@ -66,30 +66,47 @@
           </li>
         </ul>
       </div>
-      <div class="body page-features">
+      <div class="body page-object-query-parameters">
         <div class="header-nav">
           <div class="right"><a class="iconlink" href="https://github.com/sharetribe/flex-sdk-js" data-title="sharetribe/flex-sdk-js">
               <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
           </div>
         </div>
-        <div class="markdown-body"><h1 id="features">Features</h1>
-<p>The SDK handles <strong>groundwork</strong> such as authentication, renewing
-authentication tokens and serializing and deserializing data to and
-from JavaScript data structures, so that you don&apos;t need to worry about
-it.</p>
-<p>The main SDK features are:</p>
-<ul>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise-based</a> asynchronous API.</li>
-<li>Universal: Runs in any JavaScript environment, including <a href="https://nodejs.org/">Node.js</a>, browser and <a href="https://facebook.github.io/react-native/">React Native</a> (experimental).</li>
-<li>Predictable mapping from SDK methods to API endpoints.</li>
-<li><a href="types.html">Types</a> to represent UUID, money, geolocation, etc. with automatic serialization and deserialization.</li>
-<li><a href="authentication.html">Easy authentication</a>.</li>
-</ul>
+        <div class="markdown-body"><h1 id="object-query-parameters">Object query parameters</h1>
+<p>Some endpoints in the Flex Marketplace API require a specific syntax that allows
+passing one or more key-value pairs as the value of a single query parameter.
+The keys and values are colon-separated whereas the pairs are separated by
+semicolons. For example, when requesting custom image variants:</p>
+<pre><code class="lang-js">sdk.listings.show({
+  <span class="hljs-attr">id</span>: listingId,
+  <span class="hljs-attr">include</span>: [<span class="pl-s">&quot;images&quot;</span>],
+  <span class="pl-s">&quot;fields.image&quot;</span>: [<span class="pl-s">&quot;variants.my-variant&quot;</span>],
+  <span class="pl-s">&quot;imageVariant.my-variant&quot;</span>: <span class="pl-s">&quot;w:640;h:1280;fit:scale&quot;</span>
+}).then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
+  <span class="pl-c">// res.data contains the response data</span>
+});
+</code></pre>
+<p>To simplify building requests like these, the SDK provides a utility method:
+<code>sharetribeSdk.util.objectQueryString</code>. It serializes an object into the correct
+string syntax. Using this method, the request above can be written as follows:</p>
+<pre><code class="lang-js">sdk.listings.show({
+  <span class="hljs-attr">id</span>: listingId,
+  <span class="hljs-attr">include</span>: [<span class="pl-s">&quot;images&quot;</span>],
+  <span class="pl-s">&quot;fields.image&quot;</span>: [<span class="pl-s">&quot;variants.my-variant&quot;</span>],
+  <span class="pl-s">&quot;imageVariant.my-variant&quot;</span>: sharetribeSdk.util.objectQueryString({
+    <span class="hljs-attr">w</span>: <span class="hljs-number">640</span>,
+    <span class="hljs-attr">h</span>: <span class="hljs-number">1280</span>,
+    <span class="hljs-attr">fit</span>: <span class="pl-s">&apos;scale&apos;</span>
+  })
+}).then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
+  <span class="pl-c">// res.data contains the response data</span>
+});
+</code></pre>
 
         </div>
         <div class="footer-nav">
-          <div class="left"><a href="index.html"><span class="title">Sharetribe Flex SDK for JavaScript</span></a></div>
-          <div class="right"><a href="try-it-in-browser.html"><span class="label">Next: </span><span class="title">Try it in browser!</span></a></div>
+          <div class="left"><a href="serializing-types-to-json.html"><span class="title">Serializing types to JSON</span></a></div>
+          <div class="right"><a href="token-store.html"><span class="label">Next: </span><span class="title">Token store</span></a></div>
         </div>
       </div>
     </div>

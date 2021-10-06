@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=93f1a66c"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-flex-sdk-web.js?t=fc6befe1"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=29a7ddea"></script>
     <title>Configurations - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
     <script>if (false || window.location.hostname.indexOf("sharetribe.github.io") === window.location.hostname.length - 20) {
@@ -28,7 +28,7 @@
               </li>
               <li class="menu-item -level-1"><a class="link title  link-try-it-in-browser" href="try-it-in-browser.html">Try it in browser!</a>
               </li>
-              <li class="menu-item -level-1"><a class="link title  link-try-it-in-command-line" href="try-it-in-command-line.html">Try it in command-line!</a>
+              <li class="menu-item -level-1"><a class="link title  link-try-it-in-the-playground" href="try-it-in-the-playground.html">Try it in the API Playground!</a>
               </li>
               <li class="menu-item -level-1 -parent"><span class="title">Getting started</span>
                 <ul class="submenu">
@@ -47,6 +47,8 @@
                   <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
                   </li>
                   <li class="menu-item -level-2"><a class="link title  link-serializing-types-to-json" href="serializing-types-to-json.html">Serializing types to JSON</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-object-query-parameters" href="object-query-parameters.html">Object query parameters</a>
                   </li>
                   <li class="menu-item -level-2"><a class="link title  link-token-store" href="token-store.html">Token store</a>
                   </li>
@@ -77,12 +79,17 @@
 
 <span class="pl-k">var</span> sdk = sharetribeSdk.createInstance({
 
-  <span class="pl-c">// The API ClientID (mandatory)</span>
-  clientId: <span class="pl-s">&quot;08ec69f6-d37e-414d-83eb-324e94afddf0&quot;</span>,
+  <span class="pl-c">// An API application client ID (mandatory)</span>
+  <span class="hljs-attr">clientId</span>: <span class="pl-s">&quot;08ec69f6-d37e-414d-83eb-324e94afddf0&quot;</span>,
+
+  <span class="pl-c">// An API application client secret. Only to be used in a server</span>
+  <span class="pl-c">// environment and not to be exposed to a client/browser.</span>
+  <span class="hljs-attr">clientSecret</span>: <span class="pl-s">&quot;8af2bf99c380b3a303ab90ae4012c8cd8f69d309&quot;</span>,
 
   <span class="pl-c">// Token store</span>
   <span class="pl-c">//</span>
-  <span class="pl-c">// Token store instance to use. Token store is where the SDK saves the session information.</span>
+  <span class="pl-c">// Token store instance to use. Token store is where the SDK</span>
+  <span class="pl-c">// saves the session information.</span>
   <span class="pl-c">//</span>
   <span class="pl-c">// Built-in token stores:</span>
   <span class="pl-c">//</span>
@@ -92,14 +99,14 @@
   <span class="pl-c">//</span>
   <span class="pl-c">// Default: sharetribeSdk.tokenStore.browserCookieStore()</span>
   <span class="pl-c">//</span>
-  tokenStore: sharetribeSdk.tokenStore.browserCookieStore(),
+  <span class="hljs-attr">tokenStore</span>: sharetribeSdk.tokenStore.browserCookieStore(),
 
   <span class="pl-c">// List of custom type handlers</span>
-  typeHandlers: [
+  <span class="hljs-attr">typeHandlers</span>: [
     {
       <span class="hljs-attr">sdkType</span>: UUID,
       <span class="pl-c">// &quot;type&quot; was renamed to &quot;sdkType&quot; on v1.4.0</span>
-      appType: MyUuidType,
+      <span class="hljs-attr">appType</span>: MyUuidType,
       <span class="pl-c">// &quot;customType&quot; was renamed to &quot;appType&quot; on v1.4.0</span>
 
       <span class="pl-c">// Writer fn type signature must be:</span>
@@ -107,14 +114,14 @@
       <span class="pl-c">//</span>
       <span class="pl-c">// E.g.</span>
       <span class="pl-c">// MyUuidType -&gt; UUID</span>
-      writer: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> UUID(v.myUuid),
+      <span class="hljs-attr">writer</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> UUID(v.myUuid),
 
       <span class="pl-c">// Reader fn type signature must be:</span>
       <span class="pl-c">// sdkType -&gt; appType</span>
       <span class="pl-c">//</span>
       <span class="pl-c">// E.g.</span>
       <span class="pl-c">// UUID -&gt; MyUuidType</span>
-      reader: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> MyUuidType(v.uuid),
+      <span class="hljs-attr">reader</span>: <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="pl-k">new</span> MyUuidType(v.uuid),
     }
   ],
 
@@ -123,25 +130,37 @@
   <span class="pl-c">// http and https request. This allows defining non-default</span>
   <span class="pl-c">// options for agent, such as `{ keepAlive: true }`.</span>
   <span class="pl-c">//</span>
-  httpAgent: httpAgent,
+  <span class="hljs-attr">httpAgent</span>: httpAgent,
   <span class="hljs-attr">httpsAgent</span>: httpsAgent,
 
   <span class="pl-c">// If true and default browser token store is used,</span>
   <span class="pl-c">// the cookie is never transferred without HTTPS connection.</span>
   <span class="pl-c">// Default: false</span>
-  secure: <span class="pl-c1">false</span>,
+  <span class="hljs-attr">secure</span>: <span class="pl-c1">false</span>,
 
   <span class="pl-c">// SDK uses Transit format to communicate with the API.</span>
   <span class="pl-c">// If this configuration is `true` a verbose Transit mode is enabled.</span>
   <span class="pl-c">// Useful for development.</span>
   <span class="pl-c">// Default: false</span>
-  transitVerbose: <span class="pl-c1">false</span>,
+  <span class="hljs-attr">transitVerbose</span>: <span class="pl-c1">false</span>,
 
   <span class="pl-c">// The API base URL (optional)</span>
   <span class="pl-c">// Defaults to Sharetribe production (https://flex-api.sharetribe.com)</span>
   <span class="pl-c">// Change this if you want to point the SDK to somewhere else (like localhost).</span>
   <span class="pl-c">// Useful mainly for Sharetribe&apos;s internal development</span>
-  baseUrl: <span class="pl-s">&quot;https://the-api-base-url.example.sharetribe.com/&quot;</span>
+  <span class="hljs-attr">baseUrl</span>: <span class="pl-s">&quot;https://the-api-base-url.example.sharetribe.com/&quot;</span>,
+
+  <span class="pl-c">// Allow use of Client Secret in browser (optional, defaults to false)</span>
+  <span class="pl-c">//</span>
+  <span class="pl-c">// Privileged Marketplace API calls that use Client Secret are meant to be done</span>
+  <span class="pl-c">// from a secure context, e.g. from a private Node.js server. Using Client Secret</span>
+  <span class="pl-c">// in an open website exposes the it to the public.</span>
+  <span class="pl-c">//</span>
+  <span class="pl-c">// By default, the SDK will display a warning if Client Secret is used in browser</span>
+  <span class="pl-c">// but if you know what you are doing, and you have secured the website properly so</span>
+  <span class="pl-c">// that Client Secret is not leaked, you can suppress the warning by setting this</span>
+  <span class="pl-c">// to `true`.</span>
+  <span class="hljs-attr">dangerouslyAllowClientSecretInBrowser</span>: <span class="pl-c1">false</span>
 
 });
 </code></pre>
