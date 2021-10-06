@@ -7456,6 +7456,35 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 var encode = function encode(value) {
   return encodeURIComponent(value).replace(/%2C/gi, ',');
 };
+
+var UNKNOWN_TYPE = 'unknown-type';
+/**
+ * Serialize a single value. May be called recursively in case of array value.
+ */
+
+var serializeValue = function serializeValue(value) {
+  var v;
+
+  if (value instanceof __WEBPACK_IMPORTED_MODULE_2__types__["UUID"]) {
+    v = value.uuid;
+  } else if (value instanceof __WEBPACK_IMPORTED_MODULE_2__types__["LatLng"]) {
+    v = "".concat(value.lat, ",").concat(value.lng);
+  } else if (value instanceof __WEBPACK_IMPORTED_MODULE_2__types__["LatLngBounds"]) {
+    v = "".concat(value.ne.lat, ",").concat(value.ne.lng, ",").concat(value.sw.lat, ",").concat(value.sw.lng);
+  } else if (Array.isArray(value)) {
+    v = value.map(serializeValue);
+  } else if (value instanceof Date) {
+    v = value.toISOString();
+  } else if (value == null) {
+    v = value;
+  } else if (_typeof(value) !== 'object') {
+    v = value;
+  } else {
+    throw new Error(UNKNOWN_TYPE);
+  }
+
+  return v;
+};
 /**
  * Take `key` and `value` and return a key-value tuple where
  * key and value are stringified.
@@ -7468,22 +7497,14 @@ var encode = function encode(value) {
 var serialize = function serialize(key, value) {
   var v;
 
-  if (value instanceof __WEBPACK_IMPORTED_MODULE_2__types__["UUID"]) {
-    v = value.uuid;
-  } else if (value instanceof __WEBPACK_IMPORTED_MODULE_2__types__["LatLng"]) {
-    v = "".concat(value.lat, ",").concat(value.lng);
-  } else if (value instanceof __WEBPACK_IMPORTED_MODULE_2__types__["LatLngBounds"]) {
-    v = "".concat(value.ne.lat, ",").concat(value.ne.lng, ",").concat(value.sw.lat, ",").concat(value.sw.lng);
-  } else if (Array.isArray(value)) {
-    v = value;
-  } else if (value instanceof Date) {
-    v = value.toISOString();
-  } else if (value == null) {
-    v = value;
-  } else if (_typeof(value) !== 'object') {
-    v = value;
-  } else {
-    throw new Error("Don't know how to serialize query parameter '".concat(key, "': ").concat(value));
+  try {
+    v = serializeValue(value);
+  } catch (e) {
+    if (e && e.message === UNKNOWN_TYPE) {
+      throw new Error("Don't know how to serialize query parameter '".concat(key, "': ").concat(value));
+    } else {
+      throw e;
+    }
   } // Ignore null and undefined values
 
 
