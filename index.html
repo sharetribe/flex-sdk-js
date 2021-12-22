@@ -119,6 +119,7 @@ communicate with the API.</p>
 <pre><code class="lang-js"><span class="pl-k">const</span> sharetribeSdk = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-flex-sdk&apos;</span>);
 
 <span class="pl-c">// Create new SDK instance</span>
+<span class="pl-c">// To obtain a client ID, see Applications in Flex Console</span>
 <span class="pl-k">const</span> sdk = sharetribeSdk.createInstance({
   <span class="hljs-attr">clientId</span>: <span class="pl-s">&apos;&lt;Your Client ID here&gt;&apos;</span>
 });
@@ -137,6 +138,9 @@ sdk.listings
     <span class="pl-c1">console</span>.log(<span class="pl-s">`Request failed with status: <span class="hljs-subst">${res.status}</span> <span class="hljs-subst">${res.statusText}</span>`</span>);
   });
 </code></pre>
+<p>Client ID is required to create a new SDK instance.
+See <a href="https://www.sharetribe.com/docs/background/applications/">this  article</a>
+to learn how to create an application and get the client ID.</p>
 <h2 id="examples">Examples</h2>
 <p>See <a href="https://github.com/sharetribe/flex-sdk-js/tree/master/examples/">examples/</a> directory in Github repository.</p>
 <h2 id="documentation">Documentation</h2>
