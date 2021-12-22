@@ -40,6 +40,7 @@ yarn add sharetribe-flex-sdk
 const sharetribeSdk = require('sharetribe-flex-sdk');
 
 // Create new SDK instance
+// To obtain a client ID, see Applications in Flex Console
 const sdk = sharetribeSdk.createInstance({
   clientId: '<Your Client ID here>'
 });
@@ -58,6 +59,10 @@ sdk.listings
     console.log(`Request failed with status: ${res.status} ${res.statusText}`);
   });
 ```
+
+Client ID is required to create a new SDK instance. 
+See [this  article](https://www.sharetribe.com/docs/background/applications/)
+to learn how to create an application and get the client ID.
 
 ## Examples
 
