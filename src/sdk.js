@@ -34,7 +34,6 @@ const defaultSdkConfig = {
   clientSecret: null,
   baseUrl: 'https://flex-api.sharetribe.com',
   typeHandlers: [],
-  endpoints: [],
   adapter: null,
   version: 'v1',
   httpAgent: null,
