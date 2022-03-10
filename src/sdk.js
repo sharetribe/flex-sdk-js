@@ -334,9 +334,7 @@ const marketplaceApiEndpoints = [
     path: 'stock/compare_and_set',
     method: 'post',
   },
-].map(endpoint => {
-  return { apiName: 'api', ...endpoint };
-});
+];
 
 /**
    List of Auth API endpoints
@@ -357,7 +355,7 @@ const authApiEndpoints = [
     path: 'auth_with_idp',
     method: 'post',
   },
-].map(endpoint => ({ apiName: 'auth', ...endpoint }));
+];
 
 const authenticateInterceptors = [
   new FetchAuthTokenFromStore(),
@@ -411,45 +409,45 @@ const authWithIdpInterceptors = [
    - method (String): get or post
    - path (String | Array): The function name and path. I.e. if the path is `listings.show`,
      then there will be a public SDK method `sdk.listings.show`
-   - endpointInterceptorPath (String | Array): Path to endpoint interceptor
-   - interceptors: List of additional interceptors.
+   - interceptors: List of interceptors.
  */
-const marketplaceApiSdkFnDefinitions = marketplaceApiEndpoints.map(({ apiName, path, method }) => {
-  const fnPath = urlPathToFnPath(path);
-  const fullFnPath = [apiName, ...fnPath];
+const marketplaceApiSdkFnDefinitions = marketplaceApiEndpointInterceptors =>
+  marketplaceApiEndpoints.map(({ path, method }) => {
+    const fnPath = urlPathToFnPath(path);
 
-  return {
-    method,
-    path: fnPath,
-    endpointInterceptorPath: fullFnPath,
-    interceptors: [...authenticateInterceptors],
-  };
-});
+    return {
+      method,
+      path: fnPath,
+      interceptors: [
+        ...authenticateInterceptors,
+        ...(_.get(marketplaceApiEndpointInterceptors, fnPath) || []),
+      ],
+    };
+  });
 
 /**
    List of SDK methods that are not derived from the endpoints.
  */
-const authSdkFnDefinitions = [
+const authSdkFnDefinitions = authApiEndpointInterceptors => [
   {
     path: 'login',
-    endpointInterceptorPath: 'auth.token',
-    interceptors: loginInterceptors,
+    interceptors: [...loginInterceptors, ..._.get(authApiEndpointInterceptors, 'token')],
   },
   {
     path: 'logout',
-    endpointInterceptorPath: 'auth.revoke',
-    interceptors: [...logoutInterceptors],
+    interceptors: [...logoutInterceptors, ..._.get(authApiEndpointInterceptors, 'revoke')],
   },
   {
     path: 'exchangeToken',
-    endpointInterceptorPath: 'auth.token',
-    interceptors: exchangeTokenInterceptors,
+    interceptors: [...exchangeTokenInterceptors, ..._.get(authApiEndpointInterceptors, 'token')],
   },
   { path: 'authInfo', interceptors: [new AuthInfo()] },
   {
     path: 'loginWithIdp',
-    endpointInterceptorPath: 'auth.authWithIdp',
-    interceptors: authWithIdpInterceptors,
+    interceptors: [
+      ...authWithIdpInterceptors,
+      ..._.get(authApiEndpointInterceptors, 'authWithIdp'),
+    ],
   },
 ];
 
@@ -557,15 +555,8 @@ const formatError = e => {
 
 const allowedPerRequestOpts = opts => _.pick(opts, ['onUploadProgress']);
 
-const createSdkFnContextRunner = ({
-  params,
-  queryParams,
-  perRequestOpts,
-  ctx,
-  interceptors,
-  endpointInterceptors,
-}) =>
-  contextRunner(_.compact([...interceptors, ...endpointInterceptors]))({
+const createSdkFnContextRunner = ({ params, queryParams, perRequestOpts, ctx, interceptors }) =>
+  contextRunner(_.compact(interceptors))({
     ...ctx,
     params,
     queryParams,
@@ -636,65 +627,50 @@ const validateSdkConfig = sdkConfig => {
   return sdkConfig;
 };
 
-const createMarketplaceApiEndpointInterceptors = (httpOpts) =>
+const createMarketplaceApiEndpointInterceptors = httpOpts =>
   // Create `endpointInterceptors` object, which is object
   // containing interceptors for all defined endpoints.
   // This object can be passed to other interceptors in the interceptor context so they
   // are able to do API calls (e.g. authentication interceptors)
   //
-  marketplaceApiEndpoints.reduce(
-    (acc, { path, method }) => {
-      const fnPath = urlPathToFnPath(path);
-      const url = `api/${path}`;
-      let transitInterceptors = [];
-      if (method === 'post') {
-        transitInterceptors = [new TransitResponse(), new TransitRequest()];
-      } else {
-        transitInterceptors = [new TransitResponse()];
-      }
+  marketplaceApiEndpoints.reduce((acc, { path, method }) => {
+    const fnPath = urlPathToFnPath(path);
+    const url = `api/${path}`;
+    let transitInterceptors = [];
+    if (method === 'post') {
+      transitInterceptors = [new TransitResponse(), new TransitRequest()];
+    } else {
+      transitInterceptors = [new TransitResponse()];
+    }
 
-      return _.set(acc, fnPath, [...transitInterceptors, createEndpointInterceptor({ method, url, httpOpts })]);
-    },
-    {}
-  );
+    return _.set(acc, fnPath, [
+      ...transitInterceptors,
+      createEndpointInterceptor({ method, url, httpOpts }),
+    ]);
+  }, {});
 
-const createAuthApiEndpointInterceptors = (httpOpts) =>
+const createAuthApiEndpointInterceptors = httpOpts =>
   // Create `endpointInterceptors` object, which is object
   // containing interceptors for all defined endpoints.
   // This object can be passed to other interceptors in the interceptor context so they
   // are able to do API calls (e.g. authentication interceptors)
   //
-  authApiEndpoints.reduce(
-    (acc, { path, method }) => {
-      const fnPath = urlPathToFnPath(path);
-      const url = `auth/${path}`;
-      return _.set(acc, fnPath, [createEndpointInterceptor({ method, url, httpOpts })]);
-    },
-    {}
-  );
+  authApiEndpoints.reduce((acc, { path, method }) => {
+    const fnPath = urlPathToFnPath(path);
+    const url = `auth/${path}`;
+    return _.set(acc, fnPath, [createEndpointInterceptor({ method, url, httpOpts })]);
+  }, {});
 
-const createSdkFns = function(sdkFnDefinitions, endpointInterceptors, sdkConfig) {
+const createSdkFns = function(sdkFnDefinitions, ctx) {
   // Create a context object that will be passed to the interceptor context runner
-  const ctx = {
-    tokenStore: sdkConfig.tokenStore,
-    endpointInterceptors,
-    clientId: sdkConfig.clientId,
-    clientSecret: sdkConfig.clientSecret,
-    typeHandlers: sdkConfig.typeHandlers,
-    transitVerbose: sdkConfig.transitVerbose,
-  };
-
-  return sdkFnDefinitions.map(
-    ({ path, method, endpointInterceptorPath, interceptors }) => ({
-      path,
-      fn: createSdkFn({
-        method,
-        ctx,
-        endpointInterceptors: _.get(endpointInterceptors, endpointInterceptorPath) || [],
-        interceptors,
-      }),
-    })
-  );
+  return sdkFnDefinitions.map(({ path, method, interceptors }) => ({
+    path,
+    fn: createSdkFn({
+      method,
+      ctx,
+      interceptors,
+    }),
+  }));
 };
 
 export default class SharetribeSdk {
@@ -712,13 +688,31 @@ export default class SharetribeSdk {
     // Instantiate API configs
     const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
 
-    const endpointInterceptors = {
-      api: createMarketplaceApiEndpointInterceptors(apiConfigs.api),
-      auth: createAuthApiEndpointInterceptors(apiConfigs.auth),
-    }
+    const marketplaceApiEndpointInterceptors = createMarketplaceApiEndpointInterceptors(
+      apiConfigs.api
+    );
+    const authApiEndpointInterceptors = createAuthApiEndpointInterceptors(apiConfigs.auth);
+
+    const allEndpointInterceptors = {
+      api: marketplaceApiEndpointInterceptors,
+      auth: authApiEndpointInterceptors,
+    };
+
+    const ctx = {
+      tokenStore: sdkConfig.tokenStore,
+      endpointInterceptors: allEndpointInterceptors,
+      clientId: sdkConfig.clientId,
+      clientSecret: sdkConfig.clientSecret,
+      typeHandlers: sdkConfig.typeHandlers,
+      transitVerbose: sdkConfig.transitVerbose,
+    };
 
     // Assign SDK functions to 'this'
-    createSdkFns(marketplaceApiSdkFnDefinitions, endpointInterceptors, sdkConfig).forEach(({ path, fn }) => _.set(this, path, fn));
-    createSdkFns(authSdkFnDefinitions, endpointInterceptors, sdkConfig).forEach(({ path, fn }) => _.set(this, path, fn));
+    createSdkFns(marketplaceApiSdkFnDefinitions(marketplaceApiEndpointInterceptors), ctx).forEach(
+      ({ path, fn }) => _.set(this, path, fn)
+    );
+    createSdkFns(authSdkFnDefinitions(authApiEndpointInterceptors), ctx).forEach(({ path, fn }) =>
+      _.set(this, path, fn)
+    );
   }
 }
