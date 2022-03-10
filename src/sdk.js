@@ -252,7 +252,7 @@ const marketplaceApiEndpoints = [
   },
   {
     path: 'transactions/query',
-    internal: false,
+    method: 'get',
   },
   {
     path: 'transactions/show',
