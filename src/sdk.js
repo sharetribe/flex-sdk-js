@@ -1,8 +1,10 @@
 import axios from 'axios';
 import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
-import { marketplaceApi as marketplaceApiEndpoints,
-         authApi as authApiEndpoints } from './endpoints';
+import {
+  marketplaceApi as marketplaceApiEndpoints,
+  authApi as authApiEndpoints,
+} from './endpoints';
 import paramsSerializer from './params_serializer';
 import AddAuthHeader from './interceptors/add_auth_header';
 import RetryWithRefreshToken from './interceptors/retry_with_refresh_token';
@@ -229,15 +231,15 @@ const marketplaceApiSdkFns = (marketplaceApiEndpointInterceptors, ctx) =>
         ...authenticateInterceptors,
         ...(_.get(marketplaceApiEndpointInterceptors, fnPath) || []),
       ],
-    })
+    });
 
     return {
       path: fnPath,
-      fn
+      fn,
     };
   });
 
-const createAuthApiSdkFn = ({ctx, interceptors}) => (params = {}) =>
+const createAuthApiSdkFn = ({ ctx, interceptors }) => (params = {}) =>
   createSdkFnContextRunner({ params, ctx, interceptors });
 
 /**
@@ -249,13 +251,13 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
     fn: createAuthApiSdkFn({
       ctx,
       interceptors: [...loginInterceptors, ..._.get(authApiEndpointInterceptors, 'token')],
-    })
+    }),
   },
   {
     path: 'logout',
     fn: createAuthApiSdkFn({
       ctx,
-      interceptors: [...logoutInterceptors, ..._.get(authApiEndpointInterceptors, 'revoke')]
+      interceptors: [...logoutInterceptors, ..._.get(authApiEndpointInterceptors, 'revoke')],
     }),
   },
   {
@@ -263,13 +265,14 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
     fn: createAuthApiSdkFn({
       ctx,
       interceptors: [...exchangeTokenInterceptors, ..._.get(authApiEndpointInterceptors, 'token')],
-    })
+    }),
   },
-  { path: 'authInfo',
+  {
+    path: 'authInfo',
     fn: createAuthApiSdkFn({
       ctx,
       interceptors: [new AuthInfo()],
-    })
+    }),
   },
   {
     path: 'loginWithIdp',
@@ -278,9 +281,9 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
       interceptors: [
         ...authWithIdpInterceptors,
         ..._.get(authApiEndpointInterceptors, 'authWithIdp'),
-      ]
-    })
-  }
+      ],
+    }),
+  },
 ];
 
 // const logAndReturn = (data) => {
@@ -397,18 +400,22 @@ const createMarketplaceApiEndpointInterceptors = httpOpts =>
   // This object can be passed to other interceptors in the interceptor context so they
   // are able to do API calls (e.g. authentication interceptors)
   //
-  marketplaceApiEndpoints.reduce((acc, { path, method }) => {
+  marketplaceApiEndpoints.reduce((acc, { path, method, multipart }) => {
     const fnPath = urlPathToFnPath(path);
     const url = `api/${path}`;
-    let transitInterceptors = [];
-    if (method === 'post') {
-      transitInterceptors = [new TransitResponse(), new TransitRequest()];
+
+    let requestFormatInterceptors = [];
+    if (method === 'post' && multipart) {
+      requestFormatInterceptors = [new MultipartRequest()];
+    } else if (method === 'post') {
+      requestFormatInterceptors = [new TransitRequest()];
     } else {
-      transitInterceptors = [new TransitResponse()];
+      requestFormatInterceptors = [];
     }
 
     return _.set(acc, fnPath, [
-      ...transitInterceptors,
+      new TransitResponse(),
+      ...requestFormatInterceptors,
       createEndpointInterceptor({ method, url, httpOpts }),
     ]);
   }, {});
@@ -460,8 +467,8 @@ export default class SharetribeSdk {
     };
 
     // Assign SDK functions to 'this'
-    marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(
-      ({ path, fn }) => _.set(this, path, fn)
+    marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
+      _.set(this, path, fn)
     );
     authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
       _.set(this, path, fn)

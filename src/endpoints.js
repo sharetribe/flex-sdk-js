@@ -136,6 +136,7 @@ export const marketplaceApi = [
   {
     path: 'images/upload',
     method: 'post',
+    multipart: true,
   },
   {
     path: 'transactions/initiate',
