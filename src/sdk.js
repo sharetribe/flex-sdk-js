@@ -335,13 +335,7 @@ const marketplaceApiEndpoints = [
     method: 'post',
   },
 ].map(endpoint => {
-  let interceptors = [];
-  if (endpoint.method === 'post') {
-    interceptors = [new TransitResponse(), new TransitRequest()];
-  } else {
-    interceptors = [new TransitResponse()];
-  }
-  return { apiName: 'api', internal: false, interceptors, ...endpoint };
+  return { apiName: 'api', ...endpoint };
 });
 
 /**
@@ -363,7 +357,7 @@ const authApiEndpoints = [
     path: 'auth_with_idp',
     method: 'post',
   },
-].map(endpoint => ({ apiName: 'auth', internal: true, interceptors: [], ...endpoint }));
+].map(endpoint => ({ apiName: 'auth', ...endpoint }));
 
 const authenticateInterceptors = [
   new FetchAuthTokenFromStore(),
@@ -642,17 +636,39 @@ const validateSdkConfig = sdkConfig => {
   return sdkConfig;
 };
 
-const createEndpointInterceptors = (endpointDefinitions, httpOpts) =>
+const createMarketplaceApiEndpointInterceptors = (httpOpts) =>
   // Create `endpointInterceptors` object, which is object
   // containing interceptors for all defined endpoints.
   // This object can be passed to other interceptors in the interceptor context so they
   // are able to do API calls (e.g. authentication interceptors)
   //
-  endpointDefinitions.reduce(
-    (acc, { path, apiName, method, interceptors = [] }) => {
+  marketplaceApiEndpoints.reduce(
+    (acc, { path, method }) => {
       const fnPath = urlPathToFnPath(path);
-      const url = [apiName, path].join('/');
-      return _.set(acc, fnPath, [...interceptors, createEndpointInterceptor({ method, url, httpOpts })]);
+      const url = `api/${path}`;
+      let transitInterceptors = [];
+      if (method === 'post') {
+        transitInterceptors = [new TransitResponse(), new TransitRequest()];
+      } else {
+        transitInterceptors = [new TransitResponse()];
+      }
+
+      return _.set(acc, fnPath, [...transitInterceptors, createEndpointInterceptor({ method, url, httpOpts })]);
+    },
+    {}
+  );
+
+const createAuthApiEndpointInterceptors = (httpOpts) =>
+  // Create `endpointInterceptors` object, which is object
+  // containing interceptors for all defined endpoints.
+  // This object can be passed to other interceptors in the interceptor context so they
+  // are able to do API calls (e.g. authentication interceptors)
+  //
+  authApiEndpoints.reduce(
+    (acc, { path, method }) => {
+      const fnPath = urlPathToFnPath(path);
+      const url = `auth/${path}`;
+      return _.set(acc, fnPath, [createEndpointInterceptor({ method, url, httpOpts })]);
     },
     {}
   );
@@ -697,8 +713,8 @@ export default class SharetribeSdk {
     const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
 
     const endpointInterceptors = {
-      api: createEndpointInterceptors(marketplaceApiEndpoints, apiConfigs.api),
-      auth: createEndpointInterceptors(authApiEndpoints, apiConfigs.auth),
+      api: createMarketplaceApiEndpointInterceptors(apiConfigs.api),
+      auth: createAuthApiEndpointInterceptors(apiConfigs.auth),
     }
 
     // Assign SDK functions to 'this'
