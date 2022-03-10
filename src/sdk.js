@@ -683,7 +683,7 @@ const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
    Creates a list of endpoint interceptors that call the endpoint with the
    given parameters.
 */
-const createEndpointInterceptors = ({ method, url, httpOpts }) => {
+const createEndpointInterceptor = ({ method, url, httpOpts }) => {
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
   return {
@@ -825,6 +825,69 @@ const validateSdkConfig = sdkConfig => {
   return sdkConfig;
 };
 
+const createEndpointInterceptors = function(apiConfigs) {
+  // Read the endpoint definitions and do some mapping
+  const endpointDefs = [...endpointDefinitions].map(epDef => {
+    const { path, apiName, method, interceptors = [] } = epDef;
+    const fnPath = urlPathToFnPath(path);
+    const fullFnPath = [apiName, ...fnPath];
+    const url = [apiName, path].join('/');
+    const httpOpts = apiConfigs[apiName];
+
+    const endpointInterceptors = [
+      ...interceptors,
+      createEndpointInterceptor({ method, url, httpOpts }),
+    ];
+
+    return {
+      ...epDef,
+      fnPath,
+      fullFnPath,
+      endpointInterceptors,
+    };
+  });
+
+  // Create `endpointInterceptors` object, which is object
+  // containing interceptors for all defined endpoints.
+  // This object can be passed to other interceptors in the interceptor context so they
+  // are able to do API calls (e.g. authentication interceptors)
+  const endpointInterceptors = endpointDefs.reduce(
+    (acc, { fullFnPath, endpointInterceptors: interceptors }) =>
+      _.set(acc, fullFnPath, interceptors),
+    {}
+  );
+  return endpointInterceptors;
+};
+
+const createSdkFns = function(sdkConfig) {
+  // Instantiate API configs
+  const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
+
+  const endpointInterceptors = createEndpointInterceptors(apiConfigs);
+
+  // Create a context object that will be passed to the interceptor context runner
+  const ctx = {
+    tokenStore: sdkConfig.tokenStore,
+    endpointInterceptors,
+    clientId: sdkConfig.clientId,
+    clientSecret: sdkConfig.clientSecret,
+    typeHandlers: sdkConfig.typeHandlers,
+    transitVerbose: sdkConfig.transitVerbose,
+  };
+
+  return [...endpointSdkFnDefinitions, ...additionalSdkFnDefinitions].map(
+    ({ path, method, endpointInterceptorPath, interceptors }) => ({
+      path,
+      fn: createSdkFn({
+        method,
+        ctx,
+        endpointInterceptors: _.get(endpointInterceptors, endpointInterceptorPath) || [],
+        interceptors,
+      }),
+    })
+  );
+};
+
 export default class SharetribeSdk {
   /**
      Instantiates a new SharetribeSdk instance.
@@ -837,64 +900,7 @@ export default class SharetribeSdk {
       transformSdkConfig({ ...defaultSdkConfig, ...userSdkConfig })
     );
 
-    // Instantiate API configs
-    const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
-
-    // Read the endpoint definitions and do some mapping
-    const endpointDefs = [...endpointDefinitions].map(epDef => {
-      const { path, apiName, method, interceptors = [] } = epDef;
-      const fnPath = urlPathToFnPath(path);
-      const fullFnPath = [apiName, ...fnPath];
-      const url = [apiName, path].join('/');
-      const httpOpts = apiConfigs[apiName];
-
-      const endpointInterceptors = [
-        ...interceptors,
-        createEndpointInterceptors({ method, url, httpOpts }),
-      ];
-
-      return {
-        ...epDef,
-        fnPath,
-        fullFnPath,
-        endpointInterceptors,
-      };
-    });
-
-    // Create `endpointInterceptors` object, which is object
-    // containing interceptors for all defined endpoints.
-    // This object can be passed to other interceptors in the interceptor context so they
-    // are able to do API calls (e.g. authentication interceptors)
-    const endpointInterceptors = endpointDefs.reduce(
-      (acc, { fullFnPath, endpointInterceptors: interceptors }) =>
-        _.set(acc, fullFnPath, interceptors),
-      {}
-    );
-
-    // Create a context object that will be passed to the interceptor context runner
-    const ctx = {
-      tokenStore: sdkConfig.tokenStore,
-      endpointInterceptors,
-      clientId: sdkConfig.clientId,
-      clientSecret: sdkConfig.clientSecret,
-      typeHandlers: sdkConfig.typeHandlers,
-      transitVerbose: sdkConfig.transitVerbose,
-    };
-
-    // Create SDK functions
-    const sdkFns = [...endpointSdkFnDefinitions, ...additionalSdkFnDefinitions].map(
-      ({ path, method, endpointInterceptorPath, interceptors }) => ({
-        path,
-        fn: createSdkFn({
-          method,
-          ctx,
-          endpointInterceptors: _.get(endpointInterceptors, endpointInterceptorPath) || [],
-          interceptors,
-        }),
-      })
-    );
-
     // Assign SDK functions to 'this'
-    sdkFns.forEach(({ path, fn }) => _.set(this, path, fn));
+    createSdkFns(sdkConfig).forEach(({ path, fn }) => _.set(this, path, fn));
   }
 }
