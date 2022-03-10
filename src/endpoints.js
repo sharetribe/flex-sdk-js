@@ -275,3 +275,16 @@ export const authApi = [
     method: 'post',
   },
 ];
+
+export const assetsApi = [
+  {
+    path: 'pub/<%= clientId %>/v/<%= version %>/<%= assetPath %>',
+    name: 'byVersion',
+    method: 'get',
+  },
+  {
+    path: 'pub/<%= clientId %>/a/<%= versionAlias %>/<%= assetPath %>',
+    name: 'byAlias',
+    method: 'get',
+  },
+];

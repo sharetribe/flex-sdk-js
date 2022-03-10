@@ -906,3 +906,21 @@ describe('exchangeToken', () => {
     });
   });
 });
+
+describe('asset', () => {
+  it('returns latest assets', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.assets('translations.json').then(res => {
+        const resource = res.data.data;
+
+        expect(resource).toEqual(
+          expect.objectContaining({
+            thisIsAssetData: true,
+          })
+        );
+      })
+    );
+  });
+});
