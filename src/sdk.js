@@ -96,449 +96,276 @@ const apis = {
 };
 
 /**
-   List of all known endpoints
+   List of Marketplace API endpoints
 
-   - apiName: api / auth
    - path: URL path to the endpoint
-   - internal: Is this method SDK internal only,
-     or will it be part of the public SDK interface
    - method: HTTP method
  */
-const endpointDefinitions = [
+const marketplaceApiEndpoints = [
   {
-    apiName: 'api',
     path: 'marketplace/show',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'users/show',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'current_user/show',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'current_user/create',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'current_user/create_with_idp',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'current_user/update_profile',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'current_user/change_email',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'current_user/change_password',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'current_user/delete',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'current_user/verify_email',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'current_user/send_verification_email',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'current_user/create_stripe_account',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'current_user/update_stripe_account',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'current_user/delete_stripe_account',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'password_reset/request',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'password_reset/reset',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'listings/show',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'own_listings/show',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'listings/query',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'own_listings/query',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'listings/search',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'own_listings/create',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'own_listings/create_draft',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'own_listings/publish_draft',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'own_listings/discard_draft',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'own_listings/update',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'own_listings/open',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'own_listings/close',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'own_listings/add_image',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'availability_exceptions/create',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'availability_exceptions/delete',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'availability_exceptions/query',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'images/upload',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new MultipartRequest()],
   },
   {
-    apiName: 'api',
     path: 'transactions/initiate',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'transactions/initiate_speculative',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'transactions/transition',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'transactions/transition_speculative',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'transactions/query',
     internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'transactions/show',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'process_transitions/query',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'bookings/query',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'messages/query',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'messages/send',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'reviews/query',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'reviews/show',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'timeslots/query',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'stripe_account/create',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'stripe_account/fetch',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'stripe_account/update',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'stripe_account_links/create',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'stripe_persons/create',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'stripe_setup_intents/create',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'stripe_customer/create',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'stripe_customer/add_payment_method',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'stripe_customer/delete_payment_method',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'stock_adjustments/query',
-    internal: false,
     method: 'get',
-    interceptors: [new TransitResponse()],
   },
   {
-    apiName: 'api',
     path: 'stock_adjustments/create',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
   {
-    apiName: 'api',
     path: 'stock/compare_and_set',
-    internal: false,
     method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
   },
+].map(endpoint => {
+  let interceptors = [];
+  if (endpoint.method === 'post') {
+    interceptors = [new TransitResponse(), new TransitRequest()];
+  } else {
+    interceptors = [new TransitResponse()];
+  }
+  return { apiName: 'api', internal: false, interceptors, ...endpoint };
+});
+
+/**
+   List of Auth API endpoints
+
+   - path: URL path to the endpoint
+   - method: HTTP method
+ */
+const authApiEndpoints = [
   {
-    apiName: 'auth',
     path: 'token',
-    internal: true,
     method: 'post',
-    interceptors: [],
   },
   {
-    apiName: 'auth',
     path: 'revoke',
-    internal: true,
     method: 'post',
-    interceptors: [],
   },
   {
-    apiName: 'auth',
     path: 'auth_with_idp',
-    internal: true,
     method: 'post',
-    interceptors: [],
   },
+].map(endpoint => ({ apiName: 'auth', internal: true, interceptors: [], ...endpoint }));
 
-  /* ******************************************************************************** */
-
-  /*   Deprecated endpoints                                                           */
-
-  /* ******************************************************************************** */
-];
+const endpointDefinitions = [...marketplaceApiEndpoints, ...authApiEndpoints];
 
 const authenticateInterceptors = [
   new FetchAuthTokenFromStore(),
