@@ -411,41 +411,33 @@ const authWithIdpInterceptors = [
 ];
 
 /**
-   Take endpoint definitions and return SDK function definition.
- */
-const sdkFnDefsFromEndpointDefs = epDefs =>
-  epDefs
-    .filter(({ internal = false }) => !internal)
-    .map(({ apiName, path, method }) => {
-      const fnPath = urlPathToFnPath(path);
-      const fullFnPath = [apiName, ...fnPath];
+   List of Marketplace API SDK methods that will be part of the SDKs public interface.
+   The list is created from the `marketplaceApiEndpoints` list.
 
-      return {
-        method,
-        path: fnPath,
-        endpointInterceptorPath: fullFnPath,
-        interceptors: [...authenticateInterceptors],
-      };
-    });
+   The resulting objects in the list will have following fields:
 
-/**
-   List of SDK methods that will be part of the SDKs public interface.
-   The list is created from the `endpointDefinitions` list.
-
-   The objects in the list have following fields:
-
+   - method (String): get or post
    - path (String | Array): The function name and path. I.e. if the path is `listings.show`,
      then there will be a public SDK method `sdk.listings.show`
    - endpointInterceptorPath (String | Array): Path to endpoint interceptor
    - interceptors: List of additional interceptors.
-
  */
-const endpointSdkFnDefinitions = sdkFnDefsFromEndpointDefs(endpointDefinitions);
+const marketplaceApiSdkFnDefinitions = marketplaceApiEndpoints.map(({ apiName, path, method }) => {
+  const fnPath = urlPathToFnPath(path);
+  const fullFnPath = [apiName, ...fnPath];
+
+  return {
+    method,
+    path: fnPath,
+    endpointInterceptorPath: fullFnPath,
+    interceptors: [...authenticateInterceptors],
+  };
+});
 
 /**
    List of SDK methods that are not derived from the endpoints.
  */
-const additionalSdkFnDefinitions = [
+const authSdkFnDefinitions = [
   {
     path: 'login',
     endpointInterceptorPath: 'auth.token',
@@ -702,7 +694,7 @@ const createSdkFns = function(sdkConfig) {
     transitVerbose: sdkConfig.transitVerbose,
   };
 
-  return [...endpointSdkFnDefinitions, ...additionalSdkFnDefinitions].map(
+  return [...marketplaceApiSdkFnDefinitions, ...authSdkFnDefinitions].map(
     ({ path, method, endpointInterceptorPath, interceptors }) => ({
       path,
       fn: createSdkFn({
