@@ -400,6 +400,74 @@ const authWithIdpInterceptors = [
   new AddAuthTokenResponse(),
 ];
 
+const formatError = e => {
+  /* eslint-disable no-param-reassign */
+  if (e.response) {
+    const { status, statusText, data } = e.response;
+    Object.assign(e, { status, statusText, data });
+    delete e.response;
+  }
+
+  if (e.ctx) {
+    // Remove context `ctx` from the error response.
+    //
+    // `ctx` is SDK internal and should be exposed as a part of the
+    // SDK public API. It can be added in the response for debugging
+    // purposes, if needed.
+    delete e.ctx;
+  }
+
+  if (e.config) {
+    // Axios attachs the config object that was used to the error.
+    //
+    // Remove context `config` from the error response.
+    //
+    // `ctx` is SDK internal and should be exposed as a part of the
+    // SDK public API. It can be added in the response for debugging
+    // purposes, if needed.
+    delete e.config;
+  }
+
+  throw e;
+  /* eslint-enable no-param-reassign */
+};
+
+const allowedPerRequestOpts = opts => _.pick(opts, ['onUploadProgress']);
+
+const createSdkFnContextRunner = ({ params, queryParams, perRequestOpts, ctx, interceptors }) =>
+  contextRunner(_.compact(interceptors))({
+    ...ctx,
+    params,
+    queryParams,
+    perRequestOpts,
+  })
+    .then(({ res }) => res)
+    .catch(formatError);
+const createSdkPostFn = sdkFnParams => (params = {}, queryParams = {}, perRequestOpts = {}) =>
+  createSdkFnContextRunner({
+    params,
+    queryParams,
+    perRequestOpts: allowedPerRequestOpts(perRequestOpts),
+    ...sdkFnParams,
+  });
+const createSdkGetFn = sdkFnParams => (params = {}) =>
+  createSdkFnContextRunner({ params, ...sdkFnParams });
+/**
+   Creates a new SDK function.
+
+   'sdk function' is a function that will be attached to the SDK instance.
+   These functions will be part of the SDK's public interface.
+
+   It's meant to used by the user of the SDK.
+ */
+const createSdkFn = ({ method, ...sdkFnParams }) => {
+  if (method && method.toLowerCase() === 'post') {
+    return createSdkPostFn(sdkFnParams);
+  }
+
+  return createSdkGetFn(sdkFnParams);
+};
+
 /**
    List of Marketplace API SDK methods that will be part of the SDKs public interface.
    The list is created from the `marketplaceApiEndpoints` list.
@@ -411,44 +479,68 @@ const authWithIdpInterceptors = [
      then there will be a public SDK method `sdk.listings.show`
    - interceptors: List of interceptors.
  */
-const marketplaceApiSdkFnDefinitions = marketplaceApiEndpointInterceptors =>
+const marketplaceApiSdkFns = (marketplaceApiEndpointInterceptors, ctx) =>
   marketplaceApiEndpoints.map(({ path, method }) => {
     const fnPath = urlPathToFnPath(path);
-
-    return {
+    const fn = createSdkFn({
       method,
-      path: fnPath,
+      ctx,
       interceptors: [
         ...authenticateInterceptors,
         ...(_.get(marketplaceApiEndpointInterceptors, fnPath) || []),
       ],
+    })
+
+    return {
+      path: fnPath,
+      fn
     };
   });
+
+const createAuthApiSdkFn = ({ctx, interceptors}) => (params = {}) =>
+  createSdkFnContextRunner({ params, ctx, interceptors });
 
 /**
    List of SDK methods that are not derived from the endpoints.
  */
-const authSdkFnDefinitions = authApiEndpointInterceptors => [
+const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
   {
     path: 'login',
-    interceptors: [...loginInterceptors, ..._.get(authApiEndpointInterceptors, 'token')],
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [...loginInterceptors, ..._.get(authApiEndpointInterceptors, 'token')],
+    })
   },
   {
     path: 'logout',
-    interceptors: [...logoutInterceptors, ..._.get(authApiEndpointInterceptors, 'revoke')],
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [...logoutInterceptors, ..._.get(authApiEndpointInterceptors, 'revoke')]
+    }),
   },
   {
     path: 'exchangeToken',
-    interceptors: [...exchangeTokenInterceptors, ..._.get(authApiEndpointInterceptors, 'token')],
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [...exchangeTokenInterceptors, ..._.get(authApiEndpointInterceptors, 'token')],
+    })
   },
-  { path: 'authInfo', interceptors: [new AuthInfo()] },
+  { path: 'authInfo',
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [new AuthInfo()],
+    })
+  },
   {
     path: 'loginWithIdp',
-    interceptors: [
-      ...authWithIdpInterceptors,
-      ..._.get(authApiEndpointInterceptors, 'authWithIdp'),
-    ],
-  },
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [
+        ...authWithIdpInterceptors,
+        ..._.get(authApiEndpointInterceptors, 'authWithIdp'),
+      ]
+    })
+  }
 ];
 
 // const logAndReturn = (data) => {
@@ -519,74 +611,6 @@ const createEndpointInterceptor = ({ method, url, httpOpts }) => {
         });
     },
   };
-};
-
-const formatError = e => {
-  /* eslint-disable no-param-reassign */
-  if (e.response) {
-    const { status, statusText, data } = e.response;
-    Object.assign(e, { status, statusText, data });
-    delete e.response;
-  }
-
-  if (e.ctx) {
-    // Remove context `ctx` from the error response.
-    //
-    // `ctx` is SDK internal and should be exposed as a part of the
-    // SDK public API. It can be added in the response for debugging
-    // purposes, if needed.
-    delete e.ctx;
-  }
-
-  if (e.config) {
-    // Axios attachs the config object that was used to the error.
-    //
-    // Remove context `config` from the error response.
-    //
-    // `ctx` is SDK internal and should be exposed as a part of the
-    // SDK public API. It can be added in the response for debugging
-    // purposes, if needed.
-    delete e.config;
-  }
-
-  throw e;
-  /* eslint-enable no-param-reassign */
-};
-
-const allowedPerRequestOpts = opts => _.pick(opts, ['onUploadProgress']);
-
-const createSdkFnContextRunner = ({ params, queryParams, perRequestOpts, ctx, interceptors }) =>
-  contextRunner(_.compact(interceptors))({
-    ...ctx,
-    params,
-    queryParams,
-    perRequestOpts,
-  })
-    .then(({ res }) => res)
-    .catch(formatError);
-const createSdkPostFn = sdkFnParams => (params = {}, queryParams = {}, perRequestOpts = {}) =>
-  createSdkFnContextRunner({
-    params,
-    queryParams,
-    perRequestOpts: allowedPerRequestOpts(perRequestOpts),
-    ...sdkFnParams,
-  });
-const createSdkGetFn = sdkFnParams => (params = {}) =>
-  createSdkFnContextRunner({ params, ...sdkFnParams });
-/**
-   Creates a new SDK function.
-
-   'sdk function' is a function that will be attached to the SDK instance.
-   These functions will be part of the SDK's public interface.
-
-   It's meant to used by the user of the SDK.
- */
-const createSdkFn = ({ method, ...sdkFnParams }) => {
-  if (method && method.toLowerCase() === 'post') {
-    return createSdkPostFn(sdkFnParams);
-  }
-
-  return createSdkGetFn(sdkFnParams);
 };
 
 // Take SDK configurations, do transformation and return.
@@ -661,18 +685,6 @@ const createAuthApiEndpointInterceptors = httpOpts =>
     return _.set(acc, fnPath, [createEndpointInterceptor({ method, url, httpOpts })]);
   }, {});
 
-const createSdkFns = function(sdkFnDefinitions, ctx) {
-  // Create a context object that will be passed to the interceptor context runner
-  return sdkFnDefinitions.map(({ path, method, interceptors }) => ({
-    path,
-    fn: createSdkFn({
-      method,
-      ctx,
-      interceptors,
-    }),
-  }));
-};
-
 export default class SharetribeSdk {
   /**
      Instantiates a new SharetribeSdk instance.
@@ -708,10 +720,10 @@ export default class SharetribeSdk {
     };
 
     // Assign SDK functions to 'this'
-    createSdkFns(marketplaceApiSdkFnDefinitions(marketplaceApiEndpointInterceptors), ctx).forEach(
+    marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(
       ({ path, fn }) => _.set(this, path, fn)
     );
-    createSdkFns(authSdkFnDefinitions(authApiEndpointInterceptors), ctx).forEach(({ path, fn }) =>
+    authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
       _.set(this, path, fn)
     );
   }
