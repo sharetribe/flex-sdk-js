@@ -308,16 +308,35 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
 const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
   {
     path: 'assets',
-    fn: assetPath =>
-      createSdkFnContextRunner({
+    fn: (assetPath, versionParams) => {
+      const { version, versionAlias } = versionParams || {};
+
+      if (version && versionAlias) {
+        throw new Error('Please provide either version or versionAlias but not both');
+      }
+
+      if (version) {
+        return createSdkFnContextRunner({
+          ctx,
+          pathParams: {
+            clientId: ctx.clientId,
+            version,
+            assetPath,
+          },
+          interceptors: _.get(assetsEndpointInterceptors, 'byVersion'),
+        });
+      }
+
+      return createSdkFnContextRunner({
         ctx,
         pathParams: {
           clientId: ctx.clientId,
-          versionAlias: 'latest',
+          versionAlias: versionAlias || 'latest',
           assetPath,
         },
-        interceptors: _.get(assetsEndpointInterceptors, 'byAlias'),
-      }),
+        interceptors: _.get(assetsEndpointInterceptors, 'byVersionAlias'),
+      });
+    },
   },
 ];
 

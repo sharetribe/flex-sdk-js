@@ -284,7 +284,7 @@ export const assetsApi = [
   },
   {
     path: 'pub/<%= clientId %>/a/<%= versionAlias %>/<%= assetPath %>',
-    name: 'byAlias',
+    name: 'byVersionAlias',
     method: 'get',
   },
 ];

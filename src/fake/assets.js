@@ -7,7 +7,7 @@ const pub = {
 
     if (
       clientId === '08ec69f6-d37e-414d-83eb-324e94afddf0' &&
-      alias === 'latest' &&
+      (alias === 'latest' || alias === 'release-prod') &&
       assetPath === 'translations.json'
     ) {
       const res = `["^ ",
@@ -17,8 +17,25 @@ const pub = {
                        "navigation.login","Log in"],
                      "~:included",[],
                      "~:meta",["^ ",
-                       "~:version","v1",
-                       "~:aliased-version","release-1"]]`;
+                       "~:version","v3",
+                       "~:aliased-version","release-prod"]]`;
+
+      return resolve({ data: res });
+    }
+
+    if (
+      clientId === '08ec69f6-d37e-414d-83eb-324e94afddf0' &&
+      alias === 'release-dev' &&
+      assetPath === 'translations.json'
+    ) {
+      const res = `["^ ",
+                     "~:data",["^ ",
+                       "navigation.listings","Listings",
+                       "navigation.account","My account"],
+                     "~:included",[],
+                     "~:meta",["^ ",
+                       "~:version","v2",
+                       "~:aliased-version","release-dev"]]`;
 
       return resolve({ data: res });
     }
@@ -31,22 +48,21 @@ const pub = {
 
     if (
       clientId === '08ec69f6-d37e-414d-83eb-324e94afddf0' &&
-      version === 'v1' &&
+      version === 'v2' &&
       assetPath === 'translations.json'
     ) {
       const res = `["^ ",
                      "~:data",["^ ",
                        "navigation.listings","Listings",
-                       "navigation.account","My account",
-                       "navigation.login","Log in"],
+                       "navigation.account","My account"],
                      "~:included",[],
                      "~:meta",["^ ",
-                       "~:version","v1",
-                       "~:aliased-version","release-1"]]`;
+                       "~:version","v2",
+                       "~:aliased-version","release-dev"]]`;
       return resolve({ data: res });
     }
 
-    throw new Error(`Asset by alias not implemented for: ${match}`);
+    throw new Error(`Asset by version not implemented for: ${match}`);
   },
 };
 
