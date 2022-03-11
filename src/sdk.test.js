@@ -917,7 +917,9 @@ describe('asset', () => {
 
         expect(resource).toEqual(
           expect.objectContaining({
-            thisIsAssetData: true,
+            'navigation.listings': 'Listings',
+            'navigation.account': 'My account',
+            'navigation.login': 'Log in',
           })
         );
       })

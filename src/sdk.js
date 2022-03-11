@@ -476,7 +476,10 @@ const createAssetsApiEndpointInterceptors = httpOpts =>
   //
   assetsApiEndpoints.reduce((acc, { path, method, name }) => {
     const urlTemplate = _.template(`assets/${path}`);
-    return _.set(acc, name, [new TransitResponse(), createEndpointInterceptor({ method, urlTemplate, httpOpts })]);
+    return _.set(acc, name, [
+      new TransitResponse(),
+      createEndpointInterceptor({ method, urlTemplate, httpOpts }),
+    ]);
   }, {});
 
 export default class SharetribeSdk {
