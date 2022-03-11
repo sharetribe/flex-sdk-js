@@ -18,7 +18,7 @@ const pub = {
                      "~:included",[],
                      "~:meta",["^ ",
                        "~:version","v3",
-                       "~:aliased-version","release-prod"]]`;
+                       "~:aliased-version","v3"]]`;
 
       return resolve({ data: res });
     }
@@ -35,7 +35,7 @@ const pub = {
                      "~:included",[],
                      "~:meta",["^ ",
                        "~:version","v2",
-                       "~:aliased-version","release-dev"]]`;
+                       "~:aliased-version","v2"]]`;
 
       return resolve({ data: res });
     }
@@ -58,7 +58,7 @@ const pub = {
                      "~:included",[],
                      "~:meta",["^ ",
                        "~:version","v2",
-                       "~:aliased-version","release-dev"]]`;
+                       "~:aliased-version","v2"]]`;
       return resolve({ data: res });
     }
 
