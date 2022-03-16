@@ -307,34 +307,47 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
 
 const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
   {
-    path: 'assets',
-    fn: (assetPath, versionParams) => {
-      const { version, versionAlias } = versionParams || {};
-
-      if (version && versionAlias) {
-        throw new Error('Please provide either version or versionAlias but not both');
+    path: 'assetByAlias',
+    fn: ({ path, alias }) => {
+      if (!path) {
+        throw new Error('Missing mandatory parameter `path`');
       }
 
-      if (version) {
-        return createSdkFnContextRunner({
-          ctx,
-          pathParams: {
-            clientId: ctx.clientId,
-            version,
-            assetPath,
-          },
-          interceptors: _.get(assetsEndpointInterceptors, 'byVersion'),
-        });
+      if (!alias) {
+        throw new Error('Missing mandatory parameter `alias`');
       }
 
       return createSdkFnContextRunner({
         ctx,
         pathParams: {
           clientId: ctx.clientId,
-          versionAlias: versionAlias || 'latest',
-          assetPath,
+          alias: alias || 'latest',
+          assetPath: path,
         },
-        interceptors: _.get(assetsEndpointInterceptors, 'byVersionAlias'),
+        interceptors: _.get(assetsEndpointInterceptors, 'byAlias'),
+      });
+    },
+  },
+
+  {
+    path: 'assetByVersion',
+    fn: ({ path, version }) => {
+      if (!version) {
+        throw new Error('Missing mandatory parameter `version`');
+      }
+
+      if (!version) {
+        throw new Error('Missing mandatory parameter `alias`');
+      }
+
+      return createSdkFnContextRunner({
+        ctx,
+        pathParams: {
+          clientId: ctx.clientId,
+          version,
+          assetPath: path,
+        },
+        interceptors: _.get(assetsEndpointInterceptors, 'byVersion'),
       });
     },
   },

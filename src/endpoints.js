@@ -283,8 +283,8 @@ export const assetsApi = [
     method: 'get',
   },
   {
-    path: 'pub/<%= clientId %>/a/<%= versionAlias %>/<%= assetPath %>',
-    name: 'byVersionAlias',
+    path: 'pub/<%= clientId %>/a/<%= alias %>/<%= assetPath %>',
+    name: 'byAlias',
     method: 'get',
   },
 ];

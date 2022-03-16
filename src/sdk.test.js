@@ -912,7 +912,7 @@ describe('asset', () => {
     const { sdk } = createSdk();
 
     return report(
-      sdk.assets('translations.json').then(res => {
+      sdk.assetByAlias({ path: 'translations.json', alias: 'latest' }).then(res => {
         const resource = res.data.data;
         const { version } = res.data.meta;
 
@@ -930,7 +930,7 @@ describe('asset', () => {
     const { sdk } = createSdk();
 
     return report(
-      sdk.assets('translations.json', { version: 'v2' }).then(res => {
+      sdk.assetByVersion({ path: 'translations.json', version: 'v2' }).then(res => {
         const resource = res.data.data;
         const { version } = res.data.meta;
 
@@ -947,7 +947,7 @@ describe('asset', () => {
     const { sdk } = createSdk();
 
     return report(
-      sdk.assets('translations.json', { versionAlias: 'release-dev' }).then(res => {
+      sdk.assetByAlias({ path: 'translations.json', alias: 'release-dev' }).then(res => {
         const resource = res.data.data;
         const { version } = res.data.meta;
 
