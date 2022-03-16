@@ -153,7 +153,7 @@ const formatError = e => {
   if (e.ctx) {
     // Remove context `ctx` from the error response.
     //
-    // `ctx` is SDK internal and should be exposed as a part of the
+    // `ctx` is SDK internal and shouldn't be exposed as a part of the
     // SDK public API. It can be added in the response for debugging
     // purposes, if needed.
     delete e.ctx;
