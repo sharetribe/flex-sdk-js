@@ -284,7 +284,7 @@ export const authApi = [
    `sdk.assetByVersion()` that call these Assets API endpoints.
 
    Fields:
-   - path: URL path to the endpoint. Path can contain path params.
+   - pathFn: Function that takes path params, and returns URL.
      Lodash's `template` function is used for templating.
    - method: HTTP method
    - name: Endpoint name. Other APIs (Marketplace and Auth) derive the name from
@@ -294,12 +294,12 @@ export const authApi = [
  */
 export const assetsApi = [
   {
-    path: 'pub/<%= clientId %>/v/<%= version %>/<%= assetPath %>',
+    pathFn: ({ clientId, version, assetPath }) => `pub/${clientId}/v/${version}/${assetPath}`,
     method: 'get',
     name: 'byVersion',
   },
   {
-    path: 'pub/<%= clientId %>/a/<%= alias %>/<%= assetPath %>',
+    pathFn: ({ clientId, alias, assetPath }) => `pub/${clientId}/a/${alias}/${assetPath}`,
     method: 'get',
     name: 'byAlias',
   },

@@ -394,7 +394,7 @@ const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
    Creates a list of endpoint interceptors that call the endpoint with the
    given parameters.
 */
-const createEndpointInterceptor = ({ method, urlTemplate, httpOpts }) => {
+const createEndpointInterceptor = ({ method, url, urlTemplate, httpOpts }) => {
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
   return {
@@ -410,7 +410,7 @@ const createEndpointInterceptor = ({ method, urlTemplate, httpOpts }) => {
           // Merge additional headers
           headers: { ...httpOptsHeaders, ...headers },
           ...restHttpOpts,
-          url: urlTemplate(pathParams),
+          url: url || urlTemplate(pathParams),
         },
       })
         .then(res => ({ ...ctx, res }))
@@ -470,7 +470,7 @@ const createMarketplaceApiEndpointInterceptors = httpOpts =>
   //
   marketplaceApiEndpoints.reduce((acc, { path, method, multipart }) => {
     const fnPath = urlPathToFnPath(path);
-    const urlTemplate = _.template(`api/${path}`);
+    const url = `api/${path}`;
 
     let requestFormatInterceptors = [];
     if (method === 'post' && multipart) {
@@ -484,7 +484,7 @@ const createMarketplaceApiEndpointInterceptors = httpOpts =>
     return _.set(acc, fnPath, [
       new TransitResponse(),
       ...requestFormatInterceptors,
-      createEndpointInterceptor({ method, urlTemplate, httpOpts }),
+      createEndpointInterceptor({ method, url, httpOpts }),
     ]);
   }, {});
 
@@ -496,8 +496,8 @@ const createAuthApiEndpointInterceptors = httpOpts =>
   //
   authApiEndpoints.reduce((acc, { path, method }) => {
     const fnPath = urlPathToFnPath(path);
-    const urlTemplate = _.template(`auth/${path}`);
-    return _.set(acc, fnPath, [createEndpointInterceptor({ method, urlTemplate, httpOpts })]);
+    const url = `auth/${path}`;
+    return _.set(acc, fnPath, [createEndpointInterceptor({ method, url, httpOpts })]);
   }, {});
 
 const createAssetsApiEndpointInterceptors = httpOpts =>
@@ -506,8 +506,8 @@ const createAssetsApiEndpointInterceptors = httpOpts =>
   // This object can be passed to other interceptors in the interceptor context so they
   // are able to do API calls (e.g. authentication interceptors)
   //
-  assetsApiEndpoints.reduce((acc, { path, method, name }) => {
-    const urlTemplate = _.template(`assets/${path}`);
+  assetsApiEndpoints.reduce((acc, { pathFn, method, name }) => {
+    const urlTemplate = pathParams => `assets/${pathFn(pathParams)}`;
     return _.set(acc, name, [
       new TransitResponse(),
       createEndpointInterceptor({ method, urlTemplate, httpOpts }),
