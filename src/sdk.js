@@ -160,11 +160,12 @@ const formatError = e => {
   }
 
   if (e.config) {
-    // Axios attachs the config object that was used to the error.
+    // Remove Axios config `config` from the error response.
     //
-    // Remove context `config` from the error response.
+    // Axios attaches a config object to the error. This objects contains the
+    // configuration that was used when error occured.
     //
-    // `ctx` is SDK internal and should be exposed as a part of the
+    // `config` is SDK internal and shouldn't be exposed as a part of the
     // SDK public API. It can be added in the response for debugging
     // purposes, if needed.
     delete e.config;
