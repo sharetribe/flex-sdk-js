@@ -1,6 +1,10 @@
 import axios from 'axios';
 import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
+import {
+  marketplaceApi as marketplaceApiEndpoints,
+  authApi as authApiEndpoints,
+} from './endpoints';
 import paramsSerializer from './params_serializer';
 import AddAuthHeader from './interceptors/add_auth_header';
 import RetryWithRefreshToken from './interceptors/retry_with_refresh_token';
@@ -34,7 +38,6 @@ const defaultSdkConfig = {
   clientSecret: null,
   baseUrl: 'https://flex-api.sharetribe.com',
   typeHandlers: [],
-  endpoints: [],
   adapter: null,
   version: 'v1',
   httpAgent: null,
@@ -96,451 +99,6 @@ const apis = {
   }),
 };
 
-/**
-   List of all known endpoints
-
-   - apiName: api / auth
-   - path: URL path to the endpoint
-   - internal: Is this method SDK internal only,
-     or will it be part of the public SDK interface
-   - method: HTTP method
- */
-const endpointDefinitions = [
-  {
-    apiName: 'api',
-    path: 'marketplace/show',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'users/show',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/show',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/create',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/create_with_idp',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/update_profile',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/change_email',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/change_password',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/delete',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/verify_email',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/send_verification_email',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/create_stripe_account',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/update_stripe_account',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'current_user/delete_stripe_account',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'password_reset/request',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'password_reset/reset',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'listings/show',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'own_listings/show',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'listings/query',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'own_listings/query',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'listings/search',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'own_listings/create',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'own_listings/create_draft',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'own_listings/publish_draft',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'own_listings/discard_draft',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'own_listings/update',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'own_listings/open',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'own_listings/close',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'own_listings/add_image',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'availability_exceptions/create',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'availability_exceptions/delete',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'availability_exceptions/query',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'images/upload',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new MultipartRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'transactions/initiate',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'transactions/initiate_speculative',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'transactions/transition',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'transactions/transition_speculative',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'transactions/query',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'transactions/show',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'process_transitions/query',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'bookings/query',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'messages/query',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'messages/send',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'reviews/query',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'reviews/show',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'timeslots/query',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'stripe_account/create',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'stripe_account/fetch',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'stripe_account/update',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'stripe_account_links/create',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'stripe_persons/create',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'stripe_setup_intents/create',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'stripe_customer/create',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'stripe_customer/add_payment_method',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'stripe_customer/delete_payment_method',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'stock_adjustments/query',
-    internal: false,
-    method: 'get',
-    interceptors: [new TransitResponse()],
-  },
-  {
-    apiName: 'api',
-    path: 'stock_adjustments/create',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'api',
-    path: 'stock/compare_and_set',
-    internal: false,
-    method: 'post',
-    interceptors: [new TransitResponse(), new TransitRequest()],
-  },
-  {
-    apiName: 'auth',
-    path: 'token',
-    internal: true,
-    method: 'post',
-    interceptors: [],
-  },
-  {
-    apiName: 'auth',
-    path: 'revoke',
-    internal: true,
-    method: 'post',
-    interceptors: [],
-  },
-  {
-    apiName: 'auth',
-    path: 'auth_with_idp',
-    internal: true,
-    method: 'post',
-    interceptors: [],
-  },
-
-  /* ******************************************************************************** */
-
-  /*   Deprecated endpoints                                                           */
-
-  /* ******************************************************************************** */
-];
-
 const authenticateInterceptors = [
   new FetchAuthTokenFromStore(),
   new FetchAuthTokenFromApi(),
@@ -584,62 +142,148 @@ const authWithIdpInterceptors = [
   new AddAuthTokenResponse(),
 ];
 
+const formatError = e => {
+  /* eslint-disable no-param-reassign */
+  if (e.response) {
+    const { status, statusText, data } = e.response;
+    Object.assign(e, { status, statusText, data });
+    delete e.response;
+  }
+
+  if (e.ctx) {
+    // Remove context `ctx` from the error response.
+    //
+    // `ctx` is SDK internal and shouldn't be exposed as a part of the
+    // SDK public API. It can be added in the response for debugging
+    // purposes, if needed.
+    delete e.ctx;
+  }
+
+  if (e.config) {
+    // Remove Axios config `config` from the error response.
+    //
+    // Axios attaches a config object to the error. This objects contains the
+    // configuration that was used when error occured.
+    //
+    // `config` is SDK internal and shouldn't be exposed as a part of the
+    // SDK public API. It can be added in the response for debugging
+    // purposes, if needed.
+    delete e.config;
+  }
+
+  throw e;
+  /* eslint-enable no-param-reassign */
+};
+
+const allowedPerRequestOpts = opts => _.pick(opts, ['onUploadProgress']);
+
+const createSdkFnContextRunner = ({ params, queryParams, perRequestOpts, ctx, interceptors }) =>
+  contextRunner(_.compact(interceptors))({
+    ...ctx,
+    params,
+    queryParams,
+    perRequestOpts,
+  })
+    .then(({ res }) => res)
+    .catch(formatError);
+const createSdkPostFn = sdkFnParams => (params = {}, queryParams = {}, perRequestOpts = {}) =>
+  createSdkFnContextRunner({
+    params,
+    queryParams,
+    perRequestOpts: allowedPerRequestOpts(perRequestOpts),
+    ...sdkFnParams,
+  });
+const createSdkGetFn = sdkFnParams => (params = {}) =>
+  createSdkFnContextRunner({ params, ...sdkFnParams });
 /**
-   Take endpoint definitions and return SDK function definition.
+   Creates a new SDK function.
+
+   'sdk function' is a function that will be attached to the SDK instance.
+   These functions will be part of the SDK's public interface.
+
+   It's meant to used by the user of the SDK.
  */
-const sdkFnDefsFromEndpointDefs = epDefs =>
-  epDefs
-    .filter(({ internal = false }) => !internal)
-    .map(({ apiName, path, method }) => {
-      const fnPath = urlPathToFnPath(path);
-      const fullFnPath = [apiName, ...fnPath];
+const createSdkFn = ({ method, ...sdkFnParams }) => {
+  if (method && method.toLowerCase() === 'post') {
+    return createSdkPostFn(sdkFnParams);
+  }
 
-      return {
-        method,
-        path: fnPath,
-        endpointInterceptorPath: fullFnPath,
-        interceptors: [...authenticateInterceptors],
-      };
-    });
+  return createSdkGetFn(sdkFnParams);
+};
 
 /**
-   List of SDK methods that will be part of the SDKs public interface.
-   The list is created from the `endpointDefinitions` list.
+   List of Marketplace API SDK methods that will be part of the SDKs public interface.
+   The list is created from the `marketplaceApiEndpoints` list.
 
-   The objects in the list have following fields:
+   The resulting objects in the list will have following fields:
 
+   - method (String): get or post
    - path (String | Array): The function name and path. I.e. if the path is `listings.show`,
      then there will be a public SDK method `sdk.listings.show`
-   - endpointInterceptorPath (String | Array): Path to endpoint interceptor
-   - interceptors: List of additional interceptors.
-
+   - interceptors: List of interceptors.
  */
-const endpointSdkFnDefinitions = sdkFnDefsFromEndpointDefs(endpointDefinitions);
+const marketplaceApiSdkFns = (marketplaceApiEndpointInterceptors, ctx) =>
+  marketplaceApiEndpoints.map(({ path, method }) => {
+    const fnPath = urlPathToFnPath(path);
+    const fn = createSdkFn({
+      method,
+      ctx,
+      interceptors: [
+        ...authenticateInterceptors,
+        ...(_.get(marketplaceApiEndpointInterceptors, fnPath) || []),
+      ],
+    });
+
+    return {
+      path: fnPath,
+      fn,
+    };
+  });
+
+const createAuthApiSdkFn = ({ ctx, interceptors }) => (params = {}) =>
+  createSdkFnContextRunner({ params, ctx, interceptors });
 
 /**
    List of SDK methods that are not derived from the endpoints.
  */
-const additionalSdkFnDefinitions = [
+const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
   {
     path: 'login',
-    endpointInterceptorPath: 'auth.token',
-    interceptors: loginInterceptors,
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [...loginInterceptors, ..._.get(authApiEndpointInterceptors, 'token')],
+    }),
   },
   {
     path: 'logout',
-    endpointInterceptorPath: 'auth.revoke',
-    interceptors: [...logoutInterceptors],
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [...logoutInterceptors, ..._.get(authApiEndpointInterceptors, 'revoke')],
+    }),
   },
   {
     path: 'exchangeToken',
-    endpointInterceptorPath: 'auth.token',
-    interceptors: exchangeTokenInterceptors,
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [...exchangeTokenInterceptors, ..._.get(authApiEndpointInterceptors, 'token')],
+    }),
   },
-  { path: 'authInfo', interceptors: [new AuthInfo()] },
+  {
+    path: 'authInfo',
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [new AuthInfo()],
+    }),
+  },
   {
     path: 'loginWithIdp',
-    endpointInterceptorPath: 'auth.authWithIdp',
-    interceptors: authWithIdpInterceptors,
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [
+        ...authWithIdpInterceptors,
+        ..._.get(authApiEndpointInterceptors, 'authWithIdp'),
+      ],
+    }),
   },
 ];
 
@@ -684,7 +328,7 @@ const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
    Creates a list of endpoint interceptors that call the endpoint with the
    given parameters.
 */
-const createEndpointInterceptors = ({ method, url, httpOpts }) => {
+const createEndpointInterceptor = ({ method, url, httpOpts }) => {
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
   return {
@@ -711,81 +355,6 @@ const createEndpointInterceptors = ({ method, url, httpOpts }) => {
         });
     },
   };
-};
-
-const formatError = e => {
-  /* eslint-disable no-param-reassign */
-  if (e.response) {
-    const { status, statusText, data } = e.response;
-    Object.assign(e, { status, statusText, data });
-    delete e.response;
-  }
-
-  if (e.ctx) {
-    // Remove context `ctx` from the error response.
-    //
-    // `ctx` is SDK internal and should be exposed as a part of the
-    // SDK public API. It can be added in the response for debugging
-    // purposes, if needed.
-    delete e.ctx;
-  }
-
-  if (e.config) {
-    // Axios attachs the config object that was used to the error.
-    //
-    // Remove context `config` from the error response.
-    //
-    // `ctx` is SDK internal and should be exposed as a part of the
-    // SDK public API. It can be added in the response for debugging
-    // purposes, if needed.
-    delete e.config;
-  }
-
-  throw e;
-  /* eslint-enable no-param-reassign */
-};
-
-const allowedPerRequestOpts = opts => _.pick(opts, ['onUploadProgress']);
-
-const createSdkFnContextRunner = ({
-  params,
-  queryParams,
-  perRequestOpts,
-  ctx,
-  interceptors,
-  endpointInterceptors,
-}) =>
-  contextRunner(_.compact([...interceptors, ...endpointInterceptors]))({
-    ...ctx,
-    params,
-    queryParams,
-    perRequestOpts,
-  })
-    .then(({ res }) => res)
-    .catch(formatError);
-const createSdkPostFn = sdkFnParams => (params = {}, queryParams = {}, perRequestOpts = {}) =>
-  createSdkFnContextRunner({
-    params,
-    queryParams,
-    perRequestOpts: allowedPerRequestOpts(perRequestOpts),
-    ...sdkFnParams,
-  });
-const createSdkGetFn = sdkFnParams => (params = {}) =>
-  createSdkFnContextRunner({ params, ...sdkFnParams });
-/**
-   Creates a new SDK function.
-
-   'sdk function' is a function that will be attached to the SDK instance.
-   These functions will be part of the SDK's public interface.
-
-   It's meant to used by the user of the SDK.
- */
-const createSdkFn = ({ method, ...sdkFnParams }) => {
-  if (method && method.toLowerCase() === 'post') {
-    return createSdkPostFn(sdkFnParams);
-  }
-
-  return createSdkGetFn(sdkFnParams);
 };
 
 // Take SDK configurations, do transformation and return.
@@ -826,6 +395,44 @@ const validateSdkConfig = sdkConfig => {
   return sdkConfig;
 };
 
+const createMarketplaceApiEndpointInterceptors = httpOpts =>
+  // Create `endpointInterceptors` object, which is object
+  // containing interceptors for all defined endpoints.
+  // This object can be passed to other interceptors in the interceptor context so they
+  // are able to do API calls (e.g. authentication interceptors)
+  //
+  marketplaceApiEndpoints.reduce((acc, { path, method, multipart }) => {
+    const fnPath = urlPathToFnPath(path);
+    const url = `api/${path}`;
+
+    let requestFormatInterceptors = [];
+    if (method === 'post' && multipart) {
+      requestFormatInterceptors = [new MultipartRequest()];
+    } else if (method === 'post') {
+      requestFormatInterceptors = [new TransitRequest()];
+    } else {
+      requestFormatInterceptors = [];
+    }
+
+    return _.set(acc, fnPath, [
+      new TransitResponse(),
+      ...requestFormatInterceptors,
+      createEndpointInterceptor({ method, url, httpOpts }),
+    ]);
+  }, {});
+
+const createAuthApiEndpointInterceptors = httpOpts =>
+  // Create `endpointInterceptors` object, which is object
+  // containing interceptors for all defined endpoints.
+  // This object can be passed to other interceptors in the interceptor context so they
+  // are able to do API calls (e.g. authentication interceptors)
+  //
+  authApiEndpoints.reduce((acc, { path, method }) => {
+    const fnPath = urlPathToFnPath(path);
+    const url = `auth/${path}`;
+    return _.set(acc, fnPath, [createEndpointInterceptor({ method, url, httpOpts })]);
+  }, {});
+
 export default class SharetribeSdk {
   /**
      Instantiates a new SharetribeSdk instance.
@@ -841,61 +448,31 @@ export default class SharetribeSdk {
     // Instantiate API configs
     const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
 
-    // Read the endpoint definitions and do some mapping
-    const endpointDefs = [...endpointDefinitions].map(epDef => {
-      const { path, apiName, method, interceptors = [] } = epDef;
-      const fnPath = urlPathToFnPath(path);
-      const fullFnPath = [apiName, ...fnPath];
-      const url = [apiName, path].join('/');
-      const httpOpts = apiConfigs[apiName];
-
-      const endpointInterceptors = [
-        ...interceptors,
-        createEndpointInterceptors({ method, url, httpOpts }),
-      ];
-
-      return {
-        ...epDef,
-        fnPath,
-        fullFnPath,
-        endpointInterceptors,
-      };
-    });
-
-    // Create `endpointInterceptors` object, which is object
-    // containing interceptors for all defined endpoints.
-    // This object can be passed to other interceptors in the interceptor context so they
-    // are able to do API calls (e.g. authentication interceptors)
-    const endpointInterceptors = endpointDefs.reduce(
-      (acc, { fullFnPath, endpointInterceptors: interceptors }) =>
-        _.set(acc, fullFnPath, interceptors),
-      {}
+    const marketplaceApiEndpointInterceptors = createMarketplaceApiEndpointInterceptors(
+      apiConfigs.api
     );
+    const authApiEndpointInterceptors = createAuthApiEndpointInterceptors(apiConfigs.auth);
 
-    // Create a context object that will be passed to the interceptor context runner
+    const allEndpointInterceptors = {
+      api: marketplaceApiEndpointInterceptors,
+      auth: authApiEndpointInterceptors,
+    };
+
     const ctx = {
       tokenStore: sdkConfig.tokenStore,
-      endpointInterceptors,
+      endpointInterceptors: allEndpointInterceptors,
       clientId: sdkConfig.clientId,
       clientSecret: sdkConfig.clientSecret,
       typeHandlers: sdkConfig.typeHandlers,
       transitVerbose: sdkConfig.transitVerbose,
     };
 
-    // Create SDK functions
-    const sdkFns = [...endpointSdkFnDefinitions, ...additionalSdkFnDefinitions].map(
-      ({ path, method, endpointInterceptorPath, interceptors }) => ({
-        path,
-        fn: createSdkFn({
-          method,
-          ctx,
-          endpointInterceptors: _.get(endpointInterceptors, endpointInterceptorPath) || [],
-          interceptors,
-        }),
-      })
-    );
-
     // Assign SDK functions to 'this'
-    sdkFns.forEach(({ path, fn }) => _.set(this, path, fn));
+    marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
+      _.set(this, path, fn)
+    );
+    authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
+      _.set(this, path, fn)
+    );
   }
 }
