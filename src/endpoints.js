@@ -1,8 +1,14 @@
 /**
    List of Marketplace API endpoints
 
+   All Marketplace API endpoints will create a new function to SDK. The SDK
+   function name is derived from the path by camel-casing it, e.g.
+   `current_user/change_password` becomes `sdk.currentUser.changePassword(...)`.
+
+   Fields:
    - path: URL path to the endpoint
    - method: HTTP method
+
  */
 export const marketplaceApi = [
   {
@@ -243,6 +249,15 @@ export const marketplaceApi = [
 /**
    List of Auth API endpoints
 
+   Auth API endpoints do _not_ create SDK functions the same way Marketplace API
+   endpoints do. Instead, there are special SDK functions like `sdk.login()` and
+   `sdk.logout()` that call these Auth API endpoints.
+
+   In addition, some of the interceptors will also call these endpoints
+   internally. For example, if a request fails due to expired access token,
+   SDK's auth interceptors will call `token` endpoints to refresh the token.
+
+   Fields:
    - path: URL path to the endpoint
    - method: HTTP method
  */
