@@ -8,6 +8,11 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Added
+
+- New endpoints [#156](https://github.com/sharetribe/flex-sdk-js/pull/156)
+  - `sdk.currentUser.delete(/* ... */)`
+
 ## [v1.15.0] - 2021-10-06
 
 ### Added
