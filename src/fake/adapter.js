@@ -2,6 +2,7 @@ import _ from 'lodash';
 import createTokenStore from './token_store';
 import * as auth from './auth';
 import * as api from './api';
+import assets from './assets';
 
 /**
    This file implements a fake adapters for testing purposes only.
@@ -62,7 +63,7 @@ const requireAuth = (config, reject, tokenStore) => {
   });
 };
 
-const defaultHandler = (config, resolve, reject, tokenStore) => {
+const marketplaceApiHandler = (config, resolve, reject, tokenStore) => {
   switch (config.url) {
     case 'api/users/show':
       return requireAuth(config, reject, tokenStore).then(() => api.users.show(config, resolve));
@@ -78,6 +79,15 @@ const defaultHandler = (config, resolve, reject, tokenStore) => {
       return requireAuth(config, reject, tokenStore).then(() =>
         api.ownListings.create(config, resolve, reject)
       );
+    default:
+      throw new Error(
+        `No fake adapter handler implemented for Marketplace API endpoint: ${config.url}`
+      );
+  }
+};
+
+const authApiHandler = (config, resolve, reject, tokenStore) => {
+  switch (config.url) {
     case 'auth/token':
       return auth.token(config, resolve, reject, tokenStore);
     case 'auth/revoke':
@@ -87,7 +97,23 @@ const defaultHandler = (config, resolve, reject, tokenStore) => {
     case 'auth/auth_with_idp':
       return auth.authWithIdp(config, resolve, reject, tokenStore);
     default:
-      throw new Error(`Not implemented to Fake adapter: ${config.url}`);
+      throw new Error(`No fake adapter handler implemented for Auth API endpoint: ${config.url}`);
+  }
+};
+
+const defaultHandler = (config, resolve, reject, tokenStore) => {
+  const apiName = config.url.split('/')[0];
+  switch (apiName) {
+    case 'api':
+      return marketplaceApiHandler(config, resolve, reject, tokenStore);
+    case 'auth':
+      return authApiHandler(config, resolve, reject, tokenStore);
+    case 'assets':
+      return assets(config, resolve, reject, tokenStore);
+    default:
+      throw new Error(
+        `No fake adapter handler implemented for: ${config.url}. Unknown api name: ${apiName}`
+      );
   }
 };
 

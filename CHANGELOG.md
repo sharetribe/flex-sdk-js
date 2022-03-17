@@ -11,7 +11,10 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 ### Added
 
 - New endpoints [#156](https://github.com/sharetribe/flex-sdk-js/pull/156)
-  - `sdk.currentUser.delete(/* ... */)`
+  - `sdk.currentUser.delete(/* ... */)`  
+- New endpoints [#154](https://github.com/sharetribe/flex-sdk-js/pull/154)
+  - `sdk.assetByAlias({path, alias})`
+  - `sdk.assetByVersion({path, version})`
 
 ## [v1.15.0] - 2021-10-06
 

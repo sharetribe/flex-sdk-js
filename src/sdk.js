@@ -4,6 +4,7 @@ import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
 import {
   marketplaceApi as marketplaceApiEndpoints,
   authApi as authApiEndpoints,
+  assetsApi as assetsApiEndpoints,
 } from './endpoints';
 import paramsSerializer from './params_serializer';
 import AddAuthHeader from './interceptors/add_auth_header';
@@ -97,6 +98,15 @@ const apis = {
     httpAgent,
     httpsAgent,
   }),
+  assets: ({ baseUrl, version, adapter, httpAgent, httpsAgent, transitVerbose }) => ({
+    headers: createHeaders(transitVerbose),
+    baseURL: `${baseUrl}/${version}`,
+    transformRequest: v => v,
+    transformResponse: v => v,
+    adapter,
+    httpAgent,
+    httpsAgent,
+  }),
 };
 
 const authenticateInterceptors = [
@@ -177,11 +187,19 @@ const formatError = e => {
 
 const allowedPerRequestOpts = opts => _.pick(opts, ['onUploadProgress']);
 
-const createSdkFnContextRunner = ({ params, queryParams, perRequestOpts, ctx, interceptors }) =>
+const createSdkFnContextRunner = ({
+  params,
+  queryParams,
+  pathParams,
+  perRequestOpts,
+  ctx,
+  interceptors,
+}) =>
   contextRunner(_.compact(interceptors))({
     ...ctx,
     params,
     queryParams,
+    pathParams,
     perRequestOpts,
   })
     .then(({ res }) => res)
@@ -287,6 +305,54 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
   },
 ];
 
+const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
+  {
+    path: 'assetByAlias',
+    fn: ({ path, alias }) => {
+      if (!path) {
+        throw new Error('Missing mandatory parameter `path`');
+      }
+
+      if (!alias) {
+        throw new Error('Missing mandatory parameter `alias`');
+      }
+
+      return createSdkFnContextRunner({
+        ctx,
+        pathParams: {
+          clientId: ctx.clientId,
+          alias: alias || 'latest',
+          assetPath: path,
+        },
+        interceptors: _.get(assetsEndpointInterceptors, 'byAlias'),
+      });
+    },
+  },
+
+  {
+    path: 'assetByVersion',
+    fn: ({ path, version }) => {
+      if (!version) {
+        throw new Error('Missing mandatory parameter `version`');
+      }
+
+      if (!version) {
+        throw new Error('Missing mandatory parameter `alias`');
+      }
+
+      return createSdkFnContextRunner({
+        ctx,
+        pathParams: {
+          clientId: ctx.clientId,
+          version,
+          assetPath: path,
+        },
+        interceptors: _.get(assetsEndpointInterceptors, 'byVersion'),
+      });
+    },
+  },
+];
+
 // const logAndReturn = (data) => {
 //   console.log(data);
 //   return data;
@@ -328,12 +394,13 @@ const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
    Creates a list of endpoint interceptors that call the endpoint with the
    given parameters.
 */
-const createEndpointInterceptor = ({ method, url, httpOpts }) => {
+const createEndpointInterceptor = ({ method, url, urlTemplate, httpOpts }) => {
   const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
 
   return {
     enter: ctx => {
-      const { params, queryParams, headers, perRequestOpts } = ctx;
+      const { params, queryParams, pathParams, headers, perRequestOpts } = ctx;
+
       return doRequest({
         params,
         queryParams,
@@ -343,7 +410,7 @@ const createEndpointInterceptor = ({ method, url, httpOpts }) => {
           // Merge additional headers
           headers: { ...httpOptsHeaders, ...headers },
           ...restHttpOpts,
-          url,
+          url: url || urlTemplate(pathParams),
         },
       })
         .then(res => ({ ...ctx, res }))
@@ -433,6 +500,20 @@ const createAuthApiEndpointInterceptors = httpOpts =>
     return _.set(acc, fnPath, [createEndpointInterceptor({ method, url, httpOpts })]);
   }, {});
 
+const createAssetsApiEndpointInterceptors = httpOpts =>
+  // Create `endpointInterceptors` object, which is object
+  // containing interceptors for all defined endpoints.
+  // This object can be passed to other interceptors in the interceptor context so they
+  // are able to do API calls (e.g. authentication interceptors)
+  //
+  assetsApiEndpoints.reduce((acc, { pathFn, method, name }) => {
+    const urlTemplate = pathParams => `assets/${pathFn(pathParams)}`;
+    return _.set(acc, name, [
+      new TransitResponse(),
+      createEndpointInterceptor({ method, urlTemplate, httpOpts }),
+    ]);
+  }, {});
+
 export default class SharetribeSdk {
   /**
      Instantiates a new SharetribeSdk instance.
@@ -452,10 +533,12 @@ export default class SharetribeSdk {
       apiConfigs.api
     );
     const authApiEndpointInterceptors = createAuthApiEndpointInterceptors(apiConfigs.auth);
+    const assetsApiEndpointInterceptors = createAssetsApiEndpointInterceptors(apiConfigs.assets);
 
     const allEndpointInterceptors = {
       api: marketplaceApiEndpointInterceptors,
       auth: authApiEndpointInterceptors,
+      assets: assetsApiEndpointInterceptors,
     };
 
     const ctx = {
@@ -472,6 +555,9 @@ export default class SharetribeSdk {
       _.set(this, path, fn)
     );
     authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
+      _.set(this, path, fn)
+    );
+    assetsApiSdkFns(assetsApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
       _.set(this, path, fn)
     );
   }

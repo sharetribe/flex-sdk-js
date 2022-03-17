@@ -275,3 +275,32 @@ export const authApi = [
     method: 'post',
   },
 ];
+
+/**
+   List of Assets API endpoints
+
+   Assets API endpoints do _not_ create SDK functions the same way Marketplace API
+   endpoints do. Instead, there are special SDK functions like `sdk.assetByAlias()` and
+   `sdk.assetByVersion()` that call these Assets API endpoints.
+
+   Fields:
+   - pathFn: Function that takes path params, and returns URL.
+     Lodash's `template` function is used for templating.
+   - method: HTTP method
+   - name: Endpoint name. Other APIs (Marketplace and Auth) derive the name from
+     the `path`, but since Assets API uses path params we can't trivially derive
+     the name from path.
+
+ */
+export const assetsApi = [
+  {
+    pathFn: ({ clientId, version, assetPath }) => `pub/${clientId}/v/${version}/${assetPath}`,
+    method: 'get',
+    name: 'byVersion',
+  },
+  {
+    pathFn: ({ clientId, alias, assetPath }) => `pub/${clientId}/a/${alias}/${assetPath}`,
+    method: 'get',
+    name: 'byAlias',
+  },
+];
