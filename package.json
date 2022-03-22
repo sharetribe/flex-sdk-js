@@ -1,6 +1,6 @@
 {
   "name": "sharetribe-flex-sdk",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "Sharetribe Flex SDK for JavaScript",
   "main": "build/sharetribe-flex-sdk-node.js",
   "browser": "build/sharetribe-flex-sdk-web.js",

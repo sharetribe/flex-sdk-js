@@ -10,8 +10,12 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+## [v1.16.0] - 2022-03-23
+
+### Added
+
 - New endpoints [#156](https://github.com/sharetribe/flex-sdk-js/pull/156)
-  - `sdk.currentUser.delete(/* ... */)`  
+  - `sdk.currentUser.delete(/* ... */)`
 - New endpoints [#154](https://github.com/sharetribe/flex-sdk-js/pull/154)
   - `sdk.assetByAlias({path, alias})`
   - `sdk.assetByVersion({path, version})`
@@ -120,10 +124,10 @@ into a proper release.
 ### Changed
 
 - `sdk.authInfo` return value has been updated
-   [#107](https://github.com/sharetribe/flex-sdk-js/pull/107). The `grantType`
-   attribute has been deprecated and now the returned attributes are:
+  [#107](https://github.com/sharetribe/flex-sdk-js/pull/107). The `grantType`
+  attribute has been deprecated and now the returned attributes are:
   - `isAnonymous`: a boolean denoting if the currently stored token only allows
-     public read access
+    public read access
   - `scopes`: an array containing the scopes associated with the access token
 
 ## [v1.8.0] - 2019-12-20
@@ -241,7 +245,9 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
-[Unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.14.1...HEAD
+[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.16.0...HEAD
+
+[v1.16.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.15.0...v1.16.0]
 [v1.15.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.14.1...v1.15.0
 [v1.14.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.14.0...v1.14.1
 [v1.14.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.13.0...v1.14.0
