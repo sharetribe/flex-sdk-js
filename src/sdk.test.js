@@ -80,7 +80,7 @@ describe('new SharetribeSdk', () => {
     });
 
     const sdk = new SharetribeSdk({
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      ..._.omit(validSdkConfig, 'baseUrl'),
       adapter: adapter.adapterFn,
     });
 
