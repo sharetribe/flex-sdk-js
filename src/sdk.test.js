@@ -1,5 +1,6 @@
 /* eslint camelcase: "off" */
 import _ from 'lodash';
+import transit from 'transit-js';
 import { UUID, LatLng } from './types';
 import createAdapter from './fake/adapter';
 import SharetribeSdk from './sdk';
@@ -59,6 +60,7 @@ describe('new SharetribeSdk', () => {
   const validSdkConfig = {
     clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
     baseUrl: 'https://api-base-url.example',
+    assetCdnBaseUrl: 'https://asset-cdn-base-url.example',
   };
 
   it('validates presence of clientId', () => {
@@ -76,9 +78,18 @@ describe('new SharetribeSdk', () => {
     );
   });
 
+  it('validates that assetCdnBaseUrl is not explicitely set to null', () => {
+    // This test validates that assetCdnBaseUrl is not explicitely set to null.
+    // If assetCdnBaseUrl is missing, default assetCdnBaseUrl is used but if
+    // assetCdnBaseUrl is set to null, that's an error case we want to catch.
+    expect(() => new SharetribeSdk({ ...validSdkConfig, assetCdnBaseUrl: null })).toThrowError(
+      'assetCdnBaseUrl must be provided'
+    );
+  });
+
   it('uses default baseUrl, if none is set', () => {
     const adapter = createAdapter((config, resolve) => {
-      // Fake adapter that echoes the URL
+      // Fake adapter that echoes the URL that was used in the request
       resolve({ data: { baseURL: config.baseURL } });
     });
 
@@ -89,6 +100,25 @@ describe('new SharetribeSdk', () => {
 
     return sdk.login().then(res => {
       expect(res.data.baseURL).toMatch(/^https:\/\/flex-api.sharetribe.com/);
+    });
+  });
+
+  it('uses default assetCdnBaseUrl, if none is set', () => {
+    const adapter = createAdapter((config, resolve) => {
+      // Fake adapter that echoes the URL that was used in the request
+
+      // Asset endpoints expect Transit
+      const w = transit.writer("json");
+      resolve({ data: w.write({ baseURL: config.baseURL }) });
+    });
+
+    const sdk = new SharetribeSdk({
+      ..._.omit(validSdkConfig, 'assetCdnBaseUrl'),
+      adapter: adapter.adapterFn,
+    });
+
+    return sdk.assetByAlias({ path: 'translations.json', alias: 'latest' }).then(res => {
+      expect(res.data.baseURL).toMatch(/^https:\/\/cdn.st-api.com/);
     });
   });
 
