@@ -1,5 +1,6 @@
 /* eslint camelcase: "off" */
 import _ from 'lodash';
+import transit from 'transit-js';
 import { UUID, LatLng } from './types';
 import createAdapter from './fake/adapter';
 import SharetribeSdk from './sdk';
@@ -56,33 +57,73 @@ const createSdk = (config = {}) => {
 };
 
 describe('new SharetribeSdk', () => {
+  const validSdkConfig = {
+    clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+    baseUrl: 'https://api-base-url.example',
+    assetCdnBaseUrl: 'https://asset-cdn-base-url.example',
+  };
+
   it('validates presence of clientId', () => {
-    expect(() => new SharetribeSdk()).toThrowError('clientId must be provided');
+    const { clientId, ...withoutClientIdConfig } = validSdkConfig;
+    expect(() => new SharetribeSdk(withoutClientIdConfig)).toThrowError(
+      'clientId must be provided'
+    );
   });
 
-  it('validates presence of baseUrl', () => {
-    expect(
-      () =>
-        new SharetribeSdk({
-          clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-          baseUrl: null,
-        })
-    ).toThrowError('baseUrl must be provided');
+  it('validates that baseUrl is not explicitely set to null', () => {
+    // This test validates that baseUrl is not explicitely set to null. If
+    // baseUrl is missing, default baseUrl is used but if baseUrl is set to
+    // null, that's an error case we want to catch.
+    expect(() => new SharetribeSdk({ ...validSdkConfig, baseUrl: null })).toThrowError(
+      'baseUrl must be provided'
+    );
+  });
+
+  it('validates that assetCdnBaseUrl is not explicitely set to null', () => {
+    // This test validates that assetCdnBaseUrl is not explicitely set to null.
+    // If assetCdnBaseUrl is missing, default assetCdnBaseUrl is used but if
+    // assetCdnBaseUrl is set to null, that's an error case we want to catch.
+    expect(() => new SharetribeSdk({ ...validSdkConfig, assetCdnBaseUrl: null })).toThrowError(
+      'assetCdnBaseUrl must be provided'
+    );
   });
 
   it('uses default baseUrl, if none is set', () => {
     const adapter = createAdapter((config, resolve) => {
-      // Fake adapter that echoes the URL
+      // Fake adapter that echoes the URL that was used in the request
       resolve({ data: { baseURL: config.baseURL } });
     });
 
+    const { baseUrl, ...withoutBaseUrl } = validSdkConfig;
+
     const sdk = new SharetribeSdk({
-      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      ...withoutBaseUrl,
       adapter: adapter.adapterFn,
     });
 
     return sdk.login().then(res => {
       expect(res.data.baseURL).toMatch(/^https:\/\/flex-api.sharetribe.com/);
+    });
+  });
+
+  it('uses default assetCdnBaseUrl, if none is set', () => {
+    const adapter = createAdapter((config, resolve) => {
+      // Fake adapter that echoes the URL that was used in the request
+
+      // Asset endpoints expect Transit
+      const w = transit.writer('json');
+      resolve({ data: w.write({ baseURL: config.baseURL }) });
+    });
+
+    const { assetCdnBaseUrl, ...withoutAssetCdnBaseUrl } = validSdkConfig;
+
+    const sdk = new SharetribeSdk({
+      ...withoutAssetCdnBaseUrl,
+      adapter: adapter.adapterFn,
+    });
+
+    return sdk.assetByAlias({ path: 'translations.json', alias: 'latest' }).then(res => {
+      expect(res.data.baseURL).toMatch(/^https:\/\/cdn.st-api.com/);
     });
   });
 
