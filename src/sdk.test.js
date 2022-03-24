@@ -68,7 +68,7 @@ describe('new SharetribeSdk', () => {
   });
 
   it('validates presence of baseUrl', () => {
-    expect(() => new SharetribeSdk(_.set(validSdkConfig, 'baseUrl', null))).toThrowError(
+    expect(() => new SharetribeSdk({ ...validSdkConfig, baseUrl: null })).toThrowError(
       'baseUrl must be provided'
     );
   });
