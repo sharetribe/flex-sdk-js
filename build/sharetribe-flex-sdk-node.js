@@ -3236,6 +3236,7 @@ var defaultSdkConfig = {
   clientId: null,
   clientSecret: null,
   baseUrl: 'https://flex-api.sharetribe.com',
+  assetCdnBaseUrl: 'https://cdn.st-api.com',
   typeHandlers: [],
   adapter: null,
   version: 'v1',
@@ -3317,7 +3318,7 @@ var apis = {
     };
   },
   assets: function assets(_ref3) {
-    var baseUrl = _ref3.baseUrl,
+    var assetCdnBaseUrl = _ref3.assetCdnBaseUrl,
         version = _ref3.version,
         adapter = _ref3.adapter,
         httpAgent = _ref3.httpAgent,
@@ -3325,7 +3326,7 @@ var apis = {
         transitVerbose = _ref3.transitVerbose;
     return {
       headers: createHeaders(transitVerbose),
-      baseURL: "".concat(baseUrl, "/").concat(version),
+      baseURL: "".concat(assetCdnBaseUrl, "/").concat(version),
       transformRequest: function transformRequest(v) {
         return v;
       },
@@ -3692,6 +3693,10 @@ var validateSdkConfig = function validateSdkConfig(sdkConfig) {
 
   if (!sdkConfig.baseUrl) {
     throw new Error('baseUrl must be provided');
+  }
+
+  if (!sdkConfig.assetCdnBaseUrl) {
+    throw new Error('assetCdnBaseUrl must be provided');
   }
   /* global window, console */
 
