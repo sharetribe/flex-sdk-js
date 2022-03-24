@@ -73,11 +73,17 @@ var sdk = sharetribeSdk.createInstance({
   // Default: false
   transitVerbose: false,
 
-  // The API base URL (optional)
+  // API base URL (optional)
   // Defaults to Sharetribe production (https://flex-api.sharetribe.com)
   // Change this if you want to point the SDK to somewhere else (like localhost).
   // Useful mainly for Sharetribe's internal development
-  baseUrl: "https://the-api-base-url.example.sharetribe.com/",
+  baseUrl: "https://api-base-url.example.sharetribe.com/",
+
+  // Asset CDN base URL (optional)
+  // Defaults to Sharetribe production (https://cdn.st-api.com)
+  // Change this if you want to point the SDK to somewhere else (like localhost).
+  // Useful mainly for Sharetribe's internal development
+  assetCdnBaseUrl: "https://asset-cdn-base-url.example.sharetribe.com/",
 
   // Allow use of Client Secret in browser (optional, defaults to false)
   //
