@@ -67,7 +67,10 @@ describe('new SharetribeSdk', () => {
     );
   });
 
-  it('validates presence of baseUrl', () => {
+  it('validates that baseUrl is not explicitely set to null', () => {
+    // This test validates that baseUrl is not explicitely set to null. If
+    // baseUrl is missing, default baseUrl is used but if baseUrl is set to
+    // null, that's an error case we want to catch.
     expect(() => new SharetribeSdk({ ...validSdkConfig, baseUrl: null })).toThrowError(
       'baseUrl must be provided'
     );
