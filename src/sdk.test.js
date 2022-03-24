@@ -64,7 +64,8 @@ describe('new SharetribeSdk', () => {
   };
 
   it('validates presence of clientId', () => {
-    expect(() => new SharetribeSdk(_.omit(validSdkConfig, ['clientId']))).toThrowError(
+    const { clientId, ...withoutClientIdConfig } = validSdkConfig;
+    expect(() => new SharetribeSdk(withoutClientIdConfig)).toThrowError(
       'clientId must be provided'
     );
   });
@@ -93,8 +94,10 @@ describe('new SharetribeSdk', () => {
       resolve({ data: { baseURL: config.baseURL } });
     });
 
+    const { baseUrl, ...withoutBaseUrl } = validSdkConfig;
+
     const sdk = new SharetribeSdk({
-      ..._.omit(validSdkConfig, 'baseUrl'),
+      ...withoutBaseUrl,
       adapter: adapter.adapterFn,
     });
 
@@ -108,12 +111,14 @@ describe('new SharetribeSdk', () => {
       // Fake adapter that echoes the URL that was used in the request
 
       // Asset endpoints expect Transit
-      const w = transit.writer("json");
+      const w = transit.writer('json');
       resolve({ data: w.write({ baseURL: config.baseURL }) });
     });
 
+    const { assetCdnBaseUrl, ...withoutAssetCdnBaseUrl } = validSdkConfig;
+
     const sdk = new SharetribeSdk({
-      ..._.omit(validSdkConfig, 'assetCdnBaseUrl'),
+      ...withoutAssetCdnBaseUrl,
       adapter: adapter.adapterFn,
     });
 
