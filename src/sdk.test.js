@@ -56,18 +56,21 @@ const createSdk = (config = {}) => {
 };
 
 describe('new SharetribeSdk', () => {
+  const validSdkConfig = {
+    clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+    baseUrl: 'https://api-base-url.example',
+  };
+
   it('validates presence of clientId', () => {
-    expect(() => new SharetribeSdk()).toThrowError('clientId must be provided');
+    expect(() => new SharetribeSdk(_.omit(validSdkConfig, ['clientId']))).toThrowError(
+      'clientId must be provided'
+    );
   });
 
   it('validates presence of baseUrl', () => {
-    expect(
-      () =>
-        new SharetribeSdk({
-          clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-          baseUrl: null,
-        })
-    ).toThrowError('baseUrl must be provided');
+    expect(() => new SharetribeSdk(_.set(validSdkConfig, 'baseUrl', null))).toThrowError(
+      'baseUrl must be provided'
+    );
   });
 
   it('uses default baseUrl, if none is set', () => {
