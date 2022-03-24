@@ -10,6 +10,8 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- New configuration option: `assetCdnBaseUrl`
+
 ## [v1.16.0] - 2022-03-23
 
 ### Added
