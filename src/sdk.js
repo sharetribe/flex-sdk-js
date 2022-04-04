@@ -99,11 +99,11 @@ const apis = {
     httpAgent,
     httpsAgent,
   }),
-  assets: ({ assetCdnBaseUrl, version, adapter, httpAgent, httpsAgent, transitVerbose }) => ({
-    headers: createHeaders(transitVerbose),
+  assets: ({ assetCdnBaseUrl, version, adapter, httpAgent, httpsAgent }) => ({
+    headers: {
+      Accept: 'application/json',
+    },
     baseURL: `${assetCdnBaseUrl}/${version}`,
-    transformRequest: v => v,
-    transformResponse: v => v,
     adapter,
     httpAgent,
     httpsAgent,
@@ -513,10 +513,7 @@ const createAssetsApiEndpointInterceptors = httpOpts =>
   //
   assetsApiEndpoints.reduce((acc, { pathFn, method, name }) => {
     const urlTemplate = pathParams => `assets/${pathFn(pathParams)}`;
-    return _.set(acc, name, [
-      new TransitResponse(),
-      createEndpointInterceptor({ method, urlTemplate, httpOpts }),
-    ]);
+    return _.set(acc, name, [createEndpointInterceptor({ method, urlTemplate, httpOpts })]);
   }, {});
 
 export default class SharetribeSdk {

@@ -1,6 +1,5 @@
 /* eslint camelcase: "off" */
 import _ from 'lodash';
-import transit from 'transit-js';
 import { UUID, LatLng } from './types';
 import createAdapter from './fake/adapter';
 import SharetribeSdk from './sdk';
@@ -109,10 +108,7 @@ describe('new SharetribeSdk', () => {
   it('uses default assetCdnBaseUrl, if none is set', () => {
     const adapter = createAdapter((config, resolve) => {
       // Fake adapter that echoes the URL that was used in the request
-
-      // Asset endpoints expect Transit
-      const w = transit.writer('json');
-      resolve({ data: w.write({ baseURL: config.baseURL }) });
+      resolve({ data: { baseURL: config.baseURL } });
     });
 
     const { assetCdnBaseUrl, ...withoutAssetCdnBaseUrl } = validSdkConfig;

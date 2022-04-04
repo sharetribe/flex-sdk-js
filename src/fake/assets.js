@@ -10,16 +10,18 @@ const pub = {
       (alias === 'latest' || alias === 'release-prod') &&
       assetPath === 'translations.json'
     ) {
-      const res = `["^ ",
-                     "~:data",["^ ",
-                       "navigation.listings","Listings",
-                       "navigation.account","My account",
-                       "navigation.login","Log in"],
-                     "~:included",[],
-                     "~:meta",["^ ",
-                       "~:version","v3",
-                       "~:aliased-version","v3"]]`;
-
+      const res = JSON.stringify({
+        data: {
+          'navigation.listings': 'Listings',
+          'navigation.account': 'My account',
+          'navigation.login': 'Log in',
+        },
+        included: [],
+        meta: {
+          version: 'v3',
+          'aliased-version': 'v3',
+        },
+      });
       return resolve({ data: res });
     }
 
@@ -28,15 +30,17 @@ const pub = {
       alias === 'release-dev' &&
       assetPath === 'translations.json'
     ) {
-      const res = `["^ ",
-                     "~:data",["^ ",
-                       "navigation.listings","Listings",
-                       "navigation.account","My account"],
-                     "~:included",[],
-                     "~:meta",["^ ",
-                       "~:version","v2",
-                       "~:aliased-version","v2"]]`;
-
+      const res = JSON.stringify({
+        data: {
+          'navigation.listings': 'Listings',
+          'navigation.account': 'My account',
+        },
+        included: [],
+        meta: {
+          version: 'v2',
+          'aliased-version': 'v2',
+        },
+      });
       return resolve({ data: res });
     }
 
@@ -51,14 +55,17 @@ const pub = {
       version === 'v2' &&
       assetPath === 'translations.json'
     ) {
-      const res = `["^ ",
-                     "~:data",["^ ",
-                       "navigation.listings","Listings",
-                       "navigation.account","My account"],
-                     "~:included",[],
-                     "~:meta",["^ ",
-                       "~:version","v2",
-                       "~:aliased-version","v2"]]`;
+      const res = JSON.stringify({
+        data: {
+          'navigation.listings': 'Listings',
+          'navigation.account': 'My account',
+        },
+        included: [],
+        meta: {
+          version: 'v2',
+          'aliased-version': 'v2',
+        },
+      });
       return resolve({ data: res });
     }
 
