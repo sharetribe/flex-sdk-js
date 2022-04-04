@@ -10,7 +10,12 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- New configuration option: `assetCdnBaseUrl`
+- New configuration option: `assetCdnBaseUrl` [#159](https://github.com/sharetribe/flex-sdk-js/pull/159)
+
+### Changed
+
+- Request Assets in JSON format instead of Transit [#160](https://github.com/sharetribe/flex-sdk-js/pull/160)
+
 
 ## [v1.16.0] - 2022-03-23
 
