@@ -3322,17 +3322,12 @@ var apis = {
         version = _ref3.version,
         adapter = _ref3.adapter,
         httpAgent = _ref3.httpAgent,
-        httpsAgent = _ref3.httpsAgent,
-        transitVerbose = _ref3.transitVerbose;
+        httpsAgent = _ref3.httpsAgent;
     return {
-      headers: createHeaders(transitVerbose),
+      headers: {
+        Accept: 'application/json'
+      },
       baseURL: "".concat(assetCdnBaseUrl, "/").concat(version),
-      transformRequest: function transformRequest(v) {
-        return v;
-      },
-      transformResponse: function transformResponse(v) {
-        return v;
-      },
       adapter: adapter,
       httpAgent: httpAgent,
       httpsAgent: httpsAgent
@@ -3780,7 +3775,7 @@ var createAssetsApiEndpointInterceptors = function createAssetsApiEndpointInterc
         return "assets/".concat(pathFn(pathParams));
       };
 
-      return __WEBPACK_IMPORTED_MODULE_1_lodash_set___default()(acc, name, [new __WEBPACK_IMPORTED_MODULE_30__interceptors_transit_response__["a" /* default */](), createEndpointInterceptor({
+      return __WEBPACK_IMPORTED_MODULE_1_lodash_set___default()(acc, name, [createEndpointInterceptor({
         method: method,
         urlTemplate: urlTemplate,
         httpOpts: httpOpts
