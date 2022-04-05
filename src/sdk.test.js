@@ -853,6 +853,30 @@ describe('new SharetribeSdk', () => {
     );
   });
 
+  it('returns 500 error data as plain text', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.listings
+        .show({ id: 'eeeeeeee-eeee-eeee-eeee-000000000500' })
+        .then(() => {
+          // Fail
+          expect(true).toEqual(false);
+        })
+        .catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 500,
+              statusText: 'Internal server error',
+              data: 'Internal server error',
+            })
+          );
+          return Promise.resolve();
+        })
+    );
+  });
+
   it('returns error in expected error format, data as an object', () => {
     const { sdk } = createSdk();
 

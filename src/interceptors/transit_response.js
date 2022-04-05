@@ -12,6 +12,11 @@ export default class TransitResponse {
       return ctx;
     }
 
+    // Don't try to parse 500
+    if (ctx.error.response.status === 500) {
+      return ctx;
+    }
+
     return _.update({ ...ctx }, 'error.response.data', data => reader.read(data));
   }
 

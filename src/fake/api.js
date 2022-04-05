@@ -81,6 +81,18 @@ export const listings = {
 
     return resolve({ data: res });
   },
+
+  show: (config, resolve, reject) => {
+    if (config.params.id === 'eeeeeeee-eeee-eeee-eeee-000000000500') {
+      return reject({
+        status: 500,
+        statusText: 'Internal server error',
+        data: 'Internal server error',
+      });
+    }
+
+    throw new Error('Not implemented');
+  },
 };
 
 export const ownListings = {

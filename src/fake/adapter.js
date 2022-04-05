@@ -79,6 +79,12 @@ const marketplaceApiHandler = (config, resolve, reject, tokenStore) => {
       return requireAuth(config, reject, tokenStore).then(() =>
         api.ownListings.create(config, resolve, reject)
       );
+
+    // This returns an error for listing ID "eeeeeeee-eeee-eeee-eeee-000000000500"
+    case 'api/listings/show':
+      return requireAuth(config, reject, tokenStore).then(() =>
+        api.listings.show(config, resolve, reject)
+      );
     default:
       throw new Error(
         `No fake adapter handler implemented for Marketplace API endpoint: ${config.url}`
