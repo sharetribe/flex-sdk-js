@@ -1,6 +1,13 @@
 import _ from 'lodash';
 import { createTransitConverters } from '../serializer';
 
+const isTransit = res => {
+  const headers = res.headers || {};
+  const contentType = headers['content-type'] || '';
+
+  return contentType.startsWith('application/transit+json');
+};
+
 /**
    Transit encode the response
  */
@@ -12,8 +19,7 @@ export default class TransitResponse {
       return ctx;
     }
 
-    // Don't try to parse 500
-    if (ctx.error.response.status === 500) {
+    if (!isTransit(ctx.error.response)) {
       return ctx;
     }
 
@@ -24,6 +30,10 @@ export default class TransitResponse {
     const { reader } = createTransitConverters(ctx.typeHandlers);
 
     if (!ctx.res) {
+      return ctx;
+    }
+
+    if (!isTransit(ctx.res)) {
       return ctx;
     }
 

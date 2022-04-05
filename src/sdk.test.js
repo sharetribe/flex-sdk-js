@@ -5,6 +5,8 @@ import createAdapter from './fake/adapter';
 import SharetribeSdk from './sdk';
 import memoryStore from './memory_store';
 
+const errorListingId = 'eeeeeeee-eeee-eeee-eeee-000000000500';
+
 /**
    Helper to improve error messages.
 
@@ -132,6 +134,34 @@ describe('new SharetribeSdk', () => {
         const expectedKeys = ['status', 'statusText', 'data'];
         expect(expectedKeys).toEqual(expect.arrayContaining(Object.keys(res)));
       })
+    );
+  });
+
+  it('strips internals from the returned error response object', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.listings
+        .show({ id: errorListingId })
+        .then(() => {
+          // Fail
+          expect(true).toEqual(false);
+        })
+        .catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 500,
+              statusText: 'Internal server error',
+              data: 'Internal server error',
+            })
+          );
+
+          const expectedKeys = ['status', 'statusText', 'data'];
+          expect(expectedKeys).toEqual(expect.arrayContaining(Object.keys(e)));
+
+          return Promise.resolve();
+        })
     );
   });
 
@@ -870,7 +900,7 @@ describe('new SharetribeSdk', () => {
 
     return report(
       sdk.listings
-        .show({ id: 'eeeeeeee-eeee-eeee-eeee-000000000500' })
+        .show({ id: errorListingId })
         .then(() => {
           // Fail
           expect(true).toEqual(false);
