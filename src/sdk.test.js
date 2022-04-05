@@ -123,6 +123,18 @@ describe('new SharetribeSdk', () => {
     });
   });
 
+  it('strips internals from the returned response object', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(res => {
+        // Allow the following keys. Strip of some 'internals', i.e. config, headers, etc.
+        const expectedKeys = ['status', 'statusText', 'data'];
+        expect(expectedKeys).toEqual(expect.arrayContaining(Object.keys(res)));
+      })
+    );
+  });
+
   it('calls users endpoint with query params', () => {
     const { sdk } = createSdk();
 
