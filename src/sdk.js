@@ -29,7 +29,7 @@ import AuthInfo from './interceptors/auth_info';
 import MultipartRequest from './interceptors/multipart_request';
 import TransitRequest from './interceptors/transit_request';
 import TransitResponse from './interceptors/transit_response';
-import StripInternalsFromResponse from './interceptors/strip_internals_from_response';
+import FormatHttpResponse from './interceptors/format_http_response';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
 
@@ -248,7 +248,7 @@ const marketplaceApiSdkFns = (marketplaceApiEndpointInterceptors, ctx) =>
       method,
       ctx,
       interceptors: [
-        new StripInternalsFromResponse(),
+        new FormatHttpResponse(),
         ...authenticateInterceptors,
         ...(_.get(marketplaceApiEndpointInterceptors, fnPath) || []),
       ],
@@ -272,7 +272,7 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
     fn: createAuthApiSdkFn({
       ctx,
       interceptors: [
-        new StripInternalsFromResponse(),
+        new FormatHttpResponse(),
         ...loginInterceptors,
         ..._.get(authApiEndpointInterceptors, 'token'),
       ],
@@ -283,7 +283,7 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
     fn: createAuthApiSdkFn({
       ctx,
       interceptors: [
-        new StripInternalsFromResponse(),
+        new FormatHttpResponse(),
         ...logoutInterceptors,
         ..._.get(authApiEndpointInterceptors, 'revoke'),
       ],
@@ -334,10 +334,7 @@ const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
           alias: alias || 'latest',
           assetPath: path,
         },
-        interceptors: [
-          new StripInternalsFromResponse(),
-          ..._.get(assetsEndpointInterceptors, 'byAlias'),
-        ],
+        interceptors: [new FormatHttpResponse(), ..._.get(assetsEndpointInterceptors, 'byAlias')],
       });
     },
   },
@@ -360,10 +357,7 @@ const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
           version,
           assetPath: path,
         },
-        interceptors: [
-          new StripInternalsFromResponse(),
-          ..._.get(assetsEndpointInterceptors, 'byVersion'),
-        ],
+        interceptors: [new FormatHttpResponse(), ..._.get(assetsEndpointInterceptors, 'byVersion')],
       });
     },
   },

@@ -1,14 +1,13 @@
 import _ from 'lodash';
 
 /**
-   Add given params to the `ctx.params`
-
-   Changes to `ctx`:
-
-   - Modify `ctx.params`
+ * Takes `ctx` with HTTP `res` in it and strips internals (e.g. headers, config) and
+ * returns only those values that we want the SDK function to return.
+ *
+ * Should be only used with SDK functions that do HTTP request (e.g. not with AuthInfo)
  */
 
-export default class StripInternalsFromResponse {
+export default class FormatHttpResponse {
   error(ctx) {
     if (!ctx.error.response) {
       return ctx;
