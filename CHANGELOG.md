@@ -15,6 +15,7 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Request Assets in JSON format instead of Transit [#160](https://github.com/sharetribe/flex-sdk-js/pull/160)
+- Read response data as Transit only if Content-Type header is `application/transit+json` [#161](https://github.com/sharetribe/flex-sdk-js/pull/161)
 
 
 ## [v1.16.0] - 2022-03-23
