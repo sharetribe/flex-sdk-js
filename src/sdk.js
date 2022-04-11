@@ -29,6 +29,7 @@ import AuthInfo from './interceptors/auth_info';
 import MultipartRequest from './interceptors/multipart_request';
 import TransitRequest from './interceptors/transit_request';
 import TransitResponse from './interceptors/transit_response';
+import FormatHttpResponse from './interceptors/format_http_response';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
 
@@ -156,8 +157,7 @@ const authWithIdpInterceptors = [
 const formatError = e => {
   /* eslint-disable no-param-reassign */
   if (e.response) {
-    const { status, statusText, data } = e.response;
-    Object.assign(e, { status, statusText, data });
+    Object.assign(e, e.response);
     delete e.response;
   }
 
@@ -248,6 +248,7 @@ const marketplaceApiSdkFns = (marketplaceApiEndpointInterceptors, ctx) =>
       method,
       ctx,
       interceptors: [
+        new FormatHttpResponse(),
         ...authenticateInterceptors,
         ...(_.get(marketplaceApiEndpointInterceptors, fnPath) || []),
       ],
@@ -270,14 +271,22 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
     path: 'login',
     fn: createAuthApiSdkFn({
       ctx,
-      interceptors: [...loginInterceptors, ..._.get(authApiEndpointInterceptors, 'token')],
+      interceptors: [
+        new FormatHttpResponse(),
+        ...loginInterceptors,
+        ..._.get(authApiEndpointInterceptors, 'token'),
+      ],
     }),
   },
   {
     path: 'logout',
     fn: createAuthApiSdkFn({
       ctx,
-      interceptors: [...logoutInterceptors, ..._.get(authApiEndpointInterceptors, 'revoke')],
+      interceptors: [
+        new FormatHttpResponse(),
+        ...logoutInterceptors,
+        ..._.get(authApiEndpointInterceptors, 'revoke'),
+      ],
     }),
   },
   {
@@ -325,7 +334,7 @@ const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
           alias: alias || 'latest',
           assetPath: path,
         },
-        interceptors: _.get(assetsEndpointInterceptors, 'byAlias'),
+        interceptors: [new FormatHttpResponse(), ..._.get(assetsEndpointInterceptors, 'byAlias')],
       });
     },
   },
@@ -348,7 +357,7 @@ const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
           version,
           assetPath: path,
         },
-        interceptors: _.get(assetsEndpointInterceptors, 'byVersion'),
+        interceptors: [new FormatHttpResponse(), ..._.get(assetsEndpointInterceptors, 'byVersion')],
       });
     },
   },
@@ -358,12 +367,6 @@ const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
 //   console.log(data);
 //   return data;
 // };
-
-const handleSuccessResponse = response => {
-  const { status, statusText, data } = response;
-
-  return { status, statusText, data };
-};
 
 // GET requests: `params` includes query params. `queryParams` will be ignored
 // POST requests: `params` includes body params. `queryParams` includes URL query params
@@ -388,7 +391,7 @@ const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
     params: query,
   };
 
-  return axios.request(req).then(handleSuccessResponse);
+  return axios.request(req);
 };
 
 /**

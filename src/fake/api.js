@@ -15,7 +15,10 @@ export const marketplace = {
                      "~:meta", ["^ "],
                      "~:included", []]`;
 
-    return resolve({ data: res });
+    return resolve({
+      data: res,
+      headers: { 'content-type': 'application/transit+json;charset=UTF-8' },
+    });
   },
 };
 
@@ -32,7 +35,10 @@ export const users = {
                    "~:meta", ["^ "],
                    "~:included", []]`;
 
-    return resolve({ data: res });
+    return resolve({
+      data: res,
+      headers: { 'content-type': 'application/transit+json;charset=UTF-8' },
+    });
   },
 };
 
@@ -79,7 +85,23 @@ export const listings = {
                    "~:meta", ["^ "],
                    "~:included", []]`;
 
-    return resolve({ data: res });
+    return resolve({
+      data: res,
+      headers: { 'content-type': 'application/transit+json;charset=UTF-8' },
+    });
+  },
+
+  show: (config, resolve, reject) => {
+    if (config.params.id === 'eeeeeeee-eeee-eeee-eeee-000000000500') {
+      return reject({
+        status: 500,
+        statusText: 'Internal server error',
+        data: 'Internal server error',
+        headers: { 'content-type': 'text/plain' },
+      });
+    }
+
+    throw new Error('Not implemented');
   },
 };
 
@@ -95,6 +117,7 @@ export const ownListings = {
       return reject({
         status: 400,
         statusText: 'Bad Request',
+        headers: { 'content-type': 'application/transit+json;charset=UTF-8' },
         data: `["^ ",
           "~:errors", [
             ["^ ",
@@ -132,6 +155,9 @@ export const ownListings = {
           "~:type", "~:ownListing"]]`;
     }
 
-    return resolve({ data: res });
+    return resolve({
+      data: res,
+      headers: { 'content-type': 'application/transit+json;charset=UTF-8' },
+    });
   },
 };

@@ -5,6 +5,8 @@ import createAdapter from './fake/adapter';
 import SharetribeSdk from './sdk';
 import memoryStore from './memory_store';
 
+const errorListingId = 'eeeeeeee-eeee-eeee-eeee-000000000500';
+
 /**
    Helper to improve error messages.
 
@@ -121,6 +123,46 @@ describe('new SharetribeSdk', () => {
     return sdk.assetByAlias({ path: 'translations.json', alias: 'latest' }).then(res => {
       expect(res.data.baseURL).toMatch(/^https:\/\/cdn.st-api.com/);
     });
+  });
+
+  it('strips internals from the returned response object', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.users.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }).then(res => {
+        // Allow the following keys. Strip of some 'internals', i.e. config, headers, etc.
+        const expectedKeys = ['status', 'statusText', 'data'];
+        expect(expectedKeys).toEqual(expect.arrayContaining(Object.keys(res)));
+      })
+    );
+  });
+
+  it('strips internals from the returned error response object', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.listings
+        .show({ id: errorListingId })
+        .then(() => {
+          // Fail
+          expect(true).toEqual(false);
+        })
+        .catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 500,
+              statusText: 'Internal server error',
+              data: 'Internal server error',
+            })
+          );
+
+          const expectedKeys = ['status', 'statusText', 'data'];
+          expect(expectedKeys).toEqual(expect.arrayContaining(Object.keys(e)));
+
+          return Promise.resolve();
+        })
+    );
   });
 
   it('calls users endpoint with query params', () => {
@@ -846,6 +888,30 @@ describe('new SharetribeSdk', () => {
               status: 401,
               statusText: 'Unauthorized',
               data: 'Unauthorized',
+            })
+          );
+          return Promise.resolve();
+        })
+    );
+  });
+
+  it('returns 500 error data as plain text', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.listings
+        .show({ id: errorListingId })
+        .then(() => {
+          // Fail
+          expect(true).toEqual(false);
+        })
+        .catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 500,
+              statusText: 'Internal server error',
+              data: 'Internal server error',
             })
           );
           return Promise.resolve();
