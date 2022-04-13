@@ -19,7 +19,6 @@ const pub = {
         included: [],
         meta: {
           version: 'v3',
-          'aliased-version': 'v3',
         },
       });
       return resolve({ data: res });
@@ -38,7 +37,6 @@ const pub = {
         included: [],
         meta: {
           version: 'v2',
-          'aliased-version': 'v2',
         },
       });
       return resolve({ data: res });
@@ -63,7 +61,6 @@ const pub = {
         included: [],
         meta: {
           version: 'v2',
-          'aliased-version': 'v2',
         },
       });
       return resolve({ data: res });
