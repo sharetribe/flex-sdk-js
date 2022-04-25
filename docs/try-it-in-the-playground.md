@@ -17,7 +17,7 @@ $ yarn run pg -c <CLIENT-ID>
 ```
 
 This will start the playground using your Marketplace API Client ID to
-connect to to your marketplace. You can create a new or find your
+connect to your marketplace. You can create a new or find your
 existing Client ID in Flex Console at
 https://flex-console.sharetribe.com/applications.
 
