@@ -67,23 +67,33 @@ const createHeaders = transitVerbose => {
   if (transitVerbose) {
     return {
       'X-Transit-Verbose': 'true',
-      Accept: 'application/transit+json',
+      Accept: 'application/json',
     };
   }
 
   return {
-    Accept: 'application/transit+json',
+    Accept: 'application/json',
   };
 };
 
 const apis = {
+  // api: ({ baseUrl, version, adapter, httpAgent, httpsAgent, transitVerbose }) => ({
+  //   headers: createHeaders(transitVerbose),
+  //   baseURL: `${baseUrl}/${version}`,
+  //   transformRequest: v => v,
+  //   transformResponse: v => v,
+  //   adapter,
+  //   paramsSerializer,
+  //   httpAgent,
+  //   httpsAgent,
+  // }),
   api: ({ baseUrl, version, adapter, httpAgent, httpsAgent, transitVerbose }) => ({
-    headers: createHeaders(transitVerbose),
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
     baseURL: `${baseUrl}/${version}`,
-    transformRequest: v => v,
-    transformResponse: v => v,
     adapter,
-    paramsSerializer,
     httpAgent,
     httpsAgent,
   }),
@@ -484,7 +494,7 @@ const createMarketplaceApiEndpointInterceptors = httpOpts =>
     if (method === 'post' && multipart) {
       requestFormatInterceptors = [new MultipartRequest()];
     } else if (method === 'post') {
-      requestFormatInterceptors = [new TransitRequest()];
+      requestFormatInterceptors = [];
     } else {
       requestFormatInterceptors = [];
     }

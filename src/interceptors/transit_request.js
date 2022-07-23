@@ -7,7 +7,7 @@ export default class TransitRequest {
   enter(ctx) {
     const { params, headers = {}, typeHandlers, transitVerbose, ...restCtx } = ctx;
 
-    if (headers['Content-Type'] === 'application/transit+json') {
+    if (headers['Content-Type'] === 'application/json') {
       return ctx;
     }
 
@@ -17,7 +17,7 @@ export default class TransitRequest {
       params: writer.write(params),
       headers: {
         ...headers,
-        'Content-Type': 'application/transit+json',
+        'Content-Type': 'application/json',
       },
       typeHandlers,
       transitVerbose,

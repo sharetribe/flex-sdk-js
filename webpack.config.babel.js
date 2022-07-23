@@ -39,9 +39,9 @@ const webConfig = {
   output: output('web'),
   target: 'web',
   module,
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin(),
-  ],
+  // plugins: [
+  //   new webpack.optimize.UglifyJsPlugin(),
+  // ],
 };
 
 export default () => ([nodeConfig, webConfig]);
