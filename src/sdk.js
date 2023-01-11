@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
+import { fnPath as urlPathToFnPath, trimEndSlash, formData, canonicalAssetPaths } from './utils';
 import {
   marketplaceApi as marketplaceApiEndpoints,
   authApi as authApiEndpoints,
@@ -107,6 +107,7 @@ const apis = {
     },
     baseURL: `${assetCdnBaseUrl}/${version}`,
     adapter,
+    paramsSerializer,
     httpAgent,
     httpsAgent,
   }),
@@ -299,7 +300,7 @@ const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
       }
 
       if (!version) {
-        throw new Error('Missing mandatory parameter `alias`');
+        throw new Error('Missing mandatory parameter `version`');
       }
 
       return createSdkFnContextRunner({
@@ -308,6 +309,70 @@ const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
           clientId: ctx.clientId,
           version,
           assetPath: path,
+        },
+        interceptors: [new FormatHttpResponse(), ..._.get(assetsEndpointInterceptors, 'byVersion')],
+      });
+    },
+  },
+
+  {
+    path: 'assetsByAlias',
+    fn: ({ paths, alias }) => {
+      if (!paths) {
+        throw new Error('Missing mandatory parameter `paths`');
+      }
+
+      if (paths.length === 0) {
+        throw new Error('`paths` must not be empty');
+      }
+
+      if (!alias) {
+        throw new Error('Missing mandatory parameter `alias`');
+      }
+
+      const { pathPrefix, relativePaths } = canonicalAssetPaths(paths);
+
+      return createSdkFnContextRunner({
+        ctx,
+        params: {
+          assets: relativePaths,
+        },
+        pathParams: {
+          clientId: ctx.clientId,
+          alias,
+          assetPath: pathPrefix,
+        },
+        interceptors: [new FormatHttpResponse(), ..._.get(assetsEndpointInterceptors, 'byAlias')],
+      });
+    },
+  },
+
+  {
+    path: 'assetsByVersion',
+    fn: ({ paths, version }) => {
+      if (!paths) {
+        throw new Error('Missing mandatory parameter `paths`');
+      }
+
+      if (paths.length === 0) {
+        throw new Error('`paths` must not be empty');
+      }
+
+      if (!version) {
+        throw new Error('Missing mandatory parameter `version`');
+      }
+
+      const { pathPrefix, relativePaths } = canonicalAssetPaths(paths);
+
+      return createSdkFnContextRunner({
+        ctx,
+        params: {
+          assets: relativePaths,
+        },
+        pathParams: {
+          clientId: ctx.clientId,
+          version,
+          assetPath: pathPrefix,
         },
         interceptors: [new FormatHttpResponse(), ..._.get(assetsEndpointInterceptors, 'byVersion')],
       });
