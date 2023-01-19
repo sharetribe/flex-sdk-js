@@ -1062,4 +1062,78 @@ describe('asset', () => {
       })
     );
   });
+
+  it('returns multiple assets by version', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk
+        .assetsByVersion({ paths: ['content/b.json', 'content/a.json'], version: 'v2' })
+        .then(res => {
+          const resource = res.data.data;
+          const { version } = res.data.meta;
+          expect(resource).toEqual([
+            {
+              id: 'byVersion-a.json',
+              type: 'jsonAsset',
+              attributes: {
+                assetPath: '/content/a.json',
+                data: {
+                  assetPath: 'content/',
+                  relativePath: 'a.json',
+                },
+              },
+            },
+            {
+              id: 'byVersion-b.json',
+              type: 'jsonAsset',
+              attributes: {
+                assetPath: '/content/b.json',
+                data: {
+                  assetPath: 'content/',
+                  relativePath: 'b.json',
+                },
+              },
+            },
+          ]);
+          expect(version).toEqual('v2');
+        })
+    );
+  });
+
+  it('returns multiple assets by alias', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.assetsByAlias({ paths: ['any/foo.json', 'any/bar.json'], alias: 'latest' }).then(res => {
+        const resource = res.data.data;
+        const { version } = res.data.meta;
+        expect(resource).toEqual([
+          {
+            id: 'byAlias-bar.json',
+            type: 'jsonAsset',
+            attributes: {
+              assetPath: '/any/bar.json',
+              data: {
+                assetPath: 'any/',
+                relativePath: 'bar.json',
+              },
+            },
+          },
+          {
+            id: 'byAlias-foo.json',
+            type: 'jsonAsset',
+            attributes: {
+              assetPath: '/any/foo.json',
+              data: {
+                assetPath: 'any/',
+                relativePath: 'foo.json',
+              },
+            },
+          },
+        ]);
+        expect(version).toEqual('v1');
+      })
+    );
+  });
 });
