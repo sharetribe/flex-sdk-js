@@ -1,8 +1,8 @@
-# Calling the API
+# Calling the Marketplace API
 
 ## API Endpoints
 
-The SDK provides direct mapping from API endpoints to SDK methods.
+The SDK provides direct mapping from Marketplace API endpoints to SDK methods.
 
 For example:
 

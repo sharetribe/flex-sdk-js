@@ -6,7 +6,8 @@
 * [Try it in the API Playground!](./try-it-in-the-playground.md)
 * Getting started
   * [Authentication](./authentication.md)
-  * [Calling the API](./calling-the-api.md)
+  * [Calling the Marketplace API](./calling-the-api.md)
+  * [Calling the Asset Delivery API](./calling-the-asset-delivery-api.md)
   * [Types](./types.md)
 * Advanced
   * [Configurations](./configurations.md)
