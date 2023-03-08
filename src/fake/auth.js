@@ -59,6 +59,45 @@ export const token = (config, resolve, reject, fakeTokenStore) => {
   });
 };
 
+export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => {
+  const formData = parseFormData(config.data);
+  let success;
+  let error = {
+    status: 401,
+    statusText: 'Unauthorized',
+    data: 'Unauthorized',
+
+    // Add additional information to help debugging when testing.
+    // This key is NOT returned by the real API.
+    __additionalTestInfo: { formData },
+  }
+
+  if (formData.client_secret === 'valid-secret-valid-hostname') {
+    if (formData.grant_type === 'multitenant_client_credentials') {
+      success = {
+        ...fakeTokenStore.createAnonToken(),
+        client_data: {
+          client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0'
+        }
+      };
+    } 
+  } else if (formData.client_secret === 'valid-secret-invalid-hostname') {
+    error = {
+      ...error,
+      status: 404,
+      statusText: 'Not Found',
+      data: 'Not Found',
+      headers: { 'content-type': 'text/plain' },
+    }
+  }
+
+  if (success) {
+    return resolve({ data: JSON.stringify(success) });
+  }
+
+  return reject(error);
+};
+
 export const authWithIdp = (config, resolve, reject, fakeTokenStore) => {
   const formData = parseFormData(config.data);
   const { idpId, idpClientId, idpToken } = formData;
