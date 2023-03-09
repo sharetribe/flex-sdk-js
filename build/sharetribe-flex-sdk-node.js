@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("axios"));
+		module.exports = factory(require("axios"), require("jsonwebtoken"));
 	else if(typeof define === 'function' && define.amd)
-		define(["axios"], factory);
+		define(["axios", "jsonwebtoken"], factory);
 	else if(typeof exports === 'object')
-		exports["sharetribeSdk"] = factory(require("axios"));
+		exports["sharetribeSdk"] = factory(require("axios"), require("jsonwebtoken"));
 	else
-		root["sharetribeSdk"] = factory(root["axios"]);
-})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_156__) {
+		root["sharetribeSdk"] = factory(root["axios"], root["jsonwebtoken"]);
+})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_156__, __WEBPACK_EXTERNAL_MODULE_215__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -3136,7 +3136,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__sdk__ = __webpack_require__(72);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__types__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__browser_cookie_store__ = __webpack_require__(69);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__express_cookie_store__ = __webpack_require__(215);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__express_cookie_store__ = __webpack_require__(216);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__memory_store__ = __webpack_require__(70);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__serializer__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils__ = __webpack_require__(61);
@@ -3218,6 +3218,8 @@ var util = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__interceptors_format_http_response__ = __webpack_require__(211);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__token_store__ = __webpack_require__(212);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__context_runner__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_34_jsonwebtoken__ = __webpack_require__(215);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_34_jsonwebtoken___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_34_jsonwebtoken__);
 
 
 
@@ -3225,6 +3227,10 @@ var util = {
 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
@@ -3243,6 +3249,7 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -3809,56 +3816,68 @@ var createAssetsApiEndpointInterceptors = function createAssetsApiEndpointInterc
 };
 
 var SharetribeSdk =
-/**
-   Instantiates a new SharetribeSdk instance.
-   The constructor assumes the config options have been
-   already validated.
- */
-function SharetribeSdk(userSdkConfig) {
-  var _this = this;
+/*#__PURE__*/
+function () {
+  /**
+     Instantiates a new SharetribeSdk instance.
+     The constructor assumes the config options have been
+     already validated.
+   */
+  function SharetribeSdk(userSdkConfig) {
+    var _this = this;
 
-  _classCallCheck(this, SharetribeSdk);
+    _classCallCheck(this, SharetribeSdk);
 
-  // Transform and validation SDK configurations
-  var sdkConfig = validateSdkConfig(transformSdkConfig(_objectSpread({}, defaultSdkConfig, {}, userSdkConfig))); // Instantiate API configs
+    // Transform and validation SDK configurations
+    var sdkConfig = validateSdkConfig(transformSdkConfig(_objectSpread({}, defaultSdkConfig, {}, userSdkConfig))); // Instantiate API configs
 
-  var apiConfigs = __WEBPACK_IMPORTED_MODULE_0_lodash_mapValues___default()(apis, function (apiConfig) {
-    return apiConfig(sdkConfig);
-  });
+    var apiConfigs = __WEBPACK_IMPORTED_MODULE_0_lodash_mapValues___default()(apis, function (apiConfig) {
+      return apiConfig(sdkConfig);
+    });
 
-  var marketplaceApiEndpointInterceptors = createMarketplaceApiEndpointInterceptors(apiConfigs.api);
-  var authApiEndpointInterceptors = createAuthApiEndpointInterceptors(apiConfigs.auth);
-  var assetsApiEndpointInterceptors = createAssetsApiEndpointInterceptors(apiConfigs.assets);
-  var allEndpointInterceptors = {
-    api: marketplaceApiEndpointInterceptors,
-    auth: authApiEndpointInterceptors,
-    assets: assetsApiEndpointInterceptors
-  };
-  var ctx = {
-    tokenStore: sdkConfig.tokenStore,
-    endpointInterceptors: allEndpointInterceptors,
-    clientId: sdkConfig.clientId,
-    clientSecret: sdkConfig.clientSecret,
-    typeHandlers: sdkConfig.typeHandlers,
-    transitVerbose: sdkConfig.transitVerbose
-  }; // Assign SDK functions to 'this'
+    var marketplaceApiEndpointInterceptors = createMarketplaceApiEndpointInterceptors(apiConfigs.api);
+    var authApiEndpointInterceptors = createAuthApiEndpointInterceptors(apiConfigs.auth);
+    var assetsApiEndpointInterceptors = createAssetsApiEndpointInterceptors(apiConfigs.assets);
+    var allEndpointInterceptors = {
+      api: marketplaceApiEndpointInterceptors,
+      auth: authApiEndpointInterceptors,
+      assets: assetsApiEndpointInterceptors
+    };
+    var ctx = {
+      tokenStore: sdkConfig.tokenStore,
+      endpointInterceptors: allEndpointInterceptors,
+      clientId: sdkConfig.clientId,
+      clientSecret: sdkConfig.clientSecret,
+      typeHandlers: sdkConfig.typeHandlers,
+      transitVerbose: sdkConfig.transitVerbose
+    }; // Assign SDK functions to 'this'
 
-  marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(function (_ref17) {
-    var path = _ref17.path,
-        fn = _ref17.fn;
-    return __WEBPACK_IMPORTED_MODULE_1_lodash_set___default()(_this, path, fn);
-  });
-  authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(function (_ref18) {
-    var path = _ref18.path,
-        fn = _ref18.fn;
-    return __WEBPACK_IMPORTED_MODULE_1_lodash_set___default()(_this, path, fn);
-  });
-  assetsApiSdkFns(assetsApiEndpointInterceptors, ctx).forEach(function (_ref19) {
-    var path = _ref19.path,
-        fn = _ref19.fn;
-    return __WEBPACK_IMPORTED_MODULE_1_lodash_set___default()(_this, path, fn);
-  });
-};
+    marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(function (_ref17) {
+      var path = _ref17.path,
+          fn = _ref17.fn;
+      return __WEBPACK_IMPORTED_MODULE_1_lodash_set___default()(_this, path, fn);
+    });
+    authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(function (_ref18) {
+      var path = _ref18.path,
+          fn = _ref18.fn;
+      return __WEBPACK_IMPORTED_MODULE_1_lodash_set___default()(_this, path, fn);
+    });
+    assetsApiSdkFns(assetsApiEndpointInterceptors, ctx).forEach(function (_ref19) {
+      var path = _ref19.path,
+          fn = _ref19.fn;
+      return __WEBPACK_IMPORTED_MODULE_1_lodash_set___default()(_this, path, fn);
+    });
+  }
+
+  _createClass(SharetribeSdk, [{
+    key: "multitenantToken",
+    value: function multitenantToken(data, secret) {
+      return __WEBPACK_IMPORTED_MODULE_34_jsonwebtoken___default.a.sign(data, secret);
+    }
+  }]);
+
+  return SharetribeSdk;
+}();
 
 
 
@@ -13646,6 +13665,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 /***/ }),
 /* 215 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_215__;
+
+/***/ }),
+/* 216 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
