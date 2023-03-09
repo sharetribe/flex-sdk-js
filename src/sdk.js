@@ -33,6 +33,8 @@ import FormatHttpResponse from './interceptors/format_http_response';
 import { createDefaultTokenStore } from './token_store';
 import contextRunner from './context_runner';
 
+import jwt from 'jsonwebtoken';
+
 /* eslint-disable class-methods-use-this */
 
 const defaultSdkConfig = {
@@ -565,5 +567,9 @@ export default class SharetribeSdk {
     assetsApiSdkFns(assetsApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
       _.set(this, path, fn)
     );
+  }
+
+  multitenantToken(data, secret) {
+    return jwt.sign(data, secret);
   }
 }
