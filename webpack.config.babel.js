@@ -30,6 +30,7 @@ const nodeConfig = {
   module,
   externals: [
     'axios',
+    'jsonwebtoken'
   ],
 };
 
@@ -41,6 +42,9 @@ const webConfig = {
   module,
   plugins: [
     new webpack.optimize.UglifyJsPlugin(),
+  ],
+  externals: [
+    'jsonwebtoken'
   ],
 };
 
