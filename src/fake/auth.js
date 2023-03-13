@@ -65,8 +65,8 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
   let error = {
     status: 401,
     statusText: 'Unauthorized',
-    data: 'Unauthorized'
-  }
+    data: 'Unauthorized',
+  };
 
   if (formData.client_secret === 'valid-secret-valid-hostname') {
     if (formData.grant_type === 'multitenant_client_credentials') {
@@ -75,10 +75,10 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
         client_data: {
           client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
           // for testing purposes, we want to check which endpoint is called
-          called_url: config.url
-        }
+          called_url: config.url,
+        },
       };
-    } 
+    }
   } else if (formData.client_secret === 'valid-secret-invalid-hostname') {
     error = {
       ...error,
@@ -86,7 +86,7 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
       statusText: 'Not Found',
       data: 'Not Found',
       headers: { 'content-type': 'text/plain' },
-    }
+    };
   }
 
   if (success) {
@@ -103,22 +103,22 @@ export const multitenantClientData = (config, resolve, reject) => {
   let error = {
     status: 401,
     statusText: 'Unauthorized',
-    data: 'Unauthorized'
-  }
+    data: 'Unauthorized',
+  };
 
   if (clientSecret === 'valid-secret-valid-hostname') {
     success = {
       client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       // for testing purposes, we want to check which endpoint is called
-      called_url: config.url
+      called_url: config.url,
     };
   } else if (clientSecret === 'valid-secret-invalid-hostname') {
     error = {
       ...error,
       status: 404,
       statusText: 'Not Found',
-      data: 'Not Found'
-    }
+      data: 'Not Found',
+    };
   }
 
   if (success) {

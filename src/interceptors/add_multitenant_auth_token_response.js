@@ -10,24 +10,19 @@ export default class AddMultitenantAuthTokenResponse {
   /* eslint camelcase: "off" */
   leave(ctx) {
     const {
-      res: { 
-        data: { 
-          access_token, 
-          token_type, 
-          expires_in, 
-          scope 
-        } 
+      res: {
+        data: { access_token, token_type, expires_in, scope },
       },
     } = ctx;
 
-    return { 
-      ...ctx, 
-      authToken: { 
-        access_token, 
-        token_type, 
-        expires_in, 
-        scope 
-      }  
+    return {
+      ...ctx,
+      authToken: {
+        access_token,
+        token_type,
+        expires_in,
+        scope,
+      },
     };
   }
 }

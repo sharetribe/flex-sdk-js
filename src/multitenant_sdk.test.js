@@ -56,7 +56,7 @@ const createSdk = (config = {}) => {
 describe('new MultitenantSharetribeSdk', () => {
   const validSdkConfig = {
     clientSecret: 'some-secret',
-    baseUrl: 'https://api-base-url.example'
+    baseUrl: 'https://api-base-url.example',
   };
 
   it('validates presence of clientSecret', () => {
@@ -81,23 +81,23 @@ describe('new MultitenantSharetribeSdk', () => {
         // Fake adapter that echoes the URL that was used in the request
         resolve({ data: { baseURL: config.baseURL } });
       });
-  
+
       const { baseUrl, ...withoutBaseUrl } = validSdkConfig;
-  
+
       const sdk = new MultitenantSharetribeSdk({
         ...withoutBaseUrl,
         adapter: adapter.adapterFn,
       });
-  
+
       return sdk.token().then(res => {
         expect(res.data.baseURL).toMatch(/^https:\/\/flex-api.sharetribe.com/);
       });
     });
-  
+
     it('stores auth token after token request', () => {
       const { sdk, sdkTokenStore } = createSdk();
       expect(sdkTokenStore.getToken()).toBeUndefined();
-  
+
       // Anonymous token is stored
       return report(
         sdk.token({ grant_type: 'multitenant_client_credentials' }).then(() => {
@@ -105,16 +105,16 @@ describe('new MultitenantSharetribeSdk', () => {
             access_token: 'anonymous-access-1',
             expires_in: 86400,
             scope: 'public-read',
-            token_type: 'bearer'
+            token_type: 'bearer',
           });
         })
       );
     });
-  
+
     it('token request returns unauthorized', () => {
       const { sdk, sdkTokenStore } = createSdk({ clientSecret: 'invalid' });
       expect(sdkTokenStore.getToken()).toBeUndefined();
-  
+
       // Anonymous token is stored
       return report(
         sdk.token({ grant_type: 'multitenant_client_credentials' }).catch(e => {
@@ -123,28 +123,27 @@ describe('new MultitenantSharetribeSdk', () => {
             expect.objectContaining({
               status: 401,
               statusText: 'Unauthorized',
-              data: 'Unauthorized'
+              data: 'Unauthorized',
             })
           );
         })
       );
     });
-  
+
     it('token request returns not found', () => {
       const { sdk } = createSdk({ clientSecret: 'valid-secret-invalid-hostname' });
-  
+
       return report(
-        sdk.token({ grant_type: 'multitenant_client_credentials' })
-          .catch(e => {
-            expect(e).toBeInstanceOf(Error);
-            expect(e).toEqual(
-              expect.objectContaining({
-                status: 404,
-                statusText: 'Not Found',
-                data: 'Not Found'
-              })
-            );
-          })
+        sdk.token({ grant_type: 'multitenant_client_credentials' }).catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 404,
+              statusText: 'Not Found',
+              data: 'Not Found',
+            })
+          );
+        })
       );
     });
   });
@@ -163,7 +162,8 @@ describe('new MultitenantSharetribeSdk', () => {
             expect(authInfo.scopes).toBeUndefined();
           })
           .then(() =>
-            sdk.token({ grant_type: 'multitenant_client_credentials' })
+            sdk
+              .token({ grant_type: 'multitenant_client_credentials' })
               .then(sdk.authInfo)
               .then(authInfo => {
                 // Anonymous token
@@ -196,53 +196,49 @@ describe('new MultitenantSharetribeSdk', () => {
       const { sdk } = createSdk();
 
       return report(
-        sdk
-          .clientData()
-          .then(response => {
-            expect(response.data).toEqual(
-              expect.objectContaining({
-                client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0'
-              })
-            );
-          })
+        sdk.clientData().then(response => {
+          expect(response.data).toEqual(
+            expect.objectContaining({
+              client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+            })
+          );
+        })
       );
     });
 
     it('client data request returns unauthorized', () => {
       const { sdk, sdkTokenStore } = createSdk({ clientSecret: 'invalid' });
       expect(sdkTokenStore.getToken()).toBeUndefined();
-  
+
       // Anonymous token is stored
       return report(
-        sdk.clientData()
-          .catch(e => {
-            expect(e).toBeInstanceOf(Error);
-            expect(e).toEqual(
-              expect.objectContaining({
-                status: 401,
-                statusText: 'Unauthorized',
-                data: 'Unauthorized'
-              })
-            );
-          })
-        );
+        sdk.clientData().catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 401,
+              statusText: 'Unauthorized',
+              data: 'Unauthorized',
+            })
+          );
+        })
+      );
     });
-  
+
     it('client data request returns not found', () => {
       const { sdk } = createSdk({ clientSecret: 'valid-secret-invalid-hostname' });
-  
+
       return report(
-        sdk.clientData()
-          .catch(e => {
-            expect(e).toBeInstanceOf(Error);
-            expect(e).toEqual(
-              expect.objectContaining({
-                status: 404,
-                statusText: 'Not Found',
-                data: 'Not Found'
-              })
-            );
-          })
+        sdk.clientData().catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 404,
+              statusText: 'Not Found',
+              data: 'Not Found',
+            })
+          );
+        })
       );
     });
   });
@@ -252,29 +248,27 @@ describe('new MultitenantSharetribeSdk', () => {
       const { sdk, sdkTokenStore } = createSdk();
 
       return report(
-        sdk
-          .clientAuthData()
-          .then(response => {
-            // token store contains relevant token information
-            expect(sdkTokenStore.getToken()).toEqual({
+        sdk.clientAuthData().then(response => {
+          // token store contains relevant token information
+          expect(sdkTokenStore.getToken()).toEqual({
+            access_token: 'anonymous-access-1',
+            expires_in: 86400,
+            scope: 'public-read',
+            token_type: 'bearer',
+          });
+          // response data contains access token and client data
+          expect(response.data).toEqual(
+            expect.objectContaining({
               access_token: 'anonymous-access-1',
-              expires_in: 86400,
-              scope: 'public-read',
-              token_type: 'bearer'
-            });
-            // response data contains access token and client data
-            expect(response.data).toEqual(
-              expect.objectContaining({
-                access_token: 'anonymous-access-1', 
-                client_data: {
-                  client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-                  // for testing purposes, called_url is not included in the real API response
-                  // Token endpoint is called
-                  called_url: "auth/multitenant/token"
-                },
-              })
-            );
-          })
+              client_data: {
+                client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+                // for testing purposes, called_url is not included in the real API response
+                // Token endpoint is called
+                called_url: 'auth/multitenant/token',
+              },
+            })
+          );
+        })
       );
     });
 
@@ -285,59 +279,55 @@ describe('new MultitenantSharetribeSdk', () => {
       sdkTokenStore.setToken({ ...rest });
 
       return report(
-        sdk
-          .clientAuthData()
-          .then(response => {
-            expect(response.data).toEqual(
-              expect.objectContaining({
-                access_token: 'anonymous-access-1', 
-                client_data: {
-                  client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-                  // for testing purposes, called_url is not included in the real API response
-                  // Client data endpoint is called
-                  called_url: "auth/multitenant/client_data"
-                },
-              })
-            );
-          })
+        sdk.clientAuthData().then(response => {
+          expect(response.data).toEqual(
+            expect.objectContaining({
+              access_token: 'anonymous-access-1',
+              client_data: {
+                client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+                // for testing purposes, called_url is not included in the real API response
+                // Client data endpoint is called
+                called_url: 'auth/multitenant/client_data',
+              },
+            })
+          );
+        })
       );
     });
 
     it('client data request returns unauthorized', () => {
       const { sdk, sdkTokenStore } = createSdk({ clientSecret: 'invalid' });
       expect(sdkTokenStore.getToken()).toBeUndefined();
-  
+
       // Anonymous token is stored
       return report(
-        sdk.clientAuthData()
-          .catch(e => {
-            expect(e).toBeInstanceOf(Error);
-            expect(e).toEqual(
-              expect.objectContaining({
-                status: 401,
-                statusText: 'Unauthorized',
-                data: 'Unauthorized'
-              })
-            );
-          })
-        );
+        sdk.clientAuthData().catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 401,
+              statusText: 'Unauthorized',
+              data: 'Unauthorized',
+            })
+          );
+        })
+      );
     });
-  
+
     it('client data request returns not found', () => {
       const { sdk } = createSdk({ clientSecret: 'valid-secret-invalid-hostname' });
-  
+
       return report(
-        sdk.clientAuthData()
-          .catch(e => {
-            expect(e).toBeInstanceOf(Error);
-            expect(e).toEqual(
-              expect.objectContaining({
-                status: 404,
-                statusText: 'Not Found',
-                data: 'Not Found'
-              })
-            );
-          })
+        sdk.clientAuthData().catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 404,
+              statusText: 'Not Found',
+              data: 'Not Found',
+            })
+          );
+        })
       );
     });
   });
