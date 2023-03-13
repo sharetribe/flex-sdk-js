@@ -47,7 +47,7 @@ const sdk = sharetribeSdk.createInstance({
 
 // Query first 5 listings
 sdk.listings
-  .query({ per_page: 5 })
+  .query({ perPage: 5 })
   .then(res => {
     // Print listing titles
     res.data.data.forEach(listing => {
