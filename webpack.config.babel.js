@@ -30,6 +30,7 @@ const nodeConfig = {
   module,
   externals: [
     'axios',
+    'jsonwebtoken'
   ],
 };
 
@@ -42,6 +43,14 @@ const webConfig = {
   plugins: [
     new webpack.optimize.UglifyJsPlugin(),
   ],
+  resolve: {
+    alias: {
+      // JWT is mocked with empty implementation in the browser build as it is
+      // not needed there and this prevents downstream webpack runs from
+      // attemtpting to include the dependency.
+      jsonwebtoken: path.resolve(__dirname, 'src/jwt_mock.js')
+    }
+  }
 };
 
 export default () => ([nodeConfig, webConfig]);

@@ -1,5 +1,6 @@
 /**
-   Read `clientSecret` from `ctx`. Then construct Authorization header and add it to `headers`.
+   Read `multitenantClientSecretToken` from `ctx` and add it to Authorization
+   header.
 
    Changes to `ctx`:
 
@@ -7,13 +8,8 @@
  */
 export default class AddMultitenantAuthHeader {
   enter(ctx) {
-    const { clientSecret, headers = {} } = ctx;
-
-    if (!clientSecret) {
-      throw new Error('clientSecret is missing from the context');
-    }
-
-    const authHeaders = { Authorization: `Bearer ${clientSecret}` };
+    const { multitenantClientSecretToken, headers = {} } = ctx;
+    const authHeaders = { Authorization: `Bearer ${multitenantClientSecretToken}` };
     return { ...ctx, headers: { ...headers, ...authHeaders } };
   }
 }

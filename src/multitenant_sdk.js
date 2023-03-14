@@ -2,7 +2,8 @@ import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
 import AddMultitenantAuthTokenResponse from './interceptors/add_multitenant_auth_token_response';
 import SaveToken from './interceptors/save_token';
-import AddClientSecretToParams from './interceptors/add_client_secret_to_params';
+import AddMultitenantClientSecretTokenToCtx from './interceptors/add_multitenant_client_secret_token_to_ctx';
+import AddMultitenantClientSecretToParams from './interceptors/add_multitenant_client_secret_to_params';
 import FormatHttpResponse from './interceptors/format_http_response';
 import endpointRequest from './interceptors/endpoint_request';
 import AddMultitenantAuthHeader from './interceptors/add_multitenant_auth_header';
@@ -14,12 +15,13 @@ import contextRunner from './context_runner';
 /* eslint-disable class-methods-use-this */
 
 const defaultSdkConfig = {
-  clientSecret: null,
+  hostname: null,
+  multitenantClientSecret: null,
   baseUrl: 'https://flex-api.sharetribe.com',
   adapter: null,
   version: 'v1',
   httpAgent: null,
-  httpsAgent: null
+  httpsAgent: null,
 };
 
 const multitenantAuthApi = [
@@ -47,57 +49,57 @@ const apis = {
   }),
 };
 
-const tokenInterceptors = (authApiEndpointInterceptors) => [
-  // TODO: encode secret as JWT
+const tokenInterceptors = authApiEndpointInterceptors => [
   new FormatHttpResponse(),
-  new AddClientSecretToParams(),
+  new AddMultitenantClientSecretTokenToCtx(),
+  new AddMultitenantClientSecretToParams(),
   new SaveToken(),
   new AddMultitenantAuthTokenResponse(),
-  ..._.get(authApiEndpointInterceptors, 'token')
+  ..._.get(authApiEndpointInterceptors, 'token'),
 ];
 
-const clientDataInterceptors = (authApiEndpointInterceptors) => [
+const clientDataInterceptors = authApiEndpointInterceptors => [
   new FormatHttpResponse(),
+  new AddMultitenantClientSecretTokenToCtx(),
   new AddMultitenantAuthHeader(),
-  ..._.get(authApiEndpointInterceptors, 'clientData')
+  ..._.get(authApiEndpointInterceptors, 'clientData'),
 ];
 
-const tokenAndClientDataInterceptor = (authApiEndpointInterceptors) => (
-  {
-    enter: ctx => {
-      const { tokenStore } = ctx;
-      return Promise.resolve()
-          .then(tokenStore.getToken)
-          .then(storedToken => {
-            // If there's a token with any access, it's only necessary
-            // to fetch the client data. Else, we request a token and 
-            // the response will also contain the client data.
-            // We don't need to distinguish between token scopes.
-            if (storedToken) {
-              return contextRunner(clientDataInterceptors(authApiEndpointInterceptors))(ctx)
-                .then(newCtx => {
-                  const { res } = newCtx;
-                  return {
-                    ...newCtx,
-                    res: {
-                      ...res,
-                      data: {
-                        access_token: storedToken.access_token,
-                        client_data: res.data
-                      }
-                    }
-                  }
-                });
+const tokenAndClientDataInterceptor = authApiEndpointInterceptors => ({
+  enter: ctx => {
+    const { tokenStore } = ctx;
+    return Promise.resolve()
+      .then(tokenStore.getToken)
+      .then(storedToken => {
+        // If there's a token with any access, it's only necessary
+        // to fetch the client data. Else, we request a token and
+        // the response will also contain the client data.
+        // We don't need to distinguish between token scopes.
+        if (storedToken) {
+          return contextRunner(clientDataInterceptors(authApiEndpointInterceptors))(ctx).then(
+            newCtx => {
+              const { res } = newCtx;
+              return {
+                ...newCtx,
+                res: {
+                  ...res,
+                  data: {
+                    access_token: storedToken.access_token,
+                    client_data: res.data,
+                  },
+                },
+              };
             }
-            
-            return contextRunner(tokenInterceptors(authApiEndpointInterceptors))({
-              ...ctx,
-              params: { grant_type: 'multitenant_client_credentials' }
-            });
-          });
-    },
-  }
-);
+          );
+        }
+
+        return contextRunner(tokenInterceptors(authApiEndpointInterceptors))({
+          ...ctx,
+          params: { grant_type: 'multitenant_client_credentials' },
+        });
+      });
+  },
+});
 
 const createAuthApiSdkFn = ({ ctx, interceptors }) => (params = {}) =>
   createSdkFnContextRunner({ params, ctx, interceptors });
@@ -124,9 +126,7 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
     path: 'clientAuthData',
     fn: createAuthApiSdkFn({
       ctx,
-      interceptors: [
-        tokenAndClientDataInterceptor(authApiEndpointInterceptors)
-      ],
+      interceptors: [tokenAndClientDataInterceptor(authApiEndpointInterceptors)],
     }),
   },
   {
@@ -142,13 +142,17 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
 const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
   ...sdkConfig,
   baseUrl: trimEndSlash(baseUrl),
-  tokenStore: tokenStore || memoryStore()
+  tokenStore: tokenStore || memoryStore(),
 });
 
 // Validate SDK configurations, throw an error if invalid, otherwise return.
 const validateSdkConfig = sdkConfig => {
-  if (!sdkConfig.clientSecret) {
-    throw new Error('clientSecret must be provided');
+  if (!sdkConfig.hostname) {
+    throw new Error('hostname must be provided');
+  }
+
+  if (!sdkConfig.multitenantClientSecret) {
+    throw new Error('multitenantClientSecret must be provided');
   }
 
   if (!sdkConfig.baseUrl) {
@@ -158,8 +162,8 @@ const validateSdkConfig = sdkConfig => {
   /* global window */
   const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
 
-  if (isBrowser && sdkConfig.clientSecret) {
-    throw new Error('Using the client secret in a browser is not allowed.');
+  if (isBrowser) {
+    throw new Error('Using the multitenant SDK in browser is not allowed.');
   }
 
   return sdkConfig;
@@ -199,7 +203,8 @@ export default class MultitenantSharetribeSdk {
 
     const ctx = {
       endpointInterceptors: allEndpointInterceptors,
-      clientSecret: sdkConfig.clientSecret,
+      multitenantClientSecret: sdkConfig.multitenantClientSecret,
+      hostname: sdkConfig.hostname,
       tokenStore: sdkConfig.tokenStore,
     };
 
