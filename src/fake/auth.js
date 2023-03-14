@@ -1,7 +1,16 @@
 import _ from 'lodash';
+import jwt from 'jsonwebtoken';
 
 const parseFormData = data =>
   _.fromPairs(data.split('&').map(keyValue => keyValue.split('=').map(decodeURIComponent)));
+
+const hostnameFromToken = (token, secret) => {
+  try {
+    return jwt.verify(token, secret).hostname;
+  } catch (e) {
+    return null;
+  }
+};
 
 export const revoke = (config, resolve, reject, tokenStore) => {
   const formData = parseFormData(config.data);
@@ -68,7 +77,9 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
     data: 'Unauthorized',
   };
 
-  if (formData.client_secret === 'valid-secret-valid-hostname') {
+  const hostname = hostnameFromToken(formData.client_secret, 'valid-secret');
+
+  if (hostname === 'valid.example.com') {
     if (formData.grant_type === 'multitenant_client_credentials') {
       success = {
         ...fakeTokenStore.createAnonToken(),
@@ -79,7 +90,7 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
         },
       };
     }
-  } else if (formData.client_secret === 'valid-secret-invalid-hostname') {
+  } else if (hostname === 'invalid.example.com') {
     error = {
       ...error,
       status: 404,
@@ -97,8 +108,8 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
 };
 
 export const multitenantClientData = (config, resolve, reject) => {
-  const authHeader = _.get(config.headers, 'Authorization', 'Bearer invalid-secret');
-  const clientSecret = authHeader.replace('Bearer ', '');
+  const authHeader = _.get(config.headers, 'Authorization', 'Bearer invalid-token');
+  const secretToken = authHeader.replace('Bearer ', '');
   let success;
   let error = {
     status: 401,
@@ -106,13 +117,15 @@ export const multitenantClientData = (config, resolve, reject) => {
     data: 'Unauthorized',
   };
 
-  if (clientSecret === 'valid-secret-valid-hostname') {
+  const hostname = hostnameFromToken(secretToken, 'valid-secret');
+
+  if (hostname === 'valid.example.com') {
     success = {
       client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
       // for testing purposes, we want to check which endpoint is called
       called_url: config.url,
     };
-  } else if (clientSecret === 'valid-secret-invalid-hostname') {
+  } else if (hostname === 'invalid.example.com') {
     error = {
       ...error,
       status: 404,

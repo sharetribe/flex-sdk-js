@@ -29,7 +29,8 @@ const report = responsePromise =>
  */
 const createSdk = (config = {}) => {
   const defaults = {
-    clientSecret: 'valid-secret-valid-hostname',
+    multitenantClientSecret: 'valid-secret',
+    hostname: 'valid.example.com',
   };
 
   // Extract adapter and token store here so that they can be passed to SDK
@@ -55,14 +56,15 @@ const createSdk = (config = {}) => {
 
 describe('new MultitenantSharetribeSdk', () => {
   const validSdkConfig = {
-    clientSecret: 'some-secret',
+    multitenantClientSecret: 'valid-secret',
+    hostname: 'valid.example.com',
     baseUrl: 'https://api-base-url.example',
   };
 
   it('validates presence of clientSecret', () => {
-    const { clientSecret, ...withoutClientSecretConfig } = validSdkConfig;
+    const { multitenantClientSecret, ...withoutClientSecretConfig } = validSdkConfig;
     expect(() => new MultitenantSharetribeSdk(withoutClientSecretConfig)).toThrowError(
-      'clientSecret must be provided'
+      'multitenantClientSecret must be provided'
     );
   });
 
@@ -112,7 +114,10 @@ describe('new MultitenantSharetribeSdk', () => {
     });
 
     it('token request returns unauthorized', () => {
-      const { sdk, sdkTokenStore } = createSdk({ clientSecret: 'invalid' });
+      const { sdk, sdkTokenStore } = createSdk({
+        multitenantClientSecret: 'invalid-secret',
+        hostname: 'valid.example.com',
+      });
       expect(sdkTokenStore.getToken()).toBeUndefined();
 
       // Anonymous token is stored
