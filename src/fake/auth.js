@@ -65,11 +65,7 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
   let error = {
     status: 401,
     statusText: 'Unauthorized',
-    data: 'Unauthorized',
-
-    // Add additional information to help debugging when testing.
-    // This key is NOT returned by the real API.
-    __additionalTestInfo: { formData },
+    data: 'Unauthorized'
   }
 
   if (formData.client_secret === 'valid-secret-valid-hostname') {
@@ -77,7 +73,9 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
       success = {
         ...fakeTokenStore.createAnonToken(),
         client_data: {
-          client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0'
+          client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+          // for testing purposes, we want to check which endpoint is called
+          called_url: config.url
         }
       };
     } 
@@ -88,6 +86,38 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
       statusText: 'Not Found',
       data: 'Not Found',
       headers: { 'content-type': 'text/plain' },
+    }
+  }
+
+  if (success) {
+    return resolve({ data: JSON.stringify(success), url: config.url });
+  }
+
+  return reject(error);
+};
+
+export const multitenantClientData = (config, resolve, reject) => {
+  const authHeader = _.get(config.headers, 'Authorization', 'Bearer invalid-secret');
+  const clientSecret = authHeader.replace('Bearer ', '');
+  let success;
+  let error = {
+    status: 401,
+    statusText: 'Unauthorized',
+    data: 'Unauthorized'
+  }
+
+  if (clientSecret === 'valid-secret-valid-hostname') {
+    success = {
+      client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      // for testing purposes, we want to check which endpoint is called
+      called_url: config.url
+    };
+  } else if (clientSecret === 'valid-secret-invalid-hostname') {
+    error = {
+      ...error,
+      status: 404,
+      statusText: 'Not Found',
+      data: 'Not Found'
     }
   }
 

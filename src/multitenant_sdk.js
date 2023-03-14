@@ -1,13 +1,15 @@
 import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
-import AddAuthTokenResponse from './interceptors/add_auth_token_response';
+import AddMultitenantAuthTokenResponse from './interceptors/add_multitenant_auth_token_response';
 import SaveToken from './interceptors/save_token';
 import AddClientSecretToParams from './interceptors/add_client_secret_to_params';
 import FormatHttpResponse from './interceptors/format_http_response';
 import endpointRequest from './interceptors/endpoint_request';
+import AddMultitenantAuthHeader from './interceptors/add_multitenant_auth_header';
 import createSdkFnContextRunner from './sdk_context_runner';
 import memoryStore from './memory_store';
 import AuthInfo from './interceptors/auth_info';
+import contextRunner from './context_runner';
 
 /* eslint-disable class-methods-use-this */
 
@@ -45,12 +47,57 @@ const apis = {
   }),
 };
 
-const authInterceptors = [
+const tokenInterceptors = (authApiEndpointInterceptors) => [
   // TODO: encode secret as JWT
+  new FormatHttpResponse(),
   new AddClientSecretToParams(),
   new SaveToken(),
-  new AddAuthTokenResponse(),
+  new AddMultitenantAuthTokenResponse(),
+  ..._.get(authApiEndpointInterceptors, 'token')
 ];
+
+const clientDataInterceptors = (authApiEndpointInterceptors) => [
+  new FormatHttpResponse(),
+  new AddMultitenantAuthHeader(),
+  ..._.get(authApiEndpointInterceptors, 'clientData')
+];
+
+const tokenAndClientDataInterceptor = (authApiEndpointInterceptors) => (
+  {
+    enter: ctx => {
+      const { tokenStore } = ctx;
+      return Promise.resolve()
+          .then(tokenStore.getToken)
+          .then(storedToken => {
+            // If there's a token with any access, it's only necessary
+            // to fetch the client data. Else, we request a token and 
+            // the response will also contain the client data.
+            // We don't need to distinguish between token scopes.
+            if (storedToken) {
+              return contextRunner(clientDataInterceptors(authApiEndpointInterceptors))(ctx)
+                .then(newCtx => {
+                  const { res } = newCtx;
+                  return {
+                    ...newCtx,
+                    res: {
+                      ...res,
+                      data: {
+                        access_token: storedToken.access_token,
+                        client_data: res.data
+                      }
+                    }
+                  }
+                });
+            }
+            
+            return contextRunner(tokenInterceptors(authApiEndpointInterceptors))({
+              ...ctx,
+              params: { grant_type: 'multitenant_client_credentials' }
+            });
+          });
+    },
+  }
+);
 
 const createAuthApiSdkFn = ({ ctx, interceptors }) => (params = {}) =>
   createSdkFnContextRunner({ params, ctx, interceptors });
@@ -63,21 +110,22 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
     path: 'token',
     fn: createAuthApiSdkFn({
       ctx,
-      interceptors: [
-        new FormatHttpResponse(),
-        ...authInterceptors,
-        ..._.get(authApiEndpointInterceptors, 'token'),
-      ],
+      interceptors: tokenInterceptors(authApiEndpointInterceptors),
     }),
   },
   {
     path: 'clientData',
     fn: createAuthApiSdkFn({
       ctx,
+      interceptors: clientDataInterceptors(authApiEndpointInterceptors),
+    }),
+  },
+  {
+    path: 'clientAuthData',
+    fn: createAuthApiSdkFn({
+      ctx,
       interceptors: [
-        new FormatHttpResponse(),
-        ...authInterceptors,
-        ..._.get(authApiEndpointInterceptors, 'clientData'),
+        tokenAndClientDataInterceptor(authApiEndpointInterceptors)
       ],
     }),
   },
