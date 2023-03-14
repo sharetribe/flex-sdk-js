@@ -4,6 +4,7 @@ import AddMultitenantAuthTokenResponse from './interceptors/add_multitenant_auth
 import SaveToken from './interceptors/save_token';
 import AddMultitenantClientSecretTokenToCtx from './interceptors/add_multitenant_client_secret_token_to_ctx';
 import AddMultitenantClientSecretToParams from './interceptors/add_multitenant_client_secret_to_params';
+import AddMultitenantTokenExchangeParams from './interceptors/add_multitenant_token_exchange_params';
 import FormatHttpResponse from './interceptors/format_http_response';
 import endpointRequest from './interceptors/endpoint_request';
 import AddMultitenantAuthHeader from './interceptors/add_multitenant_auth_header';
@@ -21,6 +22,7 @@ const defaultSdkConfig = {
   adapter: null,
   version: 'v1',
   httpAgent: null,
+  httpsAgent: null,
   httpsAgent: null,
 };
 
@@ -127,6 +129,16 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
     fn: createAuthApiSdkFn({
       ctx,
       interceptors: [tokenAndClientDataInterceptor(authApiEndpointInterceptors)],
+    }),
+  },
+  {
+    path: 'tokenExchange',
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [
+        new AddMultitenantTokenExchangeParams(),
+        ...tokenInterceptors(authApiEndpointInterceptors),
+      ],
     }),
   },
   {
