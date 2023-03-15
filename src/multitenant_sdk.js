@@ -4,12 +4,12 @@ import AddMultitenantAuthTokenResponse from './interceptors/add_multitenant_auth
 import SaveToken from './interceptors/save_token';
 import AddMultitenantClientSecretTokenToCtx from './interceptors/add_multitenant_client_secret_token_to_ctx';
 import AddMultitenantClientSecretToParams from './interceptors/add_multitenant_client_secret_to_params';
+import AddMultitenantTokenExchangeParams from './interceptors/add_multitenant_token_exchange_params';
 import FormatHttpResponse from './interceptors/format_http_response';
 import endpointRequest from './interceptors/endpoint_request';
 import AddMultitenantAuthHeader from './interceptors/add_multitenant_auth_header';
 import createSdkFnContextRunner from './sdk_context_runner';
 import memoryStore from './memory_store';
-import AuthInfo from './interceptors/auth_info';
 import contextRunner from './context_runner';
 
 /* eslint-disable class-methods-use-this */
@@ -109,20 +109,6 @@ const createAuthApiSdkFn = ({ ctx, interceptors }) => (params = {}) =>
  */
 const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
   {
-    path: 'token',
-    fn: createAuthApiSdkFn({
-      ctx,
-      interceptors: tokenInterceptors(authApiEndpointInterceptors),
-    }),
-  },
-  {
-    path: 'clientData',
-    fn: createAuthApiSdkFn({
-      ctx,
-      interceptors: clientDataInterceptors(authApiEndpointInterceptors),
-    }),
-  },
-  {
     path: 'clientAuthData',
     fn: createAuthApiSdkFn({
       ctx,
@@ -130,10 +116,13 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
     }),
   },
   {
-    path: 'authInfo',
+    path: 'tokenExchange',
     fn: createAuthApiSdkFn({
       ctx,
-      interceptors: [new AuthInfo()],
+      interceptors: [
+        new AddMultitenantTokenExchangeParams(),
+        ...tokenInterceptors(authApiEndpointInterceptors),
+      ],
     }),
   },
 ];

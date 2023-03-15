@@ -89,6 +89,13 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
           called_url: config.url,
         },
       };
+    } else if (formData.grant_type === 'multitenant_token_exchange') {
+      success = {
+        ...fakeTokenStore.exchangeToken(formData.subject_token),
+        client_data: {
+          client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+        },
+      };
     }
   } else if (hostname === 'invalid.example.com') {
     error = {
@@ -101,7 +108,7 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
   }
 
   if (success) {
-    return resolve({ data: JSON.stringify(success), url: config.url });
+    return resolve({ data: JSON.stringify(success) });
   }
 
   return reject(error);
