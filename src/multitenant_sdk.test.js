@@ -77,12 +77,12 @@ describe('new MultitenantSharetribeSdk', () => {
     );
   });
 
-  describe('clientAuthData', () => {
+  describe('clientData', () => {
     it('returns client data and token by making a POST /token request, if no token is found in store', () => {
       const { sdk, sdkTokenStore } = createSdk();
 
       return report(
-        sdk.clientAuthData().then(response => {
+        sdk.clientData().then(response => {
           // token store contains relevant token information
           expect(sdkTokenStore.getToken()).toEqual({
             access_token: 'anonymous-access-1',
@@ -93,7 +93,6 @@ describe('new MultitenantSharetribeSdk', () => {
           // response data contains access token and client data
           expect(response.data).toEqual(
             expect.objectContaining({
-              access_token: 'anonymous-access-1',
               client_data: {
                 client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
                 // for testing purposes, called_url is not included in the real API response
@@ -113,10 +112,9 @@ describe('new MultitenantSharetribeSdk', () => {
       sdkTokenStore.setToken({ ...rest });
 
       return report(
-        sdk.clientAuthData().then(response => {
+        sdk.clientData().then(response => {
           expect(response.data).toEqual(
             expect.objectContaining({
-              access_token: 'anonymous-access-1',
               client_data: {
                 client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
                 // for testing purposes, called_url is not included in the real API response
@@ -138,7 +136,7 @@ describe('new MultitenantSharetribeSdk', () => {
 
       // Anonymous token is stored
       return report(
-        sdk.clientAuthData().catch(e => {
+        sdk.clientData().catch(e => {
           expect(e).toBeInstanceOf(Error);
           expect(e).toEqual(
             expect.objectContaining({
@@ -158,7 +156,7 @@ describe('new MultitenantSharetribeSdk', () => {
       });
 
       return report(
-        sdk.clientAuthData().catch(e => {
+        sdk.clientData().catch(e => {
           expect(e).toBeInstanceOf(Error);
           expect(e).toEqual(
             expect.objectContaining({

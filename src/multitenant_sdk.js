@@ -73,7 +73,7 @@ const tokenAndClientDataInterceptor = authApiEndpointInterceptors => ({
       .then(storedToken => {
         // If there's a token with any access, it's only necessary
         // to fetch the client data. Else, we request a token and
-        // the response will also contain the client data.
+        // the response will contain the client data.
         // We don't need to distinguish between token scopes.
         if (storedToken) {
           return contextRunner(clientDataInterceptors(authApiEndpointInterceptors))(ctx).then(
@@ -84,7 +84,6 @@ const tokenAndClientDataInterceptor = authApiEndpointInterceptors => ({
                 res: {
                   ...res,
                   data: {
-                    access_token: storedToken.access_token,
                     client_data: res.data,
                   },
                 },
@@ -96,7 +95,22 @@ const tokenAndClientDataInterceptor = authApiEndpointInterceptors => ({
         return contextRunner(tokenInterceptors(authApiEndpointInterceptors))({
           ...ctx,
           params: { grant_type: 'multitenant_client_credentials' },
-        });
+        }).then(
+          // Strip token data from response, as it is handled internally by the
+          // SDK and the token store. Return only `client_data` to the caller.
+          newCtx => {
+            const { res } = newCtx;
+            return {
+              ...newCtx,
+              res: {
+                ...res,
+                data: {
+                  client_data: res.data.client_data,
+                },
+              },
+            };
+          }
+        );
       });
   },
 });
@@ -109,7 +123,7 @@ const createAuthApiSdkFn = ({ ctx, interceptors }) => (params = {}) =>
  */
 const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
   {
-    path: 'clientAuthData',
+    path: 'clientData',
     fn: createAuthApiSdkFn({
       ctx,
       interceptors: [tokenAndClientDataInterceptor(authApiEndpointInterceptors)],
