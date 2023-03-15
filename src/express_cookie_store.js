@@ -1,9 +1,9 @@
-const generateKey = (clientId, namespace) => `${namespace}-${clientId}-token`;
+const generateKey = (cookieId, namespace) => `${namespace}-${cookieId}-token`;
 
-const createStore = ({ clientId, req, res, secure }) => {
+const createStore = ({ clientId, cookieId, req, res, secure }) => {
   const expiration = 180; // 180 days
   const namespace = 'st';
-  const key = generateKey(clientId, namespace);
+  const key = generateKey(clientId || cookieId, namespace);
 
   // A mutable variable containing the current token.
   // When a `setToken` is called, the current token will be
