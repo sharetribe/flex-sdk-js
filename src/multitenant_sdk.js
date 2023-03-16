@@ -6,6 +6,7 @@ import AddMultitenantClientSecretTokenToCtx from './interceptors/add_multitenant
 import AddMultitenantClientSecretToParams from './interceptors/add_multitenant_client_secret_to_params';
 import AddMultitenantTokenExchangeParams from './interceptors/add_multitenant_token_exchange_params';
 import FormatHttpResponse from './interceptors/format_http_response';
+import FormatMultitenantHttpResponse from './interceptors/format_multitenant_http_response';
 import endpointRequest from './interceptors/endpoint_request';
 import AddMultitenantAuthHeader from './interceptors/add_multitenant_auth_header';
 import createSdkFnContextRunner from './sdk_context_runner';
@@ -51,6 +52,7 @@ const apis = {
 
 const tokenInterceptors = authApiEndpointInterceptors => [
   new FormatHttpResponse(),
+  new FormatMultitenantHttpResponse(),
   new AddMultitenantClientSecretTokenToCtx(),
   new AddMultitenantClientSecretToParams(),
   new SaveToken(),
@@ -73,7 +75,7 @@ const tokenAndClientDataInterceptor = authApiEndpointInterceptors => ({
       .then(storedToken => {
         // If there's a token with any access, it's only necessary
         // to fetch the client data. Else, we request a token and
-        // the response will contain the client data.
+        // the response will also contain the client data.
         // We don't need to distinguish between token scopes.
         if (storedToken) {
           return contextRunner(clientDataInterceptors(authApiEndpointInterceptors))(ctx).then(
@@ -95,22 +97,7 @@ const tokenAndClientDataInterceptor = authApiEndpointInterceptors => ({
         return contextRunner(tokenInterceptors(authApiEndpointInterceptors))({
           ...ctx,
           params: { grant_type: 'multitenant_client_credentials' },
-        }).then(
-          // Strip token data from response, as it is handled internally by the
-          // SDK and the token store. Return only `client_data` to the caller.
-          newCtx => {
-            const { res } = newCtx;
-            return {
-              ...newCtx,
-              res: {
-                ...res,
-                data: {
-                  client_data: res.data.client_data,
-                },
-              },
-            };
-          }
-        );
+        });
       });
   },
 });

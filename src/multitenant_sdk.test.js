@@ -182,11 +182,6 @@ describe('new MultitenantSharetribeSdk', () => {
       return report(
         sdk.tokenExchange().then(res => {
           expect(res.data).toEqual({
-            access_token: 'joe.dunphy@example.com-access-2',
-            refresh_token: 'joe.dunphy@example.com-refresh-2',
-            expires_in: 86400,
-            scope: 'trusted:user',
-            token_type: 'bearer',
             client_data: {
               client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
             },
