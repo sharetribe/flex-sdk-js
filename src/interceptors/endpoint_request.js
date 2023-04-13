@@ -1,9 +1,10 @@
 import axios from 'axios';
+import { sdkUserAgentString } from '../runtime';
 
 // GET requests: `params` includes query params. `queryParams` will be ignored
 // POST requests: `params` includes body params. `queryParams` includes URL query params
 const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
-  const { method = 'get' } = httpOpts;
+  const { method = 'get', headers } = httpOpts;
 
   let data = null;
   let query = null;
@@ -18,6 +19,7 @@ const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
 
   const req = {
     ...httpOpts,
+    headers: { ...headers, 'User-Agent': sdkUserAgentString },
     method,
     data,
     params: query,

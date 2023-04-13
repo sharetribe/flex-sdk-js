@@ -12,6 +12,7 @@ import AddMultitenantAuthHeader from './interceptors/add_multitenant_auth_header
 import createSdkFnContextRunner from './sdk_context_runner';
 import memoryStore from './memory_store';
 import contextRunner from './context_runner';
+import { isBrowser } from './runtime';
 
 /* eslint-disable class-methods-use-this */
 
@@ -148,9 +149,6 @@ const validateSdkConfig = sdkConfig => {
   if (!sdkConfig.baseUrl) {
     throw new Error('baseUrl must be provided');
   }
-
-  /* global window */
-  const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
 
   if (isBrowser) {
     throw new Error('Using the multitenant SDK in browser is not allowed.');
