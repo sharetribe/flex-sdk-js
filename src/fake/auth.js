@@ -1,7 +1,16 @@
 import _ from 'lodash';
+import jwt from 'jsonwebtoken';
 
 const parseFormData = data =>
   _.fromPairs(data.split('&').map(keyValue => keyValue.split('=').map(decodeURIComponent)));
+
+const hostnameFromToken = (token, secret) => {
+  try {
+    return jwt.verify(token, secret).hostname;
+  } catch (e) {
+    return null;
+  }
+};
 
 export const revoke = (config, resolve, reject, tokenStore) => {
   const formData = parseFormData(config.data);
@@ -57,6 +66,86 @@ export const token = (config, resolve, reject, fakeTokenStore) => {
     // This key is NOT returned by the real API.
     __additionalTestInfo: { formData },
   });
+};
+
+export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => {
+  const formData = parseFormData(config.data);
+  let success;
+  let error = {
+    status: 401,
+    statusText: 'Unauthorized',
+    data: 'Unauthorized',
+  };
+
+  const hostname = hostnameFromToken(formData.client_secret, 'valid-secret');
+
+  if (hostname === 'valid.example.com') {
+    if (formData.grant_type === 'multitenant_client_credentials') {
+      success = {
+        ...fakeTokenStore.createAnonToken(),
+        client_data: {
+          client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+          // for testing purposes, we want to check which endpoint is called
+          called_url: config.url,
+        },
+      };
+    } else if (formData.grant_type === 'multitenant_token_exchange') {
+      success = {
+        ...fakeTokenStore.exchangeToken(formData.subject_token),
+        client_data: {
+          client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+        },
+      };
+    }
+  } else if (hostname === 'invalid.example.com') {
+    error = {
+      ...error,
+      status: 404,
+      statusText: 'Not Found',
+      data: 'Not Found',
+      headers: { 'content-type': 'text/plain' },
+    };
+  }
+
+  if (success) {
+    return resolve({ data: JSON.stringify(success) });
+  }
+
+  return reject(error);
+};
+
+export const multitenantClientData = (config, resolve, reject) => {
+  const authHeader = _.get(config.headers, 'Authorization', 'Bearer invalid-token');
+  const secretToken = authHeader.replace('Bearer ', '');
+  let success;
+  let error = {
+    status: 401,
+    statusText: 'Unauthorized',
+    data: 'Unauthorized',
+  };
+
+  const hostname = hostnameFromToken(secretToken, 'valid-secret');
+
+  if (hostname === 'valid.example.com') {
+    success = {
+      client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+      // for testing purposes, we want to check which endpoint is called
+      called_url: config.url,
+    };
+  } else if (hostname === 'invalid.example.com') {
+    error = {
+      ...error,
+      status: 404,
+      statusText: 'Not Found',
+      data: 'Not Found',
+    };
+  }
+
+  if (success) {
+    return resolve({ data: JSON.stringify(success) });
+  }
+
+  return reject(error);
 };
 
 export const authWithIdp = (config, resolve, reject, fakeTokenStore) => {

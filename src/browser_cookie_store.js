@@ -1,11 +1,11 @@
 import Cookies from 'js-cookie';
 
-const generateKey = (clientId, namespace) => `${namespace}-${clientId}-token`;
+const generateKey = (cookieId, namespace) => `${namespace}-${cookieId}-token`;
 
-const createStore = ({ clientId, secure }) => {
+const createStore = ({ clientId, cookieId, secure }) => {
   const expiration = 30; // 30 days
   const namespace = 'st';
-  const key = generateKey(clientId, namespace);
+  const key = generateKey(clientId || cookieId, namespace);
 
   const getToken = () => Cookies.getJSON(key);
   const setToken = tokenData => {

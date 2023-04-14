@@ -67,7 +67,7 @@ $ // git add, commit, push
 
 #### Release a new version to NPM
 
-1. Update version in `package.json`
+1. Update version in `package.json` and `src/version.js`
 
 1. Update CHANGELOG.md
    - Move everything in Unreleased to the corresponding version section

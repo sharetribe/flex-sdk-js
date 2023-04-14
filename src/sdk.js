@@ -1,4 +1,3 @@
-import axios from 'axios';
 import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
 import {
@@ -30,8 +29,10 @@ import MultipartRequest from './interceptors/multipart_request';
 import TransitRequest from './interceptors/transit_request';
 import TransitResponse from './interceptors/transit_response';
 import FormatHttpResponse from './interceptors/format_http_response';
+import endpointRequest from './interceptors/endpoint_request';
 import { createDefaultTokenStore } from './token_store';
-import contextRunner from './context_runner';
+import createSdkFnContextRunner from './sdk_context_runner';
+import { isBrowser } from './runtime';
 
 /* eslint-disable class-methods-use-this */
 
@@ -154,57 +155,8 @@ const authWithIdpInterceptors = [
   new AddAuthTokenResponse(),
 ];
 
-const formatError = e => {
-  /* eslint-disable no-param-reassign */
-  if (e.response) {
-    Object.assign(e, e.response);
-    delete e.response;
-  }
-
-  if (e.ctx) {
-    // Remove context `ctx` from the error response.
-    //
-    // `ctx` is SDK internal and shouldn't be exposed as a part of the
-    // SDK public API. It can be added in the response for debugging
-    // purposes, if needed.
-    delete e.ctx;
-  }
-
-  if (e.config) {
-    // Remove Axios config `config` from the error response.
-    //
-    // Axios attaches a config object to the error. This objects contains the
-    // configuration that was used when error occured.
-    //
-    // `config` is SDK internal and shouldn't be exposed as a part of the
-    // SDK public API. It can be added in the response for debugging
-    // purposes, if needed.
-    delete e.config;
-  }
-
-  throw e;
-  /* eslint-enable no-param-reassign */
-};
-
 const allowedPerRequestOpts = opts => _.pick(opts, ['onUploadProgress']);
 
-const createSdkFnContextRunner = ({
-  params,
-  queryParams,
-  pathParams,
-  perRequestOpts,
-  ctx,
-  interceptors,
-}) =>
-  contextRunner(_.compact(interceptors))({
-    ...ctx,
-    params,
-    queryParams,
-    pathParams,
-    perRequestOpts,
-  })
-    .then(({ res }) => res)
-    .catch(formatError);
 const createSdkPostFn = sdkFnParams => (params = {}, queryParams = {}, perRequestOpts = {}) =>
   createSdkFnContextRunner({
     params,
@@ -368,66 +320,6 @@ const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
 //   return data;
 // };
 
-// GET requests: `params` includes query params. `queryParams` will be ignored
-// POST requests: `params` includes body params. `queryParams` includes URL query params
-const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
-  const { method = 'get' } = httpOpts;
-
-  let data = null;
-  let query = null;
-
-  if (method.toLowerCase() === 'post') {
-    data = params;
-    query = queryParams;
-  } else {
-    query = params;
-    // leave `data` null
-  }
-
-  const req = {
-    ...httpOpts,
-    method,
-    data,
-    params: query,
-  };
-
-  return axios.request(req);
-};
-
-/**
-   Creates a list of endpoint interceptors that call the endpoint with the
-   given parameters.
-*/
-const createEndpointInterceptor = ({ method, url, urlTemplate, httpOpts }) => {
-  const { headers: httpOptsHeaders, ...restHttpOpts } = httpOpts;
-
-  return {
-    enter: ctx => {
-      const { params, queryParams, pathParams, headers, perRequestOpts } = ctx;
-
-      return doRequest({
-        params,
-        queryParams,
-        httpOpts: {
-          ...perRequestOpts,
-          method: method || 'get',
-          // Merge additional headers
-          headers: { ...httpOptsHeaders, ...headers },
-          ...restHttpOpts,
-          url: url || urlTemplate(pathParams),
-        },
-      })
-        .then(res => ({ ...ctx, res }))
-        .catch(error => {
-          const errorCtx = { ...ctx, res: error.response };
-          // eslint-disable-next-line no-param-reassign
-          error.ctx = errorCtx;
-          throw error;
-        });
-    },
-  };
-};
-
 // Take SDK configurations, do transformation and return.
 const transformSdkConfig = ({ baseUrl, tokenStore, ...sdkConfig }) => ({
   ...sdkConfig,
@@ -450,9 +342,7 @@ const validateSdkConfig = sdkConfig => {
     throw new Error('assetCdnBaseUrl must be provided');
   }
 
-  /* global window, console */
-  const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
-
+  /* global console */
   if (isBrowser && sdkConfig.clientSecret && !sdkConfig.dangerouslyAllowClientSecretInBrowser) {
     /* eslint-disable no-console */
     console.warn(
@@ -492,7 +382,7 @@ const createMarketplaceApiEndpointInterceptors = httpOpts =>
     return _.set(acc, fnPath, [
       new TransitResponse(),
       ...requestFormatInterceptors,
-      createEndpointInterceptor({ method, url, httpOpts }),
+      endpointRequest({ method, url, httpOpts }),
     ]);
   }, {});
 
@@ -505,7 +395,7 @@ const createAuthApiEndpointInterceptors = httpOpts =>
   authApiEndpoints.reduce((acc, { path, method }) => {
     const fnPath = urlPathToFnPath(path);
     const url = `auth/${path}`;
-    return _.set(acc, fnPath, [createEndpointInterceptor({ method, url, httpOpts })]);
+    return _.set(acc, fnPath, [endpointRequest({ method, url, httpOpts })]);
   }, {});
 
 const createAssetsApiEndpointInterceptors = httpOpts =>
@@ -516,7 +406,7 @@ const createAssetsApiEndpointInterceptors = httpOpts =>
   //
   assetsApiEndpoints.reduce((acc, { pathFn, method, name }) => {
     const urlTemplate = pathParams => `assets/${pathFn(pathParams)}`;
-    return _.set(acc, name, [createEndpointInterceptor({ method, urlTemplate, httpOpts })]);
+    return _.set(acc, name, [endpointRequest({ method, urlTemplate, httpOpts })]);
   }, {});
 
 export default class SharetribeSdk {
