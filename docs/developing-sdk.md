@@ -69,6 +69,8 @@ $ // git add, commit, push
 
 1. Update version in `package.json` and `src/version.js`
 
+1. Make a new build (as `src/version.js` needs to be up-to-date in the build) and commit
+
 1. Update CHANGELOG.md
    - Move everything in Unreleased to the corresponding version section
 

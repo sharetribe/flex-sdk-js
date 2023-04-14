@@ -8,6 +8,16 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.18.0] - 2023-04-14
+
+### Changed
+
+- Internal changes [#173](https://github.com/sharetribe/flex-sdk-js/pull/173)
+- Upgrade to webpack 4
+  [#178](https://github.com/sharetribe/flex-sdk-js/pull/178)
+- Send custom `User-Agent` string for SDK calls
+  [#182](https://github.com/sharetribe/flex-sdk-js/pull/182)
+
 ## [v1.17.0] - 2022-05-10
 
 ### Added
