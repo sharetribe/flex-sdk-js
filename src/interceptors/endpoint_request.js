@@ -17,9 +17,13 @@ const doRequest = ({ params = {}, queryParams = {}, httpOpts }) => {
     // leave `data` null
   }
 
+  const headersWithUa = sdkUserAgentString
+    ? { ...headers, 'User-Agent': sdkUserAgentString }
+    : headers;
+
   const req = {
     ...httpOpts,
-    headers: { ...headers, 'User-Agent': sdkUserAgentString },
+    headers: headersWithUa,
     method,
     data,
     params: query,
