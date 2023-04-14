@@ -12719,10 +12719,12 @@ var endpoint_request_doRequest = function doRequest(_ref) {
     query = params; // leave `data` null
   }
 
+  var headersWithUa = isBrowser ? headers : endpoint_request_objectSpread({}, headers, {
+    'User-Agent': sdkUserAgentString
+  });
+
   var req = endpoint_request_objectSpread({}, httpOpts, {
-    headers: endpoint_request_objectSpread({}, headers, {
-      'User-Agent': sdkUserAgentString
-    }),
+    headers: headersWithUa,
     method: method,
     data: data,
     params: query
