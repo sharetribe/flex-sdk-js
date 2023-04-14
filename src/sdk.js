@@ -32,6 +32,7 @@ import FormatHttpResponse from './interceptors/format_http_response';
 import endpointRequest from './interceptors/endpoint_request';
 import { createDefaultTokenStore } from './token_store';
 import createSdkFnContextRunner from './sdk_context_runner';
+import { isBrowser } from './runtime';
 
 /* eslint-disable class-methods-use-this */
 
@@ -341,9 +342,7 @@ const validateSdkConfig = sdkConfig => {
     throw new Error('assetCdnBaseUrl must be provided');
   }
 
-  /* global window, console */
-  const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
-
+  /* global console */
   if (isBrowser && sdkConfig.clientSecret && !sdkConfig.dangerouslyAllowClientSecretInBrowser) {
     /* eslint-disable no-console */
     console.warn(
