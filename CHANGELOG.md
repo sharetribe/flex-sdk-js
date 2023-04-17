@@ -8,6 +8,14 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.18.1] - 2023-04-17
+
+### Fixed
+
+- Fix issue where custom `User-Agent` string caused warning and issues with CORS
+  when used in browser. The string is no longer customized when running in
+  browser. [#184](https://github.com/sharetribe/flex-sdk-js/pull/184)
+
 ## [v1.18.0] - 2023-04-14
 
 ### Changed
