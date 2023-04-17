@@ -12664,22 +12664,22 @@ var external_axios_default = /*#__PURE__*/__webpack_require__.n(external_axios_)
 
 // CONCATENATED MODULE: ./src/version.js
 // Update this when updating package.json
-var sdkVersion = '1.18.0';
+var sdkVersion = '1.18.1';
 /* harmony default export */ var src_version = (sdkVersion);
 // CONCATENATED MODULE: ./src/runtime.js
 
-/* global window, navigator, process */
+/* global window, process */
 
 var isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
-var navigatorUserAgent = typeof navigator !== 'undefined' ? navigator.userAgent : '';
 var nodeVersion = typeof process !== 'undefined' && typeof process.versions !== 'undefined' ? process.versions.node : ''; // User-Agent string for the SDK
-// For browsers, append to the browser's user agent string,
+// Only server-side, as modifying browser UA string causes
+// side effects.
 
 var userAgent = "sharetribe-flex-sdk-js/".concat(src_version);
 
-if (isBrowser && navigatorUserAgent !== '') {
-  userAgent = "".concat(navigatorUserAgent, " ").concat(userAgent);
-} else if (nodeVersion !== '') {
+if (isBrowser) {
+  userAgent = null;
+} else if (!isBrowser && nodeVersion !== '') {
   userAgent = "".concat(userAgent, " (node/").concat(nodeVersion, ")");
 }
 
@@ -12719,10 +12719,12 @@ var endpoint_request_doRequest = function doRequest(_ref) {
     query = params; // leave `data` null
   }
 
+  var headersWithUa = sdkUserAgentString ? endpoint_request_objectSpread({}, headers, {
+    'User-Agent': sdkUserAgentString
+  }) : headers;
+
   var req = endpoint_request_objectSpread({}, httpOpts, {
-    headers: endpoint_request_objectSpread({}, headers, {
-      'User-Agent': sdkUserAgentString
-    }),
+    headers: headersWithUa,
     method: method,
     data: data,
     params: query
