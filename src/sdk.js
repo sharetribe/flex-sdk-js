@@ -285,7 +285,7 @@ const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
         pathParams: {
           clientId: ctx.clientId,
           alias: alias || 'latest',
-          assetPath: path,
+          assetPath: path[0] === '/' ? path.slice(1) : path,
         },
         interceptors: [new FormatHttpResponse(), ..._.get(assetsEndpointInterceptors, 'byAlias')],
       });
@@ -308,7 +308,7 @@ const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [
         pathParams: {
           clientId: ctx.clientId,
           version,
-          assetPath: path,
+          assetPath: path[0] === '/' ? path.slice(1) : path,
         },
         interceptors: [new FormatHttpResponse(), ..._.get(assetsEndpointInterceptors, 'byVersion')],
       });
