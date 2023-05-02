@@ -97,6 +97,19 @@ describe('utils', () => {
         relativePaths: ['nested/page-d.json', 'page-a.json', 'page-b.json', 'page-c.json'],
       });
     });
+    it('can handle absolute paths', () => {
+      expect(
+        canonicalAssetPaths([
+          'content/pages/blog/page-b.json',
+          '/content/pages/blog/page-a.json',
+          '/content/pages/blog/page-c.json',
+          'content/pages/blog/nested/page-d.json',
+        ])
+      ).toEqual({
+        pathPrefix: 'content/pages/blog/',
+        relativePaths: ['nested/page-d.json', 'page-a.json', 'page-b.json', 'page-c.json'],
+      });
+    });
     it('no common path prefix is found', () => {
       expect(
         canonicalAssetPaths(['content/pages/main.json', 'settings/admin.json', 'other/any.json'])

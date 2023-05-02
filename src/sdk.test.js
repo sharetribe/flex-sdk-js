@@ -1029,11 +1029,46 @@ describe('asset', () => {
     );
   });
 
+  it('returns latest asset with absolute path', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.assetByAlias({ path: '/translations.json', alias: 'latest' }).then(res => {
+        const resource = res.data.data;
+        const { version } = res.data.meta;
+
+        expect(resource).toEqual({
+          'navigation.listings': 'Listings',
+          'navigation.account': 'My account',
+          'navigation.login': 'Log in',
+        });
+        expect(version).toEqual('v3');
+      })
+    );
+  });
+
   it('returns asset by version', () => {
     const { sdk } = createSdk();
 
     return report(
       sdk.assetByVersion({ path: 'translations.json', version: 'v2' }).then(res => {
+        const resource = res.data.data;
+        const { version } = res.data.meta;
+
+        expect(resource).toEqual({
+          'navigation.listings': 'Listings',
+          'navigation.account': 'My account',
+        });
+        expect(version).toEqual('v2');
+      })
+    );
+  });
+
+  it('returns asset with absolute path by version', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.assetByVersion({ path: '/translations.json', version: 'v2' }).then(res => {
         const resource = res.data.data;
         const { version } = res.data.meta;
 
