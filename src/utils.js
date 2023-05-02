@@ -104,7 +104,7 @@ const longestPathPrefix = (sortedPathParts, result = '') => {
      }
 */
 export const canonicalAssetPaths = paths => {
-  const sortedPaths = [...new Set(paths)].map(p => (p[0] === '/' ? p.slice[1] : p)).sort();
+  const sortedPaths = [...new Set(paths)].map(p => (p[0] === '/' ? p.slice(1) : p)).sort();
   const sortedPathParts = [...sortedPaths].map(p => p.split('/'));
   const pathPrefix = longestPathPrefix(sortedPathParts);
   const prefixLength = pathPrefix.length;
