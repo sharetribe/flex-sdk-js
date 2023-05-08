@@ -58,6 +58,8 @@ const promise = sdk.assetsByAlias({
 });
 ```
 
+Please note that the order of the returned assets may not be the same as the order of `paths`.
+
 ### assetsByVersion()
 
 The `assetsByVersion()` method retrieves data for a set of assets given a
@@ -74,6 +76,8 @@ const promise = sdk.assetsByAlias({
   paths: ["content/translations.json", "config/design.json"]
 });
 ```
+
+Please note that the order of the returned assets may not be the same as the order of `paths`.
 
 ## Responses
 
