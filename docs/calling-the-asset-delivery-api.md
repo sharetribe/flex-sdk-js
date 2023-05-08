@@ -112,8 +112,8 @@ A successful response will have the following format:
 ```
 
 The response `data` key will not contain any data types beyond the data types
-that JavaScript supports out-of-the-box, unlike responses returned by the [SDK
-methods for the Marketplace API](./calling-the-api.md).
+that JSON supports, unlike responses returned by the [SDK methods for the
+Marketplace API](./calling-the-api.md).
 
 The API returns the data always in the following format:
 
