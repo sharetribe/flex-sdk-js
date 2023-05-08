@@ -52,9 +52,9 @@ The `assetsByAlias()` method retrieves data for a set of assets using the
 For example:
 
 ```js
-const promise = sdk.assetByAlias({
+const promise = sdk.assetsByAlias({
   alias: "latest",
-  path: ["content/translations.json", "config/design.json"]
+  paths: ["content/translations.json", "config/design.json"]
 });
 ```
 
@@ -69,9 +69,9 @@ version string. It takes an object as its argument and the object must contain:
 For example:
 
 ```js
-const promise = sdk.assetByAlias({
+const promise = sdk.assetsByAlias({
   version: "ESz8ULLX68PiENQV",
-  path: ["content/translations.json", "config/design.json"]
+  paths: ["content/translations.json", "config/design.json"]
 });
 ```
 
