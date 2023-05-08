@@ -20,7 +20,7 @@ For example:
 ```js
 const promise = sdk.assetByAlias({
   alias: "latest",
-  path: "content/translations.json"
+  path: "/content/translations.json"
 });
 ```
 
@@ -37,7 +37,7 @@ For example:
 ```js
 const promise = sdk.assetByAlias({
   version: "ESz8ULLX68PiENQV",
-  path: "content/translations.json"
+  path: "/content/translations.json"
 });
 ```
 
@@ -54,7 +54,7 @@ For example:
 ```js
 const promise = sdk.assetsByAlias({
   alias: "latest",
-  paths: ["content/translations.json", "config/design.json"]
+  paths: ["/content/translations.json", "/design/layout.json"]
 });
 ```
 
@@ -73,7 +73,7 @@ For example:
 ```js
 const promise = sdk.assetsByAlias({
   version: "ESz8ULLX68PiENQV",
-  paths: ["content/translations.json", "config/design.json"]
+  paths: ["/content/translations.json", "/design/layout.json"]
 });
 ```
 
@@ -90,7 +90,7 @@ error the Promise will be *rejected*.
 **Example:**
 
 ```js
-const promise = sdk.assetByAlias({ alias: "latest", "path": "content/translations.json" });
+const promise = sdk.assetByAlias({ alias: "latest", "path": "/content/translations.json" });
 
 // Handle success response
 promise.then(response => { console.log(response)} );
