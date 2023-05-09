@@ -1,12 +1,15 @@
-const byAliasRe = /assets\/pub\/(.+)\/a\/(.+)\/(.+)/;
-const byVersionRe = /assets\/pub\/(.+)\/v\/(.+)\/(.+)/;
+const assetByAliasRe = /assets\/pub\/(.+)\/a\/(.+)\/(.+[^/])$/;
+const assetByVersionRe = /assets\/pub\/(.+)\/v\/(.+)\/(.+[^/])$/;
+const assetsByAliasRe = /assets\/pub\/(.+)\/a\/(.+)\/(.+\/)/;
+const assetsByVersionRe = /assets\/pub\/(.+)\/v\/(.+)\/(.+\/)/;
+const testClientId = '08ec69f6-d37e-414d-83eb-324e94afddf0';
 
 const pub = {
-  alias: (config, resolve, reject, matchByAlias) => {
+  assetByAlias: (config, resolve, reject, matchByAlias) => {
     const [match, clientId, alias, assetPath] = matchByAlias;
 
     if (
-      clientId === '08ec69f6-d37e-414d-83eb-324e94afddf0' &&
+      clientId === testClientId &&
       (alias === 'latest' || alias === 'release-prod') &&
       assetPath === 'translations.json'
     ) {
@@ -24,11 +27,7 @@ const pub = {
       return resolve({ data: res });
     }
 
-    if (
-      clientId === '08ec69f6-d37e-414d-83eb-324e94afddf0' &&
-      alias === 'release-dev' &&
-      assetPath === 'translations.json'
-    ) {
+    if (clientId === testClientId && alias === 'release-dev' && assetPath === 'translations.json') {
       const res = JSON.stringify({
         data: {
           'navigation.listings': 'Listings',
@@ -45,7 +44,7 @@ const pub = {
     throw new Error(`Asset by alias not implemented for: ${match}`);
   },
 
-  version: (config, resolve, reject, matchByVersion) => {
+  assetByVersion: (config, resolve, reject, matchByVersion) => {
     const [match, clientId, version, assetPath] = matchByVersion;
 
     if (
@@ -68,17 +67,79 @@ const pub = {
 
     throw new Error(`Asset by version not implemented for: ${match}`);
   },
+
+  assetsByAlias: (config, resolve, reject, matchByAlias) => {
+    const [match, clientId, alias, assetPath] = matchByAlias;
+    const relativePaths = config.params.assets;
+
+    if (clientId === testClientId && alias === 'latest') {
+      const res = JSON.stringify({
+        data: [
+          ...relativePaths.map(relativePath => ({
+            id: `byAlias-${relativePath}`,
+            type: 'jsonAsset',
+            attributes: {
+              assetPath: `/${assetPath}${relativePath}`,
+              data: { assetPath, relativePath },
+            },
+          })),
+        ],
+        included: [],
+        meta: {
+          version: 'v1',
+        },
+      });
+      return resolve({ data: res });
+    }
+
+    throw new Error(`Assets by alias not implemented for: ${match}`);
+  },
+
+  assetsByVersion: (config, resolve, reject, matchByVersion) => {
+    const [match, clientId, version, assetPath] = matchByVersion;
+    const relativePaths = config.params.assets;
+
+    if (clientId === testClientId) {
+      const res = JSON.stringify({
+        data: [
+          ...relativePaths.map(relativePath => ({
+            id: `byVersion-${relativePath}`,
+            type: 'jsonAsset',
+            attributes: {
+              assetPath: `/${assetPath}${relativePath}`,
+              data: { assetPath, relativePath },
+            },
+          })),
+        ],
+        included: [],
+        meta: {
+          version,
+        },
+      });
+      return resolve({ data: res });
+    }
+
+    throw new Error(`Assets by version not implemented for: ${match}`);
+  },
 };
 
 const handler = (config, resolve, reject) => {
-  const matchByAlias = config.url.match(byAliasRe);
-  const matchByVersion = config.url.match(byVersionRe);
+  const matchAssetByAlias = config.url.match(assetByAliasRe);
+  const matchAssetByVersion = config.url.match(assetByVersionRe);
+  const matchAssetsByAlias = config.url.match(assetsByAliasRe);
+  const matchAssetsByVersion = config.url.match(assetsByVersionRe);
 
-  if (matchByAlias) {
-    return pub.alias(config, resolve, reject, matchByAlias);
+  if (matchAssetByAlias) {
+    return pub.assetByAlias(config, resolve, reject, matchAssetByAlias);
   }
-  if (matchByVersion) {
-    return pub.version(config, resolve, reject, matchByVersion);
+  if (matchAssetByVersion) {
+    return pub.assetByVersion(config, resolve, reject, matchAssetByVersion);
+  }
+  if (matchAssetsByAlias) {
+    return pub.assetsByAlias(config, resolve, reject, matchAssetsByAlias);
+  }
+  if (matchAssetsByVersion) {
+    return pub.assetsByVersion(config, resolve, reject, matchAssetsByVersion);
   }
 
   throw new Error(`No fake adapter handler implemented for Assets API endpoint: ${config.url}`);

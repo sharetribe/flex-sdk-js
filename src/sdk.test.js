@@ -1029,11 +1029,46 @@ describe('asset', () => {
     );
   });
 
+  it('returns latest asset with absolute path', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.assetByAlias({ path: '/translations.json', alias: 'latest' }).then(res => {
+        const resource = res.data.data;
+        const { version } = res.data.meta;
+
+        expect(resource).toEqual({
+          'navigation.listings': 'Listings',
+          'navigation.account': 'My account',
+          'navigation.login': 'Log in',
+        });
+        expect(version).toEqual('v3');
+      })
+    );
+  });
+
   it('returns asset by version', () => {
     const { sdk } = createSdk();
 
     return report(
       sdk.assetByVersion({ path: 'translations.json', version: 'v2' }).then(res => {
+        const resource = res.data.data;
+        const { version } = res.data.meta;
+
+        expect(resource).toEqual({
+          'navigation.listings': 'Listings',
+          'navigation.account': 'My account',
+        });
+        expect(version).toEqual('v2');
+      })
+    );
+  });
+
+  it('returns asset with absolute path by version', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.assetByVersion({ path: '/translations.json', version: 'v2' }).then(res => {
         const resource = res.data.data;
         const { version } = res.data.meta;
 
@@ -1059,6 +1094,80 @@ describe('asset', () => {
           'navigation.account': 'My account',
         });
         expect(version).toEqual('v2');
+      })
+    );
+  });
+
+  it('returns multiple assets by version', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk
+        .assetsByVersion({ paths: ['content/b.json', 'content/a.json'], version: 'v2' })
+        .then(res => {
+          const resource = res.data.data;
+          const { version } = res.data.meta;
+          expect(resource).toEqual([
+            {
+              id: 'byVersion-a.json',
+              type: 'jsonAsset',
+              attributes: {
+                assetPath: '/content/a.json',
+                data: {
+                  assetPath: 'content/',
+                  relativePath: 'a.json',
+                },
+              },
+            },
+            {
+              id: 'byVersion-b.json',
+              type: 'jsonAsset',
+              attributes: {
+                assetPath: '/content/b.json',
+                data: {
+                  assetPath: 'content/',
+                  relativePath: 'b.json',
+                },
+              },
+            },
+          ]);
+          expect(version).toEqual('v2');
+        })
+    );
+  });
+
+  it('returns multiple assets by alias', () => {
+    const { sdk } = createSdk();
+
+    return report(
+      sdk.assetsByAlias({ paths: ['any/foo.json', 'any/bar.json'], alias: 'latest' }).then(res => {
+        const resource = res.data.data;
+        const { version } = res.data.meta;
+        expect(resource).toEqual([
+          {
+            id: 'byAlias-bar.json',
+            type: 'jsonAsset',
+            attributes: {
+              assetPath: '/any/bar.json',
+              data: {
+                assetPath: 'any/',
+                relativePath: 'bar.json',
+              },
+            },
+          },
+          {
+            id: 'byAlias-foo.json',
+            type: 'jsonAsset',
+            attributes: {
+              assetPath: '/any/foo.json',
+              data: {
+                assetPath: 'any/',
+                relativePath: 'foo.json',
+              },
+            },
+          },
+        ]);
+        expect(version).toEqual('v1');
       })
     );
   });

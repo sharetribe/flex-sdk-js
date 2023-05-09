@@ -8,6 +8,10 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Added
+
+- Add support for multi-asset fetching. [#170](https://github.com/sharetribe/flex-sdk-js/pull/170)
+
 ## [v1.18.1] - 2023-04-17
 
 ### Fixed

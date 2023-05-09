@@ -66,3 +66,49 @@ export const objectQueryString = obj => {
     .map(([k, v]) => `${k}:${serializeAttribute(v)}`)
     .join(';');
 };
+
+/**
+   Compute longest common path prefix for an array of path parts separated by "/".
+   The input array must be sorted lexically.
+*/
+const longestPathPrefix = (sortedPathParts, result = '') => {
+  if (sortedPathParts.length === 0) {
+    return '';
+  }
+  if (sortedPathParts.length === 1) {
+    const comps = sortedPathParts[0];
+    if (comps.length === 1) {
+      return '';
+    }
+    const path = comps.slice(0, comps.length - 1).join('/');
+    return `${path}/`;
+  }
+
+  const { length: l, 0: first, [l - 1]: last } = sortedPathParts;
+  const [firstCurrent, ...firstRest] = first;
+  const [lastCurrent, ...lastRest] = last;
+  if (firstRest.length > 0 && lastRest.length > 0 && firstCurrent === lastCurrent) {
+    return longestPathPrefix([firstRest, lastRest], `${result}${firstCurrent}/`);
+  }
+
+  return result;
+};
+
+/**
+   Provided a list of paths, e.g. [content/page.json, content/init.json],
+   return a canonical structure for those paths, which consists of a
+   common prefix and a list of sorted relative paths, e.g.:
+     {
+       pathPrefix: 'content/',
+       relativePaths: ['init.json', 'translations.json']
+     }
+*/
+export const canonicalAssetPaths = paths => {
+  const sortedPaths = [...new Set(paths)].map(p => (p[0] === '/' ? p.slice(1) : p)).sort();
+  const sortedPathParts = [...sortedPaths].map(p => p.split('/'));
+  const pathPrefix = longestPathPrefix(sortedPathParts);
+  const prefixLength = pathPrefix.length;
+  const relativePaths = sortedPaths.map(p => p.substring(prefixLength));
+
+  return { pathPrefix, relativePaths };
+};

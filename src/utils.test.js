@@ -1,4 +1,4 @@
-import { fnPath, trimEndSlash, formData, objectQueryString } from './utils';
+import { fnPath, trimEndSlash, formData, objectQueryString, canonicalAssetPaths } from './utils';
 
 describe('utils', () => {
   describe('pathToMethodName', () => {
@@ -80,6 +80,70 @@ describe('utils', () => {
       expect(() => objectQueryString({ foo: { nested: 'value' } })).toThrowError(
         'Nested object in query parameter.'
       );
+    });
+  });
+
+  describe('canonicalAssetPaths', () => {
+    it('returns common path prefix and a list of sorted relative paths', () => {
+      expect(
+        canonicalAssetPaths([
+          'content/pages/blog/page-b.json',
+          'content/pages/blog/page-a.json',
+          'content/pages/blog/page-c.json',
+          'content/pages/blog/nested/page-d.json',
+        ])
+      ).toEqual({
+        pathPrefix: 'content/pages/blog/',
+        relativePaths: ['nested/page-d.json', 'page-a.json', 'page-b.json', 'page-c.json'],
+      });
+    });
+    it('can handle absolute paths', () => {
+      expect(
+        canonicalAssetPaths([
+          'content/pages/blog/page-b.json',
+          '/content/pages/blog/page-a.json',
+          '/content/pages/blog/page-c.json',
+          'content/pages/blog/nested/page-d.json',
+        ])
+      ).toEqual({
+        pathPrefix: 'content/pages/blog/',
+        relativePaths: ['nested/page-d.json', 'page-a.json', 'page-b.json', 'page-c.json'],
+      });
+    });
+    it('no common path prefix is found', () => {
+      expect(
+        canonicalAssetPaths(['content/pages/main.json', 'settings/admin.json', 'other/any.json'])
+      ).toEqual({
+        pathPrefix: '',
+        relativePaths: ['content/pages/main.json', 'other/any.json', 'settings/admin.json'],
+      });
+    });
+    it('returns empty path prefix assets at root level', () => {
+      expect(canonicalAssetPaths(['page-b.json', 'page-a.json'])).toEqual({
+        pathPrefix: '',
+        relativePaths: ['page-a.json', 'page-b.json'],
+      });
+    });
+    it('split a single asset path into prefix and asset', () => {
+      expect(canonicalAssetPaths(['content/pages/main.json'])).toEqual({
+        pathPrefix: 'content/pages/',
+        relativePaths: ['main.json'],
+      });
+    });
+    it('prefix is empty for single asset path at root level', () => {
+      expect(canonicalAssetPaths(['main.json'])).toEqual({
+        pathPrefix: '',
+        relativePaths: ['main.json'],
+      });
+    });
+    it('deduplicate asset paths', () => {
+      expect(canonicalAssetPaths(['content/init.json', 'content/init.json'])).toEqual({
+        pathPrefix: 'content/',
+        relativePaths: ['init.json'],
+      });
+    });
+    it('can handle an empty list', () => {
+      expect(canonicalAssetPaths([])).toEqual({ pathPrefix: '', relativePaths: [] });
     });
   });
 });
