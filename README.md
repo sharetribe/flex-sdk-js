@@ -15,8 +15,8 @@ Use Sharetribe Flex Marketplace API with ease.
 
 ## What is it?
 
-The SDK is the **easiest** way to interact with Sharetribe Flex
-Marketplace API.
+The SDK is the **easiest** way to interact with Sharetribe Flex Marketplace API
+and Asset Delivery API.
 
 It handles **groundwork** such as authentication, renewing
 authentication tokens and serializing and deserializing data to and from
@@ -60,7 +60,7 @@ sdk.listings
   });
 ```
 
-Client ID is required to create a new SDK instance. 
+Client ID is required to create a new SDK instance.
 See [this  article](https://www.sharetribe.com/docs/background/applications/)
 to learn how to create an application and get the client ID.
 
