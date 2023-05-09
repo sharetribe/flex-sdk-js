@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.19.0] - 2023-05-09
+
 ### Added
 
 - Add support for multi-asset fetching. [#170](https://github.com/sharetribe/flex-sdk-js/pull/170)
@@ -276,8 +278,12 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
-[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.16.0...HEAD
+[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.19.0...HEAD
 
+[v1.19.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.18.1...v1.19.0]
+[v1.18.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.18.0...v1.18.1]
+[v1.18.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.17.0...v1.18.0]
+[v1.17.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.16.0...v1.17.0]
 [v1.16.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.15.0...v1.16.0]
 [v1.15.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.14.1...v1.15.0
 [v1.14.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.14.0...v1.14.1
