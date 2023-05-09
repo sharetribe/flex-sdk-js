@@ -67,14 +67,26 @@ $ // git add, commit, push
 
 #### Release a new version to NPM
 
-1. Update version in `package.json` and `src/version.js`
+1. Update versions:
+
+   - `package.json`
+   - `src/version.js`
 
 1. Make a new build (as `src/version.js` needs to be up-to-date in the build) and commit
 
+    ```bash
+    yarn run build
+    ```
+
 1. Update CHANGELOG.md
+
    - Move everything in Unreleased to the corresponding version section
+   - Update the version links found at the very bottom of the CHANGELOG.md file
+
+1. Commit and push
 
 1. Login as `sharetribe` with `npm login`
+
    - check credentials from password manager
 
 1. Publish with `npm publish`
