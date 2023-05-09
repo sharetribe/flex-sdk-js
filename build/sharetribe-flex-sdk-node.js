@@ -10073,6 +10073,16 @@ var trimEnd_default = /*#__PURE__*/__webpack_require__.n(trimEnd);
 
 
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function _toArray(arr) { return _arrayWithHoles(arr) || _iterableToArray(arr) || _nonIterableRest(); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
@@ -10157,6 +10167,77 @@ var utils_objectQueryString = function objectQueryString(obj) {
 
     return "".concat(k, ":").concat(utils_serializeAttribute(v));
   }).join(';');
+};
+/**
+   Compute longest common path prefix for an array of path parts separated by "/".
+   The input array must be sorted lexically.
+*/
+
+var longestPathPrefix = function longestPathPrefix(sortedPathParts) {
+  var result = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+  if (sortedPathParts.length === 0) {
+    return '';
+  }
+
+  if (sortedPathParts.length === 1) {
+    var comps = sortedPathParts[0];
+
+    if (comps.length === 1) {
+      return '';
+    }
+
+    var path = comps.slice(0, comps.length - 1).join('/');
+    return "".concat(path, "/");
+  }
+
+  var l = sortedPathParts.length,
+      first = sortedPathParts[0],
+      last = sortedPathParts[l - 1];
+
+  var _first = _toArray(first),
+      firstCurrent = _first[0],
+      firstRest = _first.slice(1);
+
+  var _last = _toArray(last),
+      lastCurrent = _last[0],
+      lastRest = _last.slice(1);
+
+  if (firstRest.length > 0 && lastRest.length > 0 && firstCurrent === lastCurrent) {
+    return longestPathPrefix([firstRest, lastRest], "".concat(result).concat(firstCurrent, "/"));
+  }
+
+  return result;
+};
+/**
+   Provided a list of paths, e.g. [content/page.json, content/init.json],
+   return a canonical structure for those paths, which consists of a
+   common prefix and a list of sorted relative paths, e.g.:
+     {
+       pathPrefix: 'content/',
+       relativePaths: ['init.json', 'translations.json']
+     }
+*/
+
+
+var canonicalAssetPaths = function canonicalAssetPaths(paths) {
+  var sortedPaths = _toConsumableArray(new Set(paths)).map(function (p) {
+    return p[0] === '/' ? p.slice(1) : p;
+  }).sort();
+
+  var sortedPathParts = _toConsumableArray(sortedPaths).map(function (p) {
+    return p.split('/');
+  });
+
+  var pathPrefix = longestPathPrefix(sortedPathParts);
+  var prefixLength = pathPrefix.length;
+  var relativePaths = sortedPaths.map(function (p) {
+    return p.substring(prefixLength);
+  });
+  return {
+    pathPrefix: pathPrefix,
+    relativePaths: relativePaths
+  };
 };
 // CONCATENATED MODULE: ./src/endpoints.js
 /**
@@ -10705,13 +10786,13 @@ function context_runner_iterableToArrayLimit(arr, i) { var _arr = []; var _n = t
 
 function context_runner_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function context_runner_toConsumableArray(arr) { return context_runner_arrayWithoutHoles(arr) || context_runner_iterableToArray(arr) || context_runner_nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function context_runner_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function context_runner_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function context_runner_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 function context_runner_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -10729,7 +10810,7 @@ var buildCtx = function buildCtx() {
   var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var middleware = arguments.length > 1 ? arguments[1] : undefined;
   return context_runner_objectSpread({}, params, {
-    enterQueue: _toConsumableArray(middleware).reverse(),
+    enterQueue: context_runner_toConsumableArray(middleware).reverse(),
     leaveStack: []
   });
 };
@@ -10759,9 +10840,9 @@ var tryExecuteMw = function tryExecuteMw(ctx, mw, stage) {
 };
 
 var nextMw = function nextMw(ctx) {
-  var leaveStack = _toConsumableArray(ctx.leaveStack);
+  var leaveStack = context_runner_toConsumableArray(ctx.leaveStack);
 
-  var enterQueue = _toConsumableArray(ctx.enterQueue);
+  var enterQueue = context_runner_toConsumableArray(ctx.enterQueue);
 
   var mw;
   var type;
@@ -13107,6 +13188,7 @@ var apis = {
       },
       baseURL: "".concat(assetCdnBaseUrl, "/").concat(version),
       adapter: adapter,
+      paramsSerializer: params_serializer,
       httpAgent: httpAgent,
       httpsAgent: httpsAgent
     };
@@ -13264,7 +13346,7 @@ var sdk_assetsApiSdkFns = function assetsApiSdkFns(assetsEndpointInterceptors, c
         pathParams: {
           clientId: ctx.clientId,
           alias: alias || 'latest',
-          assetPath: path
+          assetPath: path[0] === '/' ? path.slice(1) : path
         },
         interceptors: [new format_http_response_FormatHttpResponse()].concat(sdk_toConsumableArray(get_default()(assetsEndpointInterceptors, 'byAlias')))
       });
@@ -13280,7 +13362,7 @@ var sdk_assetsApiSdkFns = function assetsApiSdkFns(assetsEndpointInterceptors, c
       }
 
       if (!version) {
-        throw new Error('Missing mandatory parameter `alias`');
+        throw new Error('Missing mandatory parameter `version`');
       }
 
       return sdk_context_runner({
@@ -13288,7 +13370,77 @@ var sdk_assetsApiSdkFns = function assetsApiSdkFns(assetsEndpointInterceptors, c
         pathParams: {
           clientId: ctx.clientId,
           version: version,
-          assetPath: path
+          assetPath: path[0] === '/' ? path.slice(1) : path
+        },
+        interceptors: [new format_http_response_FormatHttpResponse()].concat(sdk_toConsumableArray(get_default()(assetsEndpointInterceptors, 'byVersion')))
+      });
+    }
+  }, {
+    path: 'assetsByAlias',
+    fn: function fn(_ref9) {
+      var paths = _ref9.paths,
+          alias = _ref9.alias;
+
+      if (!paths) {
+        throw new Error('Missing mandatory parameter `paths`');
+      }
+
+      if (paths.length === 0) {
+        throw new Error('`paths` must not be empty');
+      }
+
+      if (!alias) {
+        throw new Error('Missing mandatory parameter `alias`');
+      }
+
+      var _canonicalAssetPaths = canonicalAssetPaths(paths),
+          pathPrefix = _canonicalAssetPaths.pathPrefix,
+          relativePaths = _canonicalAssetPaths.relativePaths;
+
+      return sdk_context_runner({
+        ctx: ctx,
+        params: {
+          assets: relativePaths
+        },
+        pathParams: {
+          clientId: ctx.clientId,
+          alias: alias,
+          assetPath: pathPrefix
+        },
+        interceptors: [new format_http_response_FormatHttpResponse()].concat(sdk_toConsumableArray(get_default()(assetsEndpointInterceptors, 'byAlias')))
+      });
+    }
+  }, {
+    path: 'assetsByVersion',
+    fn: function fn(_ref10) {
+      var paths = _ref10.paths,
+          version = _ref10.version;
+
+      if (!paths) {
+        throw new Error('Missing mandatory parameter `paths`');
+      }
+
+      if (paths.length === 0) {
+        throw new Error('`paths` must not be empty');
+      }
+
+      if (!version) {
+        throw new Error('Missing mandatory parameter `version`');
+      }
+
+      var _canonicalAssetPaths2 = canonicalAssetPaths(paths),
+          pathPrefix = _canonicalAssetPaths2.pathPrefix,
+          relativePaths = _canonicalAssetPaths2.relativePaths;
+
+      return sdk_context_runner({
+        ctx: ctx,
+        params: {
+          assets: relativePaths
+        },
+        pathParams: {
+          clientId: ctx.clientId,
+          version: version,
+          assetPath: pathPrefix
         },
         interceptors: [new format_http_response_FormatHttpResponse()].concat(sdk_toConsumableArray(get_default()(assetsEndpointInterceptors, 'byVersion')))
       });
@@ -13301,10 +13453,10 @@ var sdk_assetsApiSdkFns = function assetsApiSdkFns(assetsEndpointInterceptors, c
 // Take SDK configurations, do transformation and return.
 
 
-var sdk_transformSdkConfig = function transformSdkConfig(_ref9) {
-  var baseUrl = _ref9.baseUrl,
-      tokenStore = _ref9.tokenStore,
-      sdkConfig = sdk_objectWithoutProperties(_ref9, ["baseUrl", "tokenStore"]);
+var sdk_transformSdkConfig = function transformSdkConfig(_ref11) {
+  var baseUrl = _ref11.baseUrl,
+      tokenStore = _ref11.tokenStore,
+      sdkConfig = sdk_objectWithoutProperties(_ref11, ["baseUrl", "tokenStore"]);
 
   return sdk_objectSpread({}, sdkConfig, {
     baseUrl: utils_trimEndSlash(baseUrl),
@@ -13345,10 +13497,10 @@ var sdk_createMarketplaceApiEndpointInterceptors = function createMarketplaceApi
     // This object can be passed to other interceptors in the interceptor context so they
     // are able to do API calls (e.g. authentication interceptors)
     //
-    marketplaceApi.reduce(function (acc, _ref10) {
-      var path = _ref10.path,
-          method = _ref10.method,
-          multipart = _ref10.multipart;
+    marketplaceApi.reduce(function (acc, _ref12) {
+      var path = _ref12.path,
+          method = _ref12.method,
+          multipart = _ref12.multipart;
       var fnPath = utils_fnPath(path);
       var url = "api/".concat(path);
       var requestFormatInterceptors = [];
@@ -13376,9 +13528,9 @@ var sdk_createAuthApiEndpointInterceptors = function createAuthApiEndpointInterc
     // This object can be passed to other interceptors in the interceptor context so they
     // are able to do API calls (e.g. authentication interceptors)
     //
-    authApi.reduce(function (acc, _ref11) {
-      var path = _ref11.path,
-          method = _ref11.method;
+    authApi.reduce(function (acc, _ref13) {
+      var path = _ref13.path,
+          method = _ref13.method;
       var fnPath = utils_fnPath(path);
       var url = "auth/".concat(path);
       return set_default()(acc, fnPath, [endpoint_request({
@@ -13396,10 +13548,10 @@ var sdk_createAssetsApiEndpointInterceptors = function createAssetsApiEndpointIn
     // This object can be passed to other interceptors in the interceptor context so they
     // are able to do API calls (e.g. authentication interceptors)
     //
-    assetsApi.reduce(function (acc, _ref12) {
-      var pathFn = _ref12.pathFn,
-          method = _ref12.method,
-          name = _ref12.name;
+    assetsApi.reduce(function (acc, _ref14) {
+      var pathFn = _ref14.pathFn,
+          method = _ref14.method,
+          name = _ref14.name;
 
       var urlTemplate = function urlTemplate(pathParams) {
         return "assets/".concat(pathFn(pathParams));
@@ -13449,19 +13601,19 @@ function SharetribeSdk(userSdkConfig) {
     transitVerbose: sdkConfig.transitVerbose
   }; // Assign SDK functions to 'this'
 
-  sdk_marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(function (_ref13) {
-    var path = _ref13.path,
-        fn = _ref13.fn;
-    return set_default()(_this, path, fn);
-  });
-  sdk_authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(function (_ref14) {
-    var path = _ref14.path,
-        fn = _ref14.fn;
-    return set_default()(_this, path, fn);
-  });
-  sdk_assetsApiSdkFns(assetsApiEndpointInterceptors, ctx).forEach(function (_ref15) {
+  sdk_marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(function (_ref15) {
     var path = _ref15.path,
         fn = _ref15.fn;
+    return set_default()(_this, path, fn);
+  });
+  sdk_authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(function (_ref16) {
+    var path = _ref16.path,
+        fn = _ref16.fn;
+    return set_default()(_this, path, fn);
+  });
+  sdk_assetsApiSdkFns(assetsApiEndpointInterceptors, ctx).forEach(function (_ref17) {
+    var path = _ref17.path,
+        fn = _ref17.fn;
     return set_default()(_this, path, fn);
   });
 };
