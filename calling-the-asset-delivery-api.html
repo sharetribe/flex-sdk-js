@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/style.css?t=90051322">
+    <link rel="stylesheet" href="styles.css?t=6eea839d">
+    <script src="assets/script.js?t=93f1a66c"></script>
+    <script src="scripts.js?t=bafb4b9e"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=1318dcb3"></script>
+    <title>Calling the Asset Delivery API - Sharetribe Flex SDK for JavaScript</title>
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body class="-menu-visible">
+    <div class="doc-layout">
+      <div class="toggle menu-toggle js-menu-toggle"></div>
+      <div class="menu toc-menu">
+        <ul>
+          <li class="menu-item -level-0 -parent">
+            <ul class="submenu">
+              <li class="menu-item -level-1"><a class="link title  link-index" href="index.html">Sharetribe Flex SDK for JavaScript</a>
+              </li>
+              <li class="menu-item -level-1"><a class="link title  link-features" href="features.html">Features</a>
+              </li>
+              <li class="menu-item -level-1"><a class="link title  link-try-it-in-browser" href="try-it-in-browser.html">Try it in browser!</a>
+              </li>
+              <li class="menu-item -level-1"><a class="link title  link-try-it-in-the-playground" href="try-it-in-the-playground.html">Try it in the API Playground!</a>
+              </li>
+              <li class="menu-item -level-1 -parent"><span class="title">Getting started</span>
+                <ul class="submenu">
+                  <li class="menu-item -level-2"><a class="link title  link-authentication" href="authentication.html">Authentication</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the Marketplace API</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title -active link-calling-the-asset-delivery-api" href="calling-the-asset-delivery-api.html">Calling the Asset Delivery API</a>
+                    <ul class="headings heading-list">
+                      <li class="heading-item -depth-2"><a class="hlink link-sdk-methods" href="#sdk-methods">SDK methods</a>
+                        <ul class="heading-list -depth-2">
+                          <li class="heading-item -depth-3"><a class="hlink link-assetbyalias()" href="#assetbyalias()">assetByAlias()</a>
+                          </li>
+                          <li class="heading-item -depth-3"><a class="hlink link-assetbyversion()" href="#assetbyversion()">assetByVersion()</a>
+                          </li>
+                          <li class="heading-item -depth-3"><a class="hlink link-assetsbyalias()" href="#assetsbyalias()">assetsByAlias()</a>
+                          </li>
+                          <li class="heading-item -depth-3"><a class="hlink link-assetsbyversion()" href="#assetsbyversion()">assetsByVersion()</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li class="heading-item -depth-2"><a class="hlink link-responses" href="#responses">Responses</a>
+                        <ul class="heading-list -depth-2">
+                          <li class="heading-item -depth-3"><a class="hlink link-success-response" href="#success-response">Success response</a>
+                          </li>
+                          <li class="heading-item -depth-3"><a class="hlink link-error-response" href="#error-response">Error response</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li class="heading-item -depth-2"><a class="hlink link-asset-delivery-api-documentation" href="#asset-delivery-api-documentation">Asset Delivery API documentation</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-types" href="types.html">Types</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-item -level-1 -parent"><span class="title">Advanced</span>
+                <ul class="submenu">
+                  <li class="menu-item -level-2"><a class="link title  link-configurations" href="configurations.html">Configurations</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-serializing-types-to-json" href="serializing-types-to-json.html">Serializing types to JSON</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-object-query-parameters" href="object-query-parameters.html">Object query parameters</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-token-store" href="token-store.html">Token store</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-sharing-session-between-client-and-server" href="sharing-session-between-client-and-server.html">Sharing session between client and server</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-keep-alive" href="keep-alive.html">Keep-Alive</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-writing-your-own-token-store" href="writing-your-own-token-store.html">Writing your own token store</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-item -level-1"><a class="link title  link-developing-sdk" href="developing-sdk.html">Developing SDK</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="body page-calling-the-asset-delivery-api">
+        <div class="header-nav">
+          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/flex-sdk-js" data-title="sharetribe/flex-sdk-js">
+              <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
+          </div>
+        </div>
+        <div class="markdown-body"><h1 id="calling-the-asset-delivery-apis">Calling the Asset Delivery APIs</h1>
+<h2 id="sdk-methods">SDK methods</h2>
+<p>The <a href="https://www.sharetribe.com/api-reference/asset-delivery-api.html">Asset Delivery
+API</a> allows
+retrieving the data of a single asset or a set of assets by alias or by version.
+The SDK has corresponding methods for each case.</p>
+<h3 id="assetbyalias()">assetByAlias()</h3>
+<p>The <code>assetByAlias()</code> method retrieves data for a single asset given a version
+alias. It takes an object as its argument and the object must contain:</p>
+<ul>
+<li><code>alias</code>: currently must always have the value <code>latest</code></li>
+<li><code>path</code>: the path of the asset</li>
+</ul>
+<p>For example:</p>
+<pre><code class="lang-js"><span class="pl-k">const</span> promise = sdk.assetByAlias({
+  <span class="hljs-attr">alias</span>: <span class="pl-s">&quot;latest&quot;</span>,
+  <span class="hljs-attr">path</span>: <span class="pl-s">&quot;/content/translations.json&quot;</span>
+});
+</code></pre>
+<h3 id="assetbyversion()">assetByVersion()</h3>
+<p>The <code>assetByVersion()</code> method retrieves data for a single asset given a version
+string. It takes an object as its argument and the object must contain:</p>
+<ul>
+<li><code>version</code>: the version string</li>
+<li><code>path</code>: the path of the asset</li>
+</ul>
+<p>For example:</p>
+<pre><code class="lang-js"><span class="pl-k">const</span> promise = sdk.assetByAlias({
+  <span class="hljs-attr">version</span>: <span class="pl-s">&quot;ESz8ULLX68PiENQV&quot;</span>,
+  <span class="hljs-attr">path</span>: <span class="pl-s">&quot;/content/translations.json&quot;</span>
+});
+</code></pre>
+<h3 id="assetsbyalias()">assetsByAlias()</h3>
+<p>The <code>assetsByAlias()</code> method retrieves data for a set of assets using the
+<code>latest</code> alias. It takes an object as its argument and the object must contain:</p>
+<ul>
+<li><code>alias</code>: currently must always have the value <code>latest</code></li>
+<li><code>paths</code>: an array of asset paths</li>
+</ul>
+<p>For example:</p>
+<pre><code class="lang-js"><span class="pl-k">const</span> promise = sdk.assetsByAlias({
+  <span class="hljs-attr">alias</span>: <span class="pl-s">&quot;latest&quot;</span>,
+  <span class="hljs-attr">paths</span>: [<span class="pl-s">&quot;/content/translations.json&quot;</span>, <span class="pl-s">&quot;/design/layout.json&quot;</span>]
+});
+</code></pre>
+<p>Please note that the order of the returned assets may not be the same as the order of <code>paths</code>.</p>
+<h3 id="assetsbyversion()">assetsByVersion()</h3>
+<p>The <code>assetsByVersion()</code> method retrieves data for a set of assets given a
+version string. It takes an object as its argument and the object must contain:</p>
+<ul>
+<li><code>version</code>: the version string</li>
+<li><code>paths</code>: an array of asset paths</li>
+</ul>
+<p>For example:</p>
+<pre><code class="lang-js"><span class="pl-k">const</span> promise = sdk.assetsByAlias({
+  <span class="hljs-attr">version</span>: <span class="pl-s">&quot;ESz8ULLX68PiENQV&quot;</span>,
+  <span class="hljs-attr">paths</span>: [<span class="pl-s">&quot;/content/translations.json&quot;</span>, <span class="pl-s">&quot;/design/layout.json&quot;</span>]
+});
+</code></pre>
+<p>Please note that the order of the returned assets may not be the same as the order of <code>paths</code>.</p>
+<h2 id="responses">Responses</h2>
+<p>Calling any Asset Delivery API SDK method will always return a
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>.
+The value of the Promise differs whether the request was successful or error. In
+case of successful request the Promise will be <em>fulfilled</em> where as in case of
+error the Promise will be <em>rejected</em>.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-js"><span class="pl-k">const</span> promise = sdk.assetByAlias({ <span class="hljs-attr">alias</span>: <span class="pl-s">&quot;latest&quot;</span>, <span class="pl-s">&quot;path&quot;</span>: <span class="pl-s">&quot;/content/translations.json&quot;</span> });
+
+<span class="pl-c">// Handle success response</span>
+promise.then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> { <span class="pl-c1">console</span>.log(response)} );
+
+<span class="pl-c">// Handle error response</span>
+promise.catch(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> { <span class="pl-c1">console</span>.log(response)} );
+</code></pre>
+<h3 id="success-response">Success response</h3>
+<p>A successful response will have the following format:</p>
+<pre><code>{
+  status: 200,
+  statusText: &apos;OK&apos;,
+  data: // The data returned by the API. Object.
+}
+</code></pre>
+<p>The response <code>data</code> key will not contain any data types beyond the data types
+that JSON supports, unlike responses returned by the <a href="calling-the-api.html">SDK methods for the
+Marketplace API</a>.</p>
+<p>The API returns the data always in the following format:</p>
+<pre><code>{
+  data: // Either an array of jsonAsset resources or just the data for a single asset
+  meta: {} // Object containing metadata, such as version information
+  included: [] // Array of included resources
+}
+</code></pre>
+<p>See the <a href="https://www.sharetribe.com/api-reference/asset-delivery-api.html">Asset Delivery API
+reference</a> for
+more information about the response data format. Note that the data inside the
+<code>data</code> key differs depending on whether a single asset or a set of assets are
+queried.</p>
+<h3 id="error-response">Error response</h3>
+<p>An error response will have the following format:</p>
+<pre><code>{
+  status: &lt;HTTP Status code, 4xx or 5xx&gt;,
+  statusText: &lt;HTTP Status text&gt;,
+  data: // The data returned by the API, for example:
+  {
+    errors: [
+      {
+        status: &lt;HTTP Status code, 4xx or 5xx&gt;,
+        code: // error code
+        title: &lt;HTTP Status text&gt;,
+        details: {
+          // Additional details, not part of the public API.
+        }
+      }
+    ]
+  }
+}
+</code></pre>
+<p>The error value is always an <code>instanceof</code>
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>.</p>
+<p><strong>Please note</strong> that the content of the <code>details</code> is not part of the public API.
+This means that:</p>
+<ul>
+<li>You can use <code>details</code> for debugging and error tracking.</li>
+<li>You SHOULD NOT write production code that depends on the content of <code>details</code>.</li>
+<li>The content of <code>details</code> is not well specified and will change in the future.</li>
+</ul>
+<h2 id="asset-delivery-api-documentation">Asset Delivery API documentation</h2>
+<p>For more information about the Asset Delivery API, see the <a href="https://www.sharetribe.com/api-reference/asset-delivery-api.html">reference
+documentation
+here</a>.</p>
+
+        </div>
+        <div class="footer-nav">
+          <div class="left"><a href="calling-the-api.html"><span class="title">Calling the Marketplace API</span></a></div>
+          <div class="right"><a href="types.html"><span class="label">Next: </span><span class="title">Types</span></a></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

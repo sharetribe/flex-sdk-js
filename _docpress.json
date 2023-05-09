@@ -136,7 +136,7 @@
             ]
           },
           {
-            "title": "Calling the API",
+            "title": "Calling the Marketplace API",
             "source": "docs/calling-the-api.md",
             "url": "calling-the-api.html",
             "slug": "calling-the-api",
@@ -189,6 +189,63 @@
                 "title": "API documentation",
                 "depth": 2,
                 "id": "api-documentation"
+              }
+            ]
+          },
+          {
+            "title": "Calling the Asset Delivery API",
+            "source": "docs/calling-the-asset-delivery-api.md",
+            "url": "calling-the-asset-delivery-api.html",
+            "slug": "calling-the-asset-delivery-api",
+            "headings": [
+              {
+                "title": "SDK methods",
+                "depth": 2,
+                "id": "sdk-methods",
+                "headings": [
+                  {
+                    "title": "assetByAlias()",
+                    "depth": 3,
+                    "id": "assetbyalias()"
+                  },
+                  {
+                    "title": "assetByVersion()",
+                    "depth": 3,
+                    "id": "assetbyversion()"
+                  },
+                  {
+                    "title": "assetsByAlias()",
+                    "depth": 3,
+                    "id": "assetsbyalias()"
+                  },
+                  {
+                    "title": "assetsByVersion()",
+                    "depth": 3,
+                    "id": "assetsbyversion()"
+                  }
+                ]
+              },
+              {
+                "title": "Responses",
+                "depth": 2,
+                "id": "responses",
+                "headings": [
+                  {
+                    "title": "Success response",
+                    "depth": 3,
+                    "id": "success-response"
+                  },
+                  {
+                    "title": "Error response",
+                    "depth": 3,
+                    "id": "error-response"
+                  }
+                ]
+              },
+              {
+                "title": "Asset Delivery API documentation",
+                "depth": 2,
+                "id": "asset-delivery-api-documentation"
               }
             ]
           },
@@ -424,8 +481,8 @@
     },
     "calling-the-api.html": {
       "source": "docs/calling-the-api.md",
-      "title": "Calling the API - Sharetribe Flex SDK for JavaScript",
-      "pageTitle": "Calling the API",
+      "title": "Calling the Marketplace API - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Calling the Marketplace API",
       "slug": "calling-the-api",
       "headings": [
         {
@@ -476,6 +533,63 @@
           "title": "API documentation",
           "depth": 2,
           "id": "api-documentation"
+        }
+      ]
+    },
+    "calling-the-asset-delivery-api.html": {
+      "source": "docs/calling-the-asset-delivery-api.md",
+      "title": "Calling the Asset Delivery API - Sharetribe Flex SDK for JavaScript",
+      "pageTitle": "Calling the Asset Delivery API",
+      "slug": "calling-the-asset-delivery-api",
+      "headings": [
+        {
+          "title": "SDK methods",
+          "depth": 2,
+          "id": "sdk-methods",
+          "headings": [
+            {
+              "title": "assetByAlias()",
+              "depth": 3,
+              "id": "assetbyalias()"
+            },
+            {
+              "title": "assetByVersion()",
+              "depth": 3,
+              "id": "assetbyversion()"
+            },
+            {
+              "title": "assetsByAlias()",
+              "depth": 3,
+              "id": "assetsbyalias()"
+            },
+            {
+              "title": "assetsByVersion()",
+              "depth": 3,
+              "id": "assetsbyversion()"
+            }
+          ]
+        },
+        {
+          "title": "Responses",
+          "depth": 2,
+          "id": "responses",
+          "headings": [
+            {
+              "title": "Success response",
+              "depth": 3,
+              "id": "success-response"
+            },
+            {
+              "title": "Error response",
+              "depth": 3,
+              "id": "error-response"
+            }
+          ]
+        },
+        {
+          "title": "Asset Delivery API documentation",
+          "depth": 2,
+          "id": "asset-delivery-api-documentation"
         }
       ]
     },
@@ -576,6 +690,7 @@
     "docs/try-it-in-the-playground.md": "try-it-in-the-playground.html",
     "docs/authentication.md": "authentication.html",
     "docs/calling-the-api.md": "calling-the-api.html",
+    "docs/calling-the-asset-delivery-api.md": "calling-the-asset-delivery-api.html",
     "docs/types.md": "types.html",
     "docs/configurations.md": "configurations.html",
     "docs/your-own-types.md": "your-own-types.html",

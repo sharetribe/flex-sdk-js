@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=93f1a66c"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-flex-sdk-web.js?t=29a7ddea"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=1318dcb3"></script>
     <title>Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
   </head>
@@ -47,7 +47,9 @@
                 <ul class="submenu">
                   <li class="menu-item -level-2"><a class="link title  link-authentication" href="authentication.html">Authentication</a>
                   </li>
-                  <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the API</a>
+                  <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the Marketplace API</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-calling-the-asset-delivery-api" href="calling-the-asset-delivery-api.html">Calling the Asset Delivery API</a>
                   </li>
                   <li class="menu-item -level-2"><a class="link title  link-types" href="types.html">Types</a>
                   </li>
@@ -98,8 +100,8 @@
 <li><a href="#license">License</a></li>
 </ul>
 <h2 id="what-is-it">What is it?</h2>
-<p>The SDK is the <strong>easiest</strong> way to interact with Sharetribe Flex
-Marketplace API.</p>
+<p>The SDK is the <strong>easiest</strong> way to interact with Sharetribe Flex Marketplace API
+and Asset Delivery API.</p>
 <p>It handles <strong>groundwork</strong> such as authentication, renewing
 authentication tokens and serializing and deserializing data to and from
 JavaScript data structures.</p>
@@ -121,7 +123,7 @@ communicate with the API.</p>
 
 <span class="pl-c">// Query first 5 listings</span>
 sdk.listings
-  .query({ <span class="hljs-attr">per_page</span>: <span class="hljs-number">5</span> })
+  .query({ <span class="hljs-attr">perPage</span>: <span class="hljs-number">5</span> })
   .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
     <span class="pl-c">// Print listing titles</span>
     res.data.data.forEach(<span class="hljs-function"><span class="hljs-params">listing</span> =&gt;</span> {
