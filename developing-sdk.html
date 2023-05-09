@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=93f1a66c"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-flex-sdk-web.js?t=1318dcb3"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=c604765e"></script>
     <title>Developing SDK - Sharetribe Flex SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
   </head>
@@ -109,16 +109,26 @@ $ // git add, commit, push
 <h4 id="release-a-new-version-to-npm">Release a new version to NPM</h4>
 <ol>
 <li>
-<p>Update version in <code>package.json</code> and <code>src/version.js</code></p>
+<p>Update versions:</p>
+<ul>
+<li><code>package.json</code></li>
+<li><code>src/version.js</code></li>
+</ul>
 </li>
 <li>
 <p>Make a new build (as <code>src/version.js</code> needs to be up-to-date in the build) and commit</p>
+<pre><code class="lang-bash">yarn run build
+</code></pre>
 </li>
 <li>
 <p>Update <a href="http://CHANGELOG.md">CHANGELOG.md</a></p>
 <ul>
 <li>Move everything in Unreleased to the corresponding version section</li>
+<li>Update the version links found at the very bottom of the <a href="http://CHANGELOG.md">CHANGELOG.md</a> file</li>
 </ul>
+</li>
+<li>
+<p>Commit and push</p>
 </li>
 <li>
 <p>Login as <code>sharetribe</code> with <code>npm login</code></p>
