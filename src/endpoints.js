@@ -244,6 +244,14 @@ export const marketplaceApi = [
     path: 'stock/compare_and_set',
     method: 'post',
   },
+  {
+    path: 'sitemap_data/query_listings',
+    method: 'get',
+  },
+  {
+    path: 'sitemap_data/query_assets',
+    method: 'get',
+  },
 ];
 
 /**
