@@ -10427,6 +10427,12 @@ var marketplaceApi = [{
 }, {
   path: 'stock/compare_and_set',
   method: 'post'
+}, {
+  path: 'sitemap_data/query_listings',
+  method: 'get'
+}, {
+  path: 'sitemap_data/query_assets',
+  method: 'get'
 }];
 /**
    List of Auth API endpoints
@@ -12745,7 +12751,7 @@ var external_axios_default = /*#__PURE__*/__webpack_require__.n(external_axios_)
 
 // CONCATENATED MODULE: ./src/version.js
 // Update this when updating package.json
-var sdkVersion = '1.19.0';
+var sdkVersion = '1.20.0';
 /* harmony default export */ var src_version = (sdkVersion);
 // CONCATENATED MODULE: ./src/runtime.js
 
