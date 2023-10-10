@@ -8,6 +8,9 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+* New endpoints [#187](https://github.com/sharetribe/flex-sdk-js/pull/187)
+  * `sdk.sitemapData.queryListings(/* ... */)`
+  * `sdk.sitemapData.queryAssets(/* ... */)`
 * Update Axios to the latest version. The new version will improve performance by
   enabling gzip compression.
   [#188](https://github.com/sharetribe/flex-sdk-js/pull/188)
