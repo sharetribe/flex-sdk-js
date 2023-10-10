@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.20.0] - 2023-10-10
+
 * New endpoints [#187](https://github.com/sharetribe/flex-sdk-js/pull/187)
   * `sdk.sitemapData.queryListings(/* ... */)`
   * `sdk.sitemapData.queryAssets(/* ... */)`
@@ -285,8 +287,9 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
-[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.19.0...HEAD
+[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.0...HEAD
 
+[v1.20.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.19.0...v1.20.0]
 [v1.19.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.18.1...v1.19.0]
 [v1.18.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.18.0...v1.18.1]
 [v1.18.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.17.0...v1.18.0]
