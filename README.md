@@ -1,6 +1,6 @@
-# Sharetribe Flex SDK for JavaScript
+# Sharetribe SDK for JavaScript
 
-Use Sharetribe Flex Marketplace API with ease.
+Use Sharetribe Marketplace API with ease.
 
 [![CircleCI](https://circleci.com/gh/sharetribe/flex-sdk-js.svg?style=svg&circle-token=f2209b7cd8300d10f73d359072d7f03f81bff8f4)](https://circleci.com/gh/sharetribe/flex-sdk-js)
 
@@ -15,7 +15,7 @@ Use Sharetribe Flex Marketplace API with ease.
 
 ## What is it?
 
-The SDK is the **easiest** way to interact with Sharetribe Flex Marketplace API
+The SDK is the **easiest** way to interact with Sharetribe Marketplace API
 and Asset Delivery API.
 
 It handles **groundwork** such as authentication, renewing
@@ -40,7 +40,7 @@ yarn add sharetribe-flex-sdk
 const sharetribeSdk = require('sharetribe-flex-sdk');
 
 // Create new SDK instance
-// To obtain a client ID, see Applications in Flex Console
+// To obtain a client ID, see Applications in Console
 const sdk = sharetribeSdk.createInstance({
   clientId: '<Your Client ID here>'
 });

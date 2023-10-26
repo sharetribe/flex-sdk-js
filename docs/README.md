@@ -1,6 +1,6 @@
 # Documentation
 
-* [Sharetribe Flex SDK for JavaScript](../README.md)
+* [Sharetribe SDK for JavaScript](../README.md)
 * [Features](./features.md)
 * [Try it in browser!](./try-it-in-browser.md)
 * [Try it in the API Playground!](./try-it-in-the-playground.md)

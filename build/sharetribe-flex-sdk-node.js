@@ -10132,7 +10132,7 @@ var utils_serializeAttribute = function serializeAttribute(attribute) {
   }
 };
 /**
-   Serializes an object into a Flex API query parameter value format. Null and
+   Serializes an object into a Sharetribe API query parameter value format. Null and
    undefined object attributes are dropped.
 
    Example:
