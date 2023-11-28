@@ -120,7 +120,7 @@ const optionDefinitions = [
   },
   {
     name: 'clientid',
-    description: 'Your Marketplace API Client ID to initialize the SDK with. You create your Client ID in Flex Console: {underline https://flex-console.sharetribe.com/applications}.',
+    description: 'Your Marketplace API Client ID to initialize the SDK with. You create your Client ID in Console: {underline https://console.sharetribe.com/advanced/applications}.',
     alias: 'c',
     typeLabel: '{underline ID}',
     type: String
@@ -161,7 +161,7 @@ const printUsage = () => {
   console.log(commandLineUsage([
     {
       header: 'Marketplace API Playground',
-      content: 'The easiest way to call the Flex Marketplace API using the JS SDK to try things out, to learn the APIs and to test your ideas.'
+      content: 'The easiest way to call the Sharetribe Marketplace API using the JS SDK to try things out, to learn the APIs and to test your ideas.'
     },
     {
       header: 'Options',

@@ -31,8 +31,8 @@ store](./token-store.md#memory-store).
 Logs in the user with information from an identity provider (e.g. Facebook) and
 returns a Promise. User can be authenticated if the `idpToken` can be verified
 and an identity provider account resolved from the token is associated with a
-Flex account or if an email address resolved from the token matches a verified
-email of a Flex account.
+Sharetribe account or if an email address resolved from the token matches a verified
+email of a Sharetribe account.
 
 `sdk.loginWithIdp` requires that the SDK instance is initialized with a
 `clientSecret` attribute.
@@ -132,7 +132,7 @@ sdk
 **`sdk.exchangeToken() : Promise`**
 
 A valid access token can be exchanged to a trusted token when combined with a client
-secret. A trusted token is required by the Flex APIs for certain requests, for
+secret. A trusted token is required by the Sharetribe APIs for certain requests, for
 example, [privileged
 transitions](https://www.sharetribe.com/docs/background/privileged-transitions/).
 
@@ -161,7 +161,7 @@ sdk.exchangeToken().then((res) => {
 Are you seeing occasional 401 errors in the browser's Web Console?
 Don't worry! That's part of the normal operations.
 
-Flex API uses two authentication tokens for each session:
+Sharetribe API uses two authentication tokens for each session:
 
 - _Access token_ that is used to authenticate the user. Valid only a
   short amount of time.

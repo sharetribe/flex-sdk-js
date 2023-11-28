@@ -1,6 +1,6 @@
 # Object query parameters
 
-Some endpoints in the Flex Marketplace API require a specific syntax that allows
+Some endpoints in the Sharetribe Marketplace API require a specific syntax that allows
 passing one or more key-value pairs as the value of a single query parameter.
 The keys and values are colon-separated whereas the pairs are separated by
 semicolons. For example, when requesting custom image variants:
