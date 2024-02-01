@@ -25,3 +25,18 @@ const price = new Money(5000, 'USD');
 console.log("Amount in subunit (i.e. cents): " + price.amount)
 console.log("Currency: " + price.currency)
 ```
+
+**Note:** If you are using the Sharetribe SDK and the Sharetribe Integration SDK 
+in the same application, it is good to note that the types are currently 
+NOT interchangeable between SDKs, even though they have the same shape. 
+
+If you want to pass a Sharetribe Integration SDK UUID to a Sharetribe SDK
+call, for example, you can use the `toType` function:
+
+```js
+const integrationSDKlistingUUID = integrationSKDlisting.listingId;
+const marketplaceSDKlistingUUID = sharetribeSdk.types.toType(integrationSDKlistingUUID);
+
+sharetribeSdk.listings.show({ id: marketplaceSDKlistingUUID })
+  .then(...)
+```
