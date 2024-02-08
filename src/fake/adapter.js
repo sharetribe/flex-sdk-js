@@ -106,6 +106,8 @@ const authApiHandler = (config, resolve, reject, tokenStore) => {
       return auth.multitenantAuthData(config, resolve, reject, tokenStore);
     case 'auth/multitenant/client_data':
       return auth.multitenantClientData(config, resolve, reject);
+    case 'auth/multitenant/auth_with_idp':
+      return auth.multitenantAuthWithIdpData(config, resolve, reject, tokenStore);
     default:
       throw new Error(`No fake adapter handler implemented for Auth API endpoint: ${config.url}`);
   }
