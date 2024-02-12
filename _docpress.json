@@ -2,7 +2,7 @@
   "toc": {
     "sections": [
       {
-        "title": "Sharetribe Flex SDK for JavaScript",
+        "title": "Sharetribe SDK for JavaScript",
         "source": "README.md",
         "url": "index.html",
         "slug": "index",
@@ -136,7 +136,7 @@
             ]
           },
           {
-            "title": "Calling the API",
+            "title": "Calling the Marketplace API",
             "source": "docs/calling-the-api.md",
             "url": "calling-the-api.html",
             "slug": "calling-the-api",
@@ -189,6 +189,63 @@
                 "title": "API documentation",
                 "depth": 2,
                 "id": "api-documentation"
+              }
+            ]
+          },
+          {
+            "title": "Calling the Asset Delivery API",
+            "source": "docs/calling-the-asset-delivery-api.md",
+            "url": "calling-the-asset-delivery-api.html",
+            "slug": "calling-the-asset-delivery-api",
+            "headings": [
+              {
+                "title": "SDK methods",
+                "depth": 2,
+                "id": "sdk-methods",
+                "headings": [
+                  {
+                    "title": "assetByAlias()",
+                    "depth": 3,
+                    "id": "assetbyalias()"
+                  },
+                  {
+                    "title": "assetByVersion()",
+                    "depth": 3,
+                    "id": "assetbyversion()"
+                  },
+                  {
+                    "title": "assetsByAlias()",
+                    "depth": 3,
+                    "id": "assetsbyalias()"
+                  },
+                  {
+                    "title": "assetsByVersion()",
+                    "depth": 3,
+                    "id": "assetsbyversion()"
+                  }
+                ]
+              },
+              {
+                "title": "Responses",
+                "depth": 2,
+                "id": "responses",
+                "headings": [
+                  {
+                    "title": "Success response",
+                    "depth": 3,
+                    "id": "success-response"
+                  },
+                  {
+                    "title": "Error response",
+                    "depth": 3,
+                    "id": "error-response"
+                  }
+                ]
+              },
+              {
+                "title": "Asset Delivery API documentation",
+                "depth": 2,
+                "id": "asset-delivery-api-documentation"
               }
             ]
           },
@@ -293,8 +350,8 @@
   "index": {
     "index.html": {
       "source": "README.md",
-      "title": "Sharetribe Flex SDK for JavaScript",
-      "pageTitle": "Sharetribe Flex SDK for JavaScript",
+      "title": "Sharetribe SDK for JavaScript",
+      "pageTitle": "Sharetribe SDK for JavaScript",
       "slug": "index",
       "headings": [
         {
@@ -341,19 +398,19 @@
     },
     "features.html": {
       "source": "docs/features.md",
-      "title": "Features - Sharetribe Flex SDK for JavaScript",
+      "title": "Features - Sharetribe SDK for JavaScript",
       "pageTitle": "Features",
       "slug": "features"
     },
     "try-it-in-browser.html": {
       "source": "docs/try-it-in-browser.md",
-      "title": "Try it in browser! - Sharetribe Flex SDK for JavaScript",
+      "title": "Try it in browser! - Sharetribe SDK for JavaScript",
       "pageTitle": "Try it in browser!",
       "slug": "try-it-in-browser"
     },
     "try-it-in-the-playground.html": {
       "source": "docs/try-it-in-the-playground.md",
-      "title": "Try it in the API Playground! - Sharetribe Flex SDK for JavaScript",
+      "title": "Try it in the API Playground! - Sharetribe SDK for JavaScript",
       "pageTitle": "Try it in the API Playground!",
       "slug": "try-it-in-the-playground",
       "headings": [
@@ -381,7 +438,7 @@
     },
     "authentication.html": {
       "source": "docs/authentication.md",
-      "title": "Authentication - Sharetribe Flex SDK for JavaScript",
+      "title": "Authentication - Sharetribe SDK for JavaScript",
       "pageTitle": "Authentication",
       "slug": "authentication",
       "headings": [
@@ -424,8 +481,8 @@
     },
     "calling-the-api.html": {
       "source": "docs/calling-the-api.md",
-      "title": "Calling the API - Sharetribe Flex SDK for JavaScript",
-      "pageTitle": "Calling the API",
+      "title": "Calling the Marketplace API - Sharetribe SDK for JavaScript",
+      "pageTitle": "Calling the Marketplace API",
       "slug": "calling-the-api",
       "headings": [
         {
@@ -479,39 +536,96 @@
         }
       ]
     },
+    "calling-the-asset-delivery-api.html": {
+      "source": "docs/calling-the-asset-delivery-api.md",
+      "title": "Calling the Asset Delivery API - Sharetribe SDK for JavaScript",
+      "pageTitle": "Calling the Asset Delivery API",
+      "slug": "calling-the-asset-delivery-api",
+      "headings": [
+        {
+          "title": "SDK methods",
+          "depth": 2,
+          "id": "sdk-methods",
+          "headings": [
+            {
+              "title": "assetByAlias()",
+              "depth": 3,
+              "id": "assetbyalias()"
+            },
+            {
+              "title": "assetByVersion()",
+              "depth": 3,
+              "id": "assetbyversion()"
+            },
+            {
+              "title": "assetsByAlias()",
+              "depth": 3,
+              "id": "assetsbyalias()"
+            },
+            {
+              "title": "assetsByVersion()",
+              "depth": 3,
+              "id": "assetsbyversion()"
+            }
+          ]
+        },
+        {
+          "title": "Responses",
+          "depth": 2,
+          "id": "responses",
+          "headings": [
+            {
+              "title": "Success response",
+              "depth": 3,
+              "id": "success-response"
+            },
+            {
+              "title": "Error response",
+              "depth": 3,
+              "id": "error-response"
+            }
+          ]
+        },
+        {
+          "title": "Asset Delivery API documentation",
+          "depth": 2,
+          "id": "asset-delivery-api-documentation"
+        }
+      ]
+    },
     "types.html": {
       "source": "docs/types.md",
-      "title": "Types - Sharetribe Flex SDK for JavaScript",
+      "title": "Types - Sharetribe SDK for JavaScript",
       "pageTitle": "Types",
       "slug": "types"
     },
     "configurations.html": {
       "source": "docs/configurations.md",
-      "title": "Configurations - Sharetribe Flex SDK for JavaScript",
+      "title": "Configurations - Sharetribe SDK for JavaScript",
       "pageTitle": "Configurations",
       "slug": "configurations"
     },
     "your-own-types.html": {
       "source": "docs/your-own-types.md",
-      "title": "Your own types - Sharetribe Flex SDK for JavaScript",
+      "title": "Your own types - Sharetribe SDK for JavaScript",
       "pageTitle": "Your own types",
       "slug": "your-own-types"
     },
     "serializing-types-to-json.html": {
       "source": "docs/serializing-types-to-json.md",
-      "title": "Serializing types to JSON - Sharetribe Flex SDK for JavaScript",
+      "title": "Serializing types to JSON - Sharetribe SDK for JavaScript",
       "pageTitle": "Serializing types to JSON",
       "slug": "serializing-types-to-json"
     },
     "object-query-parameters.html": {
       "source": "docs/object-query-parameters.md",
-      "title": "Object query parameters - Sharetribe Flex SDK for JavaScript",
+      "title": "Object query parameters - Sharetribe SDK for JavaScript",
       "pageTitle": "Object query parameters",
       "slug": "object-query-parameters"
     },
     "token-store.html": {
       "source": "docs/token-store.md",
-      "title": "Token store - Sharetribe Flex SDK for JavaScript",
+      "title": "Token store - Sharetribe SDK for JavaScript",
       "pageTitle": "Token store",
       "slug": "token-store",
       "headings": [
@@ -534,19 +648,19 @@
     },
     "sharing-session-between-client-and-server.html": {
       "source": "docs/sharing-session-between-client-and-server.md",
-      "title": "Sharing session between client and server - Sharetribe Flex SDK for JavaScript",
+      "title": "Sharing session between client and server - Sharetribe SDK for JavaScript",
       "pageTitle": "Sharing session between client and server",
       "slug": "sharing-session-between-client-and-server"
     },
     "keep-alive.html": {
       "source": "docs/keep-alive.md",
-      "title": "Keep-Alive - Sharetribe Flex SDK for JavaScript",
+      "title": "Keep-Alive - Sharetribe SDK for JavaScript",
       "pageTitle": "Keep-Alive",
       "slug": "keep-alive"
     },
     "writing-your-own-token-store.html": {
       "source": "docs/writing-your-own-token-store.md",
-      "title": "Writing your own token store - Sharetribe Flex SDK for JavaScript",
+      "title": "Writing your own token store - Sharetribe SDK for JavaScript",
       "pageTitle": "Writing your own token store",
       "slug": "writing-your-own-token-store",
       "headings": [
@@ -564,7 +678,7 @@
     },
     "developing-sdk.html": {
       "source": "docs/developing-sdk.md",
-      "title": "Developing SDK - Sharetribe Flex SDK for JavaScript",
+      "title": "Developing SDK - Sharetribe SDK for JavaScript",
       "pageTitle": "Developing SDK",
       "slug": "developing-sdk"
     }
@@ -576,6 +690,7 @@
     "docs/try-it-in-the-playground.md": "try-it-in-the-playground.html",
     "docs/authentication.md": "authentication.html",
     "docs/calling-the-api.md": "calling-the-api.html",
+    "docs/calling-the-asset-delivery-api.md": "calling-the-asset-delivery-api.html",
     "docs/types.md": "types.html",
     "docs/configurations.md": "configurations.html",
     "docs/your-own-types.md": "your-own-types.html",
