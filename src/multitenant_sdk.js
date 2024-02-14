@@ -9,6 +9,10 @@ import FormatHttpResponse from './interceptors/format_http_response';
 import FormatMultitenantHttpResponse from './interceptors/format_multitenant_http_response';
 import endpointRequest from './interceptors/endpoint_request';
 import AddMultitenantAuthHeader from './interceptors/add_multitenant_auth_header';
+import AddIdpClientIdToParams from './interceptors/add_idp_client_id_to_params';
+import AddIdpIdToParams from './interceptors/add_idp_id_to_params';
+import AddIdpTokenToParams from './interceptors/add_idp_token_to_params';
+import AddMultitenantAuthWithIdpResponse from './interceptors/add_multitenant_auth_with_idp_response';
 import createSdkFnContextRunner from './sdk_context_runner';
 import memoryStore from './memory_store';
 import contextRunner from './context_runner';
@@ -34,6 +38,10 @@ const multitenantAuthApi = [
   {
     path: 'client_data',
     method: 'get',
+  },
+  {
+    path: 'auth_with_idp',
+    method: 'post',
   },
 ];
 
@@ -103,6 +111,18 @@ const tokenAndClientDataInterceptor = authApiEndpointInterceptors => ({
   },
 });
 
+const authWithIdpInterceptors = authApiEndpointInterceptors => [
+  new FormatHttpResponse(),
+  new AddMultitenantClientSecretTokenToCtx(),
+  new AddMultitenantClientSecretToParams(),
+  new AddIdpClientIdToParams(),
+  new AddIdpIdToParams(),
+  new AddIdpTokenToParams(),
+  new SaveToken(),
+  new AddMultitenantAuthWithIdpResponse(),
+  ..._.get(authApiEndpointInterceptors, 'authWithIdp'),
+];
+
 const createAuthApiSdkFn = ({ ctx, interceptors }) => (params = {}) =>
   createSdkFnContextRunner({ params, ctx, interceptors });
 
@@ -125,6 +145,13 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
         new AddMultitenantTokenExchangeParams(),
         ...tokenInterceptors(authApiEndpointInterceptors),
       ],
+    }),
+  },
+  {
+    path: 'loginWithIdp',
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: authWithIdpInterceptors(authApiEndpointInterceptors),
     }),
   },
 ];

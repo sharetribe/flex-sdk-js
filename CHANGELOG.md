@@ -11,6 +11,7 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Remove references to Flex in documentation. [190](https://github.com/sharetribe/flex-sdk-js/pull/190)
+- Internal changes [#192](https://github.com/sharetribe/flex-sdk-js/pull/192)
 
 ## [v1.20.0] - 2023-10-10
 

@@ -286,4 +286,67 @@ describe('new MultitenantSharetribeSdk', () => {
       );
     });
   });
+
+  describe('loginWithIdp', () => {
+    it('access token and refresh token are stored', () => {
+      const { sdk, sdkTokenStore } = createSdk();
+      return report(
+        sdk
+          .loginWithIdp({
+            idpId: 'facebook',
+            idpClientId: 'idp-client-id',
+            idpToken: 'idp-token',
+          })
+          .then(() => {
+            expect(sdkTokenStore.getToken()).toEqual({
+              access_token: 'joe.dunphy@example.com-access-1',
+              expires_in: 86400,
+              scope: 'user',
+              token_type: 'bearer',
+              refresh_token: 'joe.dunphy@example.com-refresh-1',
+            });
+          })
+      );
+    });
+
+    it('request returns unauthorized', () => {
+      const { sdk, sdkTokenStore } = createSdk({
+        multitenantClientSecret: 'invalid-secret',
+        hostname: 'valid.example.com',
+      });
+      return report(
+        sdk.loginWithIdp().catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 401,
+              statusText: 'Unauthorized',
+              data: 'Unauthorized',
+            })
+          );
+          expect(sdkTokenStore.getToken()).toBeUndefined();
+        })
+      );
+    });
+
+    it('request returns not found', () => {
+      const { sdk, sdkTokenStore } = createSdk({
+        multitenantClientSecret: 'valid-secret',
+        hostname: 'invalid.example.com',
+      });
+      return report(
+        sdk.loginWithIdp().catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 404,
+              statusText: 'Not Found',
+              data: 'Not Found',
+            })
+          );
+          expect(sdkTokenStore.getToken()).toBeUndefined();
+        })
+      );
+    });
+  });
 });

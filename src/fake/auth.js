@@ -171,3 +171,34 @@ export const authWithIdp = (config, resolve, reject, fakeTokenStore) => {
     __additionalTestInfo: { formData },
   });
 };
+
+export const multitenantAuthWithIdpData = (config, resolve, reject, fakeTokenStore) => {
+  const formData = parseFormData(config.data);
+  const { idpId, idpClientId, idpToken } = formData;
+  let success;
+  let error = {
+    status: 401,
+    statusText: 'Unauthorized',
+    data: 'Unauthorized',
+  };
+
+  const hostname = hostnameFromToken(formData.client_secret, 'valid-secret');
+
+  if (hostname === 'valid.example.com') {
+    success = fakeTokenStore.createTokenWithIdp(idpId, idpClientId, idpToken);
+  } else if (hostname === 'invalid.example.com') {
+    error = {
+      ...error,
+      status: 404,
+      statusText: 'Not Found',
+      data: 'Not Found',
+      headers: { 'content-type': 'text/plain' },
+    };
+  }
+
+  if (success) {
+    return resolve({ data: JSON.stringify(success) });
+  }
+
+  return reject(error);
+};
