@@ -11638,159 +11638,6 @@ function () {
 }();
 
 
-// CONCATENATED MODULE: ./src/interceptors/add_idp_client_id_to_params.js
-function add_idp_client_id_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function add_idp_client_id_to_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_idp_client_id_to_params_ownKeys(source, true).forEach(function (key) { add_idp_client_id_to_params_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_idp_client_id_to_params_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function add_idp_client_id_to_params_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function add_idp_client_id_to_params_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = add_idp_client_id_to_params_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function add_idp_client_id_to_params_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function add_idp_client_id_to_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_idp_client_id_to_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_idp_client_id_to_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_idp_client_id_to_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_idp_client_id_to_params_defineProperties(Constructor, staticProps); return Constructor; }
-
-/**
-   Read `idpClientId` from `ctx` and add it to `params`
-
-   Changes to `ctx`:
-
-   - add `params.idpClientId`
- */
-var AddIdpClientIdToParams =
-/*#__PURE__*/
-function () {
-  function AddIdpClientIdToParams() {
-    add_idp_client_id_to_params_classCallCheck(this, AddIdpClientIdToParams);
-  }
-
-  add_idp_client_id_to_params_createClass(AddIdpClientIdToParams, [{
-    key: "enter",
-    value: function enter(_ref) {
-      var params = _ref.params,
-          ctx = add_idp_client_id_to_params_objectWithoutProperties(_ref, ["params"]);
-
-      var idpClientId = params.idpClientId;
-      return add_idp_client_id_to_params_objectSpread({}, ctx, {
-        idpClientId: idpClientId,
-        params: add_idp_client_id_to_params_objectSpread({}, params, {
-          idp_client_id: idpClientId
-        })
-      });
-    }
-  }]);
-
-  return AddIdpClientIdToParams;
-}();
-
-
-// CONCATENATED MODULE: ./src/interceptors/add_idp_id_to_params.js
-function add_idp_id_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function add_idp_id_to_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_idp_id_to_params_ownKeys(source, true).forEach(function (key) { add_idp_id_to_params_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_idp_id_to_params_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function add_idp_id_to_params_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function add_idp_id_to_params_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = add_idp_id_to_params_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function add_idp_id_to_params_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function add_idp_id_to_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_idp_id_to_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_idp_id_to_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_idp_id_to_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_idp_id_to_params_defineProperties(Constructor, staticProps); return Constructor; }
-
-/**
-   Read `idpId` from `ctx` and add it to `params`
-
-   Changes to `ctx`:
-
-   - add `params.idpId`
- */
-var AddIdpIdToParams =
-/*#__PURE__*/
-function () {
-  function AddIdpIdToParams() {
-    add_idp_id_to_params_classCallCheck(this, AddIdpIdToParams);
-  }
-
-  add_idp_id_to_params_createClass(AddIdpIdToParams, [{
-    key: "enter",
-    value: function enter(_ref) {
-      var params = _ref.params,
-          ctx = add_idp_id_to_params_objectWithoutProperties(_ref, ["params"]);
-
-      var idpId = params.idpId;
-      return add_idp_id_to_params_objectSpread({}, ctx, {
-        idpId: idpId,
-        params: add_idp_id_to_params_objectSpread({}, params, {
-          idp_id: idpId
-        })
-      });
-    }
-  }]);
-
-  return AddIdpIdToParams;
-}();
-
-
-// CONCATENATED MODULE: ./src/interceptors/add_idp_token_to_params.js
-function add_idp_token_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function add_idp_token_to_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_idp_token_to_params_ownKeys(source, true).forEach(function (key) { add_idp_token_to_params_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_idp_token_to_params_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function add_idp_token_to_params_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function add_idp_token_to_params_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = add_idp_token_to_params_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function add_idp_token_to_params_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function add_idp_token_to_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_idp_token_to_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_idp_token_to_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_idp_token_to_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_idp_token_to_params_defineProperties(Constructor, staticProps); return Constructor; }
-
-/**
-   Read `idpToken` from `ctx` and add it to `params`
-
-   Changes to `ctx`:
-
-   - add `params.idpToken`
- */
-var AddIdpTokenToParams =
-/*#__PURE__*/
-function () {
-  function AddIdpTokenToParams() {
-    add_idp_token_to_params_classCallCheck(this, AddIdpTokenToParams);
-  }
-
-  add_idp_token_to_params_createClass(AddIdpTokenToParams, [{
-    key: "enter",
-    value: function enter(_ref) {
-      var params = _ref.params,
-          ctx = add_idp_token_to_params_objectWithoutProperties(_ref, ["params"]);
-
-      var idpToken = params.idpToken;
-      return add_idp_token_to_params_objectSpread({}, ctx, {
-        idpToken: idpToken,
-        params: add_idp_token_to_params_objectSpread({}, params, {
-          idp_token: idpToken
-        })
-      });
-    }
-  }]);
-
-  return AddIdpTokenToParams;
-}();
-
-
 // CONCATENATED MODULE: ./src/interceptors/add_subject_token_to_params.js
 function add_subject_token_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -12745,13 +12592,78 @@ function () {
 }();
 
 
+// CONCATENATED MODULE: ./src/interceptors/rename_idp_params_for_auth.js
+function rename_idp_params_for_auth_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function rename_idp_params_for_auth_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { rename_idp_params_for_auth_ownKeys(source, true).forEach(function (key) { rename_idp_params_for_auth_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { rename_idp_params_for_auth_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function rename_idp_params_for_auth_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function rename_idp_params_for_auth_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = rename_idp_params_for_auth_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function rename_idp_params_for_auth_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function rename_idp_params_for_auth_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function rename_idp_params_for_auth_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function rename_idp_params_for_auth_createClass(Constructor, protoProps, staticProps) { if (protoProps) rename_idp_params_for_auth_defineProperties(Constructor.prototype, protoProps); if (staticProps) rename_idp_params_for_auth_defineProperties(Constructor, staticProps); return Constructor; }
+
+/**
+   Renames IdP related auth parameters to use snake case.
+
+   Changes to `ctx`:
+
+   Update following param names, if they exist:
+
+   - change `ctx.params.idpId` to `ctx.params.idp_id`
+   - change `ctx.params.idpClientId` to `ctx.params.idp_client_id`
+   - change `ctx.params.idpToken` to `ctx.params.idp_token`
+*/
+var RenameIdpParamsForAuth =
+/*#__PURE__*/
+function () {
+  function RenameIdpParamsForAuth() {
+    rename_idp_params_for_auth_classCallCheck(this, RenameIdpParamsForAuth);
+  }
+
+  rename_idp_params_for_auth_createClass(RenameIdpParamsForAuth, [{
+    key: "enter",
+    value: function enter(_ref) {
+      var params = _ref.params,
+          ctx = rename_idp_params_for_auth_objectWithoutProperties(_ref, ["params"]);
+
+      var idpId = params.idpId,
+          idpClientId = params.idpClientId,
+          idpToken = params.idpToken,
+          rest = rename_idp_params_for_auth_objectWithoutProperties(params, ["idpId", "idpClientId", "idpToken"]);
+
+      var idpIdObj = idpId ? {
+        idp_id: idpId
+      } : null;
+      var idpClientIdObj = idpClientId ? {
+        idp_client_id: idpClientId
+      } : null;
+      var idpTokenObj = idpToken ? {
+        idp_token: idpToken
+      } : null;
+      return rename_idp_params_for_auth_objectSpread({}, ctx, {
+        params: rename_idp_params_for_auth_objectSpread({}, idpIdObj, {}, idpClientIdObj, {}, idpTokenObj, {}, rest)
+      });
+    }
+  }]);
+
+  return RenameIdpParamsForAuth;
+}();
+
+
 // EXTERNAL MODULE: external "axios"
 var external_axios_ = __webpack_require__(72);
 var external_axios_default = /*#__PURE__*/__webpack_require__.n(external_axios_);
 
 // CONCATENATED MODULE: ./src/version.js
 // Update this when updating package.json
-var sdkVersion = '1.20.0';
+var sdkVersion = '1.20.1';
 /* harmony default export */ var src_version = (sdkVersion);
 // CONCATENATED MODULE: ./src/runtime.js
 
@@ -13093,8 +13005,6 @@ function sdk_defineProperty(obj, key, value) { if (key in obj) { Object.definePr
 
 
 
-
-
 /* eslint-disable class-methods-use-this */
 
 var defaultSdkConfig = {
@@ -13204,7 +13114,7 @@ var authenticateInterceptors = [new FetchAuthTokenFromStore(), new fetch_auth_to
 var loginInterceptors = [new AddClientIdToParams(), new AddGrantTypeToParams(), new AddScopeToParams(), new SaveToken(), new AddAuthTokenResponse()];
 var logoutInterceptors = [new FetchAuthTokenFromStore(), new clear_token_after_revoke_ClearTokenAfterRevoke(), new retry_with_refresh_token_RetryWithRefreshToken(), new AddAuthHeader(), new FetchRefreshTokenForRevoke()];
 var exchangeTokenInterceptors = [new FetchAuthTokenFromStore(), new retry_with_refresh_token_RetryWithRefreshToken(), new AddClientIdToParams(), new AddClientSecretToParams(), new AddSubjectTokenToParams(), new AddTokenExchangeGrantTypeToParams()];
-var authWithIdpInterceptors = [new AddClientIdToParams(), new AddClientSecretToParams(), new AddIdpClientIdToParams(), new AddIdpIdToParams(), new AddIdpTokenToParams(), new SaveToken(), new AddAuthTokenResponse()];
+var sdk_authWithIdpInterceptors = [new AddClientIdToParams(), new AddClientSecretToParams(), new RenameIdpParamsForAuth(), new SaveToken(), new AddAuthTokenResponse()];
 
 var sdk_allowedPerRequestOpts = function allowedPerRequestOpts(opts) {
   return pick_default()(opts, ['onUploadProgress']);
@@ -13327,7 +13237,7 @@ var sdk_authApiSdkFns = function authApiSdkFns(authApiEndpointInterceptors, ctx)
     path: 'loginWithIdp',
     fn: sdk_createAuthApiSdkFn({
       ctx: ctx,
-      interceptors: [].concat(authWithIdpInterceptors, sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'authWithIdp')))
+      interceptors: [].concat(sdk_authWithIdpInterceptors, sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'authWithIdp')))
     })
   }];
 };
@@ -13944,6 +13854,61 @@ function () {
 }();
 
 
+// CONCATENATED MODULE: ./src/interceptors/add_multitenant_auth_with_idp_response.js
+function add_multitenant_auth_with_idp_response_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function add_multitenant_auth_with_idp_response_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_multitenant_auth_with_idp_response_ownKeys(source, true).forEach(function (key) { add_multitenant_auth_with_idp_response_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_multitenant_auth_with_idp_response_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function add_multitenant_auth_with_idp_response_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function add_multitenant_auth_with_idp_response_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function add_multitenant_auth_with_idp_response_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function add_multitenant_auth_with_idp_response_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_multitenant_auth_with_idp_response_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_multitenant_auth_with_idp_response_defineProperties(Constructor, staticProps); return Constructor; }
+
+/**
+   Take token data from `res` and add it to `ctx` top-level.
+   Make sure to include only the necessary keys.
+
+   Changes to `ctx`:
+
+   - add `authToken`
+*/
+var AddMultitenantAuthWithIdpResponse =
+/*#__PURE__*/
+function () {
+  function AddMultitenantAuthWithIdpResponse() {
+    add_multitenant_auth_with_idp_response_classCallCheck(this, AddMultitenantAuthWithIdpResponse);
+  }
+
+  add_multitenant_auth_with_idp_response_createClass(AddMultitenantAuthWithIdpResponse, [{
+    key: "leave",
+
+    /* eslint camelcase: "off" */
+    value: function leave(ctx) {
+      var _ctx$res$data = ctx.res.data,
+          access_token = _ctx$res$data.access_token,
+          refresh_token = _ctx$res$data.refresh_token,
+          token_type = _ctx$res$data.token_type,
+          expires_in = _ctx$res$data.expires_in,
+          scope = _ctx$res$data.scope;
+      return add_multitenant_auth_with_idp_response_objectSpread({}, ctx, {
+        authToken: {
+          access_token: access_token,
+          refresh_token: refresh_token,
+          token_type: token_type,
+          expires_in: expires_in,
+          scope: scope
+        }
+      });
+    }
+  }]);
+
+  return AddMultitenantAuthWithIdpResponse;
+}();
+
+
 // CONCATENATED MODULE: ./src/multitenant_sdk.js
 
 
@@ -13983,6 +13948,8 @@ function multitenant_sdk_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for 
 
 
 
+
+
 /* eslint-disable class-methods-use-this */
 
 var multitenant_sdk_defaultSdkConfig = {
@@ -14000,6 +13967,9 @@ var multitenantAuthApi = [{
 }, {
   path: 'client_data',
   method: 'get'
+}, {
+  path: 'auth_with_idp',
+  method: 'post'
 }];
 var multitenant_sdk_apis = {
   auth: function auth(_ref) {
@@ -14064,6 +14034,10 @@ var multitenant_sdk_tokenAndClientDataInterceptor = function tokenAndClientDataI
   };
 };
 
+var multitenant_sdk_authWithIdpInterceptors = function authWithIdpInterceptors(authApiEndpointInterceptors) {
+  return [new format_http_response_FormatHttpResponse(), new add_multitenant_client_secret_token_to_ctx_AddMultitenantClientSecretTokenToCtx(), new AddMultitenantClientSecretToParams(), new RenameIdpParamsForAuth(), new SaveToken(), new AddMultitenantAuthWithIdpResponse()].concat(multitenant_sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'authWithIdp')));
+};
+
 var multitenant_sdk_createAuthApiSdkFn = function createAuthApiSdkFn(_ref2) {
   var ctx = _ref2.ctx,
       interceptors = _ref2.interceptors;
@@ -14093,6 +14067,12 @@ var multitenant_sdk_authApiSdkFns = function authApiSdkFns(authApiEndpointInterc
     fn: multitenant_sdk_createAuthApiSdkFn({
       ctx: ctx,
       interceptors: [new add_multitenant_token_exchange_params_AddMultitenantTokenExchangeParams()].concat(multitenant_sdk_toConsumableArray(multitenant_sdk_tokenInterceptors(authApiEndpointInterceptors)))
+    })
+  }, {
+    path: 'loginWithIdp',
+    fn: multitenant_sdk_createAuthApiSdkFn({
+      ctx: ctx,
+      interceptors: multitenant_sdk_authWithIdpInterceptors(authApiEndpointInterceptors)
     })
   }];
 }; // Take SDK configurations, do transformation and return.
