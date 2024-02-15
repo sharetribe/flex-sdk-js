@@ -315,17 +315,23 @@ describe('new MultitenantSharetribeSdk', () => {
         hostname: 'valid.example.com',
       });
       return report(
-        sdk.loginWithIdp().catch(e => {
-          expect(e).toBeInstanceOf(Error);
-          expect(e).toEqual(
-            expect.objectContaining({
-              status: 401,
-              statusText: 'Unauthorized',
-              data: 'Unauthorized',
-            })
-          );
-          expect(sdkTokenStore.getToken()).toBeUndefined();
-        })
+        sdk
+          .loginWithIdp({
+            idpId: 'facebook',
+            idpClientId: 'idp-client-id',
+            idpToken: 'idp-token',
+          })
+          .catch(e => {
+            expect(e).toBeInstanceOf(Error);
+            expect(e).toEqual(
+              expect.objectContaining({
+                status: 401,
+                statusText: 'Unauthorized',
+                data: 'Unauthorized',
+              })
+            );
+            expect(sdkTokenStore.getToken()).toBeUndefined();
+          })
       );
     });
 
@@ -335,17 +341,23 @@ describe('new MultitenantSharetribeSdk', () => {
         hostname: 'invalid.example.com',
       });
       return report(
-        sdk.loginWithIdp().catch(e => {
-          expect(e).toBeInstanceOf(Error);
-          expect(e).toEqual(
-            expect.objectContaining({
-              status: 404,
-              statusText: 'Not Found',
-              data: 'Not Found',
-            })
-          );
-          expect(sdkTokenStore.getToken()).toBeUndefined();
-        })
+        sdk
+          .loginWithIdp({
+            idpId: 'facebook',
+            idpClientId: 'idp-client-id',
+            idpToken: 'idp-token',
+          })
+          .catch(e => {
+            expect(e).toBeInstanceOf(Error);
+            expect(e).toEqual(
+              expect.objectContaining({
+                status: 404,
+                statusText: 'Not Found',
+                data: 'Not Found',
+              })
+            );
+            expect(sdkTokenStore.getToken()).toBeUndefined();
+          })
       );
     });
   });

@@ -17,9 +17,6 @@ import FetchAuthTokenFromApi from './interceptors/fetch_auth_token_from_api';
 import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
 import AddClientIdToParams from './interceptors/add_client_id_to_params';
 import AddClientSecretToParams from './interceptors/add_client_secret_to_params';
-import AddIdpClientIdToParams from './interceptors/add_idp_client_id_to_params';
-import AddIdpIdToParams from './interceptors/add_idp_id_to_params';
-import AddIdpTokenToParams from './interceptors/add_idp_token_to_params';
 import AddSubjectTokenToParams from './interceptors/add_subject_token_to_params';
 import AddGrantTypeToParams from './interceptors/add_grant_type_to_params';
 import AddTokenExchangeGrantTypeToParams from './interceptors/add_token_exchange_grant_type_to_params';
@@ -29,6 +26,7 @@ import MultipartRequest from './interceptors/multipart_request';
 import TransitRequest from './interceptors/transit_request';
 import TransitResponse from './interceptors/transit_response';
 import FormatHttpResponse from './interceptors/format_http_response';
+import RenameIdpParamsForAuth from './interceptors/rename_idp_params_for_auth';
 import endpointRequest from './interceptors/endpoint_request';
 import { createDefaultTokenStore } from './token_store';
 import createSdkFnContextRunner from './sdk_context_runner';
@@ -149,9 +147,7 @@ const exchangeTokenInterceptors = [
 const authWithIdpInterceptors = [
   new AddClientIdToParams(),
   new AddClientSecretToParams(),
-  new AddIdpClientIdToParams(),
-  new AddIdpIdToParams(),
-  new AddIdpTokenToParams(),
+  new RenameIdpParamsForAuth(),
   new SaveToken(),
   new AddAuthTokenResponse(),
 ];
