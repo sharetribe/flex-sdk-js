@@ -9,9 +9,7 @@ import FormatHttpResponse from './interceptors/format_http_response';
 import FormatMultitenantHttpResponse from './interceptors/format_multitenant_http_response';
 import endpointRequest from './interceptors/endpoint_request';
 import AddMultitenantAuthHeader from './interceptors/add_multitenant_auth_header';
-import AddIdpClientIdToParams from './interceptors/add_idp_client_id_to_params';
-import AddIdpIdToParams from './interceptors/add_idp_id_to_params';
-import AddIdpTokenToParams from './interceptors/add_idp_token_to_params';
+import RenameIdpParamsForAuth from './interceptors/rename_idp_params_for_auth';
 import AddMultitenantAuthWithIdpResponse from './interceptors/add_multitenant_auth_with_idp_response';
 import createSdkFnContextRunner from './sdk_context_runner';
 import memoryStore from './memory_store';
@@ -115,9 +113,7 @@ const authWithIdpInterceptors = authApiEndpointInterceptors => [
   new FormatHttpResponse(),
   new AddMultitenantClientSecretTokenToCtx(),
   new AddMultitenantClientSecretToParams(),
-  new AddIdpClientIdToParams(),
-  new AddIdpIdToParams(),
-  new AddIdpTokenToParams(),
+  new RenameIdpParamsForAuth(),
   new SaveToken(),
   new AddMultitenantAuthWithIdpResponse(),
   ..._.get(authApiEndpointInterceptors, 'authWithIdp'),
