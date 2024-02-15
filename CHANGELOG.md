@@ -8,6 +8,10 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Fixed
+
+- Prevent unnecessary params from being sent on `loginWithIdp` invocations. [#193](https://github.com/sharetribe/flex-sdk-js/pull/193)
+
 ### Changed
 
 - Remove references to Flex in documentation. [190](https://github.com/sharetribe/flex-sdk-js/pull/190)
