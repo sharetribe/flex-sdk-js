@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.20.1] - 2024-02-15
+
 ### Fixed
 
 - Prevent unnecessary params from being sent on `loginWithIdp` invocations. [#193](https://github.com/sharetribe/flex-sdk-js/pull/193)
@@ -296,8 +298,9 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
-[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.0...HEAD
+[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.1...HEAD
 
+[v1.20.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.0...v1.20.1]
 [v1.20.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.19.0...v1.20.0]
 [v1.19.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.18.1...v1.19.0]
 [v1.18.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.18.0...v1.18.1]
