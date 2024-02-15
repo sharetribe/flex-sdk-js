@@ -150,11 +150,15 @@ export const multitenantClientData = (config, resolve, reject) => {
 
 export const authWithIdp = (config, resolve, reject, fakeTokenStore) => {
   const formData = parseFormData(config.data);
-  const { idpId, idpClientId, idpToken } = formData;
+
+  /* eslint-disable camelcase */
+  const { idp_id, idp_client_id, idp_token } = formData;
+  /* eslint-enable camelcase */
+
   let res;
 
   if (formData.client_id === '08ec69f6-d37e-414d-83eb-324e94afddf0') {
-    res = fakeTokenStore.createTokenWithIdp(idpId, idpClientId, idpToken);
+    res = fakeTokenStore.createTokenWithIdp(idp_id, idp_client_id, idp_token);
   }
 
   if (res) {
@@ -174,7 +178,11 @@ export const authWithIdp = (config, resolve, reject, fakeTokenStore) => {
 
 export const multitenantAuthWithIdpData = (config, resolve, reject, fakeTokenStore) => {
   const formData = parseFormData(config.data);
-  const { idpId, idpClientId, idpToken } = formData;
+
+  /* eslint-disable camelcase */
+  const { idp_id, idp_client_id, idp_token } = formData;
+  /* eslint-enable camelcase */
+
   let success;
   let error = {
     status: 401,
@@ -185,7 +193,7 @@ export const multitenantAuthWithIdpData = (config, resolve, reject, fakeTokenSto
   const hostname = hostnameFromToken(formData.client_secret, 'valid-secret');
 
   if (hostname === 'valid.example.com') {
-    success = fakeTokenStore.createTokenWithIdp(idpId, idpClientId, idpToken);
+    success = fakeTokenStore.createTokenWithIdp(idp_id, idp_client_id, idp_token);
   } else if (hostname === 'invalid.example.com') {
     error = {
       ...error,
