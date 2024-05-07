@@ -95,7 +95,12 @@ var sdk = sharetribeSdk.createInstance({
   // but if you know what you are doing, and you have secured the website properly so
   // that Client Secret is not leaked, you can suppress the warning by setting this
   // to `true`.
-  dangerouslyAllowClientSecretInBrowser: false
+  dangerouslyAllowClientSecretInBrowser: false,
 
+  // Disables deprecation warnings.
+  //
+  // Deprecation warnings are printed with `console.warn` if `console.warn`
+  // is available. Setting this value to `true` will suppress those warnings.
+  disableDeprecationWarnings: false
 });
 ```
