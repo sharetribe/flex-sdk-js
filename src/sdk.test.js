@@ -741,9 +741,13 @@ describe('new SharetribeSdk', () => {
           .authInfo()
           .then(authInfo => {
             // No auth info yet.
+
+            // deprecated: grantType
             expect(authInfo.grantType).toBeUndefined();
+
             expect(authInfo.isAnonymous).toBeUndefined();
             expect(authInfo.scopes).toBeUndefined();
+            expect(authInfo.isLoggedInAs).toBeUndefined();
           })
           .then(() =>
             sdk.marketplace
@@ -751,9 +755,12 @@ describe('new SharetribeSdk', () => {
               .then(sdk.authInfo)
               .then(authInfo => {
                 // Anonymous token
+
+                // deprecated: grantType
                 expect(authInfo.grantType).toEqual('client_credentials');
                 expect(authInfo.isAnonymous).toEqual(true);
                 expect(authInfo.scopes).toEqual(['public-read']);
+                expect(authInfo.isLoggedInAs).toEqual(false);
               })
           )
           .then(() =>
@@ -765,9 +772,32 @@ describe('new SharetribeSdk', () => {
               .then(sdk.authInfo)
               .then(authInfo => {
                 // Login token
+
+                // deprecated: grantType
+                // Please note that the value is also off. Token
+                // hasn't been refreshed, thus, grantType should be password
                 expect(authInfo.grantType).toEqual('refresh_token');
+
                 expect(authInfo.isAnonymous).toEqual(false);
                 expect(authInfo.scopes).toEqual(['user']);
+                expect(authInfo.isLoggedInAs).toEqual(false);
+              })
+          )
+          .then(() =>
+            sdk
+              .login({ code: 'flex-authorization-code' })
+              .then(sdk.authInfo)
+              .then(authInfo => {
+
+                // deprecated: grantType
+                // Please note that the value is also off. Token
+                // hasn't been refreshed, thus, grantType should be
+                // authorization_code
+                expect(authInfo.grantType).toEqual('refresh_token');
+
+                expect(authInfo.isAnonymous).toEqual(false);
+                expect(authInfo.scopes).toEqual(['user:limited']);
+                expect(authInfo.isLoggedInAs).toEqual(true);
               })
           )
           .then(() =>
@@ -776,9 +806,13 @@ describe('new SharetribeSdk', () => {
               .then(sdk.authInfo)
               .then(authInfo => {
                 // Logout
+
+                // deprecated: grantType
                 expect(authInfo.grantType).toBeUndefined();
+
                 expect(authInfo.isAnonymous).toBeUndefined();
                 expect(authInfo.scopes).toBeUndefined();
+                expect(authInfo.isLoggedInAs).toBeUndefined();
               })
           )
           .then(() =>
@@ -787,9 +821,13 @@ describe('new SharetribeSdk', () => {
               .then(sdk.authInfo)
               .then(authInfo => {
                 // Logging out already logged out user does nothing
+
+                // deprecated: grantType
                 expect(authInfo.grantType).toBeUndefined();
+
                 expect(authInfo.isAnonymous).toBeUndefined();
                 expect(authInfo.scopes).toBeUndefined();
+                expect(authInfo.isLoggedInAs).toBeUndefined();
               })
           )
       );

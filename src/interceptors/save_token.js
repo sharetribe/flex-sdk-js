@@ -1,5 +1,7 @@
 /**
-   On `leave` phase, take `authToken` from `ctx` and save it to tokenStore
+   On `leave` phase, take `authToken` from `ctx` and save it to tokenStore.
+
+   Stores also the `isLoggedInAs` alongside with the auth token.
 
    Changes to `ctx`:
 
@@ -7,11 +9,11 @@
 */
 export default class SaveToken {
   leave(ctx) {
-    const { authToken, tokenStore } = ctx;
+    const { authToken, tokenStore, isLoggedInAs } = ctx;
 
     if (tokenStore) {
       return Promise.resolve()
-        .then(() => tokenStore.setToken(authToken))
+        .then(() => tokenStore.setToken({ ...authToken, isLoggedInAs }))
         .then(() => ctx);
     }
 

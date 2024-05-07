@@ -18,6 +18,7 @@ import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store'
 import AddClientIdToParams from './interceptors/add_client_id_to_params';
 import AddClientSecretToParams from './interceptors/add_client_secret_to_params';
 import AddSubjectTokenToParams from './interceptors/add_subject_token_to_params';
+import AddIsLoggedInAsToContext from './interceptors/add_is_logged_in_as_to_context';
 import AddGrantTypeToParams from './interceptors/add_grant_type_to_params';
 import AddTokenExchangeGrantTypeToParams from './interceptors/add_token_exchange_grant_type_to_params';
 import AddScopeToParams from './interceptors/add_scope_to_params';
@@ -122,6 +123,7 @@ const authenticateInterceptors = [
 const loginInterceptors = [
   new AddClientIdToParams(),
   new AddGrantTypeToParams(),
+  new AddIsLoggedInAsToContext(),
   new AddScopeToParams(),
   new SaveToken(),
   new AddAuthTokenResponse(),
