@@ -6,6 +6,9 @@
 
    - add `params.grant_type`
  */
+
+import { deprecated } from '../utils';
+
 export default class AddGrantTypeToParams {
   enter({ params, ...ctx }) {
     const { username, password, code } = params;
@@ -15,6 +18,11 @@ export default class AddGrantTypeToParams {
     }
 
     if (code) {
+      deprecated(
+        'Using sdk.login to login as a user is deprecated. Use sdk.loginAs instead.',
+        ctx.disableDeprecationWarnings
+      );
+
       return { ...ctx, params: { grant_type: 'authorization_code', ...params } };
     }
 

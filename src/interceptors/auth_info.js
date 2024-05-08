@@ -5,7 +5,8 @@
    - scopes: list of scopes associated with the access token in store
    - isAnonymous: boolean value indicating if the access token only grants
      access to publicly read data from API
-
+   - isLoggedInAs: boolean value indicating that the operator has logged in as
+     a marketplace user
 
    Changes to `ctx`:
 
@@ -22,6 +23,7 @@ export default class AuthInfo {
         .then(storedToken => {
           if (storedToken) {
             const tokenScope = storedToken.scope;
+            const { isLoggedInAs } = storedToken;
 
             if (tokenScope) {
               const scopes = tokenScope.split(' ');
@@ -31,14 +33,17 @@ export default class AuthInfo {
               // that rely on this attribute
               const grantType = isAnonymous ? 'client_credentials' : 'refresh_token';
 
-              return { ...ctx, res: { scopes, isAnonymous, grantType } };
+              return {
+                ...ctx,
+                res: { scopes, isAnonymous, grantType, isLoggedInAs: !!isLoggedInAs },
+              };
             }
 
             // Support old tokens that are stored in the client's token store
             // and possibly do not have the scope attribute
             const isAnonymous = !storedToken.refresh_token;
             const grantType = isAnonymous ? 'client_credentials' : 'refresh_token';
-            return { ...ctx, res: { isAnonymous, grantType } };
+            return { ...ctx, res: { isAnonymous, grantType, isLoggedInAs: !!isLoggedInAs } };
           }
 
           return { ...ctx, res: {} };

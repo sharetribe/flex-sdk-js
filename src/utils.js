@@ -112,3 +112,13 @@ export const canonicalAssetPaths = paths => {
 
   return { pathPrefix, relativePaths };
 };
+
+const consoleAvailable = typeof console !== 'undefined';
+
+export const deprecated = (msg, disable) => {
+  /* eslint-disable no-console */
+  /* eslint-disable no-undef */
+  if (consoleAvailable && console.warn && !disable) {
+    console.warn(msg);
+  }
+};

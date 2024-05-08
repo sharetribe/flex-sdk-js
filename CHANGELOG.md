@@ -8,6 +8,25 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Added
+
+- Add a new function `loginAs`. The function takes a single parameter, `code`,
+  which is the authorization code to use. This function should be used to do
+  "Login As" instead of using `login` function with `code`.
+  [#196](https://github.com/sharetribe/flex-sdk-js/pull/196)
+- Add a new key `isLoggedInAs` to the return value of the `authInfo`. The value
+  is boolean where `true` indicates that "Login As" was used. Applications
+  should use this value to check if "Login As" was used instead of examining the
+  token scopes. [#196](https://github.com/sharetribe/flex-sdk-js/pull/196)
+- Add a new configuration option `disableDeprecationWarnings`
+  [#196](https://github.com/sharetribe/flex-sdk-js/pull/196)
+
+### Deprecated
+
+- Using the `login` function to do "Login As", i.e. logging in with `code`
+  instead of `username` and `password` is deprecated in favor of a newly added
+  `loginAs` function. [#196](https://github.com/sharetribe/flex-sdk-js/pull/196)
+
 ## [v1.20.1] - 2024-02-15
 
 ### Fixed

@@ -18,7 +18,10 @@ import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store'
 import AddClientIdToParams from './interceptors/add_client_id_to_params';
 import AddClientSecretToParams from './interceptors/add_client_secret_to_params';
 import AddSubjectTokenToParams from './interceptors/add_subject_token_to_params';
+import AddIsLoggedInAsToContextFromParams from './interceptors/add_is_logged_in_as_to_context_from_params';
+import AddIsLoggedInAsToContext from './interceptors/add_is_logged_in_as_to_context';
 import AddGrantTypeToParams from './interceptors/add_grant_type_to_params';
+import AddAuthorizationCodeGrantTypeToParams from './interceptors/add_authorization_code_grant_type_to_params';
 import AddTokenExchangeGrantTypeToParams from './interceptors/add_token_exchange_grant_type_to_params';
 import AddScopeToParams from './interceptors/add_scope_to_params';
 import AuthInfo from './interceptors/auth_info';
@@ -45,6 +48,7 @@ const defaultSdkConfig = {
   httpAgent: null,
   httpsAgent: null,
   transitVerbose: false,
+  disableDeprecationWarnings: false,
 };
 
 /**
@@ -122,7 +126,16 @@ const authenticateInterceptors = [
 const loginInterceptors = [
   new AddClientIdToParams(),
   new AddGrantTypeToParams(),
+  new AddIsLoggedInAsToContextFromParams(),
   new AddScopeToParams(),
+  new SaveToken(),
+  new AddAuthTokenResponse(),
+];
+
+const loginAsInterceptors = [
+  new AddClientIdToParams(),
+  new AddAuthorizationCodeGrantTypeToParams(),
+  new AddIsLoggedInAsToContext(),
   new SaveToken(),
   new AddAuthTokenResponse(),
 ];
@@ -223,6 +236,17 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
       interceptors: [
         new FormatHttpResponse(),
         ...loginInterceptors,
+        ..._.get(authApiEndpointInterceptors, 'token'),
+      ],
+    }),
+  },
+  {
+    path: 'loginAs',
+    fn: createAuthApiSdkFn({
+      ctx,
+      interceptors: [
+        new FormatHttpResponse(),
+        ...loginAsInterceptors,
         ..._.get(authApiEndpointInterceptors, 'token'),
       ],
     }),
@@ -504,6 +528,7 @@ export default class SharetribeSdk {
       clientSecret: sdkConfig.clientSecret,
       typeHandlers: sdkConfig.typeHandlers,
       transitVerbose: sdkConfig.transitVerbose,
+      disableDeprecationWarnings: sdkConfig.disableDeprecationWarnings,
     };
 
     // Assign SDK functions to 'this'
