@@ -7,11 +7,17 @@ const entry = './src/index.js';
 const babelLoader = {
   test: /.js$/,
   exclude: [/node_modules/],
-  use: 'babel-loader',
+  use: {
+    loader: 'babel-loader',
+    query: {
+      plugins: ['lodash'],
+      presets: [['@babel/env', { 'targets': { 'node': 6 } }]]
+    }
+  }
 };
 
 const module = {
-  rules: [babelLoader],
+  rules: [babelLoader]
 };
 
 const output = target => ({
