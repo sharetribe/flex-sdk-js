@@ -10239,6 +10239,15 @@ var canonicalAssetPaths = function canonicalAssetPaths(paths) {
     relativePaths: relativePaths
   };
 };
+var consoleAvailable = typeof console !== 'undefined';
+var deprecated = function deprecated(msg, disable) {
+  /* eslint-disable no-console */
+
+  /* eslint-disable no-undef */
+  if (consoleAvailable && console.warn && !disable) {
+    console.warn(msg);
+  }
+};
 // CONCATENATED MODULE: ./src/endpoints.js
 /**
    List of Marketplace API endpoints
@@ -10980,6 +10989,12 @@ var contextRunner = function contextRunner(middleware) {
 
 /* harmony default export */ var context_runner = (contextRunner);
 // CONCATENATED MODULE: ./src/interceptors/save_token.js
+function save_token_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function save_token_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { save_token_ownKeys(source, true).forEach(function (key) { save_token_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { save_token_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function save_token_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function save_token_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function save_token_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -10987,7 +11002,9 @@ function save_token_defineProperties(target, props) { for (var i = 0; i < props.
 function save_token_createClass(Constructor, protoProps, staticProps) { if (protoProps) save_token_defineProperties(Constructor.prototype, protoProps); if (staticProps) save_token_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
-   On `leave` phase, take `authToken` from `ctx` and save it to tokenStore
+   On `leave` phase, take `authToken` from `ctx` and save it to tokenStore.
+
+   Stores also the `isLoggedInAs` alongside with the auth token.
 
    Changes to `ctx`:
 
@@ -11004,11 +11021,14 @@ function () {
     key: "leave",
     value: function leave(ctx) {
       var authToken = ctx.authToken,
-          tokenStore = ctx.tokenStore;
+          tokenStore = ctx.tokenStore,
+          isLoggedInAs = ctx.isLoggedInAs;
 
       if (tokenStore) {
         return Promise.resolve().then(function () {
-          return tokenStore.setToken(authToken);
+          return tokenStore.setToken(save_token_objectSpread({}, authToken, {
+            isLoggedInAs: isLoggedInAs
+          }));
         }).then(function () {
           return ctx;
         });
@@ -11689,6 +11709,95 @@ function () {
 }();
 
 
+// CONCATENATED MODULE: ./src/interceptors/add_is_logged_in_as_to_context_from_params.js
+function add_is_logged_in_as_to_context_from_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function add_is_logged_in_as_to_context_from_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_is_logged_in_as_to_context_from_params_ownKeys(source, true).forEach(function (key) { add_is_logged_in_as_to_context_from_params_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_is_logged_in_as_to_context_from_params_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function add_is_logged_in_as_to_context_from_params_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function add_is_logged_in_as_to_context_from_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function add_is_logged_in_as_to_context_from_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function add_is_logged_in_as_to_context_from_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_is_logged_in_as_to_context_from_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_is_logged_in_as_to_context_from_params_defineProperties(Constructor, staticProps); return Constructor; }
+
+/**
+   See if `code` is passed as a parameter and if yes, store isLoggedInAs true to
+   context.
+
+   Changes to `ctx`:
+
+   - add `isLoggedInAs`
+
+   Deprecated: login as user should use loginAs method.
+ */
+var AddIsLoggedInAsToContextFromParams =
+/*#__PURE__*/
+function () {
+  function AddIsLoggedInAsToContextFromParams() {
+    add_is_logged_in_as_to_context_from_params_classCallCheck(this, AddIsLoggedInAsToContextFromParams);
+  }
+
+  add_is_logged_in_as_to_context_from_params_createClass(AddIsLoggedInAsToContextFromParams, [{
+    key: "enter",
+    value: function enter(ctx) {
+      var code = ctx.params.code;
+
+      if (code) {
+        return add_is_logged_in_as_to_context_from_params_objectSpread({}, ctx, {
+          isLoggedInAs: !!code
+        });
+      }
+
+      return ctx;
+    }
+  }]);
+
+  return AddIsLoggedInAsToContextFromParams;
+}();
+
+
+// CONCATENATED MODULE: ./src/interceptors/add_is_logged_in_as_to_context.js
+function add_is_logged_in_as_to_context_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function add_is_logged_in_as_to_context_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_is_logged_in_as_to_context_ownKeys(source, true).forEach(function (key) { add_is_logged_in_as_to_context_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_is_logged_in_as_to_context_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function add_is_logged_in_as_to_context_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function add_is_logged_in_as_to_context_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function add_is_logged_in_as_to_context_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function add_is_logged_in_as_to_context_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_is_logged_in_as_to_context_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_is_logged_in_as_to_context_defineProperties(Constructor, staticProps); return Constructor; }
+
+/**
+   Add isLoggedInAs true to context.
+
+   Changes to `ctx`:
+
+   - add `isLoggedInAs`
+ */
+var AddIsLoggedInAsToContext =
+/*#__PURE__*/
+function () {
+  function AddIsLoggedInAsToContext() {
+    add_is_logged_in_as_to_context_classCallCheck(this, AddIsLoggedInAsToContext);
+  }
+
+  add_is_logged_in_as_to_context_createClass(AddIsLoggedInAsToContext, [{
+    key: "enter",
+    value: function enter(ctx) {
+      return add_is_logged_in_as_to_context_objectSpread({}, ctx, {
+        isLoggedInAs: true
+      });
+    }
+  }]);
+
+  return AddIsLoggedInAsToContext;
+}();
+
+
 // CONCATENATED MODULE: ./src/interceptors/add_grant_type_to_params.js
 function add_grant_type_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -11714,7 +11823,9 @@ function add_grant_type_to_params_createClass(Constructor, protoProps, staticPro
 
    - add `params.grant_type`
  */
-var AddGrantTypeToParams =
+
+
+var add_grant_type_to_params_AddGrantTypeToParams =
 /*#__PURE__*/
 function () {
   function AddGrantTypeToParams() {
@@ -11740,6 +11851,7 @@ function () {
       }
 
       if (code) {
+        deprecated('Using sdk.login to login as a user is deprecated. Use sdk.loginAs instead.', ctx.disableDeprecationWarnings);
         return add_grant_type_to_params_objectSpread({}, ctx, {
           params: add_grant_type_to_params_objectSpread({
             grant_type: 'authorization_code'
@@ -11754,6 +11866,55 @@ function () {
   }]);
 
   return AddGrantTypeToParams;
+}();
+
+
+// CONCATENATED MODULE: ./src/interceptors/add_authorization_code_grant_type_to_params.js
+function add_authorization_code_grant_type_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function add_authorization_code_grant_type_to_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_authorization_code_grant_type_to_params_ownKeys(source, true).forEach(function (key) { add_authorization_code_grant_type_to_params_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_authorization_code_grant_type_to_params_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function add_authorization_code_grant_type_to_params_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function add_authorization_code_grant_type_to_params_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = add_authorization_code_grant_type_to_params_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function add_authorization_code_grant_type_to_params_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function add_authorization_code_grant_type_to_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function add_authorization_code_grant_type_to_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function add_authorization_code_grant_type_to_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_authorization_code_grant_type_to_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_authorization_code_grant_type_to_params_defineProperties(Constructor, staticProps); return Constructor; }
+
+/**
+   Add `authorization_code` value to `params.grantType`
+
+   Changes to `ctx`:
+
+   - Add `authorization_code` value to `params.grantType`
+ */
+var AddAuthorizationCodeGrantTypeToParams =
+/*#__PURE__*/
+function () {
+  function AddAuthorizationCodeGrantTypeToParams() {
+    add_authorization_code_grant_type_to_params_classCallCheck(this, AddAuthorizationCodeGrantTypeToParams);
+  }
+
+  add_authorization_code_grant_type_to_params_createClass(AddAuthorizationCodeGrantTypeToParams, [{
+    key: "enter",
+    value: function enter(_ref) {
+      var params = _ref.params,
+          ctx = add_authorization_code_grant_type_to_params_objectWithoutProperties(_ref, ["params"]);
+
+      return add_authorization_code_grant_type_to_params_objectSpread({}, ctx, {
+        params: add_authorization_code_grant_type_to_params_objectSpread({
+          grant_type: 'authorization_code'
+        }, params)
+      });
+    }
+  }]);
+
+  return AddAuthorizationCodeGrantTypeToParams;
 }();
 
 
@@ -11884,7 +12045,8 @@ function auth_info_createClass(Constructor, protoProps, staticProps) { if (proto
    - scopes: list of scopes associated with the access token in store
    - isAnonymous: boolean value indicating if the access token only grants
      access to publicly read data from API
-
+   - isLoggedInAs: boolean value indicating that the operator has logged in as
+     a marketplace user
 
    Changes to `ctx`:
 
@@ -11907,6 +12069,7 @@ function () {
         return Promise.resolve().then(tokenStore.getToken).then(function (storedToken) {
           if (storedToken) {
             var tokenScope = storedToken.scope;
+            var isLoggedInAs = storedToken.isLoggedInAs;
 
             if (tokenScope) {
               var scopes = tokenScope.split(' ');
@@ -11921,7 +12084,8 @@ function () {
                 res: {
                   scopes: scopes,
                   isAnonymous: _isAnonymous,
-                  grantType: _grantType
+                  grantType: _grantType,
+                  isLoggedInAs: !!isLoggedInAs
                 }
               });
             } // Support old tokens that are stored in the client's token store
@@ -11933,7 +12097,8 @@ function () {
             return auth_info_objectSpread({}, ctx, {
               res: {
                 isAnonymous: isAnonymous,
-                grantType: grantType
+                grantType: grantType,
+                isLoggedInAs: !!isLoggedInAs
               }
             });
           }
@@ -13005,6 +13170,9 @@ function sdk_defineProperty(obj, key, value) { if (key in obj) { Object.definePr
 
 
 
+
+
+
 /* eslint-disable class-methods-use-this */
 
 var defaultSdkConfig = {
@@ -13017,7 +13185,8 @@ var defaultSdkConfig = {
   version: 'v1',
   httpAgent: null,
   httpsAgent: null,
-  transitVerbose: false
+  transitVerbose: false,
+  disableDeprecationWarnings: false
 };
 /**
    Basic configurations for different 'apis'.
@@ -13111,7 +13280,8 @@ var apis = {
   }
 };
 var authenticateInterceptors = [new FetchAuthTokenFromStore(), new fetch_auth_token_from_api_FetchAuthTokenFromApi(), new retry_with_anon_token_RetryWithAnonToken(), new retry_with_refresh_token_RetryWithRefreshToken(), new AddAuthHeader()];
-var loginInterceptors = [new AddClientIdToParams(), new AddGrantTypeToParams(), new AddScopeToParams(), new SaveToken(), new AddAuthTokenResponse()];
+var loginInterceptors = [new AddClientIdToParams(), new add_grant_type_to_params_AddGrantTypeToParams(), new AddIsLoggedInAsToContextFromParams(), new AddScopeToParams(), new SaveToken(), new AddAuthTokenResponse()];
+var loginAsInterceptors = [new AddClientIdToParams(), new AddAuthorizationCodeGrantTypeToParams(), new AddIsLoggedInAsToContext(), new SaveToken(), new AddAuthTokenResponse()];
 var logoutInterceptors = [new FetchAuthTokenFromStore(), new clear_token_after_revoke_ClearTokenAfterRevoke(), new retry_with_refresh_token_RetryWithRefreshToken(), new AddAuthHeader(), new FetchRefreshTokenForRevoke()];
 var exchangeTokenInterceptors = [new FetchAuthTokenFromStore(), new retry_with_refresh_token_RetryWithRefreshToken(), new AddClientIdToParams(), new AddClientSecretToParams(), new AddSubjectTokenToParams(), new AddTokenExchangeGrantTypeToParams()];
 var sdk_authWithIdpInterceptors = [new AddClientIdToParams(), new AddClientSecretToParams(), new RenameIdpParamsForAuth(), new SaveToken(), new AddAuthTokenResponse()];
@@ -13214,6 +13384,12 @@ var sdk_authApiSdkFns = function authApiSdkFns(authApiEndpointInterceptors, ctx)
     fn: sdk_createAuthApiSdkFn({
       ctx: ctx,
       interceptors: [new format_http_response_FormatHttpResponse()].concat(loginInterceptors, sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'token')))
+    })
+  }, {
+    path: 'loginAs',
+    fn: sdk_createAuthApiSdkFn({
+      ctx: ctx,
+      interceptors: [new format_http_response_FormatHttpResponse()].concat(loginAsInterceptors, sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'token')))
     })
   }, {
     path: 'logout',
@@ -13514,7 +13690,8 @@ function SharetribeSdk(userSdkConfig) {
     clientId: sdkConfig.clientId,
     clientSecret: sdkConfig.clientSecret,
     typeHandlers: sdkConfig.typeHandlers,
-    transitVerbose: sdkConfig.transitVerbose
+    transitVerbose: sdkConfig.transitVerbose,
+    disableDeprecationWarnings: sdkConfig.disableDeprecationWarnings
   }; // Assign SDK functions to 'this'
 
   sdk_marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(function (_ref15) {
