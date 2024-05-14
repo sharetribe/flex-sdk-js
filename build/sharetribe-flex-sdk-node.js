@@ -10016,8 +10016,8 @@ module.exports = castFunction;
 __webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
-__webpack_require__.d(__webpack_exports__, "createInstance", function() { return /* binding */ src_createInstance; });
-__webpack_require__.d(__webpack_exports__, "createMultitenantInstance", function() { return /* binding */ src_createMultitenantInstance; });
+__webpack_require__.d(__webpack_exports__, "createInstance", function() { return /* binding */ createInstance; });
+__webpack_require__.d(__webpack_exports__, "createMultitenantInstance", function() { return /* binding */ createMultitenantInstance; });
 __webpack_require__.d(__webpack_exports__, "types", function() { return /* reexport */ types_namespaceObject; });
 __webpack_require__.d(__webpack_exports__, "tokenStore", function() { return /* binding */ src_tokenStore; });
 __webpack_require__.d(__webpack_exports__, "transit", function() { return /* binding */ src_transit; });
@@ -10073,21 +10073,11 @@ var trimEnd_default = /*#__PURE__*/__webpack_require__.n(trimEnd);
 
 
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 function _toArray(arr) { return _arrayWithHoles(arr) || _iterableToArray(arr) || _nonIterableRest(); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -10102,27 +10092,17 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
    trimEndSlash("http://www.api.com//") => "http://www.api.com"
    ```
  */
-var utils_trimEndSlash = function trimEndSlash(url) {
-  return trimEnd_default()(url, '/');
-};
-var utils_fnPath = function fnPath(path) {
-  return without_default()(path.split('/'), '').map(function (part) {
-    return part.replace(/_\w/g, function (m) {
-      return m[1].toUpperCase();
-    });
-  });
-};
-var utils_formData = function formData(params) {
-  return reduce_default()(params, function (pairs, v, k) {
-    pairs.push("".concat(encodeURIComponent(k), "=").concat(encodeURIComponent(v)));
-    return pairs;
-  }, []).join('&');
-};
+const trimEndSlash = url => trimEnd_default()(url, '/');
+const utils_fnPath = path => without_default()(path.split('/'), '').map(part => part.replace(/_\w/g, m => m[1].toUpperCase()));
+const formData = params => reduce_default()(params, (pairs, v, k) => {
+  pairs.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
+  return pairs;
+}, []).join('&');
 /**
    Serialize a single attribute in an object query parameter.
 */
 
-var utils_serializeAttribute = function serializeAttribute(attribute) {
+const serializeAttribute = attribute => {
   if (isPlainObject_default()(attribute)) {
     throw new Error('Nested object in query parameter.');
   } else if (Array.isArray(attribute)) {
@@ -10150,61 +10130,48 @@ var utils_serializeAttribute = function serializeAttribute(attribute) {
 */
 
 
-var utils_objectQueryString = function objectQueryString(obj) {
+const objectQueryString = obj => {
   if (!isPlainObject_default()(obj)) {
     throw new Error('Parameter not an object.');
   }
 
-  return Object.entries(obj).filter(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-        v = _ref2[1];
-
-    return v !== null && v !== undefined;
-  }).map(function (_ref3) {
-    var _ref4 = _slicedToArray(_ref3, 2),
-        k = _ref4[0],
-        v = _ref4[1];
-
-    return "".concat(k, ":").concat(utils_serializeAttribute(v));
-  }).join(';');
+  return Object.entries(obj).filter(([, v]) => v !== null && v !== undefined).map(([k, v]) => `${k}:${serializeAttribute(v)}`).join(';');
 };
 /**
    Compute longest common path prefix for an array of path parts separated by "/".
    The input array must be sorted lexically.
 */
 
-var longestPathPrefix = function longestPathPrefix(sortedPathParts) {
-  var result = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-
+const longestPathPrefix = (sortedPathParts, result = '') => {
   if (sortedPathParts.length === 0) {
     return '';
   }
 
   if (sortedPathParts.length === 1) {
-    var comps = sortedPathParts[0];
+    const comps = sortedPathParts[0];
 
     if (comps.length === 1) {
       return '';
     }
 
-    var path = comps.slice(0, comps.length - 1).join('/');
-    return "".concat(path, "/");
+    const path = comps.slice(0, comps.length - 1).join('/');
+    return `${path}/`;
   }
 
-  var l = sortedPathParts.length,
-      first = sortedPathParts[0],
-      last = sortedPathParts[l - 1];
+  const l = sortedPathParts.length,
+        first = sortedPathParts[0],
+        last = sortedPathParts[l - 1];
 
-  var _first = _toArray(first),
-      firstCurrent = _first[0],
-      firstRest = _first.slice(1);
+  const _first = _toArray(first),
+        firstCurrent = _first[0],
+        firstRest = _first.slice(1);
 
-  var _last = _toArray(last),
-      lastCurrent = _last[0],
-      lastRest = _last.slice(1);
+  const _last = _toArray(last),
+        lastCurrent = _last[0],
+        lastRest = _last.slice(1);
 
   if (firstRest.length > 0 && lastRest.length > 0 && firstCurrent === lastCurrent) {
-    return longestPathPrefix([firstRest, lastRest], "".concat(result).concat(firstCurrent, "/"));
+    return longestPathPrefix([firstRest, lastRest], `${result}${firstCurrent}/`);
   }
 
   return result;
@@ -10220,24 +10187,25 @@ var longestPathPrefix = function longestPathPrefix(sortedPathParts) {
 */
 
 
-var canonicalAssetPaths = function canonicalAssetPaths(paths) {
-  var sortedPaths = _toConsumableArray(new Set(paths)).map(function (p) {
-    return p[0] === '/' ? p.slice(1) : p;
-  }).sort();
-
-  var sortedPathParts = _toConsumableArray(sortedPaths).map(function (p) {
-    return p.split('/');
-  });
-
-  var pathPrefix = longestPathPrefix(sortedPathParts);
-  var prefixLength = pathPrefix.length;
-  var relativePaths = sortedPaths.map(function (p) {
-    return p.substring(prefixLength);
-  });
+const canonicalAssetPaths = paths => {
+  const sortedPaths = [...new Set(paths)].map(p => p[0] === '/' ? p.slice(1) : p).sort();
+  const sortedPathParts = [...sortedPaths].map(p => p.split('/'));
+  const pathPrefix = longestPathPrefix(sortedPathParts);
+  const prefixLength = pathPrefix.length;
+  const relativePaths = sortedPaths.map(p => p.substring(prefixLength));
   return {
-    pathPrefix: pathPrefix,
-    relativePaths: relativePaths
+    pathPrefix,
+    relativePaths
   };
+};
+const consoleAvailable = typeof console !== 'undefined';
+const deprecated = (msg, disable) => {
+  /* eslint-disable no-console */
+
+  /* eslint-disable no-undef */
+  if (consoleAvailable && console.warn && !disable) {
+    console.warn(msg);
+  }
 };
 // CONCATENATED MODULE: ./src/endpoints.js
 /**
@@ -10252,7 +10220,7 @@ var canonicalAssetPaths = function canonicalAssetPaths(paths) {
    - method: HTTP method
 
  */
-var marketplaceApi = [{
+const marketplaceApi = [{
   path: 'marketplace/show',
   method: 'get'
 }, {
@@ -10450,7 +10418,7 @@ var marketplaceApi = [{
    - method: HTTP method
  */
 
-var authApi = [{
+const authApi = [{
   path: 'token',
   method: 'post'
 }, {
@@ -10477,22 +10445,20 @@ var authApi = [{
 
  */
 
-var assetsApi = [{
-  pathFn: function pathFn(_ref) {
-    var clientId = _ref.clientId,
-        version = _ref.version,
-        assetPath = _ref.assetPath;
-    return "pub/".concat(clientId, "/v/").concat(version, "/").concat(assetPath);
-  },
+const assetsApi = [{
+  pathFn: ({
+    clientId,
+    version,
+    assetPath
+  }) => `pub/${clientId}/v/${version}/${assetPath}`,
   method: 'get',
   name: 'byVersion'
 }, {
-  pathFn: function pathFn(_ref2) {
-    var clientId = _ref2.clientId,
-        alias = _ref2.alias,
-        assetPath = _ref2.assetPath;
-    return "pub/".concat(clientId, "/a/").concat(alias, "/").concat(assetPath);
-  },
+  pathFn: ({
+    clientId,
+    alias,
+    assetPath
+  }) => `pub/${clientId}/a/${alias}/${assetPath}`,
   method: 'get',
   name: 'byAlias'
 }];
@@ -10505,8 +10471,6 @@ var compact = __webpack_require__(28);
 var compact_default = /*#__PURE__*/__webpack_require__.n(compact);
 
 // CONCATENATED MODULE: ./src/types.js
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 /* eslint no-underscore-dangle: ["error", { "allow": ["_sdkType"] }] */
 
 /**
@@ -10514,28 +10478,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    @constructor
    @param {string} uuid - UUID represented as string
  */
-var UUID = function UUID(uuid) {
-  _classCallCheck(this, UUID);
+class UUID {
+  constructor(uuid) {
+    this._sdkType = this.constructor._sdkType;
+    this.uuid = uuid;
+  }
 
-  this._sdkType = this.constructor._sdkType;
-  this.uuid = uuid;
-};
+}
 UUID._sdkType = 'UUID';
-var LatLng = function LatLng(lat, lng) {
-  _classCallCheck(this, LatLng);
+class LatLng {
+  constructor(lat, lng) {
+    this._sdkType = this.constructor._sdkType;
+    this.lat = lat;
+    this.lng = lng;
+  }
 
-  this._sdkType = this.constructor._sdkType;
-  this.lat = lat;
-  this.lng = lng;
-};
+}
 LatLng._sdkType = 'LatLng';
-var LatLngBounds = function LatLngBounds(ne, sw) {
-  _classCallCheck(this, LatLngBounds);
+class LatLngBounds {
+  constructor(ne, sw) {
+    this._sdkType = this.constructor._sdkType;
+    this.ne = ne;
+    this.sw = sw;
+  }
 
-  this._sdkType = this.constructor._sdkType;
-  this.ne = ne;
-  this.sw = sw;
-};
+}
 LatLngBounds._sdkType = 'LatLngBounds';
 /**
    Money type to represent money
@@ -10554,13 +10521,14 @@ LatLngBounds._sdkType = 'LatLngBounds';
    ```
 */
 
-var Money = function Money(amount, currency) {
-  _classCallCheck(this, Money);
+class Money {
+  constructor(amount, currency) {
+    this._sdkType = this.constructor._sdkType;
+    this.amount = amount;
+    this.currency = currency;
+  }
 
-  this._sdkType = this.constructor._sdkType;
-  this.amount = amount;
-  this.currency = currency;
-};
+}
 Money._sdkType = 'Money';
 /**
   Type to represent arbitrary precision decimal value.
@@ -10569,16 +10537,17 @@ Money._sdkType = 'Money';
   calculations.
 */
 
-var BigDecimal = function BigDecimal(value) {
-  _classCallCheck(this, BigDecimal);
+class BigDecimal {
+  constructor(value) {
+    this._sdkType = this.constructor._sdkType;
+    this.value = value;
+  }
 
-  this._sdkType = this.constructor._sdkType;
-  this.value = value;
-};
+}
 BigDecimal._sdkType = 'BigDecimal';
-var toType = function toType(value) {
+const toType = value => {
   // eslint-disable-next-line no-underscore-dangle
-  var type = value && value._sdkType;
+  const type = value && value._sdkType;
 
   switch (type) {
     case 'LatLng':
@@ -10610,20 +10579,13 @@ var toType = function toType(value) {
 // applications are using it.
 //
 
-var replacer = function replacer(key, value) {
-  return value;
-}; //
+const replacer = (key, value) => value; //
 // JSON reviver
 //
 
-var reviver = function reviver(key, value) {
-  return toType(value);
-};
+const reviver = (key, value) => toType(value);
 // CONCATENATED MODULE: ./src/params_serializer.js
 
-
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 
 /**
@@ -10637,31 +10599,29 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  * https://github.com/mzabriskie/axios/blob/b8f6f5049cf3da8126a184b6b270316402b5b374/lib/helpers/buildURL.js#L5
  */
 
-var encode = function encode(value) {
-  return encodeURIComponent(value).replace(/%2C/gi, ',');
-};
+const encode = value => encodeURIComponent(value).replace(/%2C/gi, ',');
 
-var UNKNOWN_TYPE = 'unknown-type';
+const UNKNOWN_TYPE = 'unknown-type';
 /**
  * Serialize a single value. May be called recursively in case of array value.
  */
 
-var params_serializer_serializeValue = function serializeValue(value) {
-  var v;
+const serializeValue = value => {
+  let v;
 
   if (value instanceof UUID) {
     v = value.uuid;
   } else if (value instanceof LatLng) {
-    v = "".concat(value.lat, ",").concat(value.lng);
+    v = `${value.lat},${value.lng}`;
   } else if (value instanceof LatLngBounds) {
-    v = "".concat(value.ne.lat, ",").concat(value.ne.lng, ",").concat(value.sw.lat, ",").concat(value.sw.lng);
+    v = `${value.ne.lat},${value.ne.lng},${value.sw.lat},${value.sw.lng}`;
   } else if (Array.isArray(value)) {
     v = value.map(serializeValue);
   } else if (value instanceof Date) {
     v = value.toISOString();
   } else if (value == null) {
     v = value;
-  } else if (_typeof(value) !== 'object') {
+  } else if (typeof value !== 'object') {
     v = value;
   } else {
     throw new Error(UNKNOWN_TYPE);
@@ -10678,14 +10638,14 @@ var params_serializer_serializeValue = function serializeValue(value) {
  */
 
 
-var serialize = function serialize(key, value) {
-  var v;
+const serialize = (key, value) => {
+  let v;
 
   try {
-    v = params_serializer_serializeValue(value);
+    v = serializeValue(value);
   } catch (e) {
     if (e && e.message === UNKNOWN_TYPE) {
-      throw new Error("Don't know how to serialize query parameter '".concat(key, "': ").concat(value));
+      throw new Error(`Don't know how to serialize query parameter '${key}': ${value}`);
     } else {
       throw e;
     }
@@ -10699,19 +10659,17 @@ var serialize = function serialize(key, value) {
   return [key, encode(v)];
 };
 
-var params_serializer_paramsSerializer = function paramsSerializer(params) {
-  return compact_default()(map_default()(params, function (value, key) {
-    var serialized = serialize(key, value);
+const paramsSerializer = params => compact_default()(map_default()(params, (value, key) => {
+  const serialized = serialize(key, value);
 
-    if (serialized) {
-      return serialized.join('=');
-    }
+  if (serialized) {
+    return serialized.join('=');
+  }
 
-    return null;
-  })).join('&');
-};
+  return null;
+})).join('&');
 
-/* harmony default export */ var params_serializer = (params_serializer_paramsSerializer);
+/* harmony default export */ var params_serializer = (paramsSerializer);
 // CONCATENATED MODULE: ./src/interceptors/add_auth_header.js
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -10719,22 +10677,16 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function add_auth_header_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var constructAuthHeader = function constructAuthHeader(authToken) {
+const constructAuthHeader = authToken => {
   /* eslint-disable camelcase */
-  var token_type = authToken.token_type && authToken.token_type.toLowerCase();
+  const token_type = authToken.token_type && authToken.token_type.toLowerCase();
 
   switch (token_type) {
     case 'bearer':
-      return "Bearer ".concat(authToken.access_token);
+      return `Bearer ${authToken.access_token}`;
 
     default:
-      throw new Error("Unknown token type: ".concat(token_type));
+      throw new Error(`Unknown token type: ${token_type}`);
   }
   /* eslint-enable camelcase */
 
@@ -10748,57 +10700,37 @@ var constructAuthHeader = function constructAuthHeader(authToken) {
  */
 
 
-var AddAuthHeader =
-/*#__PURE__*/
-function () {
-  function AddAuthHeader() {
-    add_auth_header_classCallCheck(this, AddAuthHeader);
-  }
-
-  _createClass(AddAuthHeader, [{
-    key: "enter",
-    value: function enter(ctx) {
-      var authToken = ctx.authToken,
+class AddAuthHeader {
+  enter(ctx) {
+    const authToken = ctx.authToken,
           _ctx$headers = ctx.headers,
           headers = _ctx$headers === void 0 ? {} : _ctx$headers;
 
-      if (!authToken) {
-        return ctx;
-      }
-
-      var authHeaders = {
-        Authorization: constructAuthHeader(authToken)
-      };
-      return _objectSpread({}, ctx, {
-        headers: _objectSpread({}, headers, {}, authHeaders)
-      });
+    if (!authToken) {
+      return ctx;
     }
-  }]);
 
-  return AddAuthHeader;
-}();
+    const authHeaders = {
+      Authorization: constructAuthHeader(authToken)
+    };
+    return _objectSpread({}, ctx, {
+      headers: _objectSpread({}, headers, {}, authHeaders)
+    });
+  }
 
-
+}
 // CONCATENATED MODULE: ./src/context_runner.js
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-function context_runner_slicedToArray(arr, i) { return context_runner_arrayWithHoles(arr) || context_runner_iterableToArrayLimit(arr, i) || context_runner_nonIterableRest(); }
+function _slicedToArray(arr, i) { return context_runner_arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || context_runner_nonIterableRest(); }
 
 function context_runner_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
-function context_runner_iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function context_runner_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-function context_runner_toConsumableArray(arr) { return context_runner_arrayWithoutHoles(arr) || context_runner_iterableToArray(arr) || context_runner_nonIterableSpread(); }
-
-function context_runner_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function context_runner_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function context_runner_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 function context_runner_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -10806,28 +10738,22 @@ function context_runner_objectSpread(target) { for (var i = 1; i < arguments.len
 
 function context_runner_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var DEBUG = false;
+const DEBUG = false;
 
-var resolve = function resolve(ctx) {
-  return Promise.resolve(ctx);
-};
+const resolve = ctx => Promise.resolve(ctx);
 
-var buildCtx = function buildCtx() {
-  var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var middleware = arguments.length > 1 ? arguments[1] : undefined;
-  return context_runner_objectSpread({}, params, {
-    enterQueue: context_runner_toConsumableArray(middleware).reverse(),
-    leaveStack: []
-  });
-};
+const buildCtx = (params = {}, middleware) => context_runner_objectSpread({}, params, {
+  enterQueue: [...middleware].reverse(),
+  leaveStack: []
+});
 
-var tryExecuteMw = function tryExecuteMw(ctx, mw, stage) {
+const tryExecuteMw = (ctx, mw, stage) => {
   /* eslint-disable no-console */
 
   /* eslint-disable no-undef */
   if (DEBUG) {
     if (mw[stage]) {
-      console.log("Executing ".concat(mw.constructor.name, "#").concat(stage));
+      console.log(`Executing ${mw.constructor.name}#${stage}`);
     }
   }
   /* eslint-enable no-console */
@@ -10835,23 +10761,21 @@ var tryExecuteMw = function tryExecuteMw(ctx, mw, stage) {
   /* eslint-enable no-undef */
 
 
-  return resolve(ctx).then(mw[stage] || resolve)["catch"](function (error) {
-    var errorCtx = error.ctx || ctx;
+  return resolve(ctx).then(mw[stage] || resolve).catch(error => {
+    const errorCtx = error.ctx || ctx;
     return Promise.resolve(context_runner_objectSpread({}, errorCtx, {
-      error: error,
+      error,
       errorMiddleware: mw.constructor.name,
       errorStage: stage
     }));
   });
 };
 
-var nextMw = function nextMw(ctx) {
-  var leaveStack = context_runner_toConsumableArray(ctx.leaveStack);
-
-  var enterQueue = context_runner_toConsumableArray(ctx.enterQueue);
-
-  var mw;
-  var type;
+const nextMw = ctx => {
+  const leaveStack = [...ctx.leaveStack];
+  const enterQueue = [...ctx.enterQueue];
+  let mw;
+  let type;
 
   if (ctx.error) {
     mw = leaveStack.shift();
@@ -10866,25 +10790,25 @@ var nextMw = function nextMw(ctx) {
   }
 
   return [context_runner_objectSpread({}, ctx, {
-    enterQueue: enterQueue,
-    leaveStack: leaveStack
+    enterQueue,
+    leaveStack
   }), mw, type];
 };
 
-var executeCtx = function executeCtx(ctx) {
-  var _nextMw = nextMw(ctx),
-      _nextMw2 = context_runner_slicedToArray(_nextMw, 3),
-      newCtx = _nextMw2[0],
-      mw = _nextMw2[1],
-      type = _nextMw2[2];
+const executeCtx = ctx => {
+  const _nextMw = nextMw(ctx),
+        _nextMw2 = _slicedToArray(_nextMw, 3),
+        newCtx = _nextMw2[0],
+        mw = _nextMw2[1],
+        type = _nextMw2[2];
 
   if (mw) {
     return tryExecuteMw(newCtx, mw, type).then(executeCtx);
   }
 
   if (newCtx.error) {
-    var error = newCtx.error,
-        errorCtx = _objectWithoutProperties(newCtx, ["error"]);
+    const error = newCtx.error,
+          errorCtx = _objectWithoutProperties(newCtx, ["error"]);
 
     error.ctx = errorCtx;
     return Promise.reject(error);
@@ -10972,68 +10896,47 @@ var executeCtx = function executeCtx(ctx) {
  */
 
 
-var contextRunner = function contextRunner(middleware) {
-  return function (params) {
-    return executeCtx(buildCtx(params, middleware));
-  };
-};
+const contextRunner = middleware => params => executeCtx(buildCtx(params, middleware));
 
 /* harmony default export */ var context_runner = (contextRunner);
 // CONCATENATED MODULE: ./src/interceptors/save_token.js
-function save_token_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function save_token_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function save_token_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function save_token_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { save_token_ownKeys(source, true).forEach(function (key) { save_token_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { save_token_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-function save_token_createClass(Constructor, protoProps, staticProps) { if (protoProps) save_token_defineProperties(Constructor.prototype, protoProps); if (staticProps) save_token_defineProperties(Constructor, staticProps); return Constructor; }
+function save_token_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
-   On `leave` phase, take `authToken` from `ctx` and save it to tokenStore
+   On `leave` phase, take `authToken` from `ctx` and save it to tokenStore.
+
+   Stores also the `isLoggedInAs` alongside with the auth token.
 
    Changes to `ctx`:
 
    - None
 */
-var SaveToken =
-/*#__PURE__*/
-function () {
-  function SaveToken() {
-    save_token_classCallCheck(this, SaveToken);
+class SaveToken {
+  leave(ctx) {
+    const authToken = ctx.authToken,
+          tokenStore = ctx.tokenStore,
+          isLoggedInAs = ctx.isLoggedInAs;
+
+    if (tokenStore) {
+      return Promise.resolve().then(() => tokenStore.setToken(save_token_objectSpread({}, authToken, {
+        isLoggedInAs
+      }))).then(() => ctx);
+    }
+
+    return ctx;
   }
 
-  save_token_createClass(SaveToken, [{
-    key: "leave",
-    value: function leave(ctx) {
-      var authToken = ctx.authToken,
-          tokenStore = ctx.tokenStore;
-
-      if (tokenStore) {
-        return Promise.resolve().then(function () {
-          return tokenStore.setToken(authToken);
-        }).then(function () {
-          return ctx;
-        });
-      }
-
-      return ctx;
-    }
-  }]);
-
-  return SaveToken;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/add_auth_token_response.js
 function add_auth_token_response_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function add_auth_token_response_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_auth_token_response_ownKeys(source, true).forEach(function (key) { add_auth_token_response_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_auth_token_response_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function add_auth_token_response_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function add_auth_token_response_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_auth_token_response_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_auth_token_response_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_auth_token_response_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_auth_token_response_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Take `authToken` from `res` and add it to `ctx` top-level.
@@ -11042,47 +10945,21 @@ function add_auth_token_response_createClass(Constructor, protoProps, staticProp
 
    - add `authToken` (from res)
 */
-var AddAuthTokenResponse =
-/*#__PURE__*/
-function () {
-  function AddAuthTokenResponse() {
-    add_auth_token_response_classCallCheck(this, AddAuthTokenResponse);
+class AddAuthTokenResponse {
+  leave(ctx) {
+    const authToken = ctx.res.data;
+    return add_auth_token_response_objectSpread({}, ctx, {
+      authToken
+    });
   }
 
-  add_auth_token_response_createClass(AddAuthTokenResponse, [{
-    key: "leave",
-    value: function leave(ctx) {
-      var authToken = ctx.res.data;
-      return add_auth_token_response_objectSpread({}, ctx, {
-        authToken: authToken
-      });
-    }
-  }]);
-
-  return AddAuthTokenResponse;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/retry_with_refresh_token.js
-function retry_with_refresh_token_toConsumableArray(arr) { return retry_with_refresh_token_arrayWithoutHoles(arr) || retry_with_refresh_token_iterableToArray(arr) || retry_with_refresh_token_nonIterableSpread(); }
-
-function retry_with_refresh_token_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function retry_with_refresh_token_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function retry_with_refresh_token_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 function retry_with_refresh_token_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function retry_with_refresh_token_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { retry_with_refresh_token_ownKeys(source, true).forEach(function (key) { retry_with_refresh_token_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { retry_with_refresh_token_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function retry_with_refresh_token_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function retry_with_refresh_token_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function retry_with_refresh_token_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function retry_with_refresh_token_createClass(Constructor, protoProps, staticProps) { if (protoProps) retry_with_refresh_token_defineProperties(Constructor.prototype, protoProps); if (staticProps) retry_with_refresh_token_defineProperties(Constructor, staticProps); return Constructor; }
 
 
 
@@ -11101,32 +10978,24 @@ function retry_with_refresh_token_createClass(Constructor, protoProps, staticPro
    - add `authToken`
  */
 
-var retry_with_refresh_token_RetryWithRefreshToken =
-/*#__PURE__*/
-function () {
-  function RetryWithRefreshToken() {
-    retry_with_refresh_token_classCallCheck(this, RetryWithRefreshToken);
+class retry_with_refresh_token_RetryWithRefreshToken {
+  enter(enterCtx) {
+    const enterQueue = enterCtx.enterQueue,
+          _enterCtx$refreshToke = enterCtx.refreshTokenRetry,
+          _enterCtx$refreshToke2 = _enterCtx$refreshToke === void 0 ? {} : _enterCtx$refreshToke,
+          _enterCtx$refreshToke3 = _enterCtx$refreshToke2.attempts,
+          attempts = _enterCtx$refreshToke3 === void 0 ? 0 : _enterCtx$refreshToke3;
+
+    return retry_with_refresh_token_objectSpread({}, enterCtx, {
+      refreshTokenRetry: {
+        retryQueue: [...enterQueue, new retry_with_refresh_token_RetryWithRefreshToken()],
+        attempts: attempts + 1
+      }
+    });
   }
 
-  retry_with_refresh_token_createClass(RetryWithRefreshToken, [{
-    key: "enter",
-    value: function enter(enterCtx) {
-      var enterQueue = enterCtx.enterQueue,
-          _enterCtx$refreshToke = enterCtx.refreshTokenRetry;
-      _enterCtx$refreshToke = _enterCtx$refreshToke === void 0 ? {} : _enterCtx$refreshToke;
-      var _enterCtx$refreshToke2 = _enterCtx$refreshToke.attempts,
-          attempts = _enterCtx$refreshToke2 === void 0 ? 0 : _enterCtx$refreshToke2;
-      return retry_with_refresh_token_objectSpread({}, enterCtx, {
-        refreshTokenRetry: {
-          retryQueue: [].concat(retry_with_refresh_token_toConsumableArray(enterQueue), [new RetryWithRefreshToken()]),
-          attempts: attempts + 1
-        }
-      });
-    }
-  }, {
-    key: "error",
-    value: function error(errorCtx) {
-      var authToken = errorCtx.authToken,
+  error(errorCtx) {
+    const authToken = errorCtx.authToken,
           clientId = errorCtx.clientId,
           tokenStore = errorCtx.tokenStore,
           endpointInterceptors = errorCtx.endpointInterceptors,
@@ -11134,64 +11003,43 @@ function () {
           retryQueue = _errorCtx$refreshToke.retryQueue,
           attempts = _errorCtx$refreshToke.attempts;
 
-      if (attempts > 1) {
-        return errorCtx;
-      }
-
-      if (errorCtx.res && errorCtx.res.status === 401 && authToken.refresh_token) {
-        return context_runner([new SaveToken(), new AddAuthTokenResponse()].concat(retry_with_refresh_token_toConsumableArray(endpointInterceptors.auth.token)))({
-          params: {
-            client_id: clientId,
-            grant_type: 'refresh_token',
-            refresh_token: authToken.refresh_token
-          },
-          tokenStore: tokenStore
-        }).then(function (_ref) {
-          var newAuthToken = _ref.authToken;
-          return retry_with_refresh_token_objectSpread({}, errorCtx, {
-            authToken: newAuthToken,
-            enterQueue: retryQueue,
-            error: null
-          });
-        })["catch"](function (e) {
-          return retry_with_refresh_token_objectSpread({}, errorCtx, {
-            refreshTokenRetry: {
-              retryQueue: retryQueue,
-              attempts: attempts,
-              res: e.response
-            }
-          });
-        });
-      }
-
+    if (attempts > 1) {
       return errorCtx;
     }
-  }]);
 
-  return RetryWithRefreshToken;
-}();
+    if (errorCtx.res && errorCtx.res.status === 401 && authToken.refresh_token) {
+      return context_runner([new SaveToken(), new AddAuthTokenResponse(), ...endpointInterceptors.auth.token])({
+        params: {
+          client_id: clientId,
+          grant_type: 'refresh_token',
+          refresh_token: authToken.refresh_token
+        },
+        tokenStore
+      }).then(({
+        authToken: newAuthToken
+      }) => retry_with_refresh_token_objectSpread({}, errorCtx, {
+        authToken: newAuthToken,
+        enterQueue: retryQueue,
+        error: null
+      })).catch(e => retry_with_refresh_token_objectSpread({}, errorCtx, {
+        refreshTokenRetry: {
+          retryQueue,
+          attempts,
+          res: e.response
+        }
+      }));
+    }
 
+    return errorCtx;
+  }
 
+}
 // CONCATENATED MODULE: ./src/interceptors/retry_with_anon_token.js
-function retry_with_anon_token_toConsumableArray(arr) { return retry_with_anon_token_arrayWithoutHoles(arr) || retry_with_anon_token_iterableToArray(arr) || retry_with_anon_token_nonIterableSpread(); }
-
-function retry_with_anon_token_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function retry_with_anon_token_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function retry_with_anon_token_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 function retry_with_anon_token_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function retry_with_anon_token_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { retry_with_anon_token_ownKeys(source, true).forEach(function (key) { retry_with_anon_token_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { retry_with_anon_token_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function retry_with_anon_token_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function retry_with_anon_token_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function retry_with_anon_token_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function retry_with_anon_token_createClass(Constructor, protoProps, staticProps) { if (protoProps) retry_with_anon_token_defineProperties(Constructor.prototype, protoProps); if (staticProps) retry_with_anon_token_defineProperties(Constructor, staticProps); return Constructor; }
 
 
 
@@ -11209,68 +11057,55 @@ function retry_with_anon_token_createClass(Constructor, protoProps, staticProps)
    - add `authToken`
  */
 
-var retry_with_anon_token_RetryWithAnonToken =
-/*#__PURE__*/
-function () {
-  function RetryWithAnonToken() {
-    retry_with_anon_token_classCallCheck(this, RetryWithAnonToken);
+class retry_with_anon_token_RetryWithAnonToken {
+  enter(enterCtx) {
+    const enterQueue = enterCtx.enterQueue,
+          _enterCtx$anonTokenRe = enterCtx.anonTokenRetry,
+          _enterCtx$anonTokenRe2 = _enterCtx$anonTokenRe === void 0 ? {} : _enterCtx$anonTokenRe,
+          _enterCtx$anonTokenRe3 = _enterCtx$anonTokenRe2.attempts,
+          attempts = _enterCtx$anonTokenRe3 === void 0 ? 0 : _enterCtx$anonTokenRe3;
+
+    return retry_with_anon_token_objectSpread({}, enterCtx, {
+      anonTokenRetry: {
+        retryQueue: [...enterQueue, new retry_with_anon_token_RetryWithAnonToken()],
+        attempts: attempts + 1
+      }
+    });
   }
 
-  retry_with_anon_token_createClass(RetryWithAnonToken, [{
-    key: "enter",
-    value: function enter(enterCtx) {
-      var enterQueue = enterCtx.enterQueue,
-          _enterCtx$anonTokenRe = enterCtx.anonTokenRetry;
-      _enterCtx$anonTokenRe = _enterCtx$anonTokenRe === void 0 ? {} : _enterCtx$anonTokenRe;
-      var _enterCtx$anonTokenRe2 = _enterCtx$anonTokenRe.attempts,
-          attempts = _enterCtx$anonTokenRe2 === void 0 ? 0 : _enterCtx$anonTokenRe2;
-      return retry_with_anon_token_objectSpread({}, enterCtx, {
-        anonTokenRetry: {
-          retryQueue: [].concat(retry_with_anon_token_toConsumableArray(enterQueue), [new RetryWithAnonToken()]),
-          attempts: attempts + 1
-        }
-      });
-    }
-  }, {
-    key: "error",
-    value: function error(errorCtx) {
-      var clientId = errorCtx.clientId,
+  error(errorCtx) {
+    const clientId = errorCtx.clientId,
           tokenStore = errorCtx.tokenStore,
           endpointInterceptors = errorCtx.endpointInterceptors,
           _errorCtx$anonTokenRe = errorCtx.anonTokenRetry,
           retryQueue = _errorCtx$anonTokenRe.retryQueue,
           attempts = _errorCtx$anonTokenRe.attempts;
 
-      if (attempts > 1) {
-        return errorCtx;
-      }
-
-      if (errorCtx.res && errorCtx.res.status === 401) {
-        return context_runner([new SaveToken(), new AddAuthTokenResponse()].concat(retry_with_anon_token_toConsumableArray(endpointInterceptors.auth.token)))({
-          params: {
-            client_id: clientId,
-            grant_type: 'client_credentials',
-            scope: 'public-read'
-          },
-          tokenStore: tokenStore
-        }).then(function (_ref) {
-          var authToken = _ref.authToken;
-          return retry_with_anon_token_objectSpread({}, errorCtx, {
-            authToken: authToken,
-            enterQueue: retryQueue,
-            error: null
-          });
-        });
-      }
-
+    if (attempts > 1) {
       return errorCtx;
     }
-  }]);
 
-  return RetryWithAnonToken;
-}();
+    if (errorCtx.res && errorCtx.res.status === 401) {
+      return context_runner([new SaveToken(), new AddAuthTokenResponse(), ...endpointInterceptors.auth.token])({
+        params: {
+          client_id: clientId,
+          grant_type: 'client_credentials',
+          scope: 'public-read'
+        },
+        tokenStore
+      }).then(({
+        authToken
+      }) => retry_with_anon_token_objectSpread({}, errorCtx, {
+        authToken,
+        enterQueue: retryQueue,
+        error: null
+      }));
+    }
 
+    return errorCtx;
+  }
 
+}
 // CONCATENATED MODULE: ./src/interceptors/clear_token_after_revoke.js
 
 
@@ -11279,12 +11114,6 @@ function clear_token_after_revoke_ownKeys(object, enumerableOnly) { var keys = O
 function clear_token_after_revoke_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { clear_token_after_revoke_ownKeys(source, true).forEach(function (key) { clear_token_after_revoke_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { clear_token_after_revoke_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function clear_token_after_revoke_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function clear_token_after_revoke_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function clear_token_after_revoke_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function clear_token_after_revoke_createClass(Constructor, protoProps, staticProps) { if (protoProps) clear_token_after_revoke_defineProperties(Constructor.prototype, protoProps); if (staticProps) clear_token_after_revoke_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Clears token after revoke.
@@ -11301,67 +11130,45 @@ function clear_token_after_revoke_createClass(Constructor, protoProps, staticPro
 
    - Remove `error`, if 401
 */
-var clear_token_after_revoke_ClearTokenAfterRevoke =
-/*#__PURE__*/
-function () {
-  function ClearTokenAfterRevoke() {
-    clear_token_after_revoke_classCallCheck(this, ClearTokenAfterRevoke);
+class clear_token_after_revoke_ClearTokenAfterRevoke {
+  static clearTokenAndResque(ctx) {
+    const tokenStore = ctx.tokenStore;
+
+    if (tokenStore) {
+      return Promise.resolve().then(tokenStore.removeToken).then(() => clear_token_after_revoke_objectSpread({}, ctx, {
+        error: null
+      }));
+    }
+
+    return clear_token_after_revoke_objectSpread({}, ctx, {
+      error: null
+    });
   }
 
-  clear_token_after_revoke_createClass(ClearTokenAfterRevoke, [{
-    key: "leave",
-    value: function leave(ctx) {
-      return ClearTokenAfterRevoke.clearTokenAndResque(ctx);
-    }
-  }, {
-    key: "error",
-    value: function error(ctx) {
-      var _ref = ctx.res || {},
+  leave(ctx) {
+    return clear_token_after_revoke_ClearTokenAfterRevoke.clearTokenAndResque(ctx);
+  }
+
+  error(ctx) {
+    const _ref = ctx.res || {},
           status = _ref.status;
 
-      var retryStatus = get_default()(ctx, ['refreshTokenRetry', 'res', 'status']);
+    const retryStatus = get_default()(ctx, ['refreshTokenRetry', 'res', 'status']);
 
-      if (status === 401 && retryStatus === 401) {
-        return ClearTokenAfterRevoke.clearTokenAndResque(ctx);
-      }
-
-      return ctx;
+    if (status === 401 && retryStatus === 401) {
+      return clear_token_after_revoke_ClearTokenAfterRevoke.clearTokenAndResque(ctx);
     }
-  }], [{
-    key: "clearTokenAndResque",
-    value: function clearTokenAndResque(ctx) {
-      var tokenStore = ctx.tokenStore;
 
-      if (tokenStore) {
-        return Promise.resolve().then(tokenStore.removeToken).then(function () {
-          return clear_token_after_revoke_objectSpread({}, ctx, {
-            error: null
-          });
-        });
-      }
+    return ctx;
+  }
 
-      return clear_token_after_revoke_objectSpread({}, ctx, {
-        error: null
-      });
-    }
-  }]);
-
-  return ClearTokenAfterRevoke;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/fetch_refresh_token_for_revoke.js
 function fetch_refresh_token_for_revoke_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function fetch_refresh_token_for_revoke_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { fetch_refresh_token_for_revoke_ownKeys(source, true).forEach(function (key) { fetch_refresh_token_for_revoke_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { fetch_refresh_token_for_revoke_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function fetch_refresh_token_for_revoke_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function fetch_refresh_token_for_revoke_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function fetch_refresh_token_for_revoke_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function fetch_refresh_token_for_revoke_createClass(Constructor, protoProps, staticProps) { if (protoProps) fetch_refresh_token_for_revoke_defineProperties(Constructor.prototype, protoProps); if (staticProps) fetch_refresh_token_for_revoke_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Fetch `refresh_token` from `authToken` in `ctx`. If
@@ -11373,61 +11180,35 @@ function fetch_refresh_token_for_revoke_createClass(Constructor, protoProps, sta
    - Add `params.token`
    - Clear `enterQueue` (if no need to revoke)
 */
-var FetchRefreshTokenForRevoke =
-/*#__PURE__*/
-function () {
-  function FetchRefreshTokenForRevoke() {
-    fetch_refresh_token_for_revoke_classCallCheck(this, FetchRefreshTokenForRevoke);
+class FetchRefreshTokenForRevoke {
+  enter(ctx) {
+    const _ctx$authToken = ctx.authToken,
+          _ctx$authToken2 = _ctx$authToken === void 0 ? {} : _ctx$authToken,
+          token = _ctx$authToken2.refresh_token;
+
+    if (token) {
+      return fetch_refresh_token_for_revoke_objectSpread({}, ctx, {
+        params: {
+          token
+        }
+      });
+    } // No need to call `revoke` endpoint, because we don't have
+    // refresh_token.
+    // Clear the enterQueue
+
+
+    return fetch_refresh_token_for_revoke_objectSpread({}, ctx, {
+      enterQueue: []
+    });
   }
 
-  fetch_refresh_token_for_revoke_createClass(FetchRefreshTokenForRevoke, [{
-    key: "enter",
-    value: function enter(ctx) {
-      var _ctx$authToken = ctx.authToken;
-      _ctx$authToken = _ctx$authToken === void 0 ? {} : _ctx$authToken;
-      var token = _ctx$authToken.refresh_token;
-
-      if (token) {
-        return fetch_refresh_token_for_revoke_objectSpread({}, ctx, {
-          params: {
-            token: token
-          }
-        });
-      } // No need to call `revoke` endpoint, because we don't have
-      // refresh_token.
-      // Clear the enterQueue
-
-
-      return fetch_refresh_token_for_revoke_objectSpread({}, ctx, {
-        enterQueue: []
-      });
-    }
-  }]);
-
-  return FetchRefreshTokenForRevoke;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/fetch_auth_token_from_api.js
 function fetch_auth_token_from_api_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function fetch_auth_token_from_api_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { fetch_auth_token_from_api_ownKeys(source, true).forEach(function (key) { fetch_auth_token_from_api_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { fetch_auth_token_from_api_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function fetch_auth_token_from_api_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function fetch_auth_token_from_api_toConsumableArray(arr) { return fetch_auth_token_from_api_arrayWithoutHoles(arr) || fetch_auth_token_from_api_iterableToArray(arr) || fetch_auth_token_from_api_nonIterableSpread(); }
-
-function fetch_auth_token_from_api_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function fetch_auth_token_from_api_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function fetch_auth_token_from_api_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
-function fetch_auth_token_from_api_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function fetch_auth_token_from_api_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function fetch_auth_token_from_api_createClass(Constructor, protoProps, staticProps) { if (protoProps) fetch_auth_token_from_api_defineProperties(Constructor.prototype, protoProps); if (staticProps) fetch_auth_token_from_api_defineProperties(Constructor, staticProps); return Constructor; }
 
 
 
@@ -11440,57 +11221,38 @@ function fetch_auth_token_from_api_createClass(Constructor, protoProps, staticPr
    - add `authToken`
 */
 
-var fetch_auth_token_from_api_FetchAuthTokenFromApi =
-/*#__PURE__*/
-function () {
-  function FetchAuthTokenFromApi() {
-    fetch_auth_token_from_api_classCallCheck(this, FetchAuthTokenFromApi);
-  }
-
-  fetch_auth_token_from_api_createClass(FetchAuthTokenFromApi, [{
-    key: "enter",
-    value: function enter(ctx) {
-      var tokenStore = ctx.tokenStore,
+class fetch_auth_token_from_api_FetchAuthTokenFromApi {
+  enter(ctx) {
+    const tokenStore = ctx.tokenStore,
           authToken = ctx.authToken,
           endpointInterceptors = ctx.endpointInterceptors,
           clientId = ctx.clientId;
 
-      if (authToken) {
-        return ctx;
-      }
-
-      return context_runner([new SaveToken(), new AddAuthTokenResponse()].concat(fetch_auth_token_from_api_toConsumableArray(endpointInterceptors.auth.token)))({
-        params: {
-          client_id: clientId,
-          grant_type: 'client_credentials',
-          scope: 'public-read'
-        },
-        tokenStore: tokenStore
-      }).then(function (_ref) {
-        var newAuthToken = _ref.authToken;
-        return fetch_auth_token_from_api_objectSpread({}, ctx, {
-          authToken: newAuthToken
-        });
-      });
+    if (authToken) {
+      return ctx;
     }
-  }]);
 
-  return FetchAuthTokenFromApi;
-}();
+    return context_runner([new SaveToken(), new AddAuthTokenResponse(), ...endpointInterceptors.auth.token])({
+      params: {
+        client_id: clientId,
+        grant_type: 'client_credentials',
+        scope: 'public-read'
+      },
+      tokenStore
+    }).then(({
+      authToken: newAuthToken
+    }) => fetch_auth_token_from_api_objectSpread({}, ctx, {
+      authToken: newAuthToken
+    }));
+  }
 
-
+}
 // CONCATENATED MODULE: ./src/interceptors/fetch_auth_token_from_store.js
 function fetch_auth_token_from_store_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function fetch_auth_token_from_store_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { fetch_auth_token_from_store_ownKeys(source, true).forEach(function (key) { fetch_auth_token_from_store_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { fetch_auth_token_from_store_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function fetch_auth_token_from_store_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function fetch_auth_token_from_store_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function fetch_auth_token_from_store_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function fetch_auth_token_from_store_createClass(Constructor, protoProps, staticProps) { if (protoProps) fetch_auth_token_from_store_defineProperties(Constructor.prototype, protoProps); if (staticProps) fetch_auth_token_from_store_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Fetches the auth token from tokenStore and adds it to the context.
@@ -11500,38 +11262,26 @@ function fetch_auth_token_from_store_createClass(Constructor, protoProps, static
    - add `authToken`
 
  */
-var FetchAuthTokenFromStore =
-/*#__PURE__*/
-function () {
-  function FetchAuthTokenFromStore() {
-    fetch_auth_token_from_store_classCallCheck(this, FetchAuthTokenFromStore);
-  }
+class FetchAuthTokenFromStore {
+  enter(enterCtx) {
+    const tokenStore = enterCtx.tokenStore;
 
-  fetch_auth_token_from_store_createClass(FetchAuthTokenFromStore, [{
-    key: "enter",
-    value: function enter(enterCtx) {
-      var tokenStore = enterCtx.tokenStore;
+    if (!tokenStore) {
+      return enterCtx;
+    }
 
-      if (!tokenStore) {
-        return enterCtx;
+    return Promise.resolve().then(tokenStore.getToken).then(storedToken => {
+      if (storedToken) {
+        return fetch_auth_token_from_store_objectSpread({}, enterCtx, {
+          authToken: storedToken
+        });
       }
 
-      return Promise.resolve().then(tokenStore.getToken).then(function (storedToken) {
-        if (storedToken) {
-          return fetch_auth_token_from_store_objectSpread({}, enterCtx, {
-            authToken: storedToken
-          });
-        }
+      return enterCtx;
+    });
+  }
 
-        return enterCtx;
-      });
-    }
-  }]);
-
-  return FetchAuthTokenFromStore;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/add_client_id_to_params.js
 function add_client_id_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -11543,12 +11293,6 @@ function add_client_id_to_params_objectWithoutProperties(source, excluded) { if 
 
 function add_client_id_to_params_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-function add_client_id_to_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_client_id_to_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_client_id_to_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_client_id_to_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_client_id_to_params_defineProperties(Constructor, staticProps); return Constructor; }
-
 /**
    Read `clientId` from `ctx` and add it to `params`
 
@@ -11556,33 +11300,21 @@ function add_client_id_to_params_createClass(Constructor, protoProps, staticProp
 
    - add `params.clientId`
  */
-var AddClientIdToParams =
-/*#__PURE__*/
-function () {
-  function AddClientIdToParams() {
-    add_client_id_to_params_classCallCheck(this, AddClientIdToParams);
+class AddClientIdToParams {
+  enter(_ref) {
+    let clientId = _ref.clientId,
+        params = _ref.params,
+        ctx = add_client_id_to_params_objectWithoutProperties(_ref, ["clientId", "params"]);
+
+    return add_client_id_to_params_objectSpread({}, ctx, {
+      clientId,
+      params: add_client_id_to_params_objectSpread({}, params, {
+        client_id: clientId
+      })
+    });
   }
 
-  add_client_id_to_params_createClass(AddClientIdToParams, [{
-    key: "enter",
-    value: function enter(_ref) {
-      var clientId = _ref.clientId,
-          params = _ref.params,
-          ctx = add_client_id_to_params_objectWithoutProperties(_ref, ["clientId", "params"]);
-
-      return add_client_id_to_params_objectSpread({}, ctx, {
-        clientId: clientId,
-        params: add_client_id_to_params_objectSpread({}, params, {
-          client_id: clientId
-        })
-      });
-    }
-  }]);
-
-  return AddClientIdToParams;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/add_client_secret_to_params.js
 function add_client_secret_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -11594,12 +11326,6 @@ function add_client_secret_to_params_objectWithoutProperties(source, excluded) {
 
 function add_client_secret_to_params_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-function add_client_secret_to_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_client_secret_to_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_client_secret_to_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_client_secret_to_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_client_secret_to_params_defineProperties(Constructor, staticProps); return Constructor; }
-
 /**
    Read `clientSecret` from `ctx` and add it to `params`
 
@@ -11607,49 +11333,31 @@ function add_client_secret_to_params_createClass(Constructor, protoProps, static
 
    - add `params.client_secret`
  */
-var AddClientSecretToParams =
-/*#__PURE__*/
-function () {
-  function AddClientSecretToParams() {
-    add_client_secret_to_params_classCallCheck(this, AddClientSecretToParams);
+class AddClientSecretToParams {
+  enter(_ref) {
+    let clientSecret = _ref.clientSecret,
+        params = _ref.params,
+        ctx = add_client_secret_to_params_objectWithoutProperties(_ref, ["clientSecret", "params"]);
+
+    if (!clientSecret) {
+      throw new Error('SDK instance is missing the clientSecret config.');
+    }
+
+    return add_client_secret_to_params_objectSpread({}, ctx, {
+      clientSecret,
+      params: add_client_secret_to_params_objectSpread({}, params, {
+        client_secret: clientSecret
+      })
+    });
   }
 
-  add_client_secret_to_params_createClass(AddClientSecretToParams, [{
-    key: "enter",
-    value: function enter(_ref) {
-      var clientSecret = _ref.clientSecret,
-          params = _ref.params,
-          ctx = add_client_secret_to_params_objectWithoutProperties(_ref, ["clientSecret", "params"]);
-
-      if (!clientSecret) {
-        throw new Error('SDK instance is missing the clientSecret config.');
-      }
-
-      return add_client_secret_to_params_objectSpread({}, ctx, {
-        clientSecret: clientSecret,
-        params: add_client_secret_to_params_objectSpread({}, params, {
-          client_secret: clientSecret
-        })
-      });
-    }
-  }]);
-
-  return AddClientSecretToParams;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/add_subject_token_to_params.js
 function add_subject_token_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function add_subject_token_to_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_subject_token_to_params_ownKeys(source, true).forEach(function (key) { add_subject_token_to_params_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_subject_token_to_params_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function add_subject_token_to_params_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function add_subject_token_to_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_subject_token_to_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_subject_token_to_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_subject_token_to_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_subject_token_to_params_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Read `authToken.access_token` from `ctx` and adds it as
@@ -11660,35 +11368,76 @@ function add_subject_token_to_params_createClass(Constructor, protoProps, static
    - add `params.subject_token`
 
  */
-var AddSubjectTokenToParams =
-/*#__PURE__*/
-function () {
-  function AddSubjectTokenToParams() {
-    add_subject_token_to_params_classCallCheck(this, AddSubjectTokenToParams);
-  }
-
-  add_subject_token_to_params_createClass(AddSubjectTokenToParams, [{
-    key: "enter",
-    value: function enter(ctx) {
-      var authToken = ctx.authToken,
+class AddSubjectTokenToParams {
+  enter(ctx) {
+    const authToken = ctx.authToken,
           params = ctx.params;
 
-      if (authToken && authToken.access_token) {
-        return add_subject_token_to_params_objectSpread({}, ctx, {
-          params: add_subject_token_to_params_objectSpread({}, params, {
-            subject_token: authToken.access_token
-          })
-        });
-      }
-
-      return ctx;
+    if (authToken && authToken.access_token) {
+      return add_subject_token_to_params_objectSpread({}, ctx, {
+        params: add_subject_token_to_params_objectSpread({}, params, {
+          subject_token: authToken.access_token
+        })
+      });
     }
-  }]);
 
-  return AddSubjectTokenToParams;
-}();
+    return ctx;
+  }
 
+}
+// CONCATENATED MODULE: ./src/interceptors/add_is_logged_in_as_to_context_from_params.js
+function add_is_logged_in_as_to_context_from_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
+function add_is_logged_in_as_to_context_from_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_is_logged_in_as_to_context_from_params_ownKeys(source, true).forEach(function (key) { add_is_logged_in_as_to_context_from_params_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_is_logged_in_as_to_context_from_params_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function add_is_logged_in_as_to_context_from_params_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+   See if `code` is passed as a parameter and if yes, store isLoggedInAs true to
+   context.
+
+   Changes to `ctx`:
+
+   - add `isLoggedInAs`
+
+   Deprecated: login as user should use loginAs method.
+ */
+class AddIsLoggedInAsToContextFromParams {
+  enter(ctx) {
+    const code = ctx.params.code;
+
+    if (code) {
+      return add_is_logged_in_as_to_context_from_params_objectSpread({}, ctx, {
+        isLoggedInAs: !!code
+      });
+    }
+
+    return ctx;
+  }
+
+}
+// CONCATENATED MODULE: ./src/interceptors/add_is_logged_in_as_to_context.js
+function add_is_logged_in_as_to_context_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function add_is_logged_in_as_to_context_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_is_logged_in_as_to_context_ownKeys(source, true).forEach(function (key) { add_is_logged_in_as_to_context_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_is_logged_in_as_to_context_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function add_is_logged_in_as_to_context_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+   Add isLoggedInAs true to context.
+
+   Changes to `ctx`:
+
+   - add `isLoggedInAs`
+ */
+class AddIsLoggedInAsToContext {
+  enter(ctx) {
+    return add_is_logged_in_as_to_context_objectSpread({}, ctx, {
+      isLoggedInAs: true
+    });
+  }
+
+}
 // CONCATENATED MODULE: ./src/interceptors/add_grant_type_to_params.js
 function add_grant_type_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -11700,12 +11449,6 @@ function add_grant_type_to_params_objectWithoutProperties(source, excluded) { if
 
 function add_grant_type_to_params_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-function add_grant_type_to_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_grant_type_to_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_grant_type_to_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_grant_type_to_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_grant_type_to_params_defineProperties(Constructor, staticProps); return Constructor; }
-
 /**
    See what credentials (`username`, `password`, and `authorizationCode`) are
    passed in params and set the grant_type based on those.
@@ -11714,49 +11457,70 @@ function add_grant_type_to_params_createClass(Constructor, protoProps, staticPro
 
    - add `params.grant_type`
  */
-var AddGrantTypeToParams =
-/*#__PURE__*/
-function () {
-  function AddGrantTypeToParams() {
-    add_grant_type_to_params_classCallCheck(this, AddGrantTypeToParams);
-  }
 
-  add_grant_type_to_params_createClass(AddGrantTypeToParams, [{
-    key: "enter",
-    value: function enter(_ref) {
-      var params = _ref.params,
-          ctx = add_grant_type_to_params_objectWithoutProperties(_ref, ["params"]);
+class add_grant_type_to_params_AddGrantTypeToParams {
+  enter(_ref) {
+    let params = _ref.params,
+        ctx = add_grant_type_to_params_objectWithoutProperties(_ref, ["params"]);
 
-      var username = params.username,
+    const username = params.username,
           password = params.password,
           code = params.code;
 
-      if (username && password) {
-        return add_grant_type_to_params_objectSpread({}, ctx, {
-          params: add_grant_type_to_params_objectSpread({
-            grant_type: 'password'
-          }, params)
-        });
-      }
-
-      if (code) {
-        return add_grant_type_to_params_objectSpread({}, ctx, {
-          params: add_grant_type_to_params_objectSpread({
-            grant_type: 'authorization_code'
-          }, params)
-        });
-      }
-
+    if (username && password) {
       return add_grant_type_to_params_objectSpread({}, ctx, {
-        params: add_grant_type_to_params_objectSpread({}, params)
+        params: add_grant_type_to_params_objectSpread({
+          grant_type: 'password'
+        }, params)
       });
     }
-  }]);
 
-  return AddGrantTypeToParams;
-}();
+    if (code) {
+      deprecated('Using sdk.login to login as a user is deprecated. Use sdk.loginAs instead.', ctx.disableDeprecationWarnings);
+      return add_grant_type_to_params_objectSpread({}, ctx, {
+        params: add_grant_type_to_params_objectSpread({
+          grant_type: 'authorization_code'
+        }, params)
+      });
+    }
 
+    return add_grant_type_to_params_objectSpread({}, ctx, {
+      params: add_grant_type_to_params_objectSpread({}, params)
+    });
+  }
 
+}
+// CONCATENATED MODULE: ./src/interceptors/add_authorization_code_grant_type_to_params.js
+function add_authorization_code_grant_type_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function add_authorization_code_grant_type_to_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_authorization_code_grant_type_to_params_ownKeys(source, true).forEach(function (key) { add_authorization_code_grant_type_to_params_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_authorization_code_grant_type_to_params_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function add_authorization_code_grant_type_to_params_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function add_authorization_code_grant_type_to_params_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = add_authorization_code_grant_type_to_params_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function add_authorization_code_grant_type_to_params_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+/**
+   Add `authorization_code` value to `params.grantType`
+
+   Changes to `ctx`:
+
+   - Add `authorization_code` value to `params.grantType`
+ */
+class AddAuthorizationCodeGrantTypeToParams {
+  enter(_ref) {
+    let params = _ref.params,
+        ctx = add_authorization_code_grant_type_to_params_objectWithoutProperties(_ref, ["params"]);
+
+    return add_authorization_code_grant_type_to_params_objectSpread({}, ctx, {
+      params: add_authorization_code_grant_type_to_params_objectSpread({
+        grant_type: 'authorization_code'
+      }, params)
+    });
+  }
+
+}
 // CONCATENATED MODULE: ./src/interceptors/add_token_exchange_grant_type_to_params.js
 function add_token_exchange_grant_type_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -11768,12 +11532,6 @@ function add_token_exchange_grant_type_to_params_objectWithoutProperties(source,
 
 function add_token_exchange_grant_type_to_params_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-function add_token_exchange_grant_type_to_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_token_exchange_grant_type_to_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_token_exchange_grant_type_to_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_token_exchange_grant_type_to_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_token_exchange_grant_type_to_params_defineProperties(Constructor, staticProps); return Constructor; }
-
 /**
    Add "token_exchange" as the `grant_type` in `params`
 
@@ -11781,31 +11539,19 @@ function add_token_exchange_grant_type_to_params_createClass(Constructor, protoP
 
    - add `params.grant_type`
  */
-var AddTokenExchangeGrantTypeToParams =
-/*#__PURE__*/
-function () {
-  function AddTokenExchangeGrantTypeToParams() {
-    add_token_exchange_grant_type_to_params_classCallCheck(this, AddTokenExchangeGrantTypeToParams);
+class AddTokenExchangeGrantTypeToParams {
+  enter(_ref) {
+    let params = _ref.params,
+        ctx = add_token_exchange_grant_type_to_params_objectWithoutProperties(_ref, ["params"]);
+
+    return add_token_exchange_grant_type_to_params_objectSpread({}, ctx, {
+      params: add_token_exchange_grant_type_to_params_objectSpread({}, params, {
+        grant_type: 'token_exchange'
+      })
+    });
   }
 
-  add_token_exchange_grant_type_to_params_createClass(AddTokenExchangeGrantTypeToParams, [{
-    key: "enter",
-    value: function enter(_ref) {
-      var params = _ref.params,
-          ctx = add_token_exchange_grant_type_to_params_objectWithoutProperties(_ref, ["params"]);
-
-      return add_token_exchange_grant_type_to_params_objectSpread({}, ctx, {
-        params: add_token_exchange_grant_type_to_params_objectSpread({}, params, {
-          grant_type: 'token_exchange'
-        })
-      });
-    }
-  }]);
-
-  return AddTokenExchangeGrantTypeToParams;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/add_scope_to_params.js
 function add_scope_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -11817,12 +11563,6 @@ function add_scope_to_params_objectWithoutProperties(source, excluded) { if (sou
 
 function add_scope_to_params_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-function add_scope_to_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_scope_to_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_scope_to_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_scope_to_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_scope_to_params_defineProperties(Constructor, staticProps); return Constructor; }
-
 /**
    Set the scope for a token request based on the params.
 
@@ -11830,52 +11570,34 @@ function add_scope_to_params_createClass(Constructor, protoProps, staticProps) {
 
    - add `params.scope`
  */
-var AddScopeToParams =
-/*#__PURE__*/
-function () {
-  function AddScopeToParams() {
-    add_scope_to_params_classCallCheck(this, AddScopeToParams);
-  }
+class AddScopeToParams {
+  enter(_ref) {
+    let params = _ref.params,
+        ctx = add_scope_to_params_objectWithoutProperties(_ref, ["params"]);
 
-  add_scope_to_params_createClass(AddScopeToParams, [{
-    key: "enter",
-    value: function enter(_ref) {
-      var params = _ref.params,
-          ctx = add_scope_to_params_objectWithoutProperties(_ref, ["params"]);
-
-      var username = params.username,
+    const username = params.username,
           password = params.password;
 
-      if (username && password) {
-        return add_scope_to_params_objectSpread({}, ctx, {
-          params: add_scope_to_params_objectSpread({
-            scope: 'user'
-          }, params)
-        });
-      }
-
+    if (username && password) {
       return add_scope_to_params_objectSpread({}, ctx, {
-        params: add_scope_to_params_objectSpread({}, params)
+        params: add_scope_to_params_objectSpread({
+          scope: 'user'
+        }, params)
       });
     }
-  }]);
 
-  return AddScopeToParams;
-}();
+    return add_scope_to_params_objectSpread({}, ctx, {
+      params: add_scope_to_params_objectSpread({}, params)
+    });
+  }
 
-
+}
 // CONCATENATED MODULE: ./src/interceptors/auth_info.js
 function auth_info_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function auth_info_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { auth_info_ownKeys(source, true).forEach(function (key) { auth_info_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { auth_info_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function auth_info_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function auth_info_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function auth_info_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function auth_info_createClass(Constructor, protoProps, staticProps) { if (protoProps) auth_info_defineProperties(Constructor.prototype, protoProps); if (staticProps) auth_info_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Reads current authentication token from the tokenStore and returns
@@ -11884,76 +11606,65 @@ function auth_info_createClass(Constructor, protoProps, staticProps) { if (proto
    - scopes: list of scopes associated with the access token in store
    - isAnonymous: boolean value indicating if the access token only grants
      access to publicly read data from API
-
+   - isLoggedInAs: boolean value indicating that the operator has logged in as
+     a marketplace user
 
    Changes to `ctx`:
 
    - add `res`
 
 */
-var AuthInfo =
-/*#__PURE__*/
-function () {
-  function AuthInfo() {
-    auth_info_classCallCheck(this, AuthInfo);
-  }
+class AuthInfo {
+  enter(ctx) {
+    const tokenStore = ctx.tokenStore;
 
-  auth_info_createClass(AuthInfo, [{
-    key: "enter",
-    value: function enter(ctx) {
-      var tokenStore = ctx.tokenStore;
+    if (tokenStore) {
+      return Promise.resolve().then(tokenStore.getToken).then(storedToken => {
+        if (storedToken) {
+          const tokenScope = storedToken.scope;
+          const isLoggedInAs = storedToken.isLoggedInAs;
 
-      if (tokenStore) {
-        return Promise.resolve().then(tokenStore.getToken).then(function (storedToken) {
-          if (storedToken) {
-            var tokenScope = storedToken.scope;
+          if (tokenScope) {
+            const scopes = tokenScope.split(' ');
+            const isAnonymous = tokenScope === 'public-read'; // Deprecated attribute, maintained here for client implementations
+            // that rely on this attribute
 
-            if (tokenScope) {
-              var scopes = tokenScope.split(' ');
-
-              var _isAnonymous = tokenScope === 'public-read'; // Deprecated attribute, maintained here for client implementations
-              // that rely on this attribute
-
-
-              var _grantType = _isAnonymous ? 'client_credentials' : 'refresh_token';
-
-              return auth_info_objectSpread({}, ctx, {
-                res: {
-                  scopes: scopes,
-                  isAnonymous: _isAnonymous,
-                  grantType: _grantType
-                }
-              });
-            } // Support old tokens that are stored in the client's token store
-            // and possibly do not have the scope attribute
-
-
-            var isAnonymous = !storedToken.refresh_token;
-            var grantType = isAnonymous ? 'client_credentials' : 'refresh_token';
+            const grantType = isAnonymous ? 'client_credentials' : 'refresh_token';
             return auth_info_objectSpread({}, ctx, {
               res: {
-                isAnonymous: isAnonymous,
-                grantType: grantType
+                scopes,
+                isAnonymous,
+                grantType,
+                isLoggedInAs: !!isLoggedInAs
               }
             });
-          }
+          } // Support old tokens that are stored in the client's token store
+          // and possibly do not have the scope attribute
 
+
+          const isAnonymous = !storedToken.refresh_token;
+          const grantType = isAnonymous ? 'client_credentials' : 'refresh_token';
           return auth_info_objectSpread({}, ctx, {
-            res: {}
+            res: {
+              isAnonymous,
+              grantType,
+              isLoggedInAs: !!isLoggedInAs
+            }
           });
-        });
-      }
+        }
 
-      return auth_info_objectSpread({}, ctx, {
-        res: {}
+        return auth_info_objectSpread({}, ctx, {
+          res: {}
+        });
       });
     }
-  }]);
 
-  return AuthInfo;
-}();
+    return auth_info_objectSpread({}, ctx, {
+      res: {}
+    });
+  }
 
-
+}
 // CONCATENATED MODULE: ./src/interceptors/multipart_request.js
 
 
@@ -11968,12 +11679,6 @@ function multipart_request_objectWithoutProperties(source, excluded) { if (sourc
 
 function multipart_request_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-function multipart_request_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function multipart_request_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function multipart_request_createClass(Constructor, protoProps, staticProps) { if (protoProps) multipart_request_defineProperties(Constructor.prototype, protoProps); if (staticProps) multipart_request_defineProperties(Constructor, staticProps); return Constructor; }
-
 /**
    Takes `params` from `ctx` and converts to `FormData`
 
@@ -11981,47 +11686,35 @@ function multipart_request_createClass(Constructor, protoProps, staticProps) { i
 
    - Modify `ctx.params`
  */
-var multipart_request_MultipartRequest =
-/*#__PURE__*/
-function () {
-  function MultipartRequest() {
-    multipart_request_classCallCheck(this, MultipartRequest);
-  }
+class multipart_request_MultipartRequest {
+  enter(_ref) {
+    let params = _ref.params,
+        ctx = multipart_request_objectWithoutProperties(_ref, ["params"]);
 
-  multipart_request_createClass(MultipartRequest, [{
-    key: "enter",
-    value: function enter(_ref) {
-      var params = _ref.params,
-          ctx = multipart_request_objectWithoutProperties(_ref, ["params"]);
-
-      if (isPlainObject_default()(params)) {
-        /* eslint-disable no-undef */
-        if (typeof FormData === 'undefined') {
-          throw new Error("Don't know how to create multipart request from Object, when the FormData is undefined");
-        }
-
-        var formDataObj = reduce_default()(params, function (fd, val, key) {
-          fd.append(key, val);
-          return fd;
-        }, new FormData());
-        /* eslint-enable no-undef */
-
-
-        return multipart_request_objectSpread({
-          params: formDataObj
-        }, ctx);
+    if (isPlainObject_default()(params)) {
+      /* eslint-disable no-undef */
+      if (typeof FormData === 'undefined') {
+        throw new Error("Don't know how to create multipart request from Object, when the FormData is undefined");
       }
 
+      const formDataObj = reduce_default()(params, (fd, val, key) => {
+        fd.append(key, val);
+        return fd;
+      }, new FormData());
+      /* eslint-enable no-undef */
+
+
       return multipart_request_objectSpread({
-        params: params
+        params: formDataObj
       }, ctx);
     }
-  }]);
 
-  return MultipartRequest;
-}();
+    return multipart_request_objectSpread({
+      params
+    }, ctx);
+  }
 
-
+}
 // EXTERNAL MODULE: ./node_modules/lodash/isObject.js
 var isObject = __webpack_require__(7);
 var isObject_default = /*#__PURE__*/__webpack_require__.n(isObject);
@@ -12055,29 +11748,11 @@ var transit_default = /*#__PURE__*/__webpack_require__.n(transit);
 
 
 
-function serializer_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { serializer_typeof = function _typeof(obj) { return typeof obj; }; } else { serializer_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return serializer_typeof(obj); }
-
-function serializer_toConsumableArray(arr) { return serializer_arrayWithoutHoles(arr) || serializer_iterableToArray(arr) || serializer_nonIterableSpread(); }
-
-function serializer_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function serializer_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function serializer_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 function serializer_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function serializer_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { serializer_ownKeys(source, true).forEach(function (key) { serializer_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { serializer_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function serializer_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function serializer_slicedToArray(arr, i) { return serializer_arrayWithHoles(arr) || serializer_iterableToArrayLimit(arr, i) || serializer_nonIterableRest(); }
-
-function serializer_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
-
-function serializer_iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function serializer_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 /* eslint no-underscore-dangle: ["error", { "allow": ["_sdkType"] }] */
 
@@ -12113,19 +11788,17 @@ function serializer_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   ```
  */
 
-var serializer_composeReader = function composeReader(sdkTypeReader, appTypeReader) {
-  var sdkTypeReaderFn = sdkTypeReader.reader;
-  var appTypeReaderFn = appTypeReader ? appTypeReader.reader : identity_default.a;
-  return function (rep) {
-    return appTypeReaderFn(sdkTypeReaderFn(rep));
-  };
+const composeReader = (sdkTypeReader, appTypeReader) => {
+  const sdkTypeReaderFn = sdkTypeReader.reader;
+  const appTypeReaderFn = appTypeReader ? appTypeReader.reader : identity_default.a;
+  return rep => appTypeReaderFn(sdkTypeReaderFn(rep));
 };
 /**
    Type map from Transit tags to type classes
  */
 
 
-var typeMap = {
+const typeMap = {
   u: UUID,
   geo: LatLng,
   mn: Money,
@@ -12135,88 +11808,54 @@ var typeMap = {
    List of SDK type readers
  */
 
-var sdkTypeReaders = [{
+const sdkTypeReaders = [{
   sdkType: UUID,
-  reader: function reader(rep) {
-    return new UUID(rep);
-  }
+  reader: rep => new UUID(rep)
 }, {
   sdkType: LatLng,
-  reader: function reader(_ref) {
-    var _ref2 = serializer_slicedToArray(_ref, 2),
-        lat = _ref2[0],
-        lng = _ref2[1];
-
-    return new LatLng(lat, lng);
-  }
+  reader: ([lat, lng]) => new LatLng(lat, lng)
 }, {
   sdkType: Money,
-  reader: function reader(_ref3) {
-    var _ref4 = serializer_slicedToArray(_ref3, 2),
-        amount = _ref4[0],
-        currency = _ref4[1];
-
-    return new Money(amount, currency);
-  }
+  reader: ([amount, currency]) => new Money(amount, currency)
 }, {
   sdkType: BigDecimal,
-  reader: function reader(rep) {
-    return new BigDecimal(rep);
-  }
+  reader: rep => new BigDecimal(rep)
 }];
 /**
    List of SDK type writers
  */
 
-var sdkTypeWriters = [{
+const sdkTypeWriters = [{
   sdkType: UUID,
-  writer: function writer(v) {
-    return v.uuid;
-  }
+  writer: v => v.uuid
 }, {
   sdkType: LatLng,
-  writer: function writer(v) {
-    return [v.lat, v.lng];
-  }
+  writer: v => [v.lat, v.lng]
 }, {
   sdkType: Money,
-  writer: function writer(v) {
-    return [v.amount, v.currency];
-  }
+  writer: v => [v.amount, v.currency]
 }, {
   sdkType: BigDecimal,
-  writer: function writer(v) {
-    return v.value;
-  }
+  writer: v => v.value
 }];
 /**
    Take `appTypeReaders` param and construct a list of read handlers
    from `appTypeReaders`, `sdkTypeReaders` and `typeMap`.
 */
 
-var serializer_constructReadHandlers = function constructReadHandlers(appTypeReaders) {
-  return fromPairs_default()(map_default()(typeMap, function (typeClass, tag) {
-    var sdkTypeReader = find_default()(sdkTypeReaders, function (r) {
-      return r.sdkType === typeClass;
-    });
+const constructReadHandlers = appTypeReaders => fromPairs_default()(map_default()(typeMap, (typeClass, tag) => {
+  const sdkTypeReader = find_default()(sdkTypeReaders, r => r.sdkType === typeClass);
 
-    var appTypeReader = find_default()(appTypeReaders, function (r) {
-      return r.sdkType === typeClass;
-    });
+  const appTypeReader = find_default()(appTypeReaders, r => r.sdkType === typeClass);
 
-    return [tag, serializer_composeReader(sdkTypeReader, appTypeReader)];
-  }));
-};
+  return [tag, composeReader(sdkTypeReader, appTypeReader)];
+}));
 
-var writeHandlers = flatten_default()(map_default()(typeMap, function (typeClass, _tag) {
-  var sdkTypeWriter = find_default()(sdkTypeWriters, function (w) {
-    return w.sdkType === typeClass;
-  });
+const writeHandlers = flatten_default()(map_default()(typeMap, (typeClass, _tag) => {
+  const sdkTypeWriter = find_default()(sdkTypeWriters, w => w.sdkType === typeClass);
 
-  var handler = transit_default.a.makeWriteHandler({
-    tag: function tag() {
-      return _tag;
-    },
+  const handler = transit_default.a.makeWriteHandler({
+    tag: () => _tag,
     rep: sdkTypeWriter.writer
   });
   return [typeClass, handler];
@@ -12226,20 +11865,17 @@ var writeHandlers = flatten_default()(map_default()(typeMap, function (typeClass
  */
 
 
-var mapBuilder = {
-  init: function init() {
-    return {};
-  },
-  add: function add(ret, key, val) {
+const mapBuilder = {
+  init: () => ({}),
+  add: (ret, key, val) => {
     /* eslint-disable no-param-reassign */
     ret[key] = val;
     return ret;
   },
   finalize: identity_default.a
 };
-var serializer_reader = function reader() {
-  var appTypeReaders = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var handlers = serializer_constructReadHandlers(appTypeReaders);
+const serializer_reader = (appTypeReaders = []) => {
+  const handlers = constructReadHandlers(appTypeReaders);
   return transit_default.a.reader('json', {
     handlers: serializer_objectSpread({}, handlers, {
       // Convert keywords to plain strings.
@@ -12247,46 +11883,34 @@ var serializer_reader = function reader() {
       // string was originally a keyword. However, the API
       // can coerse strings to keywords, so it's ok to send strings
       // to the API when keywords is expected.
-      ':': function _(rep) {
-        return rep;
-      },
+      ':': rep => rep,
       // Convert set to an array
       // The conversion loses the information that the
       // array was originally a set. However, the API
       // can coerse arrays to sets, so it's ok to send arrays
       // to the API when set is expected.
-      set: function set(rep) {
-        return rep;
-      },
+      set: rep => rep,
       // Convert list to an array
-      list: function list(rep) {
-        return rep;
-      }
+      list: rep => rep
     }),
-    mapBuilder: mapBuilder
+    mapBuilder
   });
 };
-var MapHandler = [Object, transit_default.a.makeWriteHandler({
-  tag: function tag() {
-    return 'map';
-  },
-  rep: function rep(v) {
-    return reduce_default()(v, function (map, val, key) {
-      map.set(transit_default.a.keyword(key), val);
-      return map;
-    }, transit_default.a.map());
-  }
+const MapHandler = [Object, transit_default.a.makeWriteHandler({
+  tag: () => 'map',
+  rep: v => reduce_default()(v, (map, val, key) => {
+    map.set(transit_default.a.keyword(key), val);
+    return map;
+  }, transit_default.a.map())
 })];
-var serializer_writer = function writer() {
-  var appTypeWriters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var verbose = opts.verbose;
-  var transitType = verbose ? 'json-verbose' : 'json';
+const serializer_writer = (appTypeWriters = [], opts = {}) => {
+  const verbose = opts.verbose;
+  const transitType = verbose ? 'json-verbose' : 'json';
   return transit_default.a.writer(transitType, {
-    handlers: transit_default.a.map([].concat(serializer_toConsumableArray(writeHandlers), MapHandler)),
+    handlers: transit_default.a.map([...writeHandlers, ...MapHandler]),
     // Use transform to transform app types to sdk types before sdk
     // types are encoded by transit.
-    transform: function transform(v) {
+    transform: v => {
       // Check _.isObject for two reasons:
       // 1. _.isObject makes sure the value is not null, so the null check can be omitted in the canHandle implementation
       // 2. Perf. No need to run canHandle for primitives
@@ -12295,12 +11919,9 @@ var serializer_writer = function writer() {
           return toType(v);
         }
 
-        var appTypeWriter = find_default()(appTypeWriters, function (w) {
-          return (// Check if the value is an application type instance
-            w.appType && v instanceof w.appType || // ...or if the canHandle returns true.
-            w.canHandle && w.canHandle(v)
-          );
-        });
+        const appTypeWriter = find_default()(appTypeWriters, w => // Check if the value is an application type instance
+        w.appType && v instanceof w.appType || // ...or if the canHandle returns true.
+        w.canHandle && w.canHandle(v));
 
         if (appTypeWriter) {
           return appTypeWriter.writer(v);
@@ -12311,12 +11932,12 @@ var serializer_writer = function writer() {
     },
     // This is only needed for the REPL
     // TODO This could be stripped out for production build
-    handlerForForeign: function handlerForForeign(x, handlers) {
+    handlerForForeign: (x, handlers) => {
       if (Array.isArray(x)) {
         return handlers.get('array');
       }
 
-      if (serializer_typeof(x) === 'object') {
+      if (typeof x === 'object') {
         return handlers.get('map');
       }
 
@@ -12324,17 +11945,14 @@ var serializer_writer = function writer() {
     }
   });
 };
-var createTransitConverters = function createTransitConverters() {
-  var typeHandlers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var opts = arguments.length > 1 ? arguments[1] : undefined;
-
-  var _typeHandlers$reduce = typeHandlers.reduce(function (memo, handler) {
-    var r = {
+const createTransitConverters = (typeHandlers = [], opts) => {
+  const _typeHandlers$reduce = typeHandlers.reduce((memo, handler) => {
+    const r = {
       sdkType: handler.sdkType || // DEPRECATED Use handler.sdkType instead of handler.type
       handler.type,
       reader: handler.reader
     };
-    var w = {
+    const w = {
       sdkType: handler.sdkType || // DEPRECATED Use handler.sdkType instead of handler.type
       handler.type,
       appType: handler.appType || // DEPRECATED Use handler.appType instead of handler.customType
@@ -12349,29 +11967,27 @@ var createTransitConverters = function createTransitConverters() {
     readers: [],
     writers: []
   }),
-      readers = _typeHandlers$reduce.readers,
-      writers = _typeHandlers$reduce.writers;
+        readers = _typeHandlers$reduce.readers,
+        writers = _typeHandlers$reduce.writers;
 
   return {
     reader: serializer_reader(readers),
     writer: serializer_writer(writers, opts)
   };
 };
-var read = function read(str) {
-  var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var _opts$typeHandlers = opts.typeHandlers,
-      typeHandlers = _opts$typeHandlers === void 0 ? [] : _opts$typeHandlers;
-  var converters = createTransitConverters(typeHandlers);
+const read = (str, opts = {}) => {
+  const _opts$typeHandlers = opts.typeHandlers,
+        typeHandlers = _opts$typeHandlers === void 0 ? [] : _opts$typeHandlers;
+  const converters = createTransitConverters(typeHandlers);
   return converters.reader.read(str);
 };
-var write = function write(data) {
-  var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var _opts$typeHandlers2 = opts.typeHandlers,
-      typeHandlers = _opts$typeHandlers2 === void 0 ? [] : _opts$typeHandlers2,
-      _opts$verbose = opts.verbose,
-      verbose = _opts$verbose === void 0 ? false : _opts$verbose;
-  var converters = createTransitConverters(typeHandlers, {
-    verbose: verbose
+const write = (data, opts = {}) => {
+  const _opts$typeHandlers2 = opts.typeHandlers,
+        typeHandlers = _opts$typeHandlers2 === void 0 ? [] : _opts$typeHandlers2,
+        _opts$verbose = opts.verbose,
+        verbose = _opts$verbose === void 0 ? false : _opts$verbose;
+  const converters = createTransitConverters(typeHandlers, {
+    verbose
   });
   return converters.writer.write(data);
 };
@@ -12386,58 +12002,40 @@ function transit_request_objectWithoutProperties(source, excluded) { if (source 
 
 function transit_request_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-function transit_request_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function transit_request_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function transit_request_createClass(Constructor, protoProps, staticProps) { if (protoProps) transit_request_defineProperties(Constructor.prototype, protoProps); if (staticProps) transit_request_defineProperties(Constructor, staticProps); return Constructor; }
-
 
 /**
    Transit encode the request
  */
 
-var transit_request_TransitRequest =
-/*#__PURE__*/
-function () {
-  function TransitRequest() {
-    transit_request_classCallCheck(this, TransitRequest);
-  }
-
-  transit_request_createClass(TransitRequest, [{
-    key: "enter",
-    value: function enter(ctx) {
-      var params = ctx.params,
+class transit_request_TransitRequest {
+  enter(ctx) {
+    const params = ctx.params,
           _ctx$headers = ctx.headers,
           headers = _ctx$headers === void 0 ? {} : _ctx$headers,
           typeHandlers = ctx.typeHandlers,
           transitVerbose = ctx.transitVerbose,
           restCtx = transit_request_objectWithoutProperties(ctx, ["params", "headers", "typeHandlers", "transitVerbose"]);
 
-      if (headers['Content-Type'] === 'application/transit+json') {
-        return ctx;
-      }
+    if (headers['Content-Type'] === 'application/transit+json') {
+      return ctx;
+    }
 
-      var _createTransitConvert = createTransitConverters(typeHandlers, {
-        verbose: transitVerbose
-      }),
+    const _createTransitConvert = createTransitConverters(typeHandlers, {
+      verbose: transitVerbose
+    }),
           writer = _createTransitConvert.writer;
 
-      return transit_request_objectSpread({
-        params: writer.write(params),
-        headers: transit_request_objectSpread({}, headers, {
-          'Content-Type': 'application/transit+json'
-        }),
-        typeHandlers: typeHandlers,
-        transitVerbose: transitVerbose
-      }, restCtx);
-    }
-  }]);
+    return transit_request_objectSpread({
+      params: writer.write(params),
+      headers: transit_request_objectSpread({}, headers, {
+        'Content-Type': 'application/transit+json'
+      }),
+      typeHandlers,
+      transitVerbose
+    }, restCtx);
+  }
 
-  return TransitRequest;
-}();
-
-
+}
 // EXTERNAL MODULE: ./node_modules/lodash/update.js
 var update = __webpack_require__(12);
 var update_default = /*#__PURE__*/__webpack_require__.n(update);
@@ -12451,17 +12049,11 @@ function transit_response_objectSpread(target) { for (var i = 1; i < arguments.l
 
 function transit_response_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function transit_response_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function transit_response_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function transit_response_createClass(Constructor, protoProps, staticProps) { if (protoProps) transit_response_defineProperties(Constructor.prototype, protoProps); if (staticProps) transit_response_defineProperties(Constructor, staticProps); return Constructor; }
 
 
-
-var isTransit = function isTransit(res) {
-  var headers = res.headers || {};
-  var contentType = headers['content-type'] || '';
+const isTransit = res => {
+  const headers = res.headers || {};
+  const contentType = headers['content-type'] || '';
   return contentType.startsWith('application/transit+json');
 };
 /**
@@ -12469,55 +12061,38 @@ var isTransit = function isTransit(res) {
  */
 
 
-var transit_response_TransitResponse =
-/*#__PURE__*/
-function () {
-  function TransitResponse() {
-    transit_response_classCallCheck(this, TransitResponse);
-  }
-
-  transit_response_createClass(TransitResponse, [{
-    key: "error",
-    value: function error(ctx) {
-      var _createTransitConvert = createTransitConverters(ctx.typeHandlers),
+class transit_response_TransitResponse {
+  error(ctx) {
+    const _createTransitConvert = createTransitConverters(ctx.typeHandlers),
           reader = _createTransitConvert.reader;
 
-      if (!ctx.error.response) {
-        return ctx;
-      }
-
-      if (!isTransit(ctx.error.response)) {
-        return ctx;
-      }
-
-      return update_default()(transit_response_objectSpread({}, ctx), 'error.response.data', function (data) {
-        return reader.read(data);
-      });
+    if (!ctx.error.response) {
+      return ctx;
     }
-  }, {
-    key: "leave",
-    value: function leave(ctx) {
-      var _createTransitConvert2 = createTransitConverters(ctx.typeHandlers),
+
+    if (!isTransit(ctx.error.response)) {
+      return ctx;
+    }
+
+    return update_default()(transit_response_objectSpread({}, ctx), 'error.response.data', data => reader.read(data));
+  }
+
+  leave(ctx) {
+    const _createTransitConvert2 = createTransitConverters(ctx.typeHandlers),
           reader = _createTransitConvert2.reader;
 
-      if (!ctx.res) {
-        return ctx;
-      }
-
-      if (!isTransit(ctx.res)) {
-        return ctx;
-      }
-
-      return update_default()(transit_response_objectSpread({}, ctx), 'res.data', function (data) {
-        return reader.read(data);
-      });
+    if (!ctx.res) {
+      return ctx;
     }
-  }]);
 
-  return TransitResponse;
-}();
+    if (!isTransit(ctx.res)) {
+      return ctx;
+    }
 
+    return update_default()(transit_response_objectSpread({}, ctx), 'res.data', data => reader.read(data));
+  }
 
+}
 // CONCATENATED MODULE: ./src/interceptors/format_http_response.js
 
 
@@ -12527,71 +12102,50 @@ function format_http_response_objectSpread(target) { for (var i = 1; i < argumen
 
 function format_http_response_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function format_http_response_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function format_http_response_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function format_http_response_createClass(Constructor, protoProps, staticProps) { if (protoProps) format_http_response_defineProperties(Constructor.prototype, protoProps); if (staticProps) format_http_response_defineProperties(Constructor, staticProps); return Constructor; }
-
 /**
  * Takes `ctx` with HTTP `res` in it and strips internals (e.g. headers, config) and
  * returns only those values that we want the SDK function to return.
  *
  * Should be only used with SDK functions that do HTTP request (e.g. not with AuthInfo)
  */
-var format_http_response_FormatHttpResponse =
-/*#__PURE__*/
-function () {
-  function FormatHttpResponse() {
-    format_http_response_classCallCheck(this, FormatHttpResponse);
+class format_http_response_FormatHttpResponse {
+  error(ctx) {
+    if (!ctx.error.response) {
+      return ctx;
+    }
+
+    return update_default()(format_http_response_objectSpread({}, ctx), 'error.response', ({
+      status,
+      statusText,
+      data
+    }) => ({
+      status,
+      statusText,
+      data
+    }));
   }
 
-  format_http_response_createClass(FormatHttpResponse, [{
-    key: "error",
-    value: function error(ctx) {
-      if (!ctx.error.response) {
-        return ctx;
-      }
-
-      return update_default()(format_http_response_objectSpread({}, ctx), 'error.response', function (_ref) {
-        var status = _ref.status,
-            statusText = _ref.statusText,
-            data = _ref.data;
-        return {
-          status: status,
-          statusText: statusText,
-          data: data
-        };
-      });
+  leave(ctx) {
+    if (!ctx.res) {
+      // Some cases, SDK tries to be smart and not call API endpoint if it's not
+      // needed. For example, `logout` does not call token revoke endpoint if
+      // the user is not logged in.
+      // In those cases, there's no `res` in `ctx`
+      return ctx;
     }
-  }, {
-    key: "leave",
-    value: function leave(ctx) {
-      if (!ctx.res) {
-        // Some cases, SDK tries to be smart and not call API endpoint if it's not
-        // needed. For example, `logout` does not call token revoke endpoint if
-        // the user is not logged in.
-        // In those cases, there's no `res` in `ctx`
-        return ctx;
-      }
 
-      return update_default()(format_http_response_objectSpread({}, ctx), 'res', function (_ref2) {
-        var status = _ref2.status,
-            statusText = _ref2.statusText,
-            data = _ref2.data;
-        return {
-          status: status,
-          statusText: statusText,
-          data: data
-        };
-      });
-    }
-  }]);
+    return update_default()(format_http_response_objectSpread({}, ctx), 'res', ({
+      status,
+      statusText,
+      data
+    }) => ({
+      status,
+      statusText,
+      data
+    }));
+  }
 
-  return FormatHttpResponse;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/rename_idp_params_for_auth.js
 function rename_idp_params_for_auth_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -12602,12 +12156,6 @@ function rename_idp_params_for_auth_defineProperty(obj, key, value) { if (key in
 function rename_idp_params_for_auth_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = rename_idp_params_for_auth_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
 function rename_idp_params_for_auth_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function rename_idp_params_for_auth_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function rename_idp_params_for_auth_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function rename_idp_params_for_auth_createClass(Constructor, protoProps, staticProps) { if (protoProps) rename_idp_params_for_auth_defineProperties(Constructor.prototype, protoProps); if (staticProps) rename_idp_params_for_auth_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Renames IdP related auth parameters to use snake case.
@@ -12620,69 +12168,57 @@ function rename_idp_params_for_auth_createClass(Constructor, protoProps, staticP
    - change `ctx.params.idpClientId` to `ctx.params.idp_client_id`
    - change `ctx.params.idpToken` to `ctx.params.idp_token`
 */
-var RenameIdpParamsForAuth =
-/*#__PURE__*/
-function () {
-  function RenameIdpParamsForAuth() {
-    rename_idp_params_for_auth_classCallCheck(this, RenameIdpParamsForAuth);
-  }
+class RenameIdpParamsForAuth {
+  enter(_ref) {
+    let params = _ref.params,
+        ctx = rename_idp_params_for_auth_objectWithoutProperties(_ref, ["params"]);
 
-  rename_idp_params_for_auth_createClass(RenameIdpParamsForAuth, [{
-    key: "enter",
-    value: function enter(_ref) {
-      var params = _ref.params,
-          ctx = rename_idp_params_for_auth_objectWithoutProperties(_ref, ["params"]);
-
-      var idpId = params.idpId,
+    const idpId = params.idpId,
           idpClientId = params.idpClientId,
           idpToken = params.idpToken,
           rest = rename_idp_params_for_auth_objectWithoutProperties(params, ["idpId", "idpClientId", "idpToken"]);
 
-      var idpIdObj = idpId ? {
-        idp_id: idpId
-      } : null;
-      var idpClientIdObj = idpClientId ? {
-        idp_client_id: idpClientId
-      } : null;
-      var idpTokenObj = idpToken ? {
-        idp_token: idpToken
-      } : null;
-      return rename_idp_params_for_auth_objectSpread({}, ctx, {
-        params: rename_idp_params_for_auth_objectSpread({}, idpIdObj, {}, idpClientIdObj, {}, idpTokenObj, {}, rest)
-      });
-    }
-  }]);
+    const idpIdObj = idpId ? {
+      idp_id: idpId
+    } : null;
+    const idpClientIdObj = idpClientId ? {
+      idp_client_id: idpClientId
+    } : null;
+    const idpTokenObj = idpToken ? {
+      idp_token: idpToken
+    } : null;
+    return rename_idp_params_for_auth_objectSpread({}, ctx, {
+      params: rename_idp_params_for_auth_objectSpread({}, idpIdObj, {}, idpClientIdObj, {}, idpTokenObj, {}, rest)
+    });
+  }
 
-  return RenameIdpParamsForAuth;
-}();
-
-
+}
 // EXTERNAL MODULE: external "axios"
 var external_axios_ = __webpack_require__(72);
 var external_axios_default = /*#__PURE__*/__webpack_require__.n(external_axios_);
 
 // CONCATENATED MODULE: ./src/version.js
 // Update this when updating package.json
-var sdkVersion = '1.20.1';
+const sdkVersion = '1.20.1';
 /* harmony default export */ var src_version = (sdkVersion);
 // CONCATENATED MODULE: ./src/runtime.js
 
 /* global window, process */
 
-var isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
-var nodeVersion = typeof process !== 'undefined' && typeof process.versions !== 'undefined' ? process.versions.node : ''; // User-Agent string for the SDK
+const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+const nodeVersion = typeof process !== 'undefined' && typeof process.versions !== 'undefined' ? process.versions.node : ''; // User-Agent string for the SDK
 // Only server-side, as modifying browser UA string causes
 // side effects.
 
-var userAgent = "sharetribe-flex-sdk-js/".concat(src_version);
+let userAgent = `sharetribe-flex-sdk-js/${src_version}`;
 
 if (isBrowser) {
   userAgent = null;
 } else if (!isBrowser && nodeVersion !== '') {
-  userAgent = "".concat(userAgent, " (node/").concat(nodeVersion, ")");
+  userAgent = `${userAgent} (node/${nodeVersion})`;
 }
 
-var sdkUserAgentString = userAgent;
+const sdkUserAgentString = userAgent;
 
 // CONCATENATED MODULE: ./src/interceptors/endpoint_request.js
 function endpoint_request_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = endpoint_request_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
@@ -12699,17 +12235,16 @@ function endpoint_request_defineProperty(obj, key, value) { if (key in obj) { Ob
  // GET requests: `params` includes query params. `queryParams` will be ignored
 // POST requests: `params` includes body params. `queryParams` includes URL query params
 
-var endpoint_request_doRequest = function doRequest(_ref) {
-  var _ref$params = _ref.params,
-      params = _ref$params === void 0 ? {} : _ref$params,
-      _ref$queryParams = _ref.queryParams,
-      queryParams = _ref$queryParams === void 0 ? {} : _ref$queryParams,
-      httpOpts = _ref.httpOpts;
-  var _httpOpts$method = httpOpts.method,
-      method = _httpOpts$method === void 0 ? 'get' : _httpOpts$method,
-      headers = httpOpts.headers;
-  var data = null;
-  var query = null;
+const doRequest = ({
+  params = {},
+  queryParams = {},
+  httpOpts
+}) => {
+  const _httpOpts$method = httpOpts.method,
+        method = _httpOpts$method === void 0 ? 'get' : _httpOpts$method,
+        headers = httpOpts.headers;
+  let data = null;
+  let query = null;
 
   if (method.toLowerCase() === 'post') {
     data = params;
@@ -12718,14 +12253,14 @@ var endpoint_request_doRequest = function doRequest(_ref) {
     query = params; // leave `data` null
   }
 
-  var headersWithUa = sdkUserAgentString ? endpoint_request_objectSpread({}, headers, {
+  const headersWithUa = sdkUserAgentString ? endpoint_request_objectSpread({}, headers, {
     'User-Agent': sdkUserAgentString
   }) : headers;
 
-  var req = endpoint_request_objectSpread({}, httpOpts, {
+  const req = endpoint_request_objectSpread({}, httpOpts, {
     headers: headersWithUa,
-    method: method,
-    data: data,
+    method,
+    data,
     params: query
   });
 
@@ -12737,25 +12272,25 @@ var endpoint_request_doRequest = function doRequest(_ref) {
 */
 
 
-var endpointRequest = function endpointRequest(_ref2) {
-  var method = _ref2.method,
-      url = _ref2.url,
-      urlTemplate = _ref2.urlTemplate,
-      httpOpts = _ref2.httpOpts;
-
-  var httpOptsHeaders = httpOpts.headers,
-      restHttpOpts = endpoint_request_objectWithoutProperties(httpOpts, ["headers"]);
+const endpointRequest = ({
+  method,
+  url,
+  urlTemplate,
+  httpOpts
+}) => {
+  const httpOptsHeaders = httpOpts.headers,
+        restHttpOpts = endpoint_request_objectWithoutProperties(httpOpts, ["headers"]);
 
   return {
-    enter: function enter(ctx) {
-      var params = ctx.params,
-          queryParams = ctx.queryParams,
-          pathParams = ctx.pathParams,
-          headers = ctx.headers,
-          perRequestOpts = ctx.perRequestOpts;
-      return endpoint_request_doRequest({
-        params: params,
-        queryParams: queryParams,
+    enter: ctx => {
+      const params = ctx.params,
+            queryParams = ctx.queryParams,
+            pathParams = ctx.pathParams,
+            headers = ctx.headers,
+            perRequestOpts = ctx.perRequestOpts;
+      return doRequest({
+        params,
+        queryParams,
         httpOpts: endpoint_request_objectSpread({}, perRequestOpts, {
           method: method || 'get',
           // Merge additional headers
@@ -12763,12 +12298,10 @@ var endpointRequest = function endpointRequest(_ref2) {
         }, restHttpOpts, {
           url: url || urlTemplate(pathParams)
         })
-      }).then(function (res) {
-        return endpoint_request_objectSpread({}, ctx, {
-          res: res
-        });
-      })["catch"](function (error) {
-        var errorCtx = endpoint_request_objectSpread({}, ctx, {
+      }).then(res => endpoint_request_objectSpread({}, ctx, {
+        res
+      })).catch(error => {
+        const errorCtx = endpoint_request_objectSpread({}, ctx, {
           res: error.response
         }); // eslint-disable-next-line no-param-reassign
 
@@ -12782,8 +12315,6 @@ var endpointRequest = function endpointRequest(_ref2) {
 
 /* harmony default export */ var endpoint_request = (endpointRequest);
 // CONCATENATED MODULE: ./src/detect.js
-function detect_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { detect_typeof = function _typeof(obj) { return typeof obj; }; } else { detect_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return detect_typeof(obj); }
-
 /**
 
    Collection of functions for detecting browser/server capabilities.
@@ -12793,9 +12324,7 @@ function detect_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.
 /* eslint-disable import/prefer-default-export */
 
 /* eslint-disable no-undef */
-var hasBrowserCookies = function hasBrowserCookies() {
-  return (typeof document === "undefined" ? "undefined" : detect_typeof(document)) === 'object' && typeof document.cookie === 'string';
-};
+const hasBrowserCookies = () => typeof document === 'object' && typeof document.cookie === 'string';
 // EXTERNAL MODULE: ./node_modules/js-cookie/src/js.cookie.js
 var js_cookie = __webpack_require__(29);
 var js_cookie_default = /*#__PURE__*/__webpack_require__.n(js_cookie);
@@ -12809,25 +12338,22 @@ function browser_cookie_store_defineProperty(obj, key, value) { if (key in obj) 
 
 
 
-var generateKey = function generateKey(cookieId, namespace) {
-  return "".concat(namespace, "-").concat(cookieId, "-token");
-};
+const generateKey = (cookieId, namespace) => `${namespace}-${cookieId}-token`;
 
-var browser_cookie_store_createStore = function createStore(_ref) {
-  var clientId = _ref.clientId,
-      cookieId = _ref.cookieId,
-      secure = _ref.secure;
-  var expiration = 30; // 30 days
+const createStore = ({
+  clientId,
+  cookieId,
+  secure
+}) => {
+  const expiration = 30; // 30 days
 
-  var namespace = 'st';
-  var key = generateKey(clientId || cookieId, namespace);
+  const namespace = 'st';
+  const key = generateKey(clientId || cookieId, namespace);
 
-  var getToken = function getToken() {
-    return js_cookie_default.a.getJSON(key);
-  };
+  const getToken = () => js_cookie_default.a.getJSON(key);
 
-  var setToken = function setToken(tokenData) {
-    var secureFlag = secure ? {
+  const setToken = tokenData => {
+    const secureFlag = secure ? {
       secure: true
     } : {};
     js_cookie_default.a.set(key, tokenData, browser_cookie_store_objectSpread({
@@ -12835,38 +12361,36 @@ var browser_cookie_store_createStore = function createStore(_ref) {
     }, secureFlag));
   };
 
-  var removeToken = function removeToken() {
+  const removeToken = () => {
     js_cookie_default.a.remove(key);
   };
 
   return {
-    getToken: getToken,
-    setToken: setToken,
-    removeToken: removeToken
+    getToken,
+    setToken,
+    removeToken
   };
 };
 
-/* harmony default export */ var browser_cookie_store = (browser_cookie_store_createStore);
+/* harmony default export */ var browser_cookie_store = (createStore);
 // CONCATENATED MODULE: ./src/memory_store.js
-var memory_store_createStore = function createStore() {
-  var memo;
+const memory_store_createStore = () => {
+  let memo;
 
-  var getToken = function getToken() {
-    return memo;
-  };
+  const getToken = () => memo;
 
-  var setToken = function setToken(tokenData) {
+  const setToken = tokenData => {
     memo = tokenData;
   };
 
-  var removeToken = function removeToken() {
+  const removeToken = () => {
     memo = null;
   };
 
   return {
-    getToken: getToken,
-    setToken: setToken,
-    removeToken: removeToken
+    getToken,
+    setToken,
+    removeToken
   };
 };
 
@@ -12877,11 +12401,11 @@ var memory_store_createStore = function createStore() {
 
 /* eslint-disable import/prefer-default-export */
 
-var token_store_createDefaultTokenStore = function createDefaultTokenStore(tokenStore, clientId, secure) {
+const createDefaultTokenStore = (tokenStore, clientId, secure) => {
   if (hasBrowserCookies()) {
     return browser_cookie_store({
-      clientId: clientId,
-      secure: secure
+      clientId,
+      secure
     });
   } // Token store was not given and we can't use browser cookie store.
   // Default to in-memory store.
@@ -12900,7 +12424,7 @@ function sdk_context_runner_defineProperty(obj, key, value) { if (key in obj) { 
 
 
 
-var formatError = function formatError(e) {
+const formatError = e => {
   /* eslint-disable no-param-reassign */
   if (e.response) {
     Object.assign(e, e.response);
@@ -12932,40 +12456,28 @@ var formatError = function formatError(e) {
   /* eslint-enable no-param-reassign */
 };
 
-var sdk_context_runner_createSdkFnContextRunner = function createSdkFnContextRunner(_ref) {
-  var params = _ref.params,
-      queryParams = _ref.queryParams,
-      pathParams = _ref.pathParams,
-      perRequestOpts = _ref.perRequestOpts,
-      ctx = _ref.ctx,
-      interceptors = _ref.interceptors;
-  return context_runner(compact_default()(interceptors))(sdk_context_runner_objectSpread({}, ctx, {
-    params: params,
-    queryParams: queryParams,
-    pathParams: pathParams,
-    perRequestOpts: perRequestOpts
-  })).then(function (_ref2) {
-    var res = _ref2.res;
-    return res;
-  })["catch"](formatError);
-};
+const createSdkFnContextRunner = ({
+  params,
+  queryParams,
+  pathParams,
+  perRequestOpts,
+  ctx,
+  interceptors
+}) => context_runner(compact_default()(interceptors))(sdk_context_runner_objectSpread({}, ctx, {
+  params,
+  queryParams,
+  pathParams,
+  perRequestOpts
+})).then(({
+  res
+}) => res).catch(formatError);
 
-/* harmony default export */ var sdk_context_runner = (sdk_context_runner_createSdkFnContextRunner);
+/* harmony default export */ var sdk_context_runner = (createSdkFnContextRunner);
 // CONCATENATED MODULE: ./src/sdk.js
 
 
 
 
-
-function sdk_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function sdk_toConsumableArray(arr) { return sdk_arrayWithoutHoles(arr) || sdk_iterableToArray(arr) || sdk_nonIterableSpread(); }
-
-function sdk_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function sdk_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function sdk_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 function sdk_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = sdk_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
@@ -13005,9 +12517,12 @@ function sdk_defineProperty(obj, key, value) { if (key in obj) { Object.definePr
 
 
 
+
+
+
 /* eslint-disable class-methods-use-this */
 
-var defaultSdkConfig = {
+const defaultSdkConfig = {
   clientId: null,
   clientSecret: null,
   baseUrl: 'https://flex-api.sharetribe.com',
@@ -13017,7 +12532,8 @@ var defaultSdkConfig = {
   version: 'v1',
   httpAgent: null,
   httpsAgent: null,
-  transitVerbose: false
+  transitVerbose: false,
+  disableDeprecationWarnings: false
 };
 /**
    Basic configurations for different 'apis'.
@@ -13034,7 +12550,7 @@ var defaultSdkConfig = {
    how to transform requests and response, etc.
  */
 
-var createHeaders = function createHeaders(transitVerbose) {
+const createHeaders = transitVerbose => {
   if (transitVerbose) {
     return {
       'X-Transit-Verbose': 'true',
@@ -13047,100 +12563,78 @@ var createHeaders = function createHeaders(transitVerbose) {
   };
 };
 
-var apis = {
-  api: function api(_ref) {
-    var baseUrl = _ref.baseUrl,
-        version = _ref.version,
-        adapter = _ref.adapter,
-        httpAgent = _ref.httpAgent,
-        httpsAgent = _ref.httpsAgent,
-        transitVerbose = _ref.transitVerbose;
-    return {
-      headers: createHeaders(transitVerbose),
-      baseURL: "".concat(baseUrl, "/").concat(version),
-      transformRequest: function transformRequest(v) {
-        return v;
-      },
-      transformResponse: function transformResponse(v) {
-        return v;
-      },
-      adapter: adapter,
-      paramsSerializer: params_serializer,
-      httpAgent: httpAgent,
-      httpsAgent: httpsAgent
-    };
-  },
-  auth: function auth(_ref2) {
-    var baseUrl = _ref2.baseUrl,
-        version = _ref2.version,
-        adapter = _ref2.adapter,
-        httpAgent = _ref2.httpAgent,
-        httpsAgent = _ref2.httpsAgent;
-    return {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json'
-      },
-      baseURL: "".concat(baseUrl, "/").concat(version, "/"),
-      transformRequest: [function (data) {
-        return utils_formData(data);
-      }],
-      // using default transformRequest, which can handle JSON and fallback to plain
-      // test if JSON parsing fails
-      adapter: adapter,
-      httpAgent: httpAgent,
-      httpsAgent: httpsAgent
-    };
-  },
-  assets: function assets(_ref3) {
-    var assetCdnBaseUrl = _ref3.assetCdnBaseUrl,
-        version = _ref3.version,
-        adapter = _ref3.adapter,
-        httpAgent = _ref3.httpAgent,
-        httpsAgent = _ref3.httpsAgent;
-    return {
-      headers: {
-        Accept: 'application/json'
-      },
-      baseURL: "".concat(assetCdnBaseUrl, "/").concat(version),
-      adapter: adapter,
-      paramsSerializer: params_serializer,
-      httpAgent: httpAgent,
-      httpsAgent: httpsAgent
-    };
-  }
+const apis = {
+  api: ({
+    baseUrl,
+    version,
+    adapter,
+    httpAgent,
+    httpsAgent,
+    transitVerbose
+  }) => ({
+    headers: createHeaders(transitVerbose),
+    baseURL: `${baseUrl}/${version}`,
+    transformRequest: v => v,
+    transformResponse: v => v,
+    adapter,
+    paramsSerializer: params_serializer,
+    httpAgent,
+    httpsAgent
+  }),
+  auth: ({
+    baseUrl,
+    version,
+    adapter,
+    httpAgent,
+    httpsAgent
+  }) => ({
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json'
+    },
+    baseURL: `${baseUrl}/${version}/`,
+    transformRequest: [data => formData(data)],
+    // using default transformRequest, which can handle JSON and fallback to plain
+    // test if JSON parsing fails
+    adapter,
+    httpAgent,
+    httpsAgent
+  }),
+  assets: ({
+    assetCdnBaseUrl,
+    version,
+    adapter,
+    httpAgent,
+    httpsAgent
+  }) => ({
+    headers: {
+      Accept: 'application/json'
+    },
+    baseURL: `${assetCdnBaseUrl}/${version}`,
+    adapter,
+    paramsSerializer: params_serializer,
+    httpAgent,
+    httpsAgent
+  })
 };
-var authenticateInterceptors = [new FetchAuthTokenFromStore(), new fetch_auth_token_from_api_FetchAuthTokenFromApi(), new retry_with_anon_token_RetryWithAnonToken(), new retry_with_refresh_token_RetryWithRefreshToken(), new AddAuthHeader()];
-var loginInterceptors = [new AddClientIdToParams(), new AddGrantTypeToParams(), new AddScopeToParams(), new SaveToken(), new AddAuthTokenResponse()];
-var logoutInterceptors = [new FetchAuthTokenFromStore(), new clear_token_after_revoke_ClearTokenAfterRevoke(), new retry_with_refresh_token_RetryWithRefreshToken(), new AddAuthHeader(), new FetchRefreshTokenForRevoke()];
-var exchangeTokenInterceptors = [new FetchAuthTokenFromStore(), new retry_with_refresh_token_RetryWithRefreshToken(), new AddClientIdToParams(), new AddClientSecretToParams(), new AddSubjectTokenToParams(), new AddTokenExchangeGrantTypeToParams()];
-var sdk_authWithIdpInterceptors = [new AddClientIdToParams(), new AddClientSecretToParams(), new RenameIdpParamsForAuth(), new SaveToken(), new AddAuthTokenResponse()];
+const authenticateInterceptors = [new FetchAuthTokenFromStore(), new fetch_auth_token_from_api_FetchAuthTokenFromApi(), new retry_with_anon_token_RetryWithAnonToken(), new retry_with_refresh_token_RetryWithRefreshToken(), new AddAuthHeader()];
+const loginInterceptors = [new AddClientIdToParams(), new add_grant_type_to_params_AddGrantTypeToParams(), new AddIsLoggedInAsToContextFromParams(), new AddScopeToParams(), new SaveToken(), new AddAuthTokenResponse()];
+const loginAsInterceptors = [new AddClientIdToParams(), new AddAuthorizationCodeGrantTypeToParams(), new AddIsLoggedInAsToContext(), new SaveToken(), new AddAuthTokenResponse()];
+const logoutInterceptors = [new FetchAuthTokenFromStore(), new clear_token_after_revoke_ClearTokenAfterRevoke(), new retry_with_refresh_token_RetryWithRefreshToken(), new AddAuthHeader(), new FetchRefreshTokenForRevoke()];
+const exchangeTokenInterceptors = [new FetchAuthTokenFromStore(), new retry_with_refresh_token_RetryWithRefreshToken(), new AddClientIdToParams(), new AddClientSecretToParams(), new AddSubjectTokenToParams(), new AddTokenExchangeGrantTypeToParams()];
+const authWithIdpInterceptors = [new AddClientIdToParams(), new AddClientSecretToParams(), new RenameIdpParamsForAuth(), new SaveToken(), new AddAuthTokenResponse()];
 
-var sdk_allowedPerRequestOpts = function allowedPerRequestOpts(opts) {
-  return pick_default()(opts, ['onUploadProgress']);
-};
+const allowedPerRequestOpts = opts => pick_default()(opts, ['onUploadProgress']);
 
-var sdk_createSdkPostFn = function createSdkPostFn(sdkFnParams) {
-  return function () {
-    var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var queryParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var perRequestOpts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    return sdk_context_runner(sdk_objectSpread({
-      params: params,
-      queryParams: queryParams,
-      perRequestOpts: sdk_allowedPerRequestOpts(perRequestOpts)
-    }, sdkFnParams));
-  };
-};
+const createSdkPostFn = sdkFnParams => (params = {}, queryParams = {}, perRequestOpts = {}) => sdk_context_runner(sdk_objectSpread({
+  params,
+  queryParams,
+  perRequestOpts: allowedPerRequestOpts(perRequestOpts)
+}, sdkFnParams));
 
-var sdk_createSdkGetFn = function createSdkGetFn(sdkFnParams) {
-  return function () {
-    var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    return sdk_context_runner(sdk_objectSpread({
-      params: params
-    }, sdkFnParams));
-  };
-};
+const createSdkGetFn = sdkFnParams => (params = {}) => sdk_context_runner(sdk_objectSpread({
+  params
+}, sdkFnParams));
 /**
    Creates a new SDK function.
 
@@ -13151,15 +12645,15 @@ var sdk_createSdkGetFn = function createSdkGetFn(sdkFnParams) {
  */
 
 
-var createSdkFn = function createSdkFn(_ref4) {
-  var method = _ref4.method,
-      sdkFnParams = sdk_objectWithoutProperties(_ref4, ["method"]);
+const createSdkFn = (_ref) => {
+  let method = _ref.method,
+      sdkFnParams = sdk_objectWithoutProperties(_ref, ["method"]);
 
   if (method && method.toLowerCase() === 'post') {
-    return sdk_createSdkPostFn(sdkFnParams);
+    return createSdkPostFn(sdkFnParams);
   }
 
-  return sdk_createSdkGetFn(sdkFnParams);
+  return createSdkGetFn(sdkFnParams);
 };
 /**
    List of Marketplace API SDK methods that will be part of the SDKs public interface.
@@ -13174,214 +12668,211 @@ var createSdkFn = function createSdkFn(_ref4) {
  */
 
 
-var sdk_marketplaceApiSdkFns = function marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx) {
-  return marketplaceApi.map(function (_ref5) {
-    var path = _ref5.path,
-        method = _ref5.method;
-    var fnPath = utils_fnPath(path);
-    var fn = createSdkFn({
-      method: method,
-      ctx: ctx,
-      interceptors: [new format_http_response_FormatHttpResponse()].concat(authenticateInterceptors, sdk_toConsumableArray(get_default()(marketplaceApiEndpointInterceptors, fnPath) || []))
-    });
-    return {
-      path: fnPath,
-      fn: fn
-    };
+const marketplaceApiSdkFns = (marketplaceApiEndpointInterceptors, ctx) => marketplaceApi.map(({
+  path,
+  method
+}) => {
+  const fnPath = utils_fnPath(path);
+  const fn = createSdkFn({
+    method,
+    ctx,
+    interceptors: [new format_http_response_FormatHttpResponse(), ...authenticateInterceptors, ...(get_default()(marketplaceApiEndpointInterceptors, fnPath) || [])]
   });
-};
-
-var sdk_createAuthApiSdkFn = function createAuthApiSdkFn(_ref6) {
-  var ctx = _ref6.ctx,
-      interceptors = _ref6.interceptors;
-  return function () {
-    var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    return sdk_context_runner({
-      params: params,
-      ctx: ctx,
-      interceptors: interceptors
-    });
+  return {
+    path: fnPath,
+    fn
   };
-};
+});
+
+const createAuthApiSdkFn = ({
+  ctx,
+  interceptors
+}) => (params = {}) => sdk_context_runner({
+  params,
+  ctx,
+  interceptors
+});
 /**
    List of SDK methods that are not derived from the endpoints.
  */
 
 
-var sdk_authApiSdkFns = function authApiSdkFns(authApiEndpointInterceptors, ctx) {
-  return [{
-    path: 'login',
-    fn: sdk_createAuthApiSdkFn({
-      ctx: ctx,
-      interceptors: [new format_http_response_FormatHttpResponse()].concat(loginInterceptors, sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'token')))
-    })
-  }, {
-    path: 'logout',
-    fn: sdk_createAuthApiSdkFn({
-      ctx: ctx,
-      interceptors: [new format_http_response_FormatHttpResponse()].concat(logoutInterceptors, sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'revoke')))
-    })
-  }, {
-    path: 'exchangeToken',
-    fn: sdk_createAuthApiSdkFn({
-      ctx: ctx,
-      interceptors: [].concat(exchangeTokenInterceptors, sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'token')))
-    })
-  }, {
-    path: 'authInfo',
-    fn: sdk_createAuthApiSdkFn({
-      ctx: ctx,
-      interceptors: [new AuthInfo()]
-    })
-  }, {
-    path: 'loginWithIdp',
-    fn: sdk_createAuthApiSdkFn({
-      ctx: ctx,
-      interceptors: [].concat(sdk_authWithIdpInterceptors, sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'authWithIdp')))
-    })
-  }];
-};
+const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [{
+  path: 'login',
+  fn: createAuthApiSdkFn({
+    ctx,
+    interceptors: [new format_http_response_FormatHttpResponse(), ...loginInterceptors, ...get_default()(authApiEndpointInterceptors, 'token')]
+  })
+}, {
+  path: 'loginAs',
+  fn: createAuthApiSdkFn({
+    ctx,
+    interceptors: [new format_http_response_FormatHttpResponse(), ...loginAsInterceptors, ...get_default()(authApiEndpointInterceptors, 'token')]
+  })
+}, {
+  path: 'logout',
+  fn: createAuthApiSdkFn({
+    ctx,
+    interceptors: [new format_http_response_FormatHttpResponse(), ...logoutInterceptors, ...get_default()(authApiEndpointInterceptors, 'revoke')]
+  })
+}, {
+  path: 'exchangeToken',
+  fn: createAuthApiSdkFn({
+    ctx,
+    interceptors: [...exchangeTokenInterceptors, ...get_default()(authApiEndpointInterceptors, 'token')]
+  })
+}, {
+  path: 'authInfo',
+  fn: createAuthApiSdkFn({
+    ctx,
+    interceptors: [new AuthInfo()]
+  })
+}, {
+  path: 'loginWithIdp',
+  fn: createAuthApiSdkFn({
+    ctx,
+    interceptors: [...authWithIdpInterceptors, ...get_default()(authApiEndpointInterceptors, 'authWithIdp')]
+  })
+}];
 
-var sdk_assetsApiSdkFns = function assetsApiSdkFns(assetsEndpointInterceptors, ctx) {
-  return [{
-    path: 'assetByAlias',
-    fn: function fn(_ref7) {
-      var path = _ref7.path,
-          alias = _ref7.alias;
-
-      if (!path) {
-        throw new Error('Missing mandatory parameter `path`');
-      }
-
-      if (!alias) {
-        throw new Error('Missing mandatory parameter `alias`');
-      }
-
-      return sdk_context_runner({
-        ctx: ctx,
-        pathParams: {
-          clientId: ctx.clientId,
-          alias: alias || 'latest',
-          assetPath: path[0] === '/' ? path.slice(1) : path
-        },
-        interceptors: [new format_http_response_FormatHttpResponse()].concat(sdk_toConsumableArray(get_default()(assetsEndpointInterceptors, 'byAlias')))
-      });
+const assetsApiSdkFns = (assetsEndpointInterceptors, ctx) => [{
+  path: 'assetByAlias',
+  fn: ({
+    path,
+    alias
+  }) => {
+    if (!path) {
+      throw new Error('Missing mandatory parameter `path`');
     }
-  }, {
-    path: 'assetByVersion',
-    fn: function fn(_ref8) {
-      var path = _ref8.path,
-          version = _ref8.version;
 
-      if (!version) {
-        throw new Error('Missing mandatory parameter `version`');
-      }
-
-      if (!version) {
-        throw new Error('Missing mandatory parameter `version`');
-      }
-
-      return sdk_context_runner({
-        ctx: ctx,
-        pathParams: {
-          clientId: ctx.clientId,
-          version: version,
-          assetPath: path[0] === '/' ? path.slice(1) : path
-        },
-        interceptors: [new format_http_response_FormatHttpResponse()].concat(sdk_toConsumableArray(get_default()(assetsEndpointInterceptors, 'byVersion')))
-      });
+    if (!alias) {
+      throw new Error('Missing mandatory parameter `alias`');
     }
-  }, {
-    path: 'assetsByAlias',
-    fn: function fn(_ref9) {
-      var paths = _ref9.paths,
-          alias = _ref9.alias;
 
-      if (!paths) {
-        throw new Error('Missing mandatory parameter `paths`');
-      }
+    return sdk_context_runner({
+      ctx,
+      pathParams: {
+        clientId: ctx.clientId,
+        alias: alias || 'latest',
+        assetPath: path[0] === '/' ? path.slice(1) : path
+      },
+      interceptors: [new format_http_response_FormatHttpResponse(), ...get_default()(assetsEndpointInterceptors, 'byAlias')]
+    });
+  }
+}, {
+  path: 'assetByVersion',
+  fn: ({
+    path,
+    version
+  }) => {
+    if (!version) {
+      throw new Error('Missing mandatory parameter `version`');
+    }
 
-      if (paths.length === 0) {
-        throw new Error('`paths` must not be empty');
-      }
+    if (!version) {
+      throw new Error('Missing mandatory parameter `version`');
+    }
 
-      if (!alias) {
-        throw new Error('Missing mandatory parameter `alias`');
-      }
+    return sdk_context_runner({
+      ctx,
+      pathParams: {
+        clientId: ctx.clientId,
+        version,
+        assetPath: path[0] === '/' ? path.slice(1) : path
+      },
+      interceptors: [new format_http_response_FormatHttpResponse(), ...get_default()(assetsEndpointInterceptors, 'byVersion')]
+    });
+  }
+}, {
+  path: 'assetsByAlias',
+  fn: ({
+    paths,
+    alias
+  }) => {
+    if (!paths) {
+      throw new Error('Missing mandatory parameter `paths`');
+    }
 
-      var _canonicalAssetPaths = canonicalAssetPaths(paths),
+    if (paths.length === 0) {
+      throw new Error('`paths` must not be empty');
+    }
+
+    if (!alias) {
+      throw new Error('Missing mandatory parameter `alias`');
+    }
+
+    const _canonicalAssetPaths = canonicalAssetPaths(paths),
           pathPrefix = _canonicalAssetPaths.pathPrefix,
           relativePaths = _canonicalAssetPaths.relativePaths;
 
-      return sdk_context_runner({
-        ctx: ctx,
-        params: {
-          assets: relativePaths
-        },
-        pathParams: {
-          clientId: ctx.clientId,
-          alias: alias,
-          assetPath: pathPrefix
-        },
-        interceptors: [new format_http_response_FormatHttpResponse()].concat(sdk_toConsumableArray(get_default()(assetsEndpointInterceptors, 'byAlias')))
-      });
+    return sdk_context_runner({
+      ctx,
+      params: {
+        assets: relativePaths
+      },
+      pathParams: {
+        clientId: ctx.clientId,
+        alias,
+        assetPath: pathPrefix
+      },
+      interceptors: [new format_http_response_FormatHttpResponse(), ...get_default()(assetsEndpointInterceptors, 'byAlias')]
+    });
+  }
+}, {
+  path: 'assetsByVersion',
+  fn: ({
+    paths,
+    version
+  }) => {
+    if (!paths) {
+      throw new Error('Missing mandatory parameter `paths`');
     }
-  }, {
-    path: 'assetsByVersion',
-    fn: function fn(_ref10) {
-      var paths = _ref10.paths,
-          version = _ref10.version;
 
-      if (!paths) {
-        throw new Error('Missing mandatory parameter `paths`');
-      }
+    if (paths.length === 0) {
+      throw new Error('`paths` must not be empty');
+    }
 
-      if (paths.length === 0) {
-        throw new Error('`paths` must not be empty');
-      }
+    if (!version) {
+      throw new Error('Missing mandatory parameter `version`');
+    }
 
-      if (!version) {
-        throw new Error('Missing mandatory parameter `version`');
-      }
-
-      var _canonicalAssetPaths2 = canonicalAssetPaths(paths),
+    const _canonicalAssetPaths2 = canonicalAssetPaths(paths),
           pathPrefix = _canonicalAssetPaths2.pathPrefix,
           relativePaths = _canonicalAssetPaths2.relativePaths;
 
-      return sdk_context_runner({
-        ctx: ctx,
-        params: {
-          assets: relativePaths
-        },
-        pathParams: {
-          clientId: ctx.clientId,
-          version: version,
-          assetPath: pathPrefix
-        },
-        interceptors: [new format_http_response_FormatHttpResponse()].concat(sdk_toConsumableArray(get_default()(assetsEndpointInterceptors, 'byVersion')))
-      });
-    }
-  }];
-}; // const logAndReturn = (data) => {
+    return sdk_context_runner({
+      ctx,
+      params: {
+        assets: relativePaths
+      },
+      pathParams: {
+        clientId: ctx.clientId,
+        version,
+        assetPath: pathPrefix
+      },
+      interceptors: [new format_http_response_FormatHttpResponse(), ...get_default()(assetsEndpointInterceptors, 'byVersion')]
+    });
+  }
+}]; // const logAndReturn = (data) => {
 //   console.log(data);
 //   return data;
 // };
 // Take SDK configurations, do transformation and return.
 
 
-var sdk_transformSdkConfig = function transformSdkConfig(_ref11) {
-  var baseUrl = _ref11.baseUrl,
-      tokenStore = _ref11.tokenStore,
-      sdkConfig = sdk_objectWithoutProperties(_ref11, ["baseUrl", "tokenStore"]);
+const transformSdkConfig = (_ref2) => {
+  let baseUrl = _ref2.baseUrl,
+      tokenStore = _ref2.tokenStore,
+      sdkConfig = sdk_objectWithoutProperties(_ref2, ["baseUrl", "tokenStore"]);
 
   return sdk_objectSpread({}, sdkConfig, {
-    baseUrl: utils_trimEndSlash(baseUrl),
-    tokenStore: tokenStore || token_store_createDefaultTokenStore(tokenStore, sdkConfig.clientId, !!sdkConfig.secure)
+    baseUrl: trimEndSlash(baseUrl),
+    tokenStore: tokenStore || createDefaultTokenStore(tokenStore, sdkConfig.clientId, !!sdkConfig.secure)
   });
 }; // Validate SDK configurations, throw an error if invalid, otherwise return.
 
 
-var sdk_validateSdkConfig = function validateSdkConfig(sdkConfig) {
+const validateSdkConfig = sdkConfig => {
   if (!sdkConfig.clientId) {
     throw new Error('clientId must be provided');
   }
@@ -13407,146 +12898,123 @@ var sdk_validateSdkConfig = function validateSdkConfig(sdkConfig) {
   return sdkConfig;
 };
 
-var sdk_createMarketplaceApiEndpointInterceptors = function createMarketplaceApiEndpointInterceptors(httpOpts) {
-  return (// Create `endpointInterceptors` object, which is object
-    // containing interceptors for all defined endpoints.
-    // This object can be passed to other interceptors in the interceptor context so they
-    // are able to do API calls (e.g. authentication interceptors)
-    //
-    marketplaceApi.reduce(function (acc, _ref12) {
-      var path = _ref12.path,
-          method = _ref12.method,
-          multipart = _ref12.multipart;
-      var fnPath = utils_fnPath(path);
-      var url = "api/".concat(path);
-      var requestFormatInterceptors = [];
+const createMarketplaceApiEndpointInterceptors = httpOpts => // Create `endpointInterceptors` object, which is object
+// containing interceptors for all defined endpoints.
+// This object can be passed to other interceptors in the interceptor context so they
+// are able to do API calls (e.g. authentication interceptors)
+//
+marketplaceApi.reduce((acc, {
+  path,
+  method,
+  multipart
+}) => {
+  const fnPath = utils_fnPath(path);
+  const url = `api/${path}`;
+  let requestFormatInterceptors = [];
 
-      if (method === 'post' && multipart) {
-        requestFormatInterceptors = [new multipart_request_MultipartRequest()];
-      } else if (method === 'post') {
-        requestFormatInterceptors = [new transit_request_TransitRequest()];
-      } else {
-        requestFormatInterceptors = [];
-      }
+  if (method === 'post' && multipart) {
+    requestFormatInterceptors = [new multipart_request_MultipartRequest()];
+  } else if (method === 'post') {
+    requestFormatInterceptors = [new transit_request_TransitRequest()];
+  } else {
+    requestFormatInterceptors = [];
+  }
 
-      return set_default()(acc, fnPath, [new transit_response_TransitResponse()].concat(sdk_toConsumableArray(requestFormatInterceptors), [endpoint_request({
-        method: method,
-        url: url,
-        httpOpts: httpOpts
-      })]));
-    }, {})
-  );
-};
+  return set_default()(acc, fnPath, [new transit_response_TransitResponse(), ...requestFormatInterceptors, endpoint_request({
+    method,
+    url,
+    httpOpts
+  })]);
+}, {});
 
-var sdk_createAuthApiEndpointInterceptors = function createAuthApiEndpointInterceptors(httpOpts) {
-  return (// Create `endpointInterceptors` object, which is object
-    // containing interceptors for all defined endpoints.
-    // This object can be passed to other interceptors in the interceptor context so they
-    // are able to do API calls (e.g. authentication interceptors)
-    //
-    authApi.reduce(function (acc, _ref13) {
-      var path = _ref13.path,
-          method = _ref13.method;
-      var fnPath = utils_fnPath(path);
-      var url = "auth/".concat(path);
-      return set_default()(acc, fnPath, [endpoint_request({
-        method: method,
-        url: url,
-        httpOpts: httpOpts
-      })]);
-    }, {})
-  );
-};
+const createAuthApiEndpointInterceptors = httpOpts => // Create `endpointInterceptors` object, which is object
+// containing interceptors for all defined endpoints.
+// This object can be passed to other interceptors in the interceptor context so they
+// are able to do API calls (e.g. authentication interceptors)
+//
+authApi.reduce((acc, {
+  path,
+  method
+}) => {
+  const fnPath = utils_fnPath(path);
+  const url = `auth/${path}`;
+  return set_default()(acc, fnPath, [endpoint_request({
+    method,
+    url,
+    httpOpts
+  })]);
+}, {});
 
-var sdk_createAssetsApiEndpointInterceptors = function createAssetsApiEndpointInterceptors(httpOpts) {
-  return (// Create `endpointInterceptors` object, which is object
-    // containing interceptors for all defined endpoints.
-    // This object can be passed to other interceptors in the interceptor context so they
-    // are able to do API calls (e.g. authentication interceptors)
-    //
-    assetsApi.reduce(function (acc, _ref14) {
-      var pathFn = _ref14.pathFn,
-          method = _ref14.method,
-          name = _ref14.name;
+const createAssetsApiEndpointInterceptors = httpOpts => // Create `endpointInterceptors` object, which is object
+// containing interceptors for all defined endpoints.
+// This object can be passed to other interceptors in the interceptor context so they
+// are able to do API calls (e.g. authentication interceptors)
+//
+assetsApi.reduce((acc, {
+  pathFn,
+  method,
+  name
+}) => {
+  const urlTemplate = pathParams => `assets/${pathFn(pathParams)}`;
 
-      var urlTemplate = function urlTemplate(pathParams) {
-        return "assets/".concat(pathFn(pathParams));
-      };
+  return set_default()(acc, name, [endpoint_request({
+    method,
+    urlTemplate,
+    httpOpts
+  })]);
+}, {});
 
-      return set_default()(acc, name, [endpoint_request({
-        method: method,
-        urlTemplate: urlTemplate,
-        httpOpts: httpOpts
-      })]);
-    }, {})
-  );
-};
+class sdk_SharetribeSdk {
+  /**
+     Instantiates a new SharetribeSdk instance.
+     The constructor assumes the config options have been
+     already validated.
+   */
+  constructor(userSdkConfig) {
+    // Transform and validation SDK configurations
+    const sdkConfig = validateSdkConfig(transformSdkConfig(sdk_objectSpread({}, defaultSdkConfig, {}, userSdkConfig))); // Instantiate API configs
 
-var sdk_SharetribeSdk =
-/**
-   Instantiates a new SharetribeSdk instance.
-   The constructor assumes the config options have been
-   already validated.
- */
-function SharetribeSdk(userSdkConfig) {
-  var _this = this;
+    const apiConfigs = mapValues_default()(apis, apiConfig => apiConfig(sdkConfig));
 
-  sdk_classCallCheck(this, SharetribeSdk);
+    const marketplaceApiEndpointInterceptors = createMarketplaceApiEndpointInterceptors(apiConfigs.api);
+    const authApiEndpointInterceptors = createAuthApiEndpointInterceptors(apiConfigs.auth);
+    const assetsApiEndpointInterceptors = createAssetsApiEndpointInterceptors(apiConfigs.assets);
+    const allEndpointInterceptors = {
+      api: marketplaceApiEndpointInterceptors,
+      auth: authApiEndpointInterceptors,
+      assets: assetsApiEndpointInterceptors
+    };
+    const ctx = {
+      tokenStore: sdkConfig.tokenStore,
+      endpointInterceptors: allEndpointInterceptors,
+      clientId: sdkConfig.clientId,
+      clientSecret: sdkConfig.clientSecret,
+      typeHandlers: sdkConfig.typeHandlers,
+      transitVerbose: sdkConfig.transitVerbose,
+      disableDeprecationWarnings: sdkConfig.disableDeprecationWarnings
+    }; // Assign SDK functions to 'this'
 
-  // Transform and validation SDK configurations
-  var sdkConfig = sdk_validateSdkConfig(sdk_transformSdkConfig(sdk_objectSpread({}, defaultSdkConfig, {}, userSdkConfig))); // Instantiate API configs
+    marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(({
+      path,
+      fn
+    }) => set_default()(this, path, fn));
+    authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(({
+      path,
+      fn
+    }) => set_default()(this, path, fn));
+    assetsApiSdkFns(assetsApiEndpointInterceptors, ctx).forEach(({
+      path,
+      fn
+    }) => set_default()(this, path, fn));
+  }
 
-  var apiConfigs = mapValues_default()(apis, function (apiConfig) {
-    return apiConfig(sdkConfig);
-  });
-
-  var marketplaceApiEndpointInterceptors = sdk_createMarketplaceApiEndpointInterceptors(apiConfigs.api);
-  var authApiEndpointInterceptors = sdk_createAuthApiEndpointInterceptors(apiConfigs.auth);
-  var assetsApiEndpointInterceptors = sdk_createAssetsApiEndpointInterceptors(apiConfigs.assets);
-  var allEndpointInterceptors = {
-    api: marketplaceApiEndpointInterceptors,
-    auth: authApiEndpointInterceptors,
-    assets: assetsApiEndpointInterceptors
-  };
-  var ctx = {
-    tokenStore: sdkConfig.tokenStore,
-    endpointInterceptors: allEndpointInterceptors,
-    clientId: sdkConfig.clientId,
-    clientSecret: sdkConfig.clientSecret,
-    typeHandlers: sdkConfig.typeHandlers,
-    transitVerbose: sdkConfig.transitVerbose
-  }; // Assign SDK functions to 'this'
-
-  sdk_marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(function (_ref15) {
-    var path = _ref15.path,
-        fn = _ref15.fn;
-    return set_default()(_this, path, fn);
-  });
-  sdk_authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(function (_ref16) {
-    var path = _ref16.path,
-        fn = _ref16.fn;
-    return set_default()(_this, path, fn);
-  });
-  sdk_assetsApiSdkFns(assetsApiEndpointInterceptors, ctx).forEach(function (_ref17) {
-    var path = _ref17.path,
-        fn = _ref17.fn;
-    return set_default()(_this, path, fn);
-  });
-};
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/add_multitenant_auth_token_response.js
 function add_multitenant_auth_token_response_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function add_multitenant_auth_token_response_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_multitenant_auth_token_response_ownKeys(source, true).forEach(function (key) { add_multitenant_auth_token_response_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_multitenant_auth_token_response_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function add_multitenant_auth_token_response_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function add_multitenant_auth_token_response_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_multitenant_auth_token_response_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_multitenant_auth_token_response_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_multitenant_auth_token_response_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_multitenant_auth_token_response_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Take token data from `res` and add it to `ctx` top-level.
@@ -13556,38 +13024,25 @@ function add_multitenant_auth_token_response_createClass(Constructor, protoProps
 
    - add `authToken`
 */
-var AddMultitenantAuthTokenResponse =
-/*#__PURE__*/
-function () {
-  function AddMultitenantAuthTokenResponse() {
-    add_multitenant_auth_token_response_classCallCheck(this, AddMultitenantAuthTokenResponse);
-  }
-
-  add_multitenant_auth_token_response_createClass(AddMultitenantAuthTokenResponse, [{
-    key: "leave",
-
-    /* eslint camelcase: "off" */
-    value: function leave(ctx) {
-      var _ctx$res$data = ctx.res.data,
+class AddMultitenantAuthTokenResponse {
+  /* eslint camelcase: "off" */
+  leave(ctx) {
+    const _ctx$res$data = ctx.res.data,
           access_token = _ctx$res$data.access_token,
           token_type = _ctx$res$data.token_type,
           expires_in = _ctx$res$data.expires_in,
           scope = _ctx$res$data.scope;
-      return add_multitenant_auth_token_response_objectSpread({}, ctx, {
-        authToken: {
-          access_token: access_token,
-          token_type: token_type,
-          expires_in: expires_in,
-          scope: scope
-        }
-      });
-    }
-  }]);
+    return add_multitenant_auth_token_response_objectSpread({}, ctx, {
+      authToken: {
+        access_token,
+        token_type,
+        expires_in,
+        scope
+      }
+    });
+  }
 
-  return AddMultitenantAuthTokenResponse;
-}();
-
-
+}
 // EXTERNAL MODULE: external "jsonwebtoken"
 var external_jsonwebtoken_ = __webpack_require__(73);
 var external_jsonwebtoken_default = /*#__PURE__*/__webpack_require__.n(external_jsonwebtoken_);
@@ -13599,12 +13054,6 @@ function add_multitenant_client_secret_token_to_ctx_objectSpread(target) { for (
 
 function add_multitenant_client_secret_token_to_ctx_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function add_multitenant_client_secret_token_to_ctx_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_multitenant_client_secret_token_to_ctx_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_multitenant_client_secret_token_to_ctx_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_multitenant_client_secret_token_to_ctx_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_multitenant_client_secret_token_to_ctx_defineProperties(Constructor, staticProps); return Constructor; }
-
 /**
    Read `multitenantClientSecret` and `hostname` from `ctx`. Then construct a
    signed JWT and add it to the context for use later in the interceptor chain.
@@ -13614,49 +13063,30 @@ function add_multitenant_client_secret_token_to_ctx_createClass(Constructor, pro
    - Add `multitenantClientSecretToken`
 */
 
-var signingOpts = {
+const signingOpts = {
   algorithm: 'HS256',
   expiresIn: 60 // seconds, should be enough for possible clock skew, but not too long
 
 };
-
-var add_multitenant_client_secret_token_to_ctx_AddMultitenantClientSecretTokenToCtx =
-/*#__PURE__*/
-function () {
-  function AddMultitenantClientSecretTokenToCtx() {
-    add_multitenant_client_secret_token_to_ctx_classCallCheck(this, AddMultitenantClientSecretTokenToCtx);
+class add_multitenant_client_secret_token_to_ctx_AddMultitenantClientSecretTokenToCtx {
+  enter(ctx) {
+    const multitenantClientSecret = ctx.multitenantClientSecret,
+          hostname = ctx.hostname;
+    const multitenantClientSecretToken = external_jsonwebtoken_default.a.sign({
+      hostname
+    }, multitenantClientSecret, signingOpts);
+    return add_multitenant_client_secret_token_to_ctx_objectSpread({}, ctx, {
+      multitenantClientSecretToken
+    });
   }
 
-  add_multitenant_client_secret_token_to_ctx_createClass(AddMultitenantClientSecretTokenToCtx, [{
-    key: "enter",
-    value: function enter(ctx) {
-      var multitenantClientSecret = ctx.multitenantClientSecret,
-          hostname = ctx.hostname;
-      var multitenantClientSecretToken = external_jsonwebtoken_default.a.sign({
-        hostname: hostname
-      }, multitenantClientSecret, signingOpts);
-      return add_multitenant_client_secret_token_to_ctx_objectSpread({}, ctx, {
-        multitenantClientSecretToken: multitenantClientSecretToken
-      });
-    }
-  }]);
-
-  return AddMultitenantClientSecretTokenToCtx;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/add_multitenant_client_secret_to_params.js
 function add_multitenant_client_secret_to_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function add_multitenant_client_secret_to_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_multitenant_client_secret_to_params_ownKeys(source, true).forEach(function (key) { add_multitenant_client_secret_to_params_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_multitenant_client_secret_to_params_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function add_multitenant_client_secret_to_params_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function add_multitenant_client_secret_to_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_multitenant_client_secret_to_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_multitenant_client_secret_to_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_multitenant_client_secret_to_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_multitenant_client_secret_to_params_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Read `multitenantClientSecretToken` from `ctx` and add it as `client_secret`
@@ -13666,31 +13096,19 @@ function add_multitenant_client_secret_to_params_createClass(Constructor, protoP
 
    - add `params.client_secret`
 */
-var AddMultitenantClientSecretToParams =
-/*#__PURE__*/
-function () {
-  function AddMultitenantClientSecretToParams() {
-    add_multitenant_client_secret_to_params_classCallCheck(this, AddMultitenantClientSecretToParams);
-  }
-
-  add_multitenant_client_secret_to_params_createClass(AddMultitenantClientSecretToParams, [{
-    key: "enter",
-    value: function enter(ctx) {
-      var multitenantClientSecretToken = ctx.multitenantClientSecretToken,
+class AddMultitenantClientSecretToParams {
+  enter(ctx) {
+    const multitenantClientSecretToken = ctx.multitenantClientSecretToken,
           _ctx$params = ctx.params,
           params = _ctx$params === void 0 ? {} : _ctx$params;
-      return add_multitenant_client_secret_to_params_objectSpread({}, ctx, {
-        params: add_multitenant_client_secret_to_params_objectSpread({}, params, {
-          client_secret: multitenantClientSecretToken
-        })
-      });
-    }
-  }]);
+    return add_multitenant_client_secret_to_params_objectSpread({}, ctx, {
+      params: add_multitenant_client_secret_to_params_objectSpread({}, params, {
+        client_secret: multitenantClientSecretToken
+      })
+    });
+  }
 
-  return AddMultitenantClientSecretToParams;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/add_multitenant_token_exchange_params.js
 
 
@@ -13699,12 +13117,6 @@ function add_multitenant_token_exchange_params_ownKeys(object, enumerableOnly) {
 function add_multitenant_token_exchange_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_multitenant_token_exchange_params_ownKeys(source, true).forEach(function (key) { add_multitenant_token_exchange_params_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_multitenant_token_exchange_params_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function add_multitenant_token_exchange_params_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function add_multitenant_token_exchange_params_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_multitenant_token_exchange_params_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_multitenant_token_exchange_params_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_multitenant_token_exchange_params_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_multitenant_token_exchange_params_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Add required fields to `params` for multitenant token exchange request.
@@ -13719,47 +13131,33 @@ function add_multitenant_token_exchange_params_createClass(Constructor, protoPro
    - add `params.grant_type`
    - add `params.subject_token`
 */
-var add_multitenant_token_exchange_params_AddMultitenantTokenExchangeParams =
-/*#__PURE__*/
-function () {
-  function AddMultitenantTokenExchangeParams() {
-    add_multitenant_token_exchange_params_classCallCheck(this, AddMultitenantTokenExchangeParams);
+class add_multitenant_token_exchange_params_AddMultitenantTokenExchangeParams {
+  enter(ctx) {
+    const tokenStore = ctx.tokenStore;
+    return Promise.resolve().then(tokenStore.getToken).then(storedToken => {
+      // throw if no token is found
+      if (!storedToken || !storedToken.access_token) {
+        throw new Error('No access token found in store');
+      } // throw if token has invalid scope
+
+
+      const scopes = storedToken.scope.split(' ');
+
+      if (!find_default()(scopes, scope => scope === 'user')) {
+        throw new Error('Access token scope not supported');
+      }
+
+      return add_multitenant_token_exchange_params_objectSpread({}, ctx, {
+        params: add_multitenant_token_exchange_params_objectSpread({}, ctx.params, {
+          scope: 'trusted:user',
+          grant_type: 'multitenant_token_exchange',
+          subject_token: storedToken.access_token
+        })
+      });
+    });
   }
 
-  add_multitenant_token_exchange_params_createClass(AddMultitenantTokenExchangeParams, [{
-    key: "enter",
-    value: function enter(ctx) {
-      var tokenStore = ctx.tokenStore;
-      return Promise.resolve().then(tokenStore.getToken).then(function (storedToken) {
-        // throw if no token is found
-        if (!storedToken || !storedToken.access_token) {
-          throw new Error('No access token found in store');
-        } // throw if token has invalid scope
-
-
-        var scopes = storedToken.scope.split(' ');
-
-        if (!find_default()(scopes, function (scope) {
-          return scope === 'user';
-        })) {
-          throw new Error('Access token scope not supported');
-        }
-
-        return add_multitenant_token_exchange_params_objectSpread({}, ctx, {
-          params: add_multitenant_token_exchange_params_objectSpread({}, ctx.params, {
-            scope: 'trusted:user',
-            grant_type: 'multitenant_token_exchange',
-            subject_token: storedToken.access_token
-          })
-        });
-      });
-    }
-  }]);
-
-  return AddMultitenantTokenExchangeParams;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/format_multitenant_http_response.js
 function format_multitenant_http_response_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -13767,58 +13165,34 @@ function format_multitenant_http_response_objectSpread(target) { for (var i = 1;
 
 function format_multitenant_http_response_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function format_multitenant_http_response_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function format_multitenant_http_response_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function format_multitenant_http_response_createClass(Constructor, protoProps, staticProps) { if (protoProps) format_multitenant_http_response_defineProperties(Constructor.prototype, protoProps); if (staticProps) format_multitenant_http_response_defineProperties(Constructor, staticProps); return Constructor; }
-
 /**
  * Takes `ctx` with HTTP `res` in it and strips token data from multitenant API
  * responses, leaving only `client_data`, which the SDK caller needs.
  */
-var FormatMultitenantHttpResponse =
-/*#__PURE__*/
-function () {
-  function FormatMultitenantHttpResponse() {
-    format_multitenant_http_response_classCallCheck(this, FormatMultitenantHttpResponse);
+class FormatMultitenantHttpResponse {
+  leave(ctx) {
+    const res = ctx.res;
+
+    if (!res) {
+      return ctx;
+    }
+
+    return format_multitenant_http_response_objectSpread({}, ctx, {
+      res: format_multitenant_http_response_objectSpread({}, res, {
+        data: {
+          client_data: res.data.client_data
+        }
+      })
+    });
   }
 
-  format_multitenant_http_response_createClass(FormatMultitenantHttpResponse, [{
-    key: "leave",
-    value: function leave(ctx) {
-      var res = ctx.res;
-
-      if (!res) {
-        return ctx;
-      }
-
-      return format_multitenant_http_response_objectSpread({}, ctx, {
-        res: format_multitenant_http_response_objectSpread({}, res, {
-          data: {
-            client_data: res.data.client_data
-          }
-        })
-      });
-    }
-  }]);
-
-  return FormatMultitenantHttpResponse;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/add_multitenant_auth_header.js
 function add_multitenant_auth_header_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function add_multitenant_auth_header_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_multitenant_auth_header_ownKeys(source, true).forEach(function (key) { add_multitenant_auth_header_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_multitenant_auth_header_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function add_multitenant_auth_header_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function add_multitenant_auth_header_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_multitenant_auth_header_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_multitenant_auth_header_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_multitenant_auth_header_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_multitenant_auth_header_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Read `multitenantClientSecretToken` from `ctx` and add it to Authorization
@@ -13828,44 +13202,26 @@ function add_multitenant_auth_header_createClass(Constructor, protoProps, static
 
    - Add `headers.Authorization`
  */
-var AddMultitenantAuthHeader =
-/*#__PURE__*/
-function () {
-  function AddMultitenantAuthHeader() {
-    add_multitenant_auth_header_classCallCheck(this, AddMultitenantAuthHeader);
-  }
-
-  add_multitenant_auth_header_createClass(AddMultitenantAuthHeader, [{
-    key: "enter",
-    value: function enter(ctx) {
-      var multitenantClientSecretToken = ctx.multitenantClientSecretToken,
+class AddMultitenantAuthHeader {
+  enter(ctx) {
+    const multitenantClientSecretToken = ctx.multitenantClientSecretToken,
           _ctx$headers = ctx.headers,
           headers = _ctx$headers === void 0 ? {} : _ctx$headers;
-      var authHeaders = {
-        Authorization: "Bearer ".concat(multitenantClientSecretToken)
-      };
-      return add_multitenant_auth_header_objectSpread({}, ctx, {
-        headers: add_multitenant_auth_header_objectSpread({}, headers, {}, authHeaders)
-      });
-    }
-  }]);
+    const authHeaders = {
+      Authorization: `Bearer ${multitenantClientSecretToken}`
+    };
+    return add_multitenant_auth_header_objectSpread({}, ctx, {
+      headers: add_multitenant_auth_header_objectSpread({}, headers, {}, authHeaders)
+    });
+  }
 
-  return AddMultitenantAuthHeader;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/interceptors/add_multitenant_auth_with_idp_response.js
 function add_multitenant_auth_with_idp_response_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function add_multitenant_auth_with_idp_response_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { add_multitenant_auth_with_idp_response_ownKeys(source, true).forEach(function (key) { add_multitenant_auth_with_idp_response_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { add_multitenant_auth_with_idp_response_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function add_multitenant_auth_with_idp_response_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function add_multitenant_auth_with_idp_response_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function add_multitenant_auth_with_idp_response_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function add_multitenant_auth_with_idp_response_createClass(Constructor, protoProps, staticProps) { if (protoProps) add_multitenant_auth_with_idp_response_defineProperties(Constructor.prototype, protoProps); if (staticProps) add_multitenant_auth_with_idp_response_defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
    Take token data from `res` and add it to `ctx` top-level.
@@ -13875,46 +13231,31 @@ function add_multitenant_auth_with_idp_response_createClass(Constructor, protoPr
 
    - add `authToken`
 */
-var AddMultitenantAuthWithIdpResponse =
-/*#__PURE__*/
-function () {
-  function AddMultitenantAuthWithIdpResponse() {
-    add_multitenant_auth_with_idp_response_classCallCheck(this, AddMultitenantAuthWithIdpResponse);
-  }
-
-  add_multitenant_auth_with_idp_response_createClass(AddMultitenantAuthWithIdpResponse, [{
-    key: "leave",
-
-    /* eslint camelcase: "off" */
-    value: function leave(ctx) {
-      var _ctx$res$data = ctx.res.data,
+class AddMultitenantAuthWithIdpResponse {
+  /* eslint camelcase: "off" */
+  leave(ctx) {
+    const _ctx$res$data = ctx.res.data,
           access_token = _ctx$res$data.access_token,
           refresh_token = _ctx$res$data.refresh_token,
           token_type = _ctx$res$data.token_type,
           expires_in = _ctx$res$data.expires_in,
           scope = _ctx$res$data.scope;
-      return add_multitenant_auth_with_idp_response_objectSpread({}, ctx, {
-        authToken: {
-          access_token: access_token,
-          refresh_token: refresh_token,
-          token_type: token_type,
-          expires_in: expires_in,
-          scope: scope
-        }
-      });
-    }
-  }]);
+    return add_multitenant_auth_with_idp_response_objectSpread({}, ctx, {
+      authToken: {
+        access_token,
+        refresh_token,
+        token_type,
+        expires_in,
+        scope
+      }
+    });
+  }
 
-  return AddMultitenantAuthWithIdpResponse;
-}();
-
-
+}
 // CONCATENATED MODULE: ./src/multitenant_sdk.js
 
 
 
-
-function multitenant_sdk_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function multitenant_sdk_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = multitenant_sdk_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
@@ -13925,14 +13266,6 @@ function multitenant_sdk_ownKeys(object, enumerableOnly) { var keys = Object.key
 function multitenant_sdk_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { multitenant_sdk_ownKeys(source, true).forEach(function (key) { multitenant_sdk_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { multitenant_sdk_ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function multitenant_sdk_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function multitenant_sdk_toConsumableArray(arr) { return multitenant_sdk_arrayWithoutHoles(arr) || multitenant_sdk_iterableToArray(arr) || multitenant_sdk_nonIterableSpread(); }
-
-function multitenant_sdk_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function multitenant_sdk_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function multitenant_sdk_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 
 
@@ -13952,7 +13285,7 @@ function multitenant_sdk_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for 
 
 /* eslint-disable class-methods-use-this */
 
-var multitenant_sdk_defaultSdkConfig = {
+const multitenant_sdk_defaultSdkConfig = {
   hostname: null,
   multitenantClientSecret: null,
   baseUrl: 'https://flex-api.sharetribe.com',
@@ -13961,7 +13294,7 @@ var multitenant_sdk_defaultSdkConfig = {
   httpAgent: null,
   httpsAgent: null
 };
-var multitenantAuthApi = [{
+const multitenantAuthApi = [{
   path: 'token',
   method: 'post'
 }, {
@@ -13971,126 +13304,109 @@ var multitenantAuthApi = [{
   path: 'auth_with_idp',
   method: 'post'
 }];
-var multitenant_sdk_apis = {
-  auth: function auth(_ref) {
-    var baseUrl = _ref.baseUrl,
-        version = _ref.version,
-        adapter = _ref.adapter,
-        httpAgent = _ref.httpAgent,
-        httpsAgent = _ref.httpsAgent;
-    return {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json'
-      },
-      baseURL: "".concat(baseUrl, "/").concat(version, "/"),
-      transformRequest: [function (data) {
-        return utils_formData(data);
-      }],
-      adapter: adapter,
-      httpAgent: httpAgent,
-      httpsAgent: httpsAgent
-    };
-  }
+const multitenant_sdk_apis = {
+  auth: ({
+    baseUrl,
+    version,
+    adapter,
+    httpAgent,
+    httpsAgent
+  }) => ({
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json'
+    },
+    baseURL: `${baseUrl}/${version}/`,
+    transformRequest: [data => formData(data)],
+    adapter,
+    httpAgent,
+    httpsAgent
+  })
 };
 
-var multitenant_sdk_tokenInterceptors = function tokenInterceptors(authApiEndpointInterceptors) {
-  return [new format_http_response_FormatHttpResponse(), new FormatMultitenantHttpResponse(), new add_multitenant_client_secret_token_to_ctx_AddMultitenantClientSecretTokenToCtx(), new AddMultitenantClientSecretToParams(), new SaveToken(), new AddMultitenantAuthTokenResponse()].concat(multitenant_sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'token')));
-};
+const tokenInterceptors = authApiEndpointInterceptors => [new format_http_response_FormatHttpResponse(), new FormatMultitenantHttpResponse(), new add_multitenant_client_secret_token_to_ctx_AddMultitenantClientSecretTokenToCtx(), new AddMultitenantClientSecretToParams(), new SaveToken(), new AddMultitenantAuthTokenResponse(), ...get_default()(authApiEndpointInterceptors, 'token')];
 
-var multitenant_sdk_clientDataInterceptors = function clientDataInterceptors(authApiEndpointInterceptors) {
-  return [new format_http_response_FormatHttpResponse(), new add_multitenant_client_secret_token_to_ctx_AddMultitenantClientSecretTokenToCtx(), new AddMultitenantAuthHeader()].concat(multitenant_sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'clientData')));
-};
+const clientDataInterceptors = authApiEndpointInterceptors => [new format_http_response_FormatHttpResponse(), new add_multitenant_client_secret_token_to_ctx_AddMultitenantClientSecretTokenToCtx(), new AddMultitenantAuthHeader(), ...get_default()(authApiEndpointInterceptors, 'clientData')];
 
-var multitenant_sdk_tokenAndClientDataInterceptor = function tokenAndClientDataInterceptor(authApiEndpointInterceptors) {
-  return {
-    enter: function enter(ctx) {
-      var tokenStore = ctx.tokenStore;
-      return Promise.resolve().then(tokenStore.getToken).then(function (storedToken) {
-        // If there's a token with any access, it's only necessary
-        // to fetch the client data. Else, we request a token and
-        // the response will also contain the client data.
-        // We don't need to distinguish between token scopes.
-        if (storedToken) {
-          return context_runner(multitenant_sdk_clientDataInterceptors(authApiEndpointInterceptors))(ctx).then(function (newCtx) {
-            var res = newCtx.res;
-            return multitenant_sdk_objectSpread({}, newCtx, {
-              res: multitenant_sdk_objectSpread({}, res, {
-                data: {
-                  client_data: res.data
-                }
-              })
-            });
+const tokenAndClientDataInterceptor = authApiEndpointInterceptors => ({
+  enter: ctx => {
+    const tokenStore = ctx.tokenStore;
+    return Promise.resolve().then(tokenStore.getToken).then(storedToken => {
+      // If there's a token with any access, it's only necessary
+      // to fetch the client data. Else, we request a token and
+      // the response will also contain the client data.
+      // We don't need to distinguish between token scopes.
+      if (storedToken) {
+        return context_runner(clientDataInterceptors(authApiEndpointInterceptors))(ctx).then(newCtx => {
+          const res = newCtx.res;
+          return multitenant_sdk_objectSpread({}, newCtx, {
+            res: multitenant_sdk_objectSpread({}, res, {
+              data: {
+                client_data: res.data
+              }
+            })
           });
+        });
+      }
+
+      return context_runner(tokenInterceptors(authApiEndpointInterceptors))(multitenant_sdk_objectSpread({}, ctx, {
+        params: {
+          grant_type: 'multitenant_client_credentials'
         }
-
-        return context_runner(multitenant_sdk_tokenInterceptors(authApiEndpointInterceptors))(multitenant_sdk_objectSpread({}, ctx, {
-          params: {
-            grant_type: 'multitenant_client_credentials'
-          }
-        }));
-      });
-    }
-  };
-};
-
-var multitenant_sdk_authWithIdpInterceptors = function authWithIdpInterceptors(authApiEndpointInterceptors) {
-  return [new format_http_response_FormatHttpResponse(), new add_multitenant_client_secret_token_to_ctx_AddMultitenantClientSecretTokenToCtx(), new AddMultitenantClientSecretToParams(), new RenameIdpParamsForAuth(), new SaveToken(), new AddMultitenantAuthWithIdpResponse()].concat(multitenant_sdk_toConsumableArray(get_default()(authApiEndpointInterceptors, 'authWithIdp')));
-};
-
-var multitenant_sdk_createAuthApiSdkFn = function createAuthApiSdkFn(_ref2) {
-  var ctx = _ref2.ctx,
-      interceptors = _ref2.interceptors;
-  return function () {
-    var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    return sdk_context_runner({
-      params: params,
-      ctx: ctx,
-      interceptors: interceptors
+      }));
     });
-  };
-};
+  }
+});
+
+const multitenant_sdk_authWithIdpInterceptors = authApiEndpointInterceptors => [new format_http_response_FormatHttpResponse(), new add_multitenant_client_secret_token_to_ctx_AddMultitenantClientSecretTokenToCtx(), new AddMultitenantClientSecretToParams(), new RenameIdpParamsForAuth(), new SaveToken(), new AddMultitenantAuthWithIdpResponse(), ...get_default()(authApiEndpointInterceptors, 'authWithIdp')];
+
+const multitenant_sdk_createAuthApiSdkFn = ({
+  ctx,
+  interceptors
+}) => (params = {}) => sdk_context_runner({
+  params,
+  ctx,
+  interceptors
+});
 /**
    List of auth-related SDK methods
  */
 
 
-var multitenant_sdk_authApiSdkFns = function authApiSdkFns(authApiEndpointInterceptors, ctx) {
-  return [{
-    path: 'clientData',
-    fn: multitenant_sdk_createAuthApiSdkFn({
-      ctx: ctx,
-      interceptors: [multitenant_sdk_tokenAndClientDataInterceptor(authApiEndpointInterceptors)]
-    })
-  }, {
-    path: 'tokenExchange',
-    fn: multitenant_sdk_createAuthApiSdkFn({
-      ctx: ctx,
-      interceptors: [new add_multitenant_token_exchange_params_AddMultitenantTokenExchangeParams()].concat(multitenant_sdk_toConsumableArray(multitenant_sdk_tokenInterceptors(authApiEndpointInterceptors)))
-    })
-  }, {
-    path: 'loginWithIdp',
-    fn: multitenant_sdk_createAuthApiSdkFn({
-      ctx: ctx,
-      interceptors: multitenant_sdk_authWithIdpInterceptors(authApiEndpointInterceptors)
-    })
-  }];
-}; // Take SDK configurations, do transformation and return.
+const multitenant_sdk_authApiSdkFns = (authApiEndpointInterceptors, ctx) => [{
+  path: 'clientData',
+  fn: multitenant_sdk_createAuthApiSdkFn({
+    ctx,
+    interceptors: [tokenAndClientDataInterceptor(authApiEndpointInterceptors)]
+  })
+}, {
+  path: 'tokenExchange',
+  fn: multitenant_sdk_createAuthApiSdkFn({
+    ctx,
+    interceptors: [new add_multitenant_token_exchange_params_AddMultitenantTokenExchangeParams(), ...tokenInterceptors(authApiEndpointInterceptors)]
+  })
+}, {
+  path: 'loginWithIdp',
+  fn: multitenant_sdk_createAuthApiSdkFn({
+    ctx,
+    interceptors: multitenant_sdk_authWithIdpInterceptors(authApiEndpointInterceptors)
+  })
+}]; // Take SDK configurations, do transformation and return.
 
 
-var multitenant_sdk_transformSdkConfig = function transformSdkConfig(_ref3) {
-  var baseUrl = _ref3.baseUrl,
-      tokenStore = _ref3.tokenStore,
-      sdkConfig = multitenant_sdk_objectWithoutProperties(_ref3, ["baseUrl", "tokenStore"]);
+const multitenant_sdk_transformSdkConfig = (_ref) => {
+  let baseUrl = _ref.baseUrl,
+      tokenStore = _ref.tokenStore,
+      sdkConfig = multitenant_sdk_objectWithoutProperties(_ref, ["baseUrl", "tokenStore"]);
 
   return multitenant_sdk_objectSpread({}, sdkConfig, {
-    baseUrl: utils_trimEndSlash(baseUrl),
+    baseUrl: trimEndSlash(baseUrl),
     tokenStore: tokenStore || memory_store()
   });
 }; // Validate SDK configurations, throw an error if invalid, otherwise return.
 
 
-var multitenant_sdk_validateSdkConfig = function validateSdkConfig(sdkConfig) {
+const multitenant_sdk_validateSdkConfig = sdkConfig => {
   if (!sdkConfig.hostname) {
     throw new Error('hostname must be provided');
   }
@@ -14110,63 +13426,54 @@ var multitenant_sdk_validateSdkConfig = function validateSdkConfig(sdkConfig) {
   return sdkConfig;
 };
 
-var multitenant_sdk_createAuthApiEndpointInterceptors = function createAuthApiEndpointInterceptors(httpOpts) {
-  return (// Create `endpointInterceptors` object, which is object
-    // containing interceptors for all defined endpoints.
-    // This object can be passed to other interceptors in the interceptor context so they
-    // are able to do API calls (e.g. authentication interceptors)
-    //
-    multitenantAuthApi.reduce(function (acc, _ref4) {
-      var path = _ref4.path,
-          method = _ref4.method;
-      var fnPath = utils_fnPath(path);
-      var url = "auth/multitenant/".concat(path);
-      return set_default()(acc, fnPath, [endpoint_request({
-        method: method,
-        url: url,
-        httpOpts: httpOpts
-      })]);
-    }, {})
-  );
-};
+const multitenant_sdk_createAuthApiEndpointInterceptors = httpOpts => // Create `endpointInterceptors` object, which is object
+// containing interceptors for all defined endpoints.
+// This object can be passed to other interceptors in the interceptor context so they
+// are able to do API calls (e.g. authentication interceptors)
+//
+multitenantAuthApi.reduce((acc, {
+  path,
+  method
+}) => {
+  const fnPath = utils_fnPath(path);
+  const url = `auth/multitenant/${path}`;
+  return set_default()(acc, fnPath, [endpoint_request({
+    method,
+    url,
+    httpOpts
+  })]);
+}, {});
 
-var multitenant_sdk_MultitenantSharetribeSdk =
-/**
-   Instantiates a new MultitenantSharetribeSdk instance.
-   The constructor assumes the config options have been
-   already validated.
- */
-function MultitenantSharetribeSdk(userSdkConfig) {
-  var _this = this;
+class multitenant_sdk_MultitenantSharetribeSdk {
+  /**
+     Instantiates a new MultitenantSharetribeSdk instance.
+     The constructor assumes the config options have been
+     already validated.
+   */
+  constructor(userSdkConfig) {
+    // Transform and validation SDK configurations
+    const sdkConfig = multitenant_sdk_validateSdkConfig(multitenant_sdk_transformSdkConfig(multitenant_sdk_objectSpread({}, multitenant_sdk_defaultSdkConfig, {}, userSdkConfig))); // Instantiate API configs
 
-  multitenant_sdk_classCallCheck(this, MultitenantSharetribeSdk);
+    const apiConfigs = mapValues_default()(multitenant_sdk_apis, apiConfig => apiConfig(sdkConfig));
 
-  // Transform and validation SDK configurations
-  var sdkConfig = multitenant_sdk_validateSdkConfig(multitenant_sdk_transformSdkConfig(multitenant_sdk_objectSpread({}, multitenant_sdk_defaultSdkConfig, {}, userSdkConfig))); // Instantiate API configs
+    const authApiEndpointInterceptors = multitenant_sdk_createAuthApiEndpointInterceptors(apiConfigs.auth);
+    const allEndpointInterceptors = {
+      auth: authApiEndpointInterceptors
+    };
+    const ctx = {
+      endpointInterceptors: allEndpointInterceptors,
+      multitenantClientSecret: sdkConfig.multitenantClientSecret,
+      hostname: sdkConfig.hostname,
+      tokenStore: sdkConfig.tokenStore
+    }; // Assign SDK functions to 'this'
 
-  var apiConfigs = mapValues_default()(multitenant_sdk_apis, function (apiConfig) {
-    return apiConfig(sdkConfig);
-  });
+    multitenant_sdk_authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(({
+      path,
+      fn
+    }) => set_default()(this, path, fn));
+  }
 
-  var authApiEndpointInterceptors = multitenant_sdk_createAuthApiEndpointInterceptors(apiConfigs.auth);
-  var allEndpointInterceptors = {
-    auth: authApiEndpointInterceptors
-  };
-  var ctx = {
-    endpointInterceptors: allEndpointInterceptors,
-    multitenantClientSecret: sdkConfig.multitenantClientSecret,
-    hostname: sdkConfig.hostname,
-    tokenStore: sdkConfig.tokenStore
-  }; // Assign SDK functions to 'this'
-
-  multitenant_sdk_authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(function (_ref5) {
-    var path = _ref5.path,
-        fn = _ref5.fn;
-    return set_default()(_this, path, fn);
-  });
-};
-
-
+}
 // CONCATENATED MODULE: ./src/express_cookie_store.js
 function express_cookie_store_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -14174,28 +13481,27 @@ function express_cookie_store_objectSpread(target) { for (var i = 1; i < argumen
 
 function express_cookie_store_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var express_cookie_store_generateKey = function generateKey(cookieId, namespace) {
-  return "".concat(namespace, "-").concat(cookieId, "-token");
-};
+const express_cookie_store_generateKey = (cookieId, namespace) => `${namespace}-${cookieId}-token`;
 
-var express_cookie_store_createStore = function createStore(_ref) {
-  var clientId = _ref.clientId,
-      cookieId = _ref.cookieId,
-      req = _ref.req,
-      res = _ref.res,
-      secure = _ref.secure;
-  var expiration = 180; // 180 days
+const express_cookie_store_createStore = ({
+  clientId,
+  cookieId,
+  req,
+  res,
+  secure
+}) => {
+  const expiration = 180; // 180 days
 
-  var namespace = 'st';
-  var key = express_cookie_store_generateKey(clientId || cookieId, namespace); // A mutable variable containing the current token.
+  const namespace = 'st';
+  const key = express_cookie_store_generateKey(clientId || cookieId, namespace); // A mutable variable containing the current token.
   // When a `setToken` is called, the current token will be
   // stored to this variable. `getToken` will read subsequent
   // calls from this variable.
 
-  var currentToken;
+  let currentToken;
 
-  var readCookie = function readCookie() {
-    var cookie = req.cookies[key];
+  const readCookie = () => {
+    const cookie = req.cookies[key];
 
     if (cookie) {
       return JSON.parse(cookie);
@@ -14204,14 +13510,14 @@ var express_cookie_store_createStore = function createStore(_ref) {
     return null;
   };
 
-  var getToken = function getToken() {
+  const getToken = () => {
     currentToken = currentToken || readCookie();
     return currentToken;
   };
 
-  var setToken = function setToken(tokenData) {
+  const setToken = tokenData => {
     currentToken = tokenData;
-    var secureFlag = secure ? {
+    const secureFlag = secure ? {
       secure: true
     } : {}; // Manually stringify tokenData.
     // Express supports passing object to `res.cookie` which will be then automatically
@@ -14224,15 +13530,15 @@ var express_cookie_store_createStore = function createStore(_ref) {
     }, secureFlag));
   };
 
-  var removeToken = function removeToken() {
+  const removeToken = () => {
     currentToken = null;
     res.clearCookie(key);
   };
 
   return {
-    getToken: getToken,
-    setToken: setToken,
-    removeToken: removeToken
+    getToken,
+    setToken,
+    removeToken
   };
 };
 
@@ -14247,28 +13553,24 @@ var express_cookie_store_createStore = function createStore(_ref) {
 
 
 
-var src_createInstance = function createInstance(config) {
-  return new sdk_SharetribeSdk(config);
-};
+const createInstance = config => new sdk_SharetribeSdk(config);
 
-var src_createMultitenantInstance = function createMultitenantInstance(config) {
-  return new multitenant_sdk_MultitenantSharetribeSdk(config);
-}; // Export token stores
+const createMultitenantInstance = config => new multitenant_sdk_MultitenantSharetribeSdk(config); // Export token stores
 
 
-var src_tokenStore = {
+const src_tokenStore = {
   memoryStore: memory_store,
   browserCookieStore: browser_cookie_store,
   expressCookieStore: express_cookie_store
 }; // Export Transit serialization helpers
 
-var src_transit = {
+const src_transit = {
   read: read,
   write: write
 }; // Export util functions
 
-var util = {
-  objectQueryString: utils_objectQueryString
+const util = {
+  objectQueryString: objectQueryString
 };
 /* eslint-disable import/prefer-default-export */
 
