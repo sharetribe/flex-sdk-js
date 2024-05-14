@@ -67,7 +67,7 @@
   "resolutions": {
     "docpress/**/lodash": "^4.17.10",
     "terser-webpack-plugin": "^4.2.3",
-    "fsevents": "^2.3.3"
+    "chokidar": "^3.6.0"
   },
   "babel": {
     "plugins": [
