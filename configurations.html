@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="styles.css?t=6eea839d">
     <script src="assets/script.js?t=93f1a66c"></script>
     <script src="scripts.js?t=bafb4b9e"></script>
-    <script src="sharetribe-flex-sdk-web.js?t=c604765e"></script>
-    <title>Configurations - Sharetribe Flex SDK for JavaScript</title>
+    <script src="sharetribe-flex-sdk-web.js?t=b4b99c3d"></script>
+    <title>Configurations - Sharetribe SDK for JavaScript</title>
     <meta name="viewport" content="width=device-width">
   </head>
   <body class="-menu-visible">
@@ -17,7 +17,7 @@
         <ul>
           <li class="menu-item -level-0 -parent">
             <ul class="submenu">
-              <li class="menu-item -level-1"><a class="link title  link-index" href="index.html">Sharetribe Flex SDK for JavaScript</a>
+              <li class="menu-item -level-1"><a class="link title  link-index" href="index.html">Sharetribe SDK for JavaScript</a>
               </li>
               <li class="menu-item -level-1"><a class="link title  link-features" href="features.html">Features</a>
               </li>
@@ -163,8 +163,13 @@
   <span class="pl-c">// but if you know what you are doing, and you have secured the website properly so</span>
   <span class="pl-c">// that Client Secret is not leaked, you can suppress the warning by setting this</span>
   <span class="pl-c">// to `true`.</span>
-  <span class="hljs-attr">dangerouslyAllowClientSecretInBrowser</span>: <span class="pl-c1">false</span>
+  <span class="hljs-attr">dangerouslyAllowClientSecretInBrowser</span>: <span class="pl-c1">false</span>,
 
+  <span class="pl-c">// Disables deprecation warnings.</span>
+  <span class="pl-c">//</span>
+  <span class="pl-c">// Deprecation warnings are printed with `console.warn` if `console.warn`</span>
+  <span class="pl-c">// is available. Setting this value to `true` will suppress those warnings.</span>
+  <span class="hljs-attr">disableDeprecationWarnings</span>: <span class="pl-c1">false</span>
 });
 </code></pre>
 
