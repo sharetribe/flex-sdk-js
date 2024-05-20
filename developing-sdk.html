@@ -97,14 +97,18 @@
 <pre><code class="lang-sh">$ yarn run build-docs
 </code></pre>
 <h4 id="update-the-github-pages">Update the Github Pages</h4>
-<pre><code class="lang-sh">$ yarn run build
+<pre><code class="lang-sh">$ git checkout master
+$ yarn run build
 $ cp build/sharetribe-flex-sdk-web.js docs/sharetribe-flex-sdk-web.js
 $ yarn run build-docs
 $ mv _docpress ../
 $ git checkout gh-pages
 $ cp -r ../_docpress/* ./
 $ rm -r ../_docpress
-$ // git add, commit, push
+$ git add .
+$ git commit -m <span class="pl-s">&quot;Update docs&quot;</span>
+$ git push --force
+$ git checkout master
 </code></pre>
 <h4 id="release-a-new-version-to-npm">Release a new version to NPM</h4>
 <ol>
