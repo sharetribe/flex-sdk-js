@@ -321,14 +321,14 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
 
 [unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.0...HEAD
 
-[v1.21.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.1...v1.21.0]
-[v1.20.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.0...v1.20.1]
-[v1.20.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.19.0...v1.20.0]
-[v1.19.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.18.1...v1.19.0]
-[v1.18.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.18.0...v1.18.1]
-[v1.18.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.17.0...v1.18.0]
-[v1.17.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.16.0...v1.17.0]
-[v1.16.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.15.0...v1.16.0]
+[v1.21.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.1...v1.21.0
+[v1.20.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.0...v1.20.1
+[v1.20.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.19.0...v1.20.0
+[v1.19.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.18.1...v1.19.0
+[v1.18.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.18.0...v1.18.1
+[v1.18.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.17.0...v1.18.0
+[v1.17.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.16.0...v1.17.0
+[v1.16.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.15.0...v1.16.0
 [v1.15.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.14.1...v1.15.0
 [v1.14.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.14.0...v1.14.1
 [v1.14.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.13.0...v1.14.0
