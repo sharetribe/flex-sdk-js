@@ -24,6 +24,16 @@ the session information may not be saved after successful login. In
 this case, you should configure the SDK to use [memory-based token
 store](./token-store.md#memory-store).
 
+## Login As
+
+**`sdk.loginAs({ code: string, redirect_uri: string, code_verifier: string }) : Promise`**
+
+Logs in the marketplace operator as the marketplace user and returns a Promise.
+
+The session information will be saved to the SDK instance when the
+Promise is resolved. Subsequent requests will be made as the logged in
+user.
+
 ## Login with IdP
 
 **`sdk.loginWithIdp({ idpId: string, idpClientId: string, idpToken: string }) : Promise`**
@@ -45,10 +55,11 @@ user.
 
 **`sdk.authInfo() : Promise(Object)`**
 
-Returns a Promise with an Object as a value. The object may contain two fields:
+Returns a Promise with an Object as a value. The object may contain the following fields:
 
 - `scopes`: an array containing the scopes associated with the currently stored token
 - `isAnonymous`: a boolean denoting if the currently stored token only allows public read access
+- `isLoggedInAs`: a boolean denoting if the marketplace operator is logged in as a marketplace user
 
 To determine if the user is logged in, check if `isAnonymous` equals
 `false`.
