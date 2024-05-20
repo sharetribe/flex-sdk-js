@@ -55,6 +55,7 @@ $ yarn run build-docs
 #### Update the Github Pages
 
 ```sh
+$ git checkout master
 $ yarn run build
 $ cp build/sharetribe-flex-sdk-web.js docs/sharetribe-flex-sdk-web.js
 $ yarn run build-docs
@@ -62,7 +63,10 @@ $ mv _docpress ../
 $ git checkout gh-pages
 $ cp -r ../_docpress/* ./
 $ rm -r ../_docpress
-$ // git add, commit, push
+$ git add .
+$ git commit -m "Update docs"
+$ git push --force
+$ git checkout master
 ```
 
 #### Release a new version to NPM
