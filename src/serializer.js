@@ -3,6 +3,7 @@
 import transit from 'transit-js';
 import _ from 'lodash';
 import { UUID, LatLng, Money, BigDecimal, toType } from './types';
+import { entries } from './utils';
 
 /**
    Composes two readers (sdk type and app type) so that:
@@ -168,14 +169,11 @@ const MapHandler = [
   transit.makeWriteHandler({
     tag: () => 'map',
     rep: v =>
-      _.reduce(
-        v,
-        (map, val, key) => {
-          map.set(transit.keyword(key), val);
-          return map;
-        },
-        transit.map()
-      ),
+      entries(v).reduce((map, entry) => {
+        const [key, val] = entry;
+        map.set(transit.keyword(key), val);
+        return map;
+      }, transit.map()),
   }),
 ];
 

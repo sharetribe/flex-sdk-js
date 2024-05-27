@@ -8,6 +8,11 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Fixed
+
+- Bug: SDK failed to send any extended data if it had a key `length` with a
+  number type value. [#199](https://github.com/sharetribe/flex-sdk-js/pull/199)
+
 ## [v1.21.0] - 2024-05-20
 
 ### Added

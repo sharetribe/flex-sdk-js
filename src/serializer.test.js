@@ -19,6 +19,24 @@ describe('serializer', () => {
     expect(r.read(w.write(testData))).toEqual(testData);
   });
 
+  it('reads and writes Object with key length', () => {
+    // See: https://github.com/lodash/lodash/issues/5870
+    const testData = {
+      a: 1,
+      b: 2,
+      c: [3, 4, 5],
+      d: {
+        e: true,
+      },
+      length: 10,
+    };
+
+    const r = reader();
+    const w = writer();
+
+    expect(r.read(w.write(testData))).toEqual(testData);
+  });
+
   it('reads and writes transit JSON verbose', () => {
     const testData = {
       a: 1,
