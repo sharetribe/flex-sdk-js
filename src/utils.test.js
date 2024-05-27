@@ -1,10 +1,4 @@
-import {
-  fnPath,
-  trimEndSlash,
-  formData,
-  objectQueryString,
-  canonicalAssetPaths,
-} from './utils';
+import { fnPath, trimEndSlash, formData, objectQueryString, canonicalAssetPaths } from './utils';
 
 describe('utils', () => {
   describe('pathToMethodName', () => {
