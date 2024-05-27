@@ -19,7 +19,7 @@ export default class MultipartRequest {
       }
 
       const formDataObj = entries(params).reduce((fd, entry) => {
-        const [val, key] = entry;
+        const [key, val] = entry;
         fd.append(key, val);
         return fd;
       }, new FormData());
