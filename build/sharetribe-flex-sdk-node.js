@@ -11779,8 +11779,8 @@ function () {
 
         var formDataObj = entries(params).reduce(function (fd, entry) {
           var _entry = multipart_request_slicedToArray(entry, 2),
-              val = _entry[0],
-              key = _entry[1];
+              key = _entry[0],
+              val = _entry[1];
 
           fd.append(key, val);
           return fd;
