@@ -1,6 +1,16 @@
 import _ from 'lodash';
 
 /**
+ Null-safe version of Object.entries
+ */
+export const entries = obj => {
+  if (obj == null) {
+    return [];
+  }
+  return Object.entries(obj);
+};
+
+/**
    Take URL and remove the trailing slashes.
 
    Example:
@@ -17,14 +27,13 @@ export const fnPath = path =>
   _.without(path.split('/'), '').map(part => part.replace(/_\w/g, m => m[1].toUpperCase()));
 
 export const formData = params =>
-  _.reduce(
-    params,
-    (pairs, v, k) => {
+  entries(params)
+    .reduce((pairs, entry) => {
+      const [k, v] = entry;
       pairs.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
       return pairs;
-    },
-    []
-  ).join('&');
+    }, [])
+    .join('&');
 
 /**
    Serialize a single attribute in an object query parameter.

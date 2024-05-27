@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { entries } from '../utils';
 
 /**
    Takes `params` from `ctx` and converts to `FormData`
@@ -17,14 +18,11 @@ export default class MultipartRequest {
         );
       }
 
-      const formDataObj = _.reduce(
-        params,
-        (fd, val, key) => {
-          fd.append(key, val);
-          return fd;
-        },
-        new FormData()
-      );
+      const formDataObj = entries(v).reduce((fd, entry) => {
+        const [val, key] = entry;
+        fd.append(key, val);
+        return fd;
+      }, new FormData());
       /* eslint-enable no-undef */
 
       return { params: formDataObj, ...ctx };
