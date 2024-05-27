@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.21.1] - 2024-05-27
+
 ### Fixed
 
 - Bug: SDK failed to send any extended data if it had a key `length` with a
@@ -324,8 +326,9 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
-[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.0...HEAD
+[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.1...HEAD
 
+[v1.21.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.0...v1.21.1
 [v1.21.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.1...v1.21.0
 [v1.20.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.0...v1.20.1
 [v1.20.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.19.0...v1.20.0
