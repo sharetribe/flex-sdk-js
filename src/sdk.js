@@ -13,8 +13,8 @@ import ClearTokenAfterRevoke from './interceptors/clear_token_after_revoke';
 import FetchRefreshTokenForRevoke from './interceptors/fetch_refresh_token_for_revoke';
 import AddAuthTokenResponse from './interceptors/add_auth_token_response';
 import SaveToken from './interceptors/save_token';
-import FetchAuthTokenFromApi from './interceptors/fetch_auth_token_from_api';
 import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
+import FetchAuthTokenDedup from './interceptors/fetch_auth_token_dedup';
 import AddClientIdToParams from './interceptors/add_client_id_to_params';
 import AddClientSecretToParams from './interceptors/add_client_secret_to_params';
 import AddSubjectTokenToParams from './interceptors/add_subject_token_to_params';
@@ -116,8 +116,7 @@ const apis = {
 };
 
 const authenticateInterceptors = [
-  new FetchAuthTokenFromStore(),
-  new FetchAuthTokenFromApi(),
+  new FetchAuthTokenDedup(),
   new RetryWithAnonToken(),
   new RetryWithRefreshToken(),
   new AddAuthHeader(),
@@ -529,6 +528,9 @@ export default class SharetribeSdk {
       typeHandlers: sdkConfig.typeHandlers,
       transitVerbose: sdkConfig.transitVerbose,
       disableDeprecationWarnings: sdkConfig.disableDeprecationWarnings,
+
+      // Mutable memo for deduplicating requests, e.g. auth token requests
+      dedup: {},
     };
 
     // Assign SDK functions to 'this'
