@@ -39,7 +39,7 @@ const parseAuthorizationHeader = value => {
   };
 };
 
-const requireAuth = (config, reject, tokenStore) => {
+const requireAuth = (config, reject, tokenStore, callback) => {
   const { accessToken, tokenType } = parseAuthorizationHeader(config.headers.Authorization);
 
   if (!accessToken && !tokenType) {
@@ -54,7 +54,7 @@ const requireAuth = (config, reject, tokenStore) => {
   const validToken = tokenStore.validToken(accessToken, tokenType);
 
   if (validToken) {
-    return Promise.resolve();
+    return callback();
   }
 
   return reject({
@@ -66,23 +66,19 @@ const requireAuth = (config, reject, tokenStore) => {
 const marketplaceApiHandler = (config, resolve, reject, tokenStore) => {
   switch (config.url) {
     case 'api/users/show':
-      return requireAuth(config, reject, tokenStore).then(() => api.users.show(config, resolve));
+      return requireAuth(config, reject, tokenStore, () => api.users.show(config, resolve));
     case 'api/marketplace/show':
-      return requireAuth(config, reject, tokenStore).then(() =>
-        api.marketplace.show(config, resolve)
-      );
+      return requireAuth(config, reject, tokenStore, () => api.marketplace.show(config, resolve));
     case 'api/listings/search':
-      return requireAuth(config, reject, tokenStore).then(() =>
-        api.listings.search(config, resolve)
-      );
+      return requireAuth(config, reject, tokenStore, () => api.listings.search(config, resolve));
     case 'api/own_listings/create':
-      return requireAuth(config, reject, tokenStore).then(() =>
+      return requireAuth(config, reject, tokenStore, () =>
         api.ownListings.create(config, resolve, reject)
       );
 
     // This returns an error for listing ID "eeeeeeee-eeee-eeee-eeee-000000000500"
     case 'api/listings/show':
-      return requireAuth(config, reject, tokenStore).then(() =>
+      return requireAuth(config, reject, tokenStore, () =>
         api.listings.show(config, resolve, reject)
       );
     default:
@@ -97,7 +93,7 @@ const authApiHandler = (config, resolve, reject, tokenStore) => {
     case 'auth/token':
       return auth.token(config, resolve, reject, tokenStore);
     case 'auth/revoke':
-      return requireAuth(config, reject, tokenStore).then(() =>
+      return requireAuth(config, reject, tokenStore, () =>
         auth.revoke(config, resolve, reject, tokenStore)
       );
     case 'auth/auth_with_idp':
