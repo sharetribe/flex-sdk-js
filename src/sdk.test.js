@@ -341,6 +341,67 @@ describe('new SharetribeSdk', () => {
     });
   });
 
+  it('deduplicates multiple auth token calls', () => {
+    const { sdk, sdkTokenStore } = createSdk();
+
+    return Promise.all([
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+    ]).then(() => {
+      // This relies on the fake implementation returning access token with
+      // increasing number appended to it.
+      expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
+    });
+  });
+
+  it('deduplicates multiple auth token calls, clean up the memo', () => {
+    const { sdk, sdkTokenStore } = createSdk();
+
+    return Promise.all([
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+    ])
+      .then(() => {
+        // This relies on the fake implementation returning access token with
+        // increasing number appended to it.
+        expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
+        sdkTokenStore.removeToken();
+
+        return Promise.all([
+          sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+          sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+        ]);
+      })
+      .then(() => {
+        // This relies on the fake implementation returning access token with
+        // increasing number appended to it.
+        expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-2');
+      });
+  });
+
+  it('deduplicates multiple auth token calls per instance', () => {
+    const adapter = createAdapter();
+    const { sdk, sdkTokenStore } = createSdk({ adapter });
+    const { sdk: sdk2, sdkTokenStore: sdkTokenStore2 } = createSdk({ adapter });
+
+    const p = Promise.all([
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+      sdk.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+      sdk2.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+      sdk2.marketplace.show({ id: '0e0b60fe-d9a2-11e6-bf26-cec0c932ce01' }),
+    ]).then(() => {
+      // This relies on the fake implementation returning access token with
+      // increasing number appended to it.
+      expect(sdkTokenStore.getToken().access_token).toEqual('anonymous-access-1');
+      expect(sdkTokenStore2.getToken().access_token).toEqual('anonymous-access-2');
+    });
+
+    return p;
+  });
+
   it('stores auth token after login', () => {
     const { sdk, sdkTokenStore } = createSdk();
 
