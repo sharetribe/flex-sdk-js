@@ -8,6 +8,17 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.22.0] - 2025-11-24
+
+### Changed
+
+- Concurrent authentication requests are deduplicated. [#200](https://github.com/sharetribe/flex-sdk-js/pull/200)
+  - Previously, making multiple concurrent requests with an unauthenticated SDK
+    instance would trigger separate authentication calls for each request. This
+    often occurred during SSR (Server-Side Rendering) when a user loaded the
+    page for the first time. Now, the SDK triggers only one authentication call,
+    reducing unnecessary requests and improving performance.
+
 ## [v1.21.1] - 2024-05-27
 
 ### Fixed
@@ -326,8 +337,9 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
-[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.1...HEAD
+[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.22.0...HEAD
 
+[v1.21.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.1...v1.22.0
 [v1.21.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.0...v1.21.1
 [v1.21.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.1...v1.21.0
 [v1.20.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.0...v1.20.1

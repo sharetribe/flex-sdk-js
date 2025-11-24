@@ -11345,6 +11345,14 @@ function fetch_auth_token_from_api_createClass(Constructor, protoProps, staticPr
 
 
 /**
+   Create a store for in-flight auth request. 
+*/
+
+function createInFlightAuthRequestStore() {
+  // We simply use a mutable object here
+  return {};
+}
+/**
    If there's no `authToken` stored to the `ctx`, try to fetch new auth token from the API.
 
    Changes to the `ctx`:
@@ -11365,24 +11373,33 @@ function () {
       var tokenStore = ctx.tokenStore,
           authToken = ctx.authToken,
           endpointInterceptors = ctx.endpointInterceptors,
-          clientId = ctx.clientId;
+          clientId = ctx.clientId,
+          inFlightAuthRequestStore = ctx.inFlightAuthRequestStore;
 
       if (authToken) {
         return ctx;
       }
 
-      return context_runner([new SaveToken(), new AddAuthTokenResponse()].concat(fetch_auth_token_from_api_toConsumableArray(endpointInterceptors.auth.token)))({
-        params: {
-          client_id: clientId,
-          grant_type: 'client_credentials',
-          scope: 'public-read'
-        },
-        tokenStore: tokenStore
-      }).then(function (_ref) {
+      if (!inFlightAuthRequestStore.inFlightRequest) {
+        inFlightAuthRequestStore.inFlightRequest = context_runner([new SaveToken(), new AddAuthTokenResponse()].concat(fetch_auth_token_from_api_toConsumableArray(endpointInterceptors.auth.token)))({
+          params: {
+            client_id: clientId,
+            grant_type: 'client_credentials',
+            scope: 'public-read'
+          },
+          tokenStore: tokenStore
+        });
+      }
+
+      return inFlightAuthRequestStore.inFlightRequest.then(function (_ref) {
         var newAuthToken = _ref.authToken;
         return fetch_auth_token_from_api_objectSpread({}, ctx, {
           authToken: newAuthToken
         });
+      }).then(function (newCtx) {
+        // Clean up
+        inFlightAuthRequestStore.inFlightRequest = null;
+        return newCtx;
       });
     }
   }]);
@@ -12736,7 +12753,7 @@ var external_axios_default = /*#__PURE__*/__webpack_require__.n(external_axios_)
 
 // CONCATENATED MODULE: ./src/version.js
 // Update this when updating package.json
-var sdkVersion = '1.21.1';
+var sdkVersion = '1.22.0';
 /* harmony default export */ var src_version = (sdkVersion);
 // CONCATENATED MODULE: ./src/runtime.js
 
@@ -13599,7 +13616,8 @@ function SharetribeSdk(userSdkConfig) {
     clientSecret: sdkConfig.clientSecret,
     typeHandlers: sdkConfig.typeHandlers,
     transitVerbose: sdkConfig.transitVerbose,
-    disableDeprecationWarnings: sdkConfig.disableDeprecationWarnings
+    disableDeprecationWarnings: sdkConfig.disableDeprecationWarnings,
+    inFlightAuthRequestStore: createInFlightAuthRequestStore()
   }; // Assign SDK functions to 'this'
 
   sdk_marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(function (_ref15) {
