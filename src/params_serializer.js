@@ -75,6 +75,10 @@ const paramsSerializer = params => {
     return params;
   }
 
+  if (Array.isArray(params)) {
+    return _.map(params, value => paramsSerializer(value)).join('&');
+  }
+
   return _.compact(
     _.map(params, (value, key) => {
       const serialized = serialize(key, value);

@@ -70,4 +70,21 @@ describe('params serializer', () => {
   it('returns string as is', () => {
     expect(ps('bounds=12.34,-56.70001,-45.67,12')).toEqual('bounds=12.34,-56.70001,-45.67,12');
   });
+
+  it('serializes query param parts which can be string or object', () => {
+    expect(
+      ps([
+        'bounds=12.34,-56.70001,-45.67,12',
+        { perPage: 10 },
+        {
+          ids: [
+            new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce01'),
+            new UUID('0e0b60fe-d9a2-11e6-bf26-cec0c932ce02'),
+          ],
+        },
+      ])
+    ).toEqual(
+      'bounds=12.34,-56.70001,-45.67,12&perPage=10&ids=0e0b60fe-d9a2-11e6-bf26-cec0c932ce01,0e0b60fe-d9a2-11e6-bf26-cec0c932ce02'
+    );
+  });
 });
