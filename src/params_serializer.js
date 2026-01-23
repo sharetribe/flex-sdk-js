@@ -70,8 +70,12 @@ const serialize = (key, value) => {
   return [key, encode(v)];
 };
 
-const paramsSerializer = params =>
-  _.compact(
+const paramsSerializer = params => {
+  if (typeof params === 'string') {
+    return params;
+  }
+
+  return _.compact(
     _.map(params, (value, key) => {
       const serialized = serialize(key, value);
 
@@ -82,5 +86,6 @@ const paramsSerializer = params =>
       return null;
     })
   ).join('&');
+};
 
 export default paramsSerializer;

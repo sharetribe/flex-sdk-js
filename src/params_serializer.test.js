@@ -66,4 +66,8 @@ describe('params serializer', () => {
       ps({ a: null, b: undefined, c: 'value', d: false, e: 0, f: '', g: [], h: [1, 2, 3] })
     ).toEqual('c=value&d=false&e=0&f=&g=&h=1,2,3');
   });
+
+  it('returns string as is', () => {
+    expect(ps('bounds=12.34,-56.70001,-45.67,12')).toEqual('bounds=12.34,-56.70001,-45.67,12');
+  });
 });
