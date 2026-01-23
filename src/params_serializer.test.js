@@ -87,4 +87,15 @@ describe('params serializer', () => {
       'bounds=12.34,-56.70001,-45.67,12&perPage=10&ids=0e0b60fe-d9a2-11e6-bf26-cec0c932ce01,0e0b60fe-d9a2-11e6-bf26-cec0c932ce02'
     );
   });
+
+  it('serializes query param parts, left to right', () => {
+    expect(
+      ps([
+        'perPage=5',
+        { perPage: 10 },
+      ])
+    ).toEqual(
+      'perPage=10'
+    );
+  });
 });

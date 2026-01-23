@@ -70,17 +70,28 @@ const serialize = (key, value) => {
   return [key, encode(v)];
 };
 
-const paramsSerializer = params => {
+const toParamsObj = params => {
   if (typeof params === 'string') {
-    return params;
+    /* global URLSearchParams */
+    return Object.fromEntries((new URLSearchParams(params)).entries());
   }
+
+  return params;
+}
+
+const paramsSerializer = params => {
+  let parts;
 
   if (Array.isArray(params)) {
-    return _.map(params, value => paramsSerializer(value)).join('&');
+      parts = params;
+  } else {
+      parts = [params];
   }
 
+  const merged = Object.assign({}, ...parts.map(toParamsObj));
+
   return _.compact(
-    _.map(params, (value, key) => {
+    _.map(merged, (value, key) => {
       const serialized = serialize(key, value);
 
       if (serialized) {
