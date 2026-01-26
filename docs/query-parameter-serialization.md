@@ -90,3 +90,39 @@ sdk.listings.show({
   })
 })
 ```
+
+`sharetribeSdk.util.queryString` takes the query parameters as a string, object, or an array of strings or objects.
+
+Examples:
+
+String query parameter is returned as is:
+
+```js
+sharetribeSdk.util.queryString('id=d89795b4-4a8d-4969-8a9c-54e95729644d')
+
+// Returns: 'id=d89795b4-4a8d-4969-8a9c-54e95729644d'
+```
+
+Object is serialized:
+
+```js
+sharetribeSdk.util.queryString({page: 10, perPage: 20})
+
+// Returns: 'page=10&perPage=20'
+```
+
+Array of query parameter parts:
+
+```js
+sharetribeSdk.util.queryString(['id=d89795b4-4a8d-4969-8a9c-54e95729644d', {page: 10, perPage: 20}])
+
+// Returns: 'id=d89795b4-4a8d-4969-8a9c-54e95729644d&page=10&perPage=20'
+```
+
+Query parameter parts are merged left-to-right:
+
+```js
+sharetribeSdk.util.queryString(['page=3', {page: 15, perPage: 20}])
+
+// Returns: 'page=15&perPage=20'
+```
