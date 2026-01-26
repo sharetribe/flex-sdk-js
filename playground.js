@@ -245,10 +245,15 @@ if (options.apidocs) {
   process.exit();
 }
 
-if (options.help || (!options.raw && options.clientid == null)) {
+if (options.help) {
   printUsage();
   process.exit();
 };
+
+if (!options.raw && options.clientid == null) {
+  console.log(`Please provide client ID with --clientid or start a start playground with --raw`)
+  process.exit();
+}
 
 let scriptSrc;
 if (options.script) {
@@ -257,8 +262,20 @@ if (options.script) {
   scriptSrc = null;
 }
 
+if (!options.clientid && options.user) {
+    console.log(`You can't use --user options without client ID.`)
+}
+
+else if (!options.clientid && options.password) {
+    console.log(`You can't use --password options without client ID.`)
+}
+
+else if (!!options.user !== !!options.password) { 
+    console.log(`You must use both --user and --password`)
+}
+
 // If client ID is provided on start, instantiate and expose sdk
-if (options.clientid) {
+else if (options.clientid) {
   const sdk = sharetribeSdk.createInstance({
     clientId: options.clientid,
     tokenStore: sharetribeSdk.tokenStore.memoryStore()

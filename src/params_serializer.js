@@ -70,9 +70,28 @@ const serialize = (key, value) => {
   return [key, encode(v)];
 };
 
-const paramsSerializer = params =>
-  _.compact(
-    _.map(params, (value, key) => {
+const toParamsObj = params => {
+  if (typeof params === 'string') {
+    /* global URLSearchParams */
+    return Object.fromEntries(new URLSearchParams(params).entries());
+  }
+
+  return params;
+};
+
+const paramsSerializer = params => {
+  let parts;
+
+  if (Array.isArray(params)) {
+    parts = params;
+  } else {
+    parts = [params];
+  }
+
+  const merged = Object.assign({}, ...parts.map(toParamsObj));
+
+  return _.compact(
+    _.map(merged, (value, key) => {
       const serialized = serialize(key, value);
 
       if (serialized) {
@@ -82,5 +101,6 @@ const paramsSerializer = params =>
       return null;
     })
   ).join('&');
+};
 
 export default paramsSerializer;
