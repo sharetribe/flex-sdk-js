@@ -8,6 +8,11 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Added
+
+- Added ability to pass query parameters as a string or query parts [#202](https://github.com/sharetribe/flex-sdk-js/pull/202)
+- Added `sharetribeSdk.util.queryString` function for query parameter serialization [#202](https://github.com/sharetribe/flex-sdk-js/pull/202)
+
 ## [v1.22.0] - 2025-11-24
 
 ### Changed
