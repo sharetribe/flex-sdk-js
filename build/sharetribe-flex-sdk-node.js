@@ -10524,6 +10524,14 @@ var reviver = function reviver(key, value) {
 
 
 
+function params_serializer_toConsumableArray(arr) { return params_serializer_arrayWithoutHoles(arr) || params_serializer_iterableToArray(arr) || params_serializer_nonIterableSpread(); }
+
+function params_serializer_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function params_serializer_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function params_serializer_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 
@@ -10600,8 +10608,26 @@ var serialize = function serialize(key, value) {
   return [key, encode(v)];
 };
 
+var toParamsObj = function toParamsObj(params) {
+  if (typeof params === 'string') {
+    /* global URLSearchParams */
+    return Object.fromEntries(new URLSearchParams(params).entries());
+  }
+
+  return params;
+};
+
 var params_serializer_paramsSerializer = function paramsSerializer(params) {
-  return compact_default()(map_default()(params, function (value, key) {
+  var parts;
+
+  if (Array.isArray(params)) {
+    parts = params;
+  } else {
+    parts = [params];
+  }
+
+  var merged = Object.assign.apply(Object, [{}].concat(params_serializer_toConsumableArray(parts.map(toParamsObj))));
+  return compact_default()(map_default()(merged, function (value, key) {
     var serialized = serialize(key, value);
 
     if (serialized) {
@@ -14350,6 +14376,7 @@ var express_cookie_store_createStore = function createStore(_ref) {
 
 
 
+
 var src_createInstance = function createInstance(config) {
   return new sdk_SharetribeSdk(config);
 };
@@ -14371,7 +14398,8 @@ var src_transit = {
 }; // Export util functions
 
 var util = {
-  objectQueryString: utils_objectQueryString
+  objectQueryString: utils_objectQueryString,
+  queryString: params_serializer
 };
 /* eslint-disable import/prefer-default-export */
 
