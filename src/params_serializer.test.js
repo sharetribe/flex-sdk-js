@@ -89,13 +89,6 @@ describe('params serializer', () => {
   });
 
   it('serializes query param parts, left to right', () => {
-    expect(
-      ps([
-        'perPage=5',
-        { perPage: 10 },
-      ])
-    ).toEqual(
-      'perPage=10'
-    );
+    expect(ps(['perPage=5', { perPage: 10 }])).toEqual('perPage=10');
   });
 });

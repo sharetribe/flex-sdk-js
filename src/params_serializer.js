@@ -73,19 +73,19 @@ const serialize = (key, value) => {
 const toParamsObj = params => {
   if (typeof params === 'string') {
     /* global URLSearchParams */
-    return Object.fromEntries((new URLSearchParams(params)).entries());
+    return Object.fromEntries(new URLSearchParams(params).entries());
   }
 
   return params;
-}
+};
 
 const paramsSerializer = params => {
   let parts;
 
   if (Array.isArray(params)) {
-      parts = params;
+    parts = params;
   } else {
-      parts = [params];
+    parts = [params];
   }
 
   const merged = Object.assign({}, ...parts.map(toParamsObj));
