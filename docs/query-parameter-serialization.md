@@ -7,10 +7,10 @@ The SDK helps users serialize query parameters from a JavaScript object to a que
 
 ## `sharetribeSdk.util.objectQueryString`
 
-Some endpoints in the Sharetribe Marketplace API require a specific syntax that allows
-passing one or more key-value pairs as the value of a single query parameter.
-The keys and values are colon-separated whereas the pairs are separated by
-semicolons. For example, when requesting custom image variants:
+Quering custom image variats with Sharetribe Marketplace API requires a specific
+syntax that allows passing one or more key-value pairs as the value of a single
+query parameter. The keys and values are colon-separated whereas the pairs are
+separated by semicolons. For example, when requesting custom image variants:
 
 ``` js
 sdk.listings.show({
