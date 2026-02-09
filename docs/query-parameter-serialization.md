@@ -91,6 +91,30 @@ sdk.listings.show({
 })
 ```
 
+You can also combine objects and strings directly in SDK methods by passing an array.
+
+For example, the following call:
+
+```js
+sdk.listings.query([
+  'price=100,1000',
+  { pub_gears: ',23' },
+  'perPage=10'
+])
+```
+
+is syntactic sugar for:
+
+```js
+sdk.listings.query(
+  sharetribeSdk.util.queryString([
+    'price=100,1000',
+    { pub_gears: ',23' },
+    'perPage=10'
+  ])
+)
+```
+
 `sharetribeSdk.util.queryString` takes the query parameters as a string, object, or an array of strings or objects.
 
 Examples:
