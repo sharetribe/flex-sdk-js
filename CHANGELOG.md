@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.23.0] - 2026-02-12
+
 ### Added
 
 - Added ability to pass query parameters as a string or query parts [#202](https://github.com/sharetribe/flex-sdk-js/pull/202)
@@ -342,9 +344,10 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
-[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.22.0...HEAD
+[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.23.0...HEAD
 
-[v1.21.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.1...v1.22.0
+[v1.23.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.22.0...v1.23.0
+[v1.22.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.1...v1.22.0
 [v1.21.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.0...v1.21.1
 [v1.21.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.1...v1.21.0
 [v1.20.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.20.0...v1.20.1
