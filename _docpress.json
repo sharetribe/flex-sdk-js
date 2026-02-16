@@ -284,10 +284,22 @@
             "slug": "serializing-types-to-json"
           },
           {
-            "title": "Object query parameters",
-            "source": "docs/object-query-parameters.md",
-            "url": "object-query-parameters.html",
-            "slug": "object-query-parameters"
+            "title": "Query parameter serialization",
+            "source": "docs/query-parameter-serialization.md",
+            "url": "query-parameter-serialization.html",
+            "slug": "query-parameter-serialization",
+            "headings": [
+              {
+                "title": "`sharetribeSdk.util.objectQueryString`",
+                "depth": 2,
+                "id": "sharetribesdk.util.objectquerystring"
+              },
+              {
+                "title": "`sharetribeSdk.util.queryString`",
+                "depth": 2,
+                "id": "sharetribesdk.util.querystring"
+              }
+            ]
           },
           {
             "title": "Token store",
@@ -627,11 +639,23 @@
       "pageTitle": "Serializing types to JSON",
       "slug": "serializing-types-to-json"
     },
-    "object-query-parameters.html": {
-      "source": "docs/object-query-parameters.md",
-      "title": "Object query parameters - Sharetribe SDK for JavaScript",
-      "pageTitle": "Object query parameters",
-      "slug": "object-query-parameters"
+    "query-parameter-serialization.html": {
+      "source": "docs/query-parameter-serialization.md",
+      "title": "Query parameter serialization - Sharetribe SDK for JavaScript",
+      "pageTitle": "Query parameter serialization",
+      "slug": "query-parameter-serialization",
+      "headings": [
+        {
+          "title": "`sharetribeSdk.util.objectQueryString`",
+          "depth": 2,
+          "id": "sharetribesdk.util.objectquerystring"
+        },
+        {
+          "title": "`sharetribeSdk.util.queryString`",
+          "depth": 2,
+          "id": "sharetribesdk.util.querystring"
+        }
+      ]
     },
     "token-store.html": {
       "source": "docs/token-store.md",
@@ -705,7 +729,7 @@
     "docs/configurations.md": "configurations.html",
     "docs/your-own-types.md": "your-own-types.html",
     "docs/serializing-types-to-json.md": "serializing-types-to-json.html",
-    "docs/object-query-parameters.md": "object-query-parameters.html",
+    "docs/query-parameter-serialization.md": "query-parameter-serialization.html",
     "docs/token-store.md": "token-store.html",
     "docs/sharing-session-between-client-and-server.md": "sharing-session-between-client-and-server.html",
     "docs/keep-alive.md": "keep-alive.html",

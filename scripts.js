@@ -27,10 +27,37 @@
     console.log("");
   }
 
+  function loadKapaWidget() {
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://widget.kapa.ai/kapa-widget.bundle.js';
+    script.setAttribute('data-website-id', 'a0adab85-c992-46fc-baf9-f7ee88597390');
+    script.setAttribute('data-project-name', 'Sharetribe');
+    script.setAttribute('data-project-color', '#181616');
+    script.setAttribute('data-project-logo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqqHt-LCCSvT41C827y-LrXf1etlv8uqUV_g&s');
+    script.setAttribute('data-bot-protection-mechanism', 'hcaptcha');
+    script.setAttribute('data-modal-override-open-id', 'ask-ai-input');
+    script.setAttribute('data-modal-override-open-class', 'search-input');
+    script.setAttribute('data-user-analytics-fingerprint-enabled', 'true');
+    script.setAttribute('data-modal-title', 'Sharetribe AI Assistant');
+    script.setAttribute('data-modal-example-questions-title', 'Try asking me...');
+    script.setAttribute('data-modal-disclaimer', 'This **AI assistant answers Sharetribe questions** using our [documentation](https://www.sharetribe.com/docs/), [API reference](https://www.sharetribe.com/api-reference/), [help center](https://www.sharetribe.com/help/en/), [blogs](https://www.sharetribe.com/developer-blog/), [SDK reference](https://sharetribe.github.io/flex-sdk-js/) and [github files](https://github.com/sharetribe/web-template/).');
+    script.setAttribute('data-button-text-color', '#FFFFFF');
+    script.setAttribute('data-modal-header-bg-color', '#181616');
+    script.setAttribute('data-modal-title-color', '#FFFFFF');
+    script.setAttribute('data-consent-required', 'true');
+    script.setAttribute('data-consent-screen-title', 'Using our AI assistant requires anonymous user tracking');
+    script.setAttribute('data-consent-screen-disclaimer', "By clicking 'Allow tracking and use AI assistant', you consent to anonymous user tracking which helps us improve our service. We don't collect any personally identifiable information.");
+    script.setAttribute('data-consent-screen-accept-button-text', 'Allow tracking and use AI assistant');
+    script.setAttribute('data-consent-screen-reject-button-text', 'No, thanks');
+    document.head.appendChild(script);
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     // Render anchors when page is loaded
     renderAnchors();
     printWelcomeMessage();
+    loadKapaWidget();
   }, false);
 
   document.addEventListener('pjax:success', function() {
