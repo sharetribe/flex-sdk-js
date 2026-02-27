@@ -68,7 +68,7 @@ The third parameter for *command* methods is `opts`.
 
 Here's a list of available `opts`:
 
-* `onUploadProcess`: Takes a callback function that is called with [ProgressEvent](https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent).
+* `onUploadProgress`: Takes a callback function that is called with [ProgressEvent](https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent).
 
 **Example:**
 
