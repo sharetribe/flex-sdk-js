@@ -252,6 +252,30 @@ export const marketplaceApi = [
     path: 'sitemap_data/query_assets',
     method: 'get',
   },
+  {
+    path: 'own_files/create',
+    method: 'post',
+  },
+  {
+    path: 'own_files/show',
+    method: 'get',
+  },
+  {
+    path: 'file_uploads/create',
+    method: 'post',
+  },
+  {
+    path: 'own_file_downloads/create',
+    method: 'post',
+  },
+  {
+    path: 'file_downloads/create',
+    method: 'post',
+  },
+  {
+    path: 'files/show',
+    method: 'get',
+  },
 ];
 
 /**
