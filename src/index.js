@@ -1,6 +1,7 @@
 import SharetribeSdk from './sdk';
 import MultitenantSharetribeSdk from './multitenant_sdk';
 import * as types from './types';
+import * as file from './file';
 import browserCookieStore from './browser_cookie_store';
 import expressCookieStore from './express_cookie_store';
 import memoryStore from './memory_store';
@@ -25,4 +26,4 @@ const transit = { read, write };
 const util = { objectQueryString, queryString: paramsSerializer };
 
 /* eslint-disable import/prefer-default-export */
-export { createInstance, createMultitenantInstance, types, tokenStore, transit, util };
+export { createInstance, createMultitenantInstance, types, tokenStore, transit, util, file };
