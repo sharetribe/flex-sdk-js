@@ -19,15 +19,15 @@ export const metadata = file => {
 };
 
 /**
-   Upload a file to a pre-signed URL obtained from `sdk.fileUploads.create()`.
+   Upload a file to a URL obtained from `sdk.fileUploads.create()`.
 
-   This performs a direct HTTP request to cloud storage — it does not go
+   This performs a direct HTTP request to cloud storage. It does not go
    through the SDK interceptor pipeline.
 
    @param {Object} params
-   @param {string} params.method - HTTP method (from fileUpload response, always "PUT")
-   @param {string} params.url - Pre-signed upload URL
-   @param {Object} params.headers - Headers to include (from fileUpload response)
+   @param {string} params.method - HTTP method
+   @param {string} params.url - Upload URL
+   @param {Object} params.headers - Headers to include
    @param {*} params.file - The file content (File, Buffer, ReadableStream, etc.)
    @returns {Promise} Axios response promise
  */
