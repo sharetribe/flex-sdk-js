@@ -2,9 +2,6 @@ import axios from 'axios';
 
 /**
    Extract file metadata needed for `sdk.ownFiles.create()`.
-
-   @param {Object} file - A browser File object or any object with `name`, `type`, and `size` properties.
-   @returns {{ name: string, mimeType: string, size: number }}
  */
 export const metadata = file => {
   if (!file) {
@@ -23,13 +20,6 @@ export const metadata = file => {
 
    This performs a direct HTTP request to cloud storage. It does not go
    through the SDK interceptor pipeline.
-
-   @param {Object} params
-   @param {string} params.method - HTTP method
-   @param {string} params.url - Upload URL
-   @param {Object} params.headers - Headers to include
-   @param {*} params.file - The file content (File, Buffer, ReadableStream, etc.)
-   @returns {Promise} Axios response promise
  */
 export const upload = ({ method, url, headers, file }) => {
   if (!url) {
