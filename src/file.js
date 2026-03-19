@@ -21,7 +21,7 @@ export const metadata = file => {
    This performs a direct HTTP request to cloud storage. It does not go
    through the SDK interceptor pipeline.
  */
-export const upload = ({ method, url, headers, file }) => {
+export const upload = ({ method, url, headers, file, onUploadProgress }) => {
   if (!url) {
     throw new Error('url is required');
   }
@@ -35,5 +35,6 @@ export const upload = ({ method, url, headers, file }) => {
     url,
     headers: headers || {},
     data: file,
+    onUploadProgress,
   });
 };
