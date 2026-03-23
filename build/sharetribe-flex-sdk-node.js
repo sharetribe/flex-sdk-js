@@ -13723,9 +13723,6 @@ function MultitenantSharetribeSdk(userSdkConfig) {
 
 /**
    Extract file metadata needed for `sdk.ownFiles.create()`.
-
-   @param {Object} file - A browser File object or any object with `name`, `type`, and `size` properties.
-   @returns {{ name: string, mimeType: string, size: number }}
  */
 var metadata = function metadata(file) {
   if (!file) {
@@ -13739,23 +13736,17 @@ var metadata = function metadata(file) {
 };
 
 /**
-   Upload a file to a pre-signed URL obtained from `sdk.fileUploads.create()`.
+   Upload a file to a URL obtained from `sdk.fileUploads.create()`.
 
-   This performs a direct HTTP request to cloud storage — it does not go
+   This performs a direct HTTP request to cloud storage. It does not go
    through the SDK interceptor pipeline.
-
-   @param {Object} params
-   @param {string} params.method - HTTP method (from fileUpload response, always "PUT")
-   @param {string} params.url - Pre-signed upload URL
-   @param {Object} params.headers - Headers to include (from fileUpload response)
-   @param {*} params.file - The file content (File, Buffer, ReadableStream, etc.)
-   @returns {Promise} Axios response promise
  */
 var file_upload = function upload(_ref) {
   var method = _ref.method,
     url = _ref.url,
     headers = _ref.headers,
-    file = _ref.file;
+    file = _ref.file,
+    onUploadProgress = _ref.onUploadProgress;
   if (!url) {
     throw new Error('url is required');
   }
@@ -13766,7 +13757,8 @@ var file_upload = function upload(_ref) {
     method: method || 'PUT',
     url: url,
     headers: headers || {},
-    data: file
+    data: file,
+    onUploadProgress: onUploadProgress
   });
 };
 // CONCATENATED MODULE: ./src/express_cookie_store.js
