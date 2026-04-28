@@ -8,6 +8,10 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Added
+
+- Update jsonwebtoken to 9.0.3 [#207](https://github.com/sharetribe/flex-sdk-js/pull/207)
+
 ## [v1.23.0] - 2026-02-12
 
 ### Added
