@@ -9,6 +9,7 @@
   * [Calling the Marketplace API](./calling-the-api.md)
   * [Calling the Asset Delivery API](./calling-the-asset-delivery-api.md)
   * [Types](./types.md)
+  * [File Uploads and Downloads](./file-uploads-and-downloads.md)
 * Advanced
   * [Configurations](./configurations.md)
   * [Your own types](./your-own-types.md)
