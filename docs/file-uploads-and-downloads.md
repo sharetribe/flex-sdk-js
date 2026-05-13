@@ -1,9 +1,10 @@
 # File Uploads and Downloads
 
 The SDK supports file uploads and downloads through the Marketplace API. The
-upload flow uses a two-step process: first request a presigned upload URL from
-the API, then upload the file directly to cloud storage using that URL. The SDK
-provides helper functions in `sharetribe-flex-sdk/file` to make this easier.
+upload flow is a three-step process: first register the file with the Marketplace
+API, then request a presigned upload URL, and finally upload the file directly
+to cloud storage. The SDK provides helper functions in `sharetribe-flex-sdk/file`
+to make this easier.
 
 ## File helper functions
 
@@ -16,7 +17,8 @@ const { file } = sharetribeSdk;
 
 ### `file.metadata(file)`
 
-Extracts the metadata needed for `sdk.ownFiles.create()` from a browser
+Extracts the metadata needed for the first step of the upload flow,
+`sdk.ownFiles.create()`, from a browser
 [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File) object.
 
 **Parameters:**
@@ -46,17 +48,16 @@ const metadata = file.metadata(selectedFile);
 ### `file.upload({ method, url, headers, file, onUploadProgress })`
 
 Uploads a file directly to cloud storage using a presigned URL obtained from
-`sdk.fileUploads.create()`. This function bypasses the SDK interceptor pipeline
-and sends the request directly to the cloud storage URL.
+`sdk.fileUploads.create()`.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `url` | `string` | Yes | The presigned upload URL from `sdk.fileUploads.create()` |
+| `url` | `string` | Yes | The presigned upload URL — taken from `attributes.url` in the `sdk.fileUploads.create()` response |
 | `file` | `File` | Yes | The file to upload |
-| `method` | `string` | No | HTTP method, defaults to `'PUT'` |
-| `headers` | `object` | No | Additional HTTP headers to send with the request |
+| `method` | `string` | No | HTTP method — taken from `attributes.method` in the `sdk.fileUploads.create()` response, defaults to `'PUT'` |
+| `headers` | `object` | No | Additional HTTP headers — taken from `attributes.headers` in the `sdk.fileUploads.create()` response |
 | `onUploadProgress` | `function` | No | Callback called with a [ProgressEvent](https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent) as the file uploads |
 
 **Returns:** A Promise that resolves when the upload is complete.
@@ -78,15 +79,16 @@ file.upload({
 
 Uploading a file requires three steps:
 
-1. Request a presigned upload URL with `sdk.fileUploads.create()`
-2. Upload the file directly to cloud storage with `file.upload()`
-3. Register the file with the Marketplace API with `sdk.ownFiles.create()`
+1. Register the file with the Marketplace API with `sdk.ownFiles.create()`
+2. Request a presigned upload URL with `sdk.fileUploads.create({ fileId })`
+3. Upload the file directly to cloud storage with `file.upload()`
 
 **Example:**
 
 ```js
 const sharetribeSdk = require('sharetribe-flex-sdk');
-const { file } = sharetribeSdk;
+const { file, types } = sharetribeSdk;
+const { UUID } = types;
 
 const sdk = sharetribeSdk.createInstance({
   clientId: 'your-client-id',
@@ -94,30 +96,29 @@ const sdk = sharetribeSdk.createInstance({
 
 const fileInput = document.querySelector('input[type="file"]');
 const selectedFile = fileInput.files[0];
+const metadata = file.metadata(selectedFile);
 
-// Step 1: Request a presigned upload URL
-sdk.fileUploads.create({})
-  .then(uploadResponse => {
+// Step 1: Register the file with the Marketplace API
+sdk.ownFiles.create({
+  name: metadata.name,
+  mimeType: metadata.mimeType,
+  size: metadata.size,
+})
+  .then(ownFileResponse => {
+    const fileId = ownFileResponse.data.data.id;
+
+    // Step 2: Request a presigned upload URL for this file
+    return sdk.fileUploads.create({ fileId })
+      .then(uploadResponse => ({ fileId, uploadResponse }));
+  })
+  .then(({ uploadResponse }) => {
     const { method, url, headers } = uploadResponse.data.data.attributes;
 
-    // Step 2: Upload the file directly to cloud storage
-    return file.upload({ method, url, headers, file: selectedFile })
-      .then(() => uploadResponse);
+    // Step 3: Upload the file directly to cloud storage
+    return file.upload({ method, url, headers, file: selectedFile });
   })
-  .then(uploadResponse => {
-    const uploadId = uploadResponse.data.data.id;
-    const metadata = file.metadata(selectedFile);
-
-    // Step 3: Register the file with the Marketplace API
-    return sdk.ownFiles.create({
-      name: metadata.name,
-      mimeType: metadata.mimeType,
-      size: metadata.size,
-      uploadId,
-    });
-  })
-  .then(ownFileResponse => {
-    console.log('File uploaded and registered:', ownFileResponse.data.data.id);
+  .then(() => {
+    console.log('File uploaded successfully');
   })
   .catch(e => {
     console.error('Upload failed:', e);
