@@ -14334,7 +14334,7 @@ var metadata = function metadata(file) {
 
   return {
     name: file.name,
-    mimeType: file.type,
+    mimeType: file.type || 'application/octet-stream',
     size: file.size
   };
 };
