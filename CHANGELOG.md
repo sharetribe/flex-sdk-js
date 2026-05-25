@@ -8,7 +8,22 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.24.0] - 2026-05-25
+
 ### Added
+
+- New endpoints for files management [#205](https://github.com/sharetribe/flex-sdk-js/pull/205)
+  - `sdk.ownFiles.create(/* ... */)`
+  - `sdk.ownFiles.show(/* ... */)`
+  - `sdk.files.show(/* ... */)`
+  - `sdk.fileUploads.create(/* ... */)`
+  - `sdk.ownFileDownloads.create(/* ... */)`
+  - `sdk.fileDownloads.create(/* ... */)`
+- New utility functions for file uploads [#205](https://github.com/sharetribe/flex-sdk-js/pull/205)
+  - `sharetribeSdk.file.metadata(file)`
+  - `sharetribeSdk.file.upload({ method, url, headers, file, onUploadProgress })`
+
+### Changed
 
 - Update jsonwebtoken to 9.0.3 [#207](https://github.com/sharetribe/flex-sdk-js/pull/207)
 
