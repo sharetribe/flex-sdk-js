@@ -109,9 +109,8 @@ sdk.ownFiles.create({
 
     // Step 2: Request a presigned upload URL for this file
     return sdk.fileUploads.create({ fileId })
-      .then(uploadResponse => ({ fileId, uploadResponse }));
   })
-  .then(({ uploadResponse }) => {
+  .then(uploadResponse => {
     const { method, url, headers } = uploadResponse.data.data.attributes;
 
     // Step 3: Upload the file directly to cloud storage
