@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/style.css?t=90051322">
+    <link rel="stylesheet" href="styles.css?t=6eea839d">
+    <script src="assets/script.js?t=93f1a66c"></script>
+    <script src="scripts.js?t=8de2c9f7"></script>
+    <script src="sharetribe-flex-sdk-web.js?t=cfd3a865"></script>
+    <title>File Uploads and Downloads - Sharetribe SDK for JavaScript</title>
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body class="-menu-visible">
+    <div class="doc-layout">
+      <div class="toggle menu-toggle js-menu-toggle"></div>
+      <div class="menu toc-menu">
+        <ul>
+          <li class="menu-item -level-0 -parent">
+            <ul class="submenu">
+              <li class="menu-item -level-1"><a class="link title  link-index" href="index.html">Sharetribe SDK for JavaScript</a>
+              </li>
+              <li class="menu-item -level-1"><a class="link title  link-features" href="features.html">Features</a>
+              </li>
+              <li class="menu-item -level-1"><a class="link title  link-try-it-in-browser" href="try-it-in-browser.html">Try it in browser!</a>
+              </li>
+              <li class="menu-item -level-1"><a class="link title  link-try-it-in-the-playground" href="try-it-in-the-playground.html">Try it in the API Playground!</a>
+              </li>
+              <li class="menu-item -level-1 -parent"><span class="title">Getting started</span>
+                <ul class="submenu">
+                  <li class="menu-item -level-2"><a class="link title  link-authentication" href="authentication.html">Authentication</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-calling-the-api" href="calling-the-api.html">Calling the Marketplace API</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-calling-the-asset-delivery-api" href="calling-the-asset-delivery-api.html">Calling the Asset Delivery API</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-types" href="types.html">Types</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title -active link-file-uploads-and-downloads" href="file-uploads-and-downloads.html">File Uploads and Downloads</a>
+                    <ul class="headings heading-list">
+                      <li class="heading-item -depth-2"><a class="hlink link-file-helper-functions" href="#file-helper-functions">File helper functions</a>
+                        <ul class="heading-list -depth-2">
+                          <li class="heading-item -depth-3"><a class="hlink link-file.metadata(file)" href="#file.metadata(file)">`file.metadata(file)`</a>
+                          </li>
+                          <li class="heading-item -depth-3"><a class="hlink link-file.upload(-method-url-headers-file-onuploadprogress-)" href="#file.upload(-method-url-headers-file-onuploadprogress-)">`file.upload({ method, url, headers, file, onUploadProgress })`</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li class="heading-item -depth-2"><a class="hlink link-uploading-a-file" href="#uploading-a-file">Uploading a file</a>
+                      </li>
+                      <li class="heading-item -depth-2"><a class="hlink link-tracking-upload-progress" href="#tracking-upload-progress">Tracking upload progress</a>
+                      </li>
+                      <li class="heading-item -depth-2"><a class="hlink link-downloading-a-file" href="#downloading-a-file">Downloading a file</a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-item -level-1 -parent"><span class="title">Advanced</span>
+                <ul class="submenu">
+                  <li class="menu-item -level-2"><a class="link title  link-configurations" href="configurations.html">Configurations</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-your-own-types" href="your-own-types.html">Your own types</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-serializing-types-to-json" href="serializing-types-to-json.html">Serializing types to JSON</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-query-parameter-serialization" href="query-parameter-serialization.html">Query parameter serialization</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-token-store" href="token-store.html">Token store</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-sharing-session-between-client-and-server" href="sharing-session-between-client-and-server.html">Sharing session between client and server</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-keep-alive" href="keep-alive.html">Keep-Alive</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title  link-writing-your-own-token-store" href="writing-your-own-token-store.html">Writing your own token store</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-item -level-1"><a class="link title  link-developing-sdk" href="developing-sdk.html">Developing SDK</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="body page-file-uploads-and-downloads">
+        <div class="header-nav">
+          <div class="right"><a class="iconlink" href="https://github.com/sharetribe/flex-sdk-js" data-title="sharetribe/flex-sdk-js">
+              <!-- span.title Open in GitHub--><span class="icon -github"></span></a>
+          </div>
+        </div>
+        <div class="markdown-body"><h1 id="file-uploads-and-downloads">File Uploads and Downloads</h1>
+<p>The SDK supports file uploads and downloads through the Marketplace API. The
+upload flow is a three-step process: first register the file with the Marketplace
+API, then request a presigned upload URL, and finally upload the file directly
+to cloud storage. The SDK provides helper functions in <code>sharetribe-flex-sdk/file</code>
+to make this easier.</p>
+<h2 id="file-helper-functions">File helper functions</h2>
+<p>The <code>file</code> module exported from the SDK contains two helper functions.</p>
+<pre><code class="lang-js"><span class="pl-k">const</span> sharetribeSdk = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-flex-sdk&apos;</span>);
+<span class="pl-k">const</span> { file } = sharetribeSdk;
+</code></pre>
+<h3 id="file.metadata(file)"><code>file.metadata(file)</code></h3>
+<p>Extracts the metadata needed for the first step of the upload flow,
+<code>sdk.ownFiles.create()</code>, from a browser
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/File"><code>File</code></a> object.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>file</code></td>
+<td><code>File</code></td>
+<td>A browser <code>File</code> object, e.g. from an <code>&lt;input type=&quot;file&quot;&gt;</code> element</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> An object with the following properties:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>string</code></td>
+<td>The file name</td>
+</tr>
+<tr>
+<td><code>mimeType</code></td>
+<td><code>string</code></td>
+<td>The MIME type of the file</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>number</code></td>
+<td>The file size in bytes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-js"><span class="pl-k">const</span> fileInput = <span class="pl-c1">document</span>.querySelector(<span class="pl-s">&apos;input[type=&quot;file&quot;]&apos;</span>);
+<span class="pl-k">const</span> selectedFile = fileInput.files[<span class="hljs-number">0</span>];
+
+<span class="pl-k">const</span> metadata = file.metadata(selectedFile);
+<span class="pl-c">// { name: &apos;photo.jpg&apos;, mimeType: &apos;image/jpeg&apos;, size: 123456 }</span>
+</code></pre>
+<h3 id="file.upload(-method-url-headers-file-onuploadprogress-)"><code>file.upload({ method, url, headers, file, onUploadProgress })</code></h3>
+<p>Uploads a file directly to cloud storage using a presigned URL obtained from
+<code>sdk.fileUploads.create()</code>.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>url</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>The presigned upload URL &#x2014; taken from <code>attributes.url</code> in the <code>sdk.fileUploads.create()</code> response</td>
+</tr>
+<tr>
+<td><code>file</code></td>
+<td><code>File</code></td>
+<td>Yes</td>
+<td>The file to upload</td>
+</tr>
+<tr>
+<td><code>method</code></td>
+<td><code>string</code></td>
+<td>No</td>
+<td>HTTP method &#x2014; taken from <code>attributes.method</code> in the <code>sdk.fileUploads.create()</code> response, defaults to <code>&apos;PUT&apos;</code></td>
+</tr>
+<tr>
+<td><code>headers</code></td>
+<td><code>object</code></td>
+<td>No</td>
+<td>Additional HTTP headers &#x2014; taken from <code>attributes.headers</code> in the <code>sdk.fileUploads.create()</code> response</td>
+</tr>
+<tr>
+<td><code>onUploadProgress</code></td>
+<td><code>function</code></td>
+<td>No</td>
+<td>Callback called with a <a href="https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent">ProgressEvent</a> as the file uploads</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> A Promise that resolves when the upload is complete.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-js">file.upload({
+  <span class="hljs-attr">url</span>: <span class="pl-s">&apos;https://storage.example.com/presigned-upload-url&apos;</span>,
+  <span class="hljs-attr">file</span>: selectedFile,
+  <span class="hljs-attr">onUploadProgress</span>: <span class="hljs-function">(<span class="hljs-params">progressEvent</span>) =&gt;</span> {
+    <span class="pl-k">const</span> percent = <span class="pl-c1">Math</span>.round((progressEvent.loaded * <span class="hljs-number">100</span>) / progressEvent.total);
+    <span class="pl-c1">console</span>.log(<span class="pl-s">`<span class="hljs-subst">${percent}</span>% uploaded`</span>);
+  },
+});
+</code></pre>
+<h2 id="uploading-a-file">Uploading a file</h2>
+<p>Uploading a file requires three steps:</p>
+<ol>
+<li>Register the file with the Marketplace API with <code>sdk.ownFiles.create()</code></li>
+<li>Request a presigned upload URL with <code>sdk.fileUploads.create({ fileId })</code></li>
+<li>Upload the file directly to cloud storage with <code>file.upload()</code></li>
+</ol>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-js"><span class="pl-k">const</span> sharetribeSdk = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-flex-sdk&apos;</span>);
+<span class="pl-k">const</span> { file, types } = sharetribeSdk;
+<span class="pl-k">const</span> { UUID } = types;
+
+<span class="pl-k">const</span> sdk = sharetribeSdk.createInstance({
+  <span class="hljs-attr">clientId</span>: <span class="pl-s">&apos;your-client-id&apos;</span>,
+});
+
+<span class="pl-k">const</span> fileInput = <span class="pl-c1">document</span>.querySelector(<span class="pl-s">&apos;input[type=&quot;file&quot;]&apos;</span>);
+<span class="pl-k">const</span> selectedFile = fileInput.files[<span class="hljs-number">0</span>];
+<span class="pl-k">const</span> metadata = file.metadata(selectedFile);
+
+<span class="pl-c">// Step 1: Register the file with the Marketplace API</span>
+sdk.ownFiles.create({
+  <span class="hljs-attr">name</span>: metadata.name,
+  <span class="hljs-attr">mimeType</span>: metadata.mimeType,
+  <span class="hljs-attr">size</span>: metadata.size,
+})
+  .then(<span class="hljs-function"><span class="hljs-params">ownFileResponse</span> =&gt;</span> {
+    <span class="pl-k">const</span> fileId = ownFileResponse.data.data.id;
+
+    <span class="pl-c">// Step 2: Request a presigned upload URL for this file</span>
+    <span class="pl-k">return</span> sdk.fileUploads.create({ fileId })
+  })
+  .then(<span class="hljs-function"><span class="hljs-params">uploadResponse</span> =&gt;</span> {
+    <span class="pl-k">const</span> { method, url, headers } = uploadResponse.data.data.attributes;
+
+    <span class="pl-c">// Step 3: Upload the file directly to cloud storage</span>
+    <span class="pl-k">return</span> file.upload({ method, url, headers, <span class="hljs-attr">file</span>: selectedFile });
+  })
+  .then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="pl-c1">console</span>.log(<span class="pl-s">&apos;File uploaded successfully&apos;</span>);
+  })
+  .catch(<span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+    <span class="pl-c1">console</span>.error(<span class="pl-s">&apos;Upload failed:&apos;</span>, e);
+  });
+</code></pre>
+<h2 id="tracking-upload-progress">Tracking upload progress</h2>
+<p>Pass <code>onUploadProgress</code> to <code>file.upload()</code> to track upload progress.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-js"><span class="pl-k">const</span> logProgress = <span class="hljs-function">(<span class="hljs-params">progressEvent</span>) =&gt;</span> {
+  <span class="pl-k">const</span> percent = <span class="pl-c1">Math</span>.round((progressEvent.loaded * <span class="hljs-number">100</span>) / progressEvent.total);
+  <span class="pl-c1">console</span>.log(<span class="pl-s">`<span class="hljs-subst">${percent}</span>% uploaded`</span>);
+};
+
+file.upload({ method, url, headers, <span class="hljs-attr">file</span>: selectedFile, <span class="hljs-attr">onUploadProgress</span>: logProgress });
+</code></pre>
+<h2 id="downloading-a-file">Downloading a file</h2>
+<p>To download a file, use <code>sdk.ownFileDownloads.create()</code> for files owned by the
+current user, or <code>sdk.fileDownloads.create()</code> for other accessible files. Both
+endpoints return a short-lived download URL that can be used to retrieve the
+file content.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-js"><span class="pl-k">const</span> { UUID } = <span class="pl-c1">require</span>(<span class="pl-s">&apos;sharetribe-flex-sdk&apos;</span>).types;
+
+<span class="pl-c">// Download a file owned by the current user</span>
+sdk.ownFileDownloads.create({ <span class="hljs-attr">fileId</span>: <span class="pl-k">new</span> UUID(<span class="pl-s">&apos;a5d04285-07da-4fa0-b80b-ebabb8bac9e5&apos;</span>) })
+  .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+    <span class="pl-k">const</span> downloadUrl = response.data.data.attributes.url;
+    <span class="pl-c1">window</span>.location.href = downloadUrl;
+  });
+
+<span class="pl-c">// Download a file accessible to the current user (e.g. from a transaction)</span>
+sdk.fileDownloads.create({ <span class="hljs-attr">fileId</span>: <span class="pl-k">new</span> UUID(<span class="pl-s">&apos;a5d04285-07da-4fa0-b80b-ebabb8bac9e5&apos;</span>) })
+  .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+    <span class="pl-k">const</span> downloadUrl = response.data.data.attributes.url;
+    <span class="pl-c1">window</span>.location.href = downloadUrl;
+  });
+</code></pre>
+
+        </div>
+        <div class="footer-nav">
+          <div class="left"><a href="types.html"><span class="title">Types</span></a></div>
+          <div class="right"><a href="configurations.html"><span class="label">Next: </span><span class="title">Configurations</span></a></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
