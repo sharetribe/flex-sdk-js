@@ -86,6 +86,8 @@ $ git checkout master
 
    - Move everything in Unreleased to the corresponding version section
    - Update the version links found at the very bottom of the CHANGELOG.md file
+   - Mark any endpoints whose API is not yet publicly available with
+     `[API not yet available]`
 
 1. Commit and push
 
@@ -147,3 +149,13 @@ $ git checkout master
     ```
 
 1.  Announce the new version in Slack
+
+    - If the release includes only new endpoints with `[API not yet available]`, 
+      postpone the annoucements until the API becomes available.
+
+1. When a previously unreleased API endpoint becomes available
+
+    1. Remove the `[API not yet available]` tag from the corresponding
+       entries in CHANGELOG.md
+    1. Commit and push
+    1. Annouce in Slack

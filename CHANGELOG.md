@@ -6,7 +6,19 @@ The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/) and this project
 adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+SDK releases may include support for API endpoints that are not yet publicly
+available at the time of the release. These endpoints are marked with `[API not
+yet available]` tag in the changelog. The tag is removed when the API endpoint
+becomes available. For the most up-to-date information on API availability, see
+the [Sharetribe API
+changelog](https://www.sharetribe.com/api-reference/changelog.html).
+
 ## [Unreleased] - xxxx-xx-xx
+
+### Changed
+
+- Future SDK releases may include support for API endpoints that are not yet
+  publicly available. Changed CHANGELOG.md to reflect this change.
 
 ## [v1.24.1] - 2026-07-27
 
