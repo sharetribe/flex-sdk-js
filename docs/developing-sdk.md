@@ -158,4 +158,5 @@ $ git checkout master
     1. Remove the `[API not yet available]` tag from the corresponding
        entries in CHANGELOG.md
     1. Commit and push
+    1. Remove the `[API not yet available]` tag from the corresponding [Github Release notes](https://github.com/sharetribe/flex-sdk-js/releases)
     1. Annouce in Slack
