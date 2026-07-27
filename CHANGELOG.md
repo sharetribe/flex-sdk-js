@@ -8,6 +8,11 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+### Changed
+- Update dependencies [#215](https://github.com/sharetribe/flex-sdk-js/pull/215)
+  - axios: 1.5.1 > 1.18.1
+  - lodash: 4.17.10 > 4.18.1  
+
 ## [v1.24.0] - 2026-05-25
 
 ### Added
