@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.24.1] - 2026-07-27
+
 ### Changed
 - Update dependencies [#215](https://github.com/sharetribe/flex-sdk-js/pull/215)
   - axios: 1.5.1 > 1.18.1
@@ -370,6 +372,8 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
 
 [unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.23.0...HEAD
 
+[v1.24.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.24.0...v1.24.1
+[v1.24.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.23.0...v1.24.0
 [v1.23.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.22.0...v1.23.0
 [v1.22.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.1...v1.22.0
 [v1.21.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.21.0...v1.21.1
