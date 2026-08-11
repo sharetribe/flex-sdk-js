@@ -47,7 +47,9 @@ export default class RetryWithRefreshToken {
         ...endpointInterceptors.auth.token,
       ])({
         params: {
-          client_id: clientId,
+          // Use clientId from token, if found. Else, use configured clientId.
+          // Please note that multitenant SDK never has configured clientId.
+          client_id: authToken.clientId || clientId,
           grant_type: 'refresh_token',
           refresh_token: authToken.refresh_token,
         },
