@@ -6,7 +6,13 @@ const createTokenStore = () => {
   let accessTokenCount = 0;
   let refreshTokenCount = 0;
 
-  const knownUsers = [['joe.dunphy@example.com', 'secret-joe']];
+  const knownUsers = {
+    'joe.dunphy@example.com': {
+      username: 'joe.dunphy@example.com',
+      password: 'secret-joe',
+      clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+    },
+  };
 
   const knownAuthorizationCodes = [
     { code: 'flex-authorization-code', username: 'joe.dunphy@example.com' },
@@ -67,9 +73,13 @@ const createTokenStore = () => {
   };
 
   const createTokenWithCredentials = (username, password) => {
-    const user = _.find(knownUsers, u => _.isEqual(u, [username, password]));
+    const user = knownUsers[username];
 
     if (!user) {
+      return null;
+    }
+
+    if (user.password !== password) {
       return null;
     }
 
@@ -77,6 +87,7 @@ const createTokenStore = () => {
       token: {
         access_token: generateAccessToken(username),
         refresh_token: generateRefreshToken(username),
+        client_id: user.clientId,
         token_type: 'bearer',
         expires_in: 86400,
         scope: 'user',
