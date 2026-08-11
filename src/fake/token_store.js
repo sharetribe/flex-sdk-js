@@ -87,7 +87,7 @@ const createTokenStore = () => {
     };
     tokens.push(token);
 
-    return token.token;
+    return { ...token.token };
   };
 
   const createTokenWithAuthorizationCode = authorizationCode => {
