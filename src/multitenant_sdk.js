@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
 import AddMultitenantAuthTokenResponse from './interceptors/add_multitenant_auth_token_response';
 import SaveToken from './interceptors/save_token';
+import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
 import AddMultitenantClientSecretTokenToCtx from './interceptors/add_multitenant_client_secret_token_to_ctx';
 import AddMultitenantClientSecretToParams from './interceptors/add_multitenant_client_secret_to_params';
 import AddMultitenantTokenExchangeParams from './interceptors/add_multitenant_token_exchange_params';
@@ -62,6 +63,18 @@ const tokenInterceptors = authApiEndpointInterceptors => [
   new FormatMultitenantHttpResponse(),
   new AddMultitenantClientSecretTokenToCtx(),
   new AddMultitenantClientSecretToParams(),
+  new SaveToken(),
+  new AddMultitenantAuthTokenResponse(),
+  ..._.get(authApiEndpointInterceptors, 'token'),
+];
+
+const tokenExchangeInterceptors = authApiEndpointInterceptors => [
+  new FormatHttpResponse(),
+  new FormatMultitenantHttpResponse(),
+  new FetchAuthTokenFromStore(),
+  new AddMultitenantClientSecretTokenToCtx(),
+  new AddMultitenantClientSecretToParams(),
+  new AddMultitenantTokenExchangeParams(),
   new SaveToken(),
   new AddMultitenantAuthTokenResponse(),
   ..._.get(authApiEndpointInterceptors, 'token'),
@@ -137,10 +150,7 @@ const authApiSdkFns = (authApiEndpointInterceptors, ctx) => [
     path: 'tokenExchange',
     fn: createAuthApiSdkFn({
       ctx,
-      interceptors: [
-        new AddMultitenantTokenExchangeParams(),
-        ...tokenInterceptors(authApiEndpointInterceptors),
-      ],
+      interceptors: tokenExchangeInterceptors(authApiEndpointInterceptors),
     }),
   },
   {
