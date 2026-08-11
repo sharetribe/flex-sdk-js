@@ -30,7 +30,6 @@ export default class RetryWithRefreshToken {
   error(errorCtx) {
     const {
       authToken,
-      clientId,
       tokenStore,
       endpointInterceptors,
       refreshTokenRetry: { retryQueue, attempts },
@@ -47,7 +46,7 @@ export default class RetryWithRefreshToken {
         ...endpointInterceptors.auth.token,
       ])({
         params: {
-          client_id: clientId,
+          client_id: authToken.client_id,
           grant_type: 'refresh_token',
           refresh_token: authToken.refresh_token,
         },
