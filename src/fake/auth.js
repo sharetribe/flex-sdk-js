@@ -90,12 +90,16 @@ export const multitenantAuthData = (config, resolve, reject, fakeTokenStore) => 
         },
       };
     } else if (formData.grant_type === 'multitenant_token_exchange') {
-      success = {
-        ...fakeTokenStore.exchangeToken(formData.subject_token),
-        client_data: {
-          client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-        },
-      };
+      const exchangedToken = fakeTokenStore.exchangeToken(formData.subject_token);
+
+      if (exchangedToken) {
+        success = {
+          ...exchangedToken,
+          client_data: {
+            client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+          },
+        };
+      }
     }
   } else if (hostname === 'invalid.example.com') {
     error = {
