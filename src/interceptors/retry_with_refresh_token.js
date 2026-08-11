@@ -1,6 +1,4 @@
-import contextRunner from '../context_runner';
-import SaveToken from './save_token';
-import AddAuthTokenResponse from './add_auth_token_response';
+import * as authTokenContextRunner from '../auth_token_context_runner';
 
 /**
    Retries with a fresh password token.
@@ -31,8 +29,6 @@ export default class RetryWithRefreshToken {
     const {
       authToken,
       clientId,
-      tokenStore,
-      endpointInterceptors,
       refreshTokenRetry: { retryQueue, attempts },
     } = errorCtx;
 
@@ -41,20 +37,14 @@ export default class RetryWithRefreshToken {
     }
 
     if (errorCtx.res && errorCtx.res.status === 401 && authToken.refresh_token) {
-      return contextRunner([
-        new SaveToken(),
-        new AddAuthTokenResponse(),
-        ...endpointInterceptors.auth.token,
-      ])({
-        params: {
+      return authTokenContextRunner
+        .requestToken(errorCtx, {
           // Use clientId from token, if found. Else, use configured clientId.
           // Please note that multitenant SDK never has configured clientId.
           client_id: authToken.clientId || clientId,
           grant_type: 'refresh_token',
           refresh_token: authToken.refresh_token,
-        },
-        tokenStore,
-      })
+        })
         .then(({ authToken: newAuthToken }) => ({
           ...errorCtx,
           authToken: newAuthToken,

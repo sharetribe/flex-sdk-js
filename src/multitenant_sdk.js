@@ -191,11 +191,6 @@ const validateSdkConfig = sdkConfig => {
 };
 
 const createAuthApiEndpointInterceptors = httpOpts =>
-  // Create `endpointInterceptors` object, which is object
-  // containing interceptors for all defined endpoints.
-  // This object can be passed to other interceptors in the interceptor context so they
-  // are able to do API calls (e.g. authentication interceptors)
-  //
   multitenantAuthApi.reduce((acc, { path, method }) => {
     const fnPath = urlPathToFnPath(path);
     const url = `auth/multitenant/${path}`;
@@ -218,12 +213,7 @@ export default class MultitenantSharetribeSdk {
     const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
     const authApiEndpointInterceptors = createAuthApiEndpointInterceptors(apiConfigs.auth);
 
-    const allEndpointInterceptors = {
-      auth: authApiEndpointInterceptors,
-    };
-
     const ctx = {
-      endpointInterceptors: allEndpointInterceptors,
       multitenantClientSecret: sdkConfig.multitenantClientSecret,
       hostname: sdkConfig.hostname,
       tokenStore: sdkConfig.tokenStore,

@@ -36,6 +36,7 @@ import endpointRequest from './interceptors/endpoint_request';
 import { createDefaultTokenStore } from './token_store';
 import createSdkFnContextRunner from './sdk_context_runner';
 import { isBrowser } from './runtime';
+import * as authTokenContextRunner from './auth_token_context_runner';
 
 /* eslint-disable class-methods-use-this */
 
@@ -448,11 +449,6 @@ const validateSdkConfig = sdkConfig => {
 };
 
 const createMarketplaceApiEndpointInterceptors = httpOpts =>
-  // Create `endpointInterceptors` object, which is object
-  // containing interceptors for all defined endpoints.
-  // This object can be passed to other interceptors in the interceptor context so they
-  // are able to do API calls (e.g. authentication interceptors)
-  //
   marketplaceApiEndpoints.reduce((acc, { path, method, multipart }) => {
     const fnPath = urlPathToFnPath(path);
     const url = `api/${path}`;
@@ -474,11 +470,6 @@ const createMarketplaceApiEndpointInterceptors = httpOpts =>
   }, {});
 
 const createAuthApiEndpointInterceptors = httpOpts =>
-  // Create `endpointInterceptors` object, which is object
-  // containing interceptors for all defined endpoints.
-  // This object can be passed to other interceptors in the interceptor context so they
-  // are able to do API calls (e.g. authentication interceptors)
-  //
   authApiEndpoints.reduce((acc, { path, method }) => {
     const fnPath = urlPathToFnPath(path);
     const url = `auth/${path}`;
@@ -486,11 +477,6 @@ const createAuthApiEndpointInterceptors = httpOpts =>
   }, {});
 
 const createAssetsApiEndpointInterceptors = httpOpts =>
-  // Create `endpointInterceptors` object, which is object
-  // containing interceptors for all defined endpoints.
-  // This object can be passed to other interceptors in the interceptor context so they
-  // are able to do API calls (e.g. authentication interceptors)
-  //
   assetsApiEndpoints.reduce((acc, { pathFn, method, name }) => {
     const urlTemplate = pathParams => `assets/${pathFn(pathParams)}`;
     return _.set(acc, name, [endpointRequest({ method, urlTemplate, httpOpts })]);
@@ -517,15 +503,8 @@ export default class SharetribeSdk {
     const authApiEndpointInterceptors = createAuthApiEndpointInterceptors(apiConfigs.auth);
     const assetsApiEndpointInterceptors = createAssetsApiEndpointInterceptors(apiConfigs.assets);
 
-    const allEndpointInterceptors = {
-      api: marketplaceApiEndpointInterceptors,
-      auth: authApiEndpointInterceptors,
-      assets: assetsApiEndpointInterceptors,
-    };
-
-    const ctx = {
+    let ctx = {
       tokenStore: sdkConfig.tokenStore,
-      endpointInterceptors: allEndpointInterceptors,
       clientId: sdkConfig.clientId,
       clientSecret: sdkConfig.clientSecret,
       typeHandlers: sdkConfig.typeHandlers,
@@ -533,6 +512,8 @@ export default class SharetribeSdk {
       disableDeprecationWarnings: sdkConfig.disableDeprecationWarnings,
       inFlightAuthRequestStore: createInFlightAuthRequestStore(),
     };
+
+    ctx = authTokenContextRunner.setAuthTokenInterceptors(ctx, authApiEndpointInterceptors.token);
 
     // Assign SDK functions to 'this'
     marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
