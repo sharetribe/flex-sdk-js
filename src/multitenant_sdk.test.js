@@ -285,6 +285,27 @@ describe('new MultitenantSharetribeSdk', () => {
         })
       );
     });
+
+    it('expired access token returns 401 because multitenant token exchange does not implement expired token refresh and retry', () => {
+      const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
+      const userToken = adapterTokenStore.createTokenWithCredentials(
+        'joe.dunphy@example.com',
+        'secret-joe'
+      );
+      sdkTokenStore.setToken({ ...userToken });
+      adapterTokenStore.expireAccessToken(userToken.access_token);
+
+      return report(
+        sdk.tokenExchange().catch(e => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e).toEqual(
+            expect.objectContaining({
+              status: 401,
+            })
+          );
+        })
+      );
+    });
   });
 
   describe('loginWithIdp', () => {
