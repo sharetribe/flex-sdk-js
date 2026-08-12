@@ -286,7 +286,7 @@ describe('new MultitenantSharetribeSdk', () => {
       );
     });
 
-    it('expired access token returns 401 because multitenant token exchange does not implement expired token refresh and retry', () => {
+    it('tokenExchange refreshes expired token', () => {
       const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
       const userToken = adapterTokenStore.createTokenWithCredentials(
         'joe.dunphy@example.com',
@@ -295,14 +295,21 @@ describe('new MultitenantSharetribeSdk', () => {
       sdkTokenStore.setToken({ ...userToken });
       adapterTokenStore.expireAccessToken(userToken.access_token);
 
+      expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-access-1');
+
       return report(
-        sdk.tokenExchange().catch(e => {
-          expect(e).toBeInstanceOf(Error);
-          expect(e).toEqual(
-            expect.objectContaining({
-              status: 401,
-            })
-          );
+        sdk.tokenExchange().then(res => {
+          // There are three tokens generated:
+          // 1: The initial token
+          // 2: The refreshed token
+          // 3: The exchanged token
+          expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-access-3');
+
+          expect(res.data).toEqual({
+            client_data: {
+              client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+            },
+          });
         })
       );
     });

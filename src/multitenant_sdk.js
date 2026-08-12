@@ -1,7 +1,9 @@
 import _ from 'lodash';
 import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
+import { authApi as authApiEndpoints } from './endpoints';
 import AddMultitenantAuthTokenResponse from './interceptors/add_multitenant_auth_token_response';
 import SaveToken from './interceptors/save_token';
+import RetryWithRefreshToken from './interceptors/retry_with_refresh_token';
 import FetchAuthTokenFromStore from './interceptors/fetch_auth_token_from_store';
 import AddMultitenantClientSecretTokenToCtx from './interceptors/add_multitenant_client_secret_token_to_ctx';
 import AddMultitenantClientSecretToParams from './interceptors/add_multitenant_client_secret_to_params';
@@ -16,6 +18,7 @@ import createSdkFnContextRunner from './sdk_context_runner';
 import memoryStore from './memory_store';
 import contextRunner from './context_runner';
 import { isBrowser } from './runtime';
+import * as authTokenContextRunner from './auth_token_context_runner';
 
 /* eslint-disable class-methods-use-this */
 
@@ -72,6 +75,7 @@ const tokenExchangeInterceptors = authApiEndpointInterceptors => [
   new FormatHttpResponse(),
   new FormatMultitenantHttpResponse(),
   new FetchAuthTokenFromStore(),
+  new RetryWithRefreshToken(),
   new AddMultitenantClientSecretTokenToCtx(),
   new AddMultitenantClientSecretToParams(),
   new AddMultitenantTokenExchangeParams(),
@@ -190,6 +194,13 @@ const validateSdkConfig = sdkConfig => {
   return sdkConfig;
 };
 
+const createAuthApiEndpointInterceptors = httpOpts =>
+  authApiEndpoints.reduce((acc, { path, method }) => {
+    const fnPath = urlPathToFnPath(path);
+    const url = `auth/${path}`;
+    return _.set(acc, fnPath, [endpointRequest({ method, url, httpOpts })]);
+  }, {});
+
 const createMultitenantAuthApiEndpointInterceptors = httpOpts =>
   multitenantAuthApi.reduce((acc, { path, method }) => {
     const fnPath = urlPathToFnPath(path);
@@ -211,15 +222,18 @@ export default class MultitenantSharetribeSdk {
 
     // Instantiate API configs
     const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
+    const authApiEndpointInterceptors = createAuthApiEndpointInterceptors(apiConfigs.auth);
     const multitenantAuthApiEndpointInterceptors = createMultitenantAuthApiEndpointInterceptors(
       apiConfigs.auth
     );
 
-    const ctx = {
+    let ctx = {
       multitenantClientSecret: sdkConfig.multitenantClientSecret,
       hostname: sdkConfig.hostname,
       tokenStore: sdkConfig.tokenStore,
     };
+
+    ctx = authTokenContextRunner.setAuthTokenInterceptors(ctx, authApiEndpointInterceptors.token);
 
     // Assign SDK functions to 'this'
     authApiSdkFns(multitenantAuthApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
