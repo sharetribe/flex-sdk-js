@@ -1,11 +1,10 @@
 import _ from 'lodash';
-import { fnPath as urlPathToFnPath, trimEndSlash, formData, canonicalAssetPaths } from './utils';
+import { fnPath as urlPathToFnPath, trimEndSlash, canonicalAssetPaths } from './utils';
 import {
   marketplaceApi as marketplaceApiEndpoints,
   authApi as authApiEndpoints,
   assetsApi as assetsApiEndpoints,
 } from './endpoints';
-import paramsSerializer from './params_serializer';
 import AddAuthHeader from './interceptors/add_auth_header';
 import RetryWithRefreshToken from './interceptors/retry_with_refresh_token';
 import RetryWithAnonToken from './interceptors/retry_with_anon_token';
@@ -37,22 +36,9 @@ import { createDefaultTokenStore } from './token_store';
 import createSdkFnContextRunner from './sdk_context_runner';
 import { isBrowser } from './runtime';
 import * as authTokenContextRunner from './auth_token_context_runner';
+import { apis, defaultSdkConfig } from './api_config';
 
 /* eslint-disable class-methods-use-this */
-
-const defaultSdkConfig = {
-  clientId: null,
-  clientSecret: null,
-  baseUrl: 'https://flex-api.sharetribe.com',
-  assetCdnBaseUrl: 'https://cdn.st-api.com',
-  typeHandlers: [],
-  adapter: null,
-  version: 'v1',
-  httpAgent: null,
-  httpsAgent: null,
-  transitVerbose: false,
-  disableDeprecationWarnings: false,
-};
 
 /**
    Basic configurations for different 'apis'.
@@ -68,55 +54,6 @@ const defaultSdkConfig = {
    what are the headers that should be always sent and
    how to transform requests and response, etc.
  */
-
-const createHeaders = transitVerbose => {
-  if (transitVerbose) {
-    return {
-      'X-Transit-Verbose': 'true',
-      Accept: 'application/transit+json',
-    };
-  }
-
-  return {
-    Accept: 'application/transit+json',
-  };
-};
-
-const apis = {
-  api: ({ baseUrl, version, adapter, httpAgent, httpsAgent, transitVerbose }) => ({
-    headers: createHeaders(transitVerbose),
-    baseURL: `${baseUrl}/${version}`,
-    transformRequest: v => v,
-    transformResponse: v => v,
-    adapter,
-    paramsSerializer,
-    httpAgent,
-    httpsAgent,
-  }),
-  auth: ({ baseUrl, version, adapter, httpAgent, httpsAgent }) => ({
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
-    },
-    baseURL: `${baseUrl}/${version}/`,
-    transformRequest: [data => formData(data)],
-    // using default transformRequest, which can handle JSON and fallback to plain
-    // test if JSON parsing fails
-    adapter,
-    httpAgent,
-    httpsAgent,
-  }),
-  assets: ({ assetCdnBaseUrl, version, adapter, httpAgent, httpsAgent }) => ({
-    headers: {
-      Accept: 'application/json',
-    },
-    baseURL: `${assetCdnBaseUrl}/${version}`,
-    adapter,
-    paramsSerializer,
-    httpAgent,
-    httpsAgent,
-  }),
-};
 
 const authenticateInterceptors = [
   new FetchAuthTokenFromStore(),
