@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { fnPath as urlPathToFnPath, trimEndSlash, formData } from './utils';
+import { fnPath as urlPathToFnPath, trimEndSlash } from './utils';
 import { authApi as authApiEndpoints } from './endpoints';
 import AddMultitenantAuthTokenResponse from './interceptors/add_multitenant_auth_token_response';
 import SaveToken from './interceptors/save_token';
@@ -19,17 +19,13 @@ import memoryStore from './memory_store';
 import contextRunner from './context_runner';
 import { isBrowser } from './runtime';
 import * as authTokenContextRunner from './auth_token_context_runner';
+import { apis, defaultSdkConfig } from './api_config';
 
 /* eslint-disable class-methods-use-this */
 
-const defaultSdkConfig = {
+const multitenantSdkConfig = {
   hostname: null,
   multitenantClientSecret: null,
-  baseUrl: 'https://flex-api.sharetribe.com',
-  adapter: null,
-  version: 'v1',
-  httpAgent: null,
-  httpsAgent: null,
 };
 
 const multitenantAuthApi = [
@@ -46,20 +42,6 @@ const multitenantAuthApi = [
     method: 'post',
   },
 ];
-
-const apis = {
-  auth: ({ baseUrl, version, adapter, httpAgent, httpsAgent }) => ({
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
-    },
-    baseURL: `${baseUrl}/${version}/`,
-    transformRequest: [data => formData(data)],
-    adapter,
-    httpAgent,
-    httpsAgent,
-  }),
-};
 
 const tokenInterceptors = authApiEndpointInterceptors => [
   new FormatHttpResponse(),
@@ -217,7 +199,7 @@ export default class MultitenantSharetribeSdk {
   constructor(userSdkConfig) {
     // Transform and validation SDK configurations
     const sdkConfig = validateSdkConfig(
-      transformSdkConfig({ ...defaultSdkConfig, ...userSdkConfig })
+      transformSdkConfig({ ...defaultSdkConfig, ...multitenantSdkConfig, ...userSdkConfig })
     );
 
     // Instantiate API configs
