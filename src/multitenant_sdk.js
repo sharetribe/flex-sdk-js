@@ -190,7 +190,7 @@ const validateSdkConfig = sdkConfig => {
   return sdkConfig;
 };
 
-const createAuthApiEndpointInterceptors = httpOpts =>
+const createMultitenantAuthApiEndpointInterceptors = httpOpts =>
   multitenantAuthApi.reduce((acc, { path, method }) => {
     const fnPath = urlPathToFnPath(path);
     const url = `auth/multitenant/${path}`;
@@ -211,7 +211,9 @@ export default class MultitenantSharetribeSdk {
 
     // Instantiate API configs
     const apiConfigs = _.mapValues(apis, apiConfig => apiConfig(sdkConfig));
-    const authApiEndpointInterceptors = createAuthApiEndpointInterceptors(apiConfigs.auth);
+    const multitenantAuthApiEndpointInterceptors = createMultitenantAuthApiEndpointInterceptors(
+      apiConfigs.auth
+    );
 
     const ctx = {
       multitenantClientSecret: sdkConfig.multitenantClientSecret,
@@ -220,7 +222,7 @@ export default class MultitenantSharetribeSdk {
     };
 
     // Assign SDK functions to 'this'
-    authApiSdkFns(authApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
+    authApiSdkFns(multitenantAuthApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>
       _.set(this, path, fn)
     );
   }
