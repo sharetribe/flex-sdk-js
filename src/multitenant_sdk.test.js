@@ -1,6 +1,7 @@
 /* eslint camelcase: "off" */
 import createAdapter from './fake/adapter';
 import memoryStore from './memory_store';
+import SharetribeSdk from './sdk';
 import MultitenantSharetribeSdk from './multitenant_sdk';
 
 /**
@@ -40,6 +41,36 @@ const createSdk = (config = {}) => {
   const sdkTokenStore = configTokenStore || memoryStore();
 
   const sdk = new MultitenantSharetribeSdk({
+    ...defaults,
+    ...restConfig,
+    tokenStore: sdkTokenStore,
+    adapter: adapter.adapterFn,
+  });
+
+  return {
+    sdkTokenStore,
+    adapter,
+    sdk,
+    adapterTokenStore: adapter.tokenStore,
+  };
+};
+
+const createSingleTenantSdk = (config = {}) => {
+  const defaults = {
+    clientId: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+
+    // We do want to test that also deprecated function work, so disable
+    // deprecation warnings to keep output clean.
+    disableDeprecationWarnings: true,
+  };
+
+  // Extract adapter and token store here so that they can be passed to SDK
+  // constructor and included in the returned object
+  const { adapter: configAdapter, tokenStore: configTokenStore, ...restConfig } = config;
+  const adapter = configAdapter || createAdapter();
+  const sdkTokenStore = configTokenStore || memoryStore();
+
+  const sdk = new SharetribeSdk({
     ...defaults,
     ...restConfig,
     tokenStore: sdkTokenStore,
@@ -286,24 +317,55 @@ describe('new MultitenantSharetribeSdk', () => {
       );
     });
 
-    it('expired access token returns 401 because multitenant token exchange does not implement expired token refresh and retry', () => {
-      const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
-      const userToken = adapterTokenStore.createTokenWithCredentials(
-        'joe.dunphy@example.com',
-        'secret-joe'
-      );
-      sdkTokenStore.setToken({ ...userToken });
-      adapterTokenStore.expireAccessToken(userToken.access_token);
+    it('tokenExchange refreshes expired token', () => {
+      const { sdk, sdkTokenStore, adapter, adapterTokenStore } = createSdk();
+      const expectedClientId = '08ec69f6-d37e-414d-83eb-324e94afddf0';
 
       return report(
-        sdk.tokenExchange().catch(e => {
-          expect(e).toBeInstanceOf(Error);
-          expect(e).toEqual(
-            expect.objectContaining({
-              status: 401,
-            })
-          );
-        })
+        sdk
+          .clientData()
+          .then(res => {
+            // Let's ensure we get the expected clientId
+            expect(res.data.client_data.client_id).toEqual(expectedClientId);
+            // Create a new single tenant SDK, because we need to log in.
+            // Multitenant SDK can't do log in. Please note that this SDK is
+            // sharing the adapter (i.e. using the same fake backend) and
+            // tokenStore with the multitenant SDK. Thus, when we log in, the
+            // multitenant SDK will also have token with user scope because the
+            // token store is shared.
+            const singleTenantSdk = createSingleTenantSdk({
+              adapter,
+              tokenStore: sdkTokenStore,
+              clientId: res.data.client_data.client_id,
+            }).sdk;
+
+            return singleTenantSdk.login({
+              username: 'joe.dunphy@example.com',
+              password: 'secret-joe',
+            });
+          })
+          .then(() => {
+            // Expire the user token
+            adapterTokenStore.expireAccessToken(sdkTokenStore.getToken().access_token);
+
+            // Now do tokenExchange. This should trigger token refresh and retry.
+            return sdk.tokenExchange();
+          })
+          .then(res => {
+            // There are three tokens generated:
+            // 1: The initial token
+            // 2: The refreshed token
+            // 3: The exchanged token
+            expect(sdkTokenStore.getToken().access_token).toEqual(
+              'joe.dunphy@example.com-access-3'
+            );
+
+            expect(res.data).toEqual({
+              client_data: {
+                client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
+              },
+            });
+          })
       );
     });
   });
