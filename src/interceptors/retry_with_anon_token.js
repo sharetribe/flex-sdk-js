@@ -1,6 +1,4 @@
-import contextRunner from '../context_runner';
-import SaveToken from './save_token';
-import AddAuthTokenResponse from './add_auth_token_response';
+import * as authTokenContextRunner from '../auth_token_context_runner';
 
 /**
    Retries with a fresh anon token.
@@ -29,8 +27,6 @@ export default class RetryWithAnonToken {
   error(errorCtx) {
     const {
       clientId,
-      tokenStore,
-      endpointInterceptors,
       anonTokenRetry: { retryQueue, attempts },
     } = errorCtx;
 
@@ -39,18 +35,13 @@ export default class RetryWithAnonToken {
     }
 
     if (errorCtx.res && errorCtx.res.status === 401) {
-      return contextRunner([
-        new SaveToken(),
-        new AddAuthTokenResponse(),
-        ...endpointInterceptors.auth.token,
-      ])({
-        params: {
+      return authTokenContextRunner
+        .requestToken(errorCtx, {
           client_id: clientId,
           grant_type: 'client_credentials',
           scope: 'public-read',
-        },
-        tokenStore,
-      }).then(({ authToken }) => ({ ...errorCtx, authToken, enterQueue: retryQueue, error: null }));
+        })
+        .then(({ authToken }) => ({ ...errorCtx, authToken, enterQueue: retryQueue, error: null }));
     }
 
     return errorCtx;
