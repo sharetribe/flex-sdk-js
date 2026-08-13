@@ -38,6 +38,9 @@ export default class RetryWithRefreshToken {
     if (errorCtx.res && errorCtx.res.status === 401 && authToken.refresh_token) {
       return authTokenContextRunner
         .requestToken(errorCtx, {
+          // Use client_id from authToken instead of using client_id from ctx so
+          // that this work for multitenant too (where we don't have client_id
+          // configured.)
           client_id: authToken.client_id,
           grant_type: 'refresh_token',
           refresh_token: authToken.refresh_token,
