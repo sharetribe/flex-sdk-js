@@ -79,11 +79,21 @@ const tokenAndClientDataInterceptor = authApiEndpointInterceptors => ({
     return Promise.resolve()
       .then(tokenStore.getToken)
       .then(storedToken => {
-        // If there's a token with any access, it's only necessary
-        // to fetch the client data. Else, we request a token and
-        // the response will also contain the client data.
-        // We don't need to distinguish between token scopes.
+        // If there's a token with any access, it's only necessary to fetch the
+        // client data. Else, we request a token using
+        // multitenant_client_credentials grant type.
+        //
+        // The returned token response contains the access token AND client
+        // data. This is an _optimization_ so that we can get client data AND a
+        // valid (anonymous) token with one request instead of two.
+        //
+        // We don't need to distinguish between token scopes. We don't check for
+        // token validity. If the token is invalid/expired, clientData request
+        // will go through because it doesn't require access token. The expired
+        // token will be refreshed by the "normal SDK". Everything works but we
+        // just didn't gain the advance from the optimization.
         if (storedToken) {
+          // Request client data only
           return contextRunner(clientDataInterceptors(authApiEndpointInterceptors))(ctx).then(
             newCtx => {
               const { res } = newCtx;
@@ -100,6 +110,7 @@ const tokenAndClientDataInterceptor = authApiEndpointInterceptors => ({
           );
         }
 
+        // Request token (which includes client data)
         return contextRunner(tokenInterceptors(authApiEndpointInterceptors))({
           ...ctx,
           params: { grant_type: 'multitenant_client_credentials' },
