@@ -15,27 +15,29 @@ import _ from 'lodash';
 */
 export default class AddMultitenantTokenExchangeParams {
   enter(ctx) {
-    const { authToken } = ctx;
-    return Promise.resolve().then(() => {
-      // throw if no token is found
-      if (!authToken || !authToken.access_token) {
-        throw new Error('No access token found in store');
-      }
-      // throw if token has invalid scope
-      const scopes = authToken.scope.split(' ');
-      if (!_.find(scopes, scope => scope === 'user')) {
-        throw new Error('Access token scope not supported');
-      }
+    const { tokenStore } = ctx;
+    return Promise.resolve()
+      .then(tokenStore.getToken)
+      .then(storedToken => {
+        // throw if no token is found
+        if (!storedToken || !storedToken.access_token) {
+          throw new Error('No access token found in store');
+        }
+        // throw if token has invalid scope
+        const scopes = storedToken.scope.split(' ');
+        if (!_.find(scopes, scope => scope === 'user')) {
+          throw new Error('Access token scope not supported');
+        }
 
-      return {
-        ...ctx,
-        params: {
-          ...ctx.params,
-          scope: 'trusted:user',
-          grant_type: 'multitenant_token_exchange',
-          subject_token: authToken.access_token,
-        },
-      };
-    });
+        return {
+          ...ctx,
+          params: {
+            ...ctx.params,
+            scope: 'trusted:user',
+            grant_type: 'multitenant_token_exchange',
+            subject_token: storedToken.access_token,
+          },
+        };
+      });
   }
 }

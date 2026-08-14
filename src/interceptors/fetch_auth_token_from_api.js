@@ -1,4 +1,6 @@
-import * as authTokenContextRunner from '../auth_token_context_runner';
+import contextRunner from '../context_runner';
+import SaveToken from './save_token';
+import AddAuthTokenResponse from './add_auth_token_response';
 
 /**
    Create a store for in-flight auth request. 
@@ -17,17 +19,24 @@ export function createInFlightAuthRequestStore() {
 */
 export default class FetchAuthTokenFromApi {
   enter(ctx) {
-    const { authToken, clientId, inFlightAuthRequestStore } = ctx;
+    const { tokenStore, authToken, endpointInterceptors, clientId, inFlightAuthRequestStore } = ctx;
 
     if (authToken) {
       return ctx;
     }
 
     if (!inFlightAuthRequestStore.inFlightRequest) {
-      inFlightAuthRequestStore.inFlightRequest = authTokenContextRunner.requestToken(ctx, {
-        client_id: clientId,
-        grant_type: 'client_credentials',
-        scope: 'public-read',
+      inFlightAuthRequestStore.inFlightRequest = contextRunner([
+        new SaveToken(),
+        new AddAuthTokenResponse(),
+        ...endpointInterceptors.auth.token,
+      ])({
+        params: {
+          client_id: clientId,
+          grant_type: 'client_credentials',
+          scope: 'public-read',
+        },
+        tokenStore,
       });
     }
 

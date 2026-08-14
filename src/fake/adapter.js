@@ -130,18 +130,13 @@ const defaultHandler = (config, resolve, reject, tokenStore) => {
 };
 
 /**
-   Create a fake adapter instance which is passed to axios.
-
-   Adapters allow you to customize the way axios handles the request data. The
-   fake adapter does NOT do a real HTTP call, instead, we fake it here and
-   implement a "fake" backend.
+   Create a fake adapter instance.
 
    Features:
 
    - Handle requests
    - Store all requests (so that they can be inspected in tests)
-   - Implement fake token store. Should not be confused the SDK's token store.
-     This on is the backend side storage for known access tokens.
+   - Implement fake token store
 */
 const createAdapter = handlerFn => {
   const requests = [];
