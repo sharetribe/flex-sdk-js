@@ -1,10 +1,11 @@
 import _ from 'lodash';
-import { fnPath as urlPathToFnPath, trimEndSlash, canonicalAssetPaths } from './utils';
+import { fnPath as urlPathToFnPath, trimEndSlash, formData, canonicalAssetPaths } from './utils';
 import {
   marketplaceApi as marketplaceApiEndpoints,
   authApi as authApiEndpoints,
   assetsApi as assetsApiEndpoints,
 } from './endpoints';
+import paramsSerializer from './params_serializer';
 import AddAuthHeader from './interceptors/add_auth_header';
 import RetryWithRefreshToken from './interceptors/retry_with_refresh_token';
 import RetryWithAnonToken from './interceptors/retry_with_anon_token';
@@ -35,10 +36,22 @@ import endpointRequest from './interceptors/endpoint_request';
 import { createDefaultTokenStore } from './token_store';
 import createSdkFnContextRunner from './sdk_context_runner';
 import { isBrowser } from './runtime';
-import * as authTokenContextRunner from './auth_token_context_runner';
-import { apis, defaultSdkConfig } from './api_config';
 
 /* eslint-disable class-methods-use-this */
+
+const defaultSdkConfig = {
+  clientId: null,
+  clientSecret: null,
+  baseUrl: 'https://flex-api.sharetribe.com',
+  assetCdnBaseUrl: 'https://cdn.st-api.com',
+  typeHandlers: [],
+  adapter: null,
+  version: 'v1',
+  httpAgent: null,
+  httpsAgent: null,
+  transitVerbose: false,
+  disableDeprecationWarnings: false,
+};
 
 /**
    Basic configurations for different 'apis'.
@@ -54,6 +67,55 @@ import { apis, defaultSdkConfig } from './api_config';
    what are the headers that should be always sent and
    how to transform requests and response, etc.
  */
+
+const createHeaders = transitVerbose => {
+  if (transitVerbose) {
+    return {
+      'X-Transit-Verbose': 'true',
+      Accept: 'application/transit+json',
+    };
+  }
+
+  return {
+    Accept: 'application/transit+json',
+  };
+};
+
+const apis = {
+  api: ({ baseUrl, version, adapter, httpAgent, httpsAgent, transitVerbose }) => ({
+    headers: createHeaders(transitVerbose),
+    baseURL: `${baseUrl}/${version}`,
+    transformRequest: v => v,
+    transformResponse: v => v,
+    adapter,
+    paramsSerializer,
+    httpAgent,
+    httpsAgent,
+  }),
+  auth: ({ baseUrl, version, adapter, httpAgent, httpsAgent }) => ({
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+    },
+    baseURL: `${baseUrl}/${version}/`,
+    transformRequest: [data => formData(data)],
+    // using default transformRequest, which can handle JSON and fallback to plain
+    // test if JSON parsing fails
+    adapter,
+    httpAgent,
+    httpsAgent,
+  }),
+  assets: ({ assetCdnBaseUrl, version, adapter, httpAgent, httpsAgent }) => ({
+    headers: {
+      Accept: 'application/json',
+    },
+    baseURL: `${assetCdnBaseUrl}/${version}`,
+    adapter,
+    paramsSerializer,
+    httpAgent,
+    httpsAgent,
+  }),
+};
 
 const authenticateInterceptors = [
   new FetchAuthTokenFromStore(),
@@ -386,6 +448,11 @@ const validateSdkConfig = sdkConfig => {
 };
 
 const createMarketplaceApiEndpointInterceptors = httpOpts =>
+  // Create `endpointInterceptors` object, which is object
+  // containing interceptors for all defined endpoints.
+  // This object can be passed to other interceptors in the interceptor context so they
+  // are able to do API calls (e.g. authentication interceptors)
+  //
   marketplaceApiEndpoints.reduce((acc, { path, method, multipart }) => {
     const fnPath = urlPathToFnPath(path);
     const url = `api/${path}`;
@@ -407,6 +474,11 @@ const createMarketplaceApiEndpointInterceptors = httpOpts =>
   }, {});
 
 const createAuthApiEndpointInterceptors = httpOpts =>
+  // Create `endpointInterceptors` object, which is object
+  // containing interceptors for all defined endpoints.
+  // This object can be passed to other interceptors in the interceptor context so they
+  // are able to do API calls (e.g. authentication interceptors)
+  //
   authApiEndpoints.reduce((acc, { path, method }) => {
     const fnPath = urlPathToFnPath(path);
     const url = `auth/${path}`;
@@ -414,6 +486,11 @@ const createAuthApiEndpointInterceptors = httpOpts =>
   }, {});
 
 const createAssetsApiEndpointInterceptors = httpOpts =>
+  // Create `endpointInterceptors` object, which is object
+  // containing interceptors for all defined endpoints.
+  // This object can be passed to other interceptors in the interceptor context so they
+  // are able to do API calls (e.g. authentication interceptors)
+  //
   assetsApiEndpoints.reduce((acc, { pathFn, method, name }) => {
     const urlTemplate = pathParams => `assets/${pathFn(pathParams)}`;
     return _.set(acc, name, [endpointRequest({ method, urlTemplate, httpOpts })]);
@@ -440,8 +517,15 @@ export default class SharetribeSdk {
     const authApiEndpointInterceptors = createAuthApiEndpointInterceptors(apiConfigs.auth);
     const assetsApiEndpointInterceptors = createAssetsApiEndpointInterceptors(apiConfigs.assets);
 
-    let ctx = {
+    const allEndpointInterceptors = {
+      api: marketplaceApiEndpointInterceptors,
+      auth: authApiEndpointInterceptors,
+      assets: assetsApiEndpointInterceptors,
+    };
+
+    const ctx = {
       tokenStore: sdkConfig.tokenStore,
+      endpointInterceptors: allEndpointInterceptors,
       clientId: sdkConfig.clientId,
       clientSecret: sdkConfig.clientSecret,
       typeHandlers: sdkConfig.typeHandlers,
@@ -449,8 +533,6 @@ export default class SharetribeSdk {
       disableDeprecationWarnings: sdkConfig.disableDeprecationWarnings,
       inFlightAuthRequestStore: createInFlightAuthRequestStore(),
     };
-
-    ctx = authTokenContextRunner.setAuthTokenInterceptors(ctx, authApiEndpointInterceptors.token);
 
     // Assign SDK functions to 'this'
     marketplaceApiSdkFns(marketplaceApiEndpointInterceptors, ctx).forEach(({ path, fn }) =>

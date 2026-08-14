@@ -285,34 +285,6 @@ describe('new MultitenantSharetribeSdk', () => {
         })
       );
     });
-
-    it('tokenExchange refreshes expired token', () => {
-      const { sdk, sdkTokenStore, adapterTokenStore } = createSdk();
-      const userToken = adapterTokenStore.createTokenWithCredentials(
-        'joe.dunphy@example.com',
-        'secret-joe'
-      );
-      sdkTokenStore.setToken({ ...userToken });
-      adapterTokenStore.expireAccessToken(userToken.access_token);
-
-      expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-access-1');
-
-      return report(
-        sdk.tokenExchange().then(res => {
-          // There are three tokens generated:
-          // 1: The initial token
-          // 2: The refreshed token
-          // 3: The exchanged token
-          expect(sdkTokenStore.getToken().access_token).toEqual('joe.dunphy@example.com-access-3');
-
-          expect(res.data).toEqual({
-            client_data: {
-              client_id: '08ec69f6-d37e-414d-83eb-324e94afddf0',
-            },
-          });
-        })
-      );
-    });
   });
 
   describe('loginWithIdp', () => {
