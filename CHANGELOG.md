@@ -15,6 +15,8 @@ changelog](https://www.sharetribe.com/api-reference/changelog.html).
 
 ## [Unreleased] - xxxx-xx-xx
 
+## [v1.24.2] - 2026-08-18
+
 ### Changed
 
 - Future SDK releases may include support for API endpoints that are not yet
@@ -403,8 +405,9 @@ See: https://www.npmjs.com/package/sharetribe-flex-sdk
   to prepare for publishing to NPM. Remember to check your existing
   imports!
 
-[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.23.0...HEAD
+[unreleased]: https://github.com/sharetribe/flex-sdk-js/compare/v1.24.2...HEAD
 
+[v1.24.2]: https://github.com/sharetribe/flex-sdk-js/compare/v1.24.1...v1.24.2
 [v1.24.1]: https://github.com/sharetribe/flex-sdk-js/compare/v1.24.0...v1.24.1
 [v1.24.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.23.0...v1.24.0
 [v1.23.0]: https://github.com/sharetribe/flex-sdk-js/compare/v1.22.0...v1.23.0
