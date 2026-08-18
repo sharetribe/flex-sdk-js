@@ -63,7 +63,7 @@ describe('new MultitenantSharetribeSdk', () => {
 
   it('validates presence of clientSecret', () => {
     const { multitenantClientSecret, ...withoutClientSecretConfig } = validSdkConfig;
-    expect(() => new MultitenantSharetribeSdk(withoutClientSecretConfig)).toThrowError(
+    expect(() => new MultitenantSharetribeSdk(withoutClientSecretConfig)).toThrow(
       'multitenantClientSecret must be provided'
     );
   });
@@ -72,7 +72,7 @@ describe('new MultitenantSharetribeSdk', () => {
     // This test validates that baseUrl is not explicitely set to null. If
     // baseUrl is missing, default baseUrl is used but if baseUrl is set to
     // null, that's an error case we want to catch.
-    expect(() => new MultitenantSharetribeSdk({ ...validSdkConfig, baseUrl: null })).toThrowError(
+    expect(() => new MultitenantSharetribeSdk({ ...validSdkConfig, baseUrl: null })).toThrow(
       'baseUrl must be provided'
     );
   });

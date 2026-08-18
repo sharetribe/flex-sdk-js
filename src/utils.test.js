@@ -77,12 +77,12 @@ describe('utils', () => {
     });
 
     it('only takes an object', () => {
-      expect(() => objectQueryString('foo')).toThrowError('Parameter not an object.');
-      expect(() => objectQueryString(null)).toThrowError('Parameter not an object.');
+      expect(() => objectQueryString('foo')).toThrow('Parameter not an object.');
+      expect(() => objectQueryString(null)).toThrow('Parameter not an object.');
     });
 
     it('does not allow nested objects', () => {
-      expect(() => objectQueryString({ foo: { nested: 'value' } })).toThrowError(
+      expect(() => objectQueryString({ foo: { nested: 'value' } })).toThrow(
         'Nested object in query parameter.'
       );
     });

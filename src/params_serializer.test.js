@@ -52,11 +52,11 @@ describe('params serializer', () => {
       }
     }
 
-    expect(() => ps({ point: new Point(12, -5) })).toThrowError(
+    expect(() => ps({ point: new Point(12, -5) })).toThrow(
       "Don't know how to serialize query parameter 'point': [object Object]"
     );
 
-    expect(() => ps({ foo: { a: 1, b: 'bar' } })).toThrowError(
+    expect(() => ps({ foo: { a: 1, b: 'bar' } })).toThrow(
       "Don't know how to serialize query parameter 'foo': [object Object]"
     );
   });
