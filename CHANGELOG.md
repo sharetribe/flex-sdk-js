@@ -24,6 +24,7 @@ changelog](https://www.sharetribe.com/api-reference/changelog.html).
 
 - Update js-cookie from v2 to v3. This includes a security fix for cookie
   attribute injection (CVE-2026-46625).[#219](https://github.com/sharetribe/flex-sdk-js/pull/219)
+- Update minimist from 1.2.5 to 1.2.8. Fixes (CVE-2021-44906). [#223](https://github.com/sharetribe/flex-sdk-js/pull/223)
 
 ## [v1.24.1] - 2026-07-27
 
