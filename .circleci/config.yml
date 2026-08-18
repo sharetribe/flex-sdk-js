@@ -5,9 +5,10 @@ jobs:
       ignore:
         - gh-pages
     docker:
-      - image: node:16.19.1
+      - image: cimg/node:26.7.0
     steps:
       - checkout
+      - run: node --version
       - run:
           name: install
           command: yarn install
