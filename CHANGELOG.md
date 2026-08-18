@@ -28,6 +28,7 @@ changelog](https://www.sharetribe.com/api-reference/changelog.html).
 - Update shell-quote from 1.7.1 to 1.8.2. Fixes (CVE-2021-42740). shell-quote is a development-time transitive dependency. [#224](https://github.com/sharetribe/flex-sdk-js/pull/224)
 - Update babel-loader from 8.0.6 to 8.4.1. Fixes prototype pollution in loader-utils (CVE-2022-37601). [#225](https://github.com/sharetribe/flex-sdk-js/pull/225)
 - Update handlebars from 4.7.7 to 4.7.9. Fixes (CVE-2026-33937). handlebars is a development-time transitive dependency. [#226](https://github.com/sharetribe/flex-sdk-js/pull/226)
+- Update thenify from 3.3.0 to 3.3.1. Fixes (CVE-2020-7677). thenify is a development-time transitive dependency. [#227](https://github.com/sharetribe/flex-sdk-js/pull/227)
 
 ## [v1.24.1] - 2026-07-27
 
