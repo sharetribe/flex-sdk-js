@@ -19,10 +19,14 @@ changelog](https://www.sharetribe.com/api-reference/changelog.html).
 
 - Future SDK releases may include support for API endpoints that are not yet
   publicly available. Changed CHANGELOG.md to reflect this change.
+- Internal. Added refresh and retry mechanism for expired auth tokens for
+  multitenant SDK, which is only used by the Sharetribe-hosted no-code
+  marketplaces. [#220](https://github.com/sharetribe/flex-sdk-js/pull/220)
 
 ## [v1.24.1] - 2026-07-27
 
 ### Changed
+
 - Update dependencies [#215](https://github.com/sharetribe/flex-sdk-js/pull/215)
   - axios: 1.5.1 > 1.18.1
   - lodash: 4.17.10 > 4.18.1

@@ -87,7 +87,7 @@ const createTokenStore = () => {
     };
     tokens.push(token);
 
-    return token.token;
+    return { ...token.token };
   };
 
   const createTokenWithAuthorizationCode = authorizationCode => {
@@ -202,7 +202,7 @@ const createTokenStore = () => {
           refresh_token: generateRefreshToken(username),
           token_type: 'bearer',
           expires_in: 86400,
-          // TODO missing `scope`
+          scope: 'user',
         },
         user: {
           username,
