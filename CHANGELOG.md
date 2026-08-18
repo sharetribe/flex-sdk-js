@@ -32,6 +32,13 @@ changelog](https://www.sharetribe.com/api-reference/changelog.html).
 - Remove redundant babel-jest direct dependency. jest 29 bundles its own babel-jest, and the old direct dependency was pulling in vulnerable babel-traverse 6.26.0. [#228](https://github.com/sharetribe/flex-sdk-js/pull/228)
 - Update @babel/* dependencies. Fixes (CVE-2023-45133). [#229](https://github.com/sharetribe/flex-sdk-js/pull/229)
 - Update jest from 29 to 30 and @babel/traverse from 7.23.0 to 7.29.8. Fixes (CVE-2023-45133). [#230](https://github.com/sharetribe/flex-sdk-js/pull/230) [#231](https://github.com/sharetribe/flex-sdk-js/pull/231)
+- Update development-time transitive dependencies in yarn.lock. [#233](https://github.com/sharetribe/flex-sdk-js/pull/233)
+  - shell-quote 1.8.2 to 1.9.0 (CVE-2026-9277)
+  - websocket-driver 0.7.3 to 0.7.5 (CVE-2026-54466)
+  - sha.js 2.4.11 to 2.4.12 (CVE-2025-9288)
+  - cipher-base 1.0.4 to 1.0.5 (CVE-2025-9287)
+  - pbkdf2 3.0.17 to 3.1.3 (CVE-2025-6547, CVE-2025-6545)
+  - elliptic 6.5.4 to 6.6.1
 
 ## [v1.24.1] - 2026-07-27
 
