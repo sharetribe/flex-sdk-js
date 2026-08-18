@@ -70,7 +70,7 @@ describe('new SharetribeSdk', () => {
 
   it('validates presence of clientId', () => {
     const { clientId, ...withoutClientIdConfig } = validSdkConfig;
-    expect(() => new SharetribeSdk(withoutClientIdConfig)).toThrowError(
+    expect(() => new SharetribeSdk(withoutClientIdConfig)).toThrow(
       'clientId must be provided'
     );
   });
@@ -79,7 +79,7 @@ describe('new SharetribeSdk', () => {
     // This test validates that baseUrl is not explicitely set to null. If
     // baseUrl is missing, default baseUrl is used but if baseUrl is set to
     // null, that's an error case we want to catch.
-    expect(() => new SharetribeSdk({ ...validSdkConfig, baseUrl: null })).toThrowError(
+    expect(() => new SharetribeSdk({ ...validSdkConfig, baseUrl: null })).toThrow(
       'baseUrl must be provided'
     );
   });
@@ -88,7 +88,7 @@ describe('new SharetribeSdk', () => {
     // This test validates that assetCdnBaseUrl is not explicitely set to null.
     // If assetCdnBaseUrl is missing, default assetCdnBaseUrl is used but if
     // assetCdnBaseUrl is set to null, that's an error case we want to catch.
-    expect(() => new SharetribeSdk({ ...validSdkConfig, assetCdnBaseUrl: null })).toThrowError(
+    expect(() => new SharetribeSdk({ ...validSdkConfig, assetCdnBaseUrl: null })).toThrow(
       'assetCdnBaseUrl must be provided'
     );
   });
