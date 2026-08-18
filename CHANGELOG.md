@@ -26,6 +26,7 @@ changelog](https://www.sharetribe.com/api-reference/changelog.html).
   attribute injection (CVE-2026-46625).[#219](https://github.com/sharetribe/flex-sdk-js/pull/219)
 - Update minimist from 1.2.5 to 1.2.8. Fixes (CVE-2021-44906). minimist is a development-time transitive dependency. [#223](https://github.com/sharetribe/flex-sdk-js/pull/223)
 - Update shell-quote from 1.7.1 to 1.8.2. Fixes (CVE-2021-42740). shell-quote is a development-time transitive dependency. [#224](https://github.com/sharetribe/flex-sdk-js/pull/224)
+- Update babel-loader from 8.0.6 to 8.4.1. Fixes prototype pollution in loader-utils (CVE-2022-37601). [#225](https://github.com/sharetribe/flex-sdk-js/pull/225)
 
 ## [v1.24.1] - 2026-07-27
 
