@@ -7,10 +7,13 @@ const createStore = ({ clientId, cookieId, secure }) => {
   const namespace = 'st';
   const key = generateKey(clientId || cookieId, namespace);
 
-  const getToken = () => Cookies.getJSON(key);
+  const getToken = () => {
+    const value = Cookies.get(key);
+    return value ? JSON.parse(value) : undefined;
+  };
   const setToken = tokenData => {
     const secureFlag = secure ? { secure: true } : {};
-    Cookies.set(key, tokenData, { expires: expiration, ...secureFlag });
+    Cookies.set(key, JSON.stringify(tokenData), { expires: expiration, ...secureFlag });
   };
   const removeToken = () => {
     Cookies.remove(key);

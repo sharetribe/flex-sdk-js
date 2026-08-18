@@ -19,10 +19,16 @@ changelog](https://www.sharetribe.com/api-reference/changelog.html).
 
 - Future SDK releases may include support for API endpoints that are not yet
   publicly available. Changed CHANGELOG.md to reflect this change.
+  
+### Security
+
+- Update js-cookie from v2 to v3. This includes a security fix for cookie
+  attribute injection (CVE-2026-46625).[#219](https://github.com/sharetribe/flex-sdk-js/pull/219)
 
 ## [v1.24.1] - 2026-07-27
 
 ### Changed
+
 - Update dependencies [#215](https://github.com/sharetribe/flex-sdk-js/pull/215)
   - axios: 1.5.1 > 1.18.1
   - lodash: 4.17.10 > 4.18.1
