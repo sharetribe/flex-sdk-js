@@ -30,6 +30,7 @@ changelog](https://www.sharetribe.com/api-reference/changelog.html).
 - Update handlebars from 4.7.7 to 4.7.9. Fixes (CVE-2026-33937). handlebars is a development-time transitive dependency. [#226](https://github.com/sharetribe/flex-sdk-js/pull/226)
 - Update thenify from 3.3.0 to 3.3.1. Fixes (CVE-2020-7677). thenify is a development-time transitive dependency. [#227](https://github.com/sharetribe/flex-sdk-js/pull/227)
 - Remove redundant babel-jest direct dependency. jest 29 bundles its own babel-jest, and the old direct dependency was pulling in vulnerable babel-traverse 6.26.0. [#228](https://github.com/sharetribe/flex-sdk-js/pull/228)
+- Update @babel/* dependencies. Fixes (CVE-2023-45133). [#229](https://github.com/sharetribe/flex-sdk-js/pull/229)
 
 ## [v1.24.1] - 2026-07-27
 
