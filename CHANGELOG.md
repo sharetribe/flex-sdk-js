@@ -31,6 +31,7 @@ changelog](https://www.sharetribe.com/api-reference/changelog.html).
 - Update thenify from 3.3.0 to 3.3.1. Fixes (CVE-2020-7677). thenify is a development-time transitive dependency. [#227](https://github.com/sharetribe/flex-sdk-js/pull/227)
 - Remove redundant babel-jest direct dependency. jest 29 bundles its own babel-jest, and the old direct dependency was pulling in vulnerable babel-traverse 6.26.0. [#228](https://github.com/sharetribe/flex-sdk-js/pull/228)
 - Update @babel/* dependencies. Fixes (CVE-2023-45133). [#229](https://github.com/sharetribe/flex-sdk-js/pull/229)
+- Update jest from 29 to 30. Fixes (CVE-2023-45133) in jest's transitive @babel/traverse dependency. [#230](https://github.com/sharetribe/flex-sdk-js/pull/230)
 
 ## [v1.24.1] - 2026-07-27
 
