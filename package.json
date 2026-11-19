@@ -61,7 +61,7 @@
     "js-cookie": "^3.0.8",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",
-    "transit-js": "^0.8.861"
+    "transit-js": "^0.8.874"
   },
   "resolutions": {
     "docpress/**/lodash": "^4.18.1",
